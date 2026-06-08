@@ -172,11 +172,15 @@ const modalAuthor = document.querySelector('#modalAuthor');
 const modalContent = document.querySelector('#modalContent');
 const modalAttachment = document.querySelector('#modalAttachment');
 
-function closeAnnouncementModal() {
-    if (!announcementModal) return;
-    announcementModal.classList.remove('open');
-    announcementModal.setAttribute('aria-hidden', 'true');
+function closeModal(modal) {
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+}
+
+function closeAnnouncementModal() {
+    closeModal(announcementModal);
 }
 
 document.querySelectorAll('.read-more-btn').forEach((button) => {
@@ -204,12 +208,19 @@ document.querySelectorAll('.read-more-btn').forEach((button) => {
 });
 
 document.querySelectorAll('[data-close-modal]').forEach((element) => {
-    element.addEventListener('click', closeAnnouncementModal);
+    element.addEventListener('click', () => {
+        const modal = element.closest('.modal');
+        if (modal) {
+            closeModal(modal);
+        } else {
+            closeAnnouncementModal();
+        }
+    });
 });
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-        closeAnnouncementModal();
+        document.querySelectorAll('.modal.open').forEach(closeModal);
     }
 });
 
@@ -283,6 +294,111 @@ if (markAllRead) {
                 pill.textContent = 'Read';
                 pill.className = 'status-pill status-read';
             }
+        });
+    });
+}
+
+const activityCalendarEl = document.getElementById('activityCalendar');
+const activityModal = document.getElementById('activityEditorModal');
+const activityForm = document.getElementById('activityEditorForm');
+
+function activityById(id) {
+    return (window.activityCalendarEvents || []).find((event) => String(event.id) === String(id));
+}
+
+function openActivityEditor(eventData) {
+    if (!activityModal || !activityForm || !eventData) return;
+
+    const props = eventData.extendedProps || {};
+    document.getElementById('activityModalMode').textContent = props.type || 'Activity';
+    document.getElementById('activityModalTitle').textContent = 'Edit Activity';
+    document.getElementById('activityAction').value = 'update';
+    document.getElementById('activityId').value = eventData.id || '';
+    document.getElementById('activityTitle').value = eventData.title || '';
+    document.getElementById('activityType').value = props.type || 'Seminar';
+    document.getElementById('activityDate').value = (eventData.startStr || props.date || '').slice(0, 10);
+    document.getElementById('activityVenue').value = props.venue || '';
+    document.getElementById('activityDescription').value = props.description || '';
+    document.getElementById('deleteActivityButton').style.display = '';
+
+    activityModal.classList.add('open');
+    activityModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function openActivityCreator(dateStr) {
+    if (!activityModal || !activityForm) return;
+
+    document.getElementById('activityModalMode').textContent = 'New Activity';
+    document.getElementById('activityModalTitle').textContent = 'Add Activity';
+    document.getElementById('activityAction').value = 'create';
+    document.getElementById('activityId').value = '';
+    document.getElementById('activityTitle').value = '';
+    document.getElementById('activityType').value = 'Seminar';
+    document.getElementById('activityDate').value = dateStr || new Date().toISOString().slice(0, 10);
+    document.getElementById('activityVenue').value = '';
+    document.getElementById('activityDescription').value = '';
+    document.getElementById('deleteActivityButton').style.display = 'none';
+
+    activityModal.classList.add('open');
+    activityModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+if (activityCalendarEl && window.FullCalendar) {
+    const calendar = new FullCalendar.Calendar(activityCalendarEl, {
+        initialView: 'dayGridMonth',
+        height: 'auto',
+        editable: true,
+        selectable: true,
+        dayMaxEvents: true,
+        nowIndicator: true,
+        events: window.activityCalendarEvents || [],
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        buttonText: {
+            today: 'today',
+            month: 'month',
+            week: 'week',
+            day: 'day',
+            list: 'list'
+        },
+        dateClick(info) {
+            openActivityCreator(info.dateStr);
+        },
+        eventClick(info) {
+            openActivityEditor(info.event);
+        },
+        eventDrop(info) {
+            const formData = new FormData();
+            formData.append('csrf_token', window.activityCalendarCsrf || '');
+            formData.append('action', 'move');
+            formData.append('id', info.event.id);
+            formData.append('date', info.event.startStr.slice(0, 10));
+
+            fetch('activities.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            }).then((response) => {
+                if (!response.ok) throw new Error('Move failed');
+                return response.json();
+            }).then((data) => {
+                if (!data.ok) throw new Error(data.message || 'Move failed');
+            }).catch(() => {
+                info.revert();
+                alert('The activity could not be moved. Please try again.');
+            });
+        }
+    });
+    calendar.render();
+
+    document.querySelectorAll('[data-edit-activity]').forEach((button) => {
+        button.addEventListener('click', () => {
+            openActivityEditor(activityById(button.dataset.editActivity));
         });
     });
 }

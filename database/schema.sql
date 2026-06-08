@@ -82,7 +82,7 @@ CREATE TABLE announcements (
 CREATE TABLE activities (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(220) NOT NULL,
-  activity_type ENUM('Seminar','Training','Workshop','Community Outreach') NOT NULL,
+  activity_type ENUM('Seminar','Training','Workshop','Community Outreach','Project Defense') NOT NULL,
   date DATE NOT NULL,
   venue VARCHAR(180) NOT NULL,
   description TEXT NULL,
