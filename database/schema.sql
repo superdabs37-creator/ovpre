@@ -1,0 +1,149 @@
+CREATE DATABASE IF NOT EXISTS ovpre CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE ovpre;
+
+CREATE TABLE departments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  department_name VARCHAR(150) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  fullname VARCHAR(160) NOT NULL,
+  email VARCHAR(190) NOT NULL UNIQUE,
+  username VARCHAR(80) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('Super Admin','Vice President','OVPRE Staff','Research Coordinator','Extension Coordinator','Faculty Researcher','Evaluator/Reviewer','User') NOT NULL,
+  department_id INT NULL,
+  status ENUM('Active','Inactive','Locked') DEFAULT 'Active',
+  login_attempts INT DEFAULT 0,
+  locked_until DATETIME NULL,
+  reset_token VARCHAR(255) NULL,
+  reset_expires DATETIME NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
+);
+
+CREATE TABLE categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  category_name VARCHAR(120) NOT NULL UNIQUE
+);
+
+CREATE TABLE documents (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(220) NOT NULL,
+  category_id INT NOT NULL,
+  description TEXT NULL,
+  author VARCHAR(160) NOT NULL,
+  department_id INT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  original_filename VARCHAR(255) NOT NULL,
+  uploaded_by INT NOT NULL,
+  status ENUM('Pending','Under Review','Approved','Declined') DEFAULT 'Pending',
+  submission_date DATE NOT NULL,
+  archived_at DATETIME NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (category_id) REFERENCES categories(id),
+  FOREIGN KEY (department_id) REFERENCES departments(id),
+  FOREIGN KEY (uploaded_by) REFERENCES users(id)
+);
+
+CREATE TABLE document_versions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  document_id INT NOT NULL,
+  version_label VARCHAR(80) NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  modified_by INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+  FOREIGN KEY (modified_by) REFERENCES users(id)
+);
+
+CREATE TABLE archived_documents (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  document_id INT NOT NULL,
+  archived_by INT NOT NULL,
+  reason VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE announcements (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(220) NOT NULL,
+  content TEXT NOT NULL,
+  audience ENUM('All','Faculty','Researchers','Staff') DEFAULT 'All',
+  status ENUM('Draft','Published','Archived') DEFAULT 'Published',
+  posted_by INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (posted_by) REFERENCES users(id)
+);
+
+CREATE TABLE activities (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(220) NOT NULL,
+  activity_type ENUM('Seminar','Training','Workshop','Community Outreach') NOT NULL,
+  date DATE NOT NULL,
+  venue VARCHAR(180) NOT NULL,
+  description TEXT NULL,
+  created_by INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  message TEXT NOT NULL,
+  status ENUM('Unread','Read') DEFAULT 'Unread',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE audit_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  action VARCHAR(255) NOT NULL,
+  ip_address VARCHAR(64) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE research_projects (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(220) NOT NULL,
+  researchers TEXT NOT NULL,
+  abstract TEXT NOT NULL,
+  funding_source VARCHAR(180) NULL,
+  document_id INT NULL,
+  submitted_by INT NOT NULL,
+  status ENUM('Pending','Under Review','Approved','Declined') DEFAULT 'Pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE SET NULL,
+  FOREIGN KEY (submitted_by) REFERENCES users(id)
+);
+
+CREATE TABLE extension_projects (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  project_title VARCHAR(220) NOT NULL,
+  coordinator VARCHAR(160) NOT NULL,
+  community_partner VARCHAR(180) NOT NULL,
+  budget DECIMAL(12,2) DEFAULT 0,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  progress_status ENUM('Planning','Ongoing','Completed') DEFAULT 'Planning',
+  submitted_by INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (submitted_by) REFERENCES users(id)
+);
+
+CREATE TABLE accomplishment_reports (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(220) NOT NULL,
+  project_id INT NULL,
+  document_id INT NULL,
+  submitted_by INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (project_id) REFERENCES extension_projects(id) ON DELETE SET NULL,
+  FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE SET NULL,
+  FOREIGN KEY (submitted_by) REFERENCES users(id)
+);
