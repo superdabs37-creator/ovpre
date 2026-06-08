@@ -38,7 +38,7 @@ const chartDefaults = {
 const palette = ['#15803d', '#16a34a', '#facc15', '#fde047', '#0f3d24', '#86efac'];
 
 const pieCanvas = document.getElementById('pieChart');
-if (pieCanvas) {
+if (pieCanvas && window.Chart) {
     const statusRows = window.irecordCharts?.status || [];
     new Chart(pieCanvas, {
         type: 'pie',
@@ -56,7 +56,7 @@ if (pieCanvas) {
 }
 
 const barCanvas = document.getElementById('barChart');
-if (barCanvas) {
+if (barCanvas && window.Chart) {
     const monthlyRows = window.irecordCharts?.monthly || [];
     new Chart(barCanvas, {
         type: 'bar',
@@ -80,7 +80,7 @@ if (barCanvas) {
 }
 
 const lineCanvas = document.getElementById('lineChart');
-if (lineCanvas) {
+if (lineCanvas && window.Chart) {
     const extensionRows = window.irecordCharts?.extension || [];
     new Chart(lineCanvas, {
         type: 'line',
@@ -110,11 +110,11 @@ if (lineCanvas) {
 
 function renderReportChart(id, type, rows, label) {
     const canvas = document.getElementById(id);
-    if (!canvas) return;
+    if (!canvas || !window.Chart) return;
     new Chart(canvas, {
         type,
         data: {
-            labels: rows.map((row) => row.category_name || row.status),
+            labels: rows.map((row) => row.label || row.department_name || row.category_name || row.status),
             datasets: [{ label, data: rows.map((row) => Number(row.total)), backgroundColor: palette, borderColor: '#15803d', tension: 0.35 }]
         },
         options: chartDefaults
@@ -123,8 +123,10 @@ function renderReportChart(id, type, rows, label) {
 
 if (window.reportCharts) {
     renderReportChart('reportCategoryChart', 'bar', window.reportCharts.categories || [], 'Documents');
+    renderReportChart('reportMonthlyChart', 'bar', window.reportCharts.monthly || [], 'Submissions');
     renderReportChart('reportResearchChart', 'doughnut', window.reportCharts.research || [], 'Research');
     renderReportChart('reportExtensionChart', 'line', window.reportCharts.extension || [], 'Extension');
+    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Department Output');
 }
 
 document.querySelectorAll('[data-file-search]').forEach((input) => {
@@ -297,6 +299,42 @@ if (markAllRead) {
         });
     });
 }
+
+document.querySelector('[data-select-all-records]')?.addEventListener('change', (event) => {
+    document.querySelectorAll('input[name="ids[]"]').forEach((checkbox) => {
+        checkbox.checked = event.target.checked;
+    });
+});
+
+document.querySelectorAll('[data-export-table]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const table = document.getElementById(button.dataset.exportTable);
+        if (!table) return;
+        const rows = [...table.querySelectorAll('tr')].map((row) => [...row.children].map((cell) => {
+            const text = cell.innerText.replace(/\s+/g, ' ').trim();
+            return `"${text.replaceAll('"', '""')}"`;
+        }).join(',')).join('\n');
+        const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'irecord-export.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+});
+
+document.querySelectorAll('.user-status-form').forEach((form) => {
+    const select = form.querySelector('select[name="status"]');
+    const button = form.querySelector('button[type="submit"]');
+    if (!select || !button) return;
+
+    const updateButton = () => {
+        button.disabled = select.value === select.dataset.originalStatus;
+    };
+
+    select.addEventListener('change', updateButton);
+    updateButton();
+});
 
 const activityCalendarEl = document.getElementById('activityCalendar');
 const activityModal = document.getElementById('activityEditorModal');

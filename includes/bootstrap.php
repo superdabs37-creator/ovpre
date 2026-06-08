@@ -12,6 +12,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+define('SESSION_TIMEOUT_SECONDS', 1800);
+
 function db(): PDO {
     static $pdo = null;
     if ($pdo instanceof PDO) {
@@ -74,9 +76,31 @@ function current_user(): ?array {
     if (empty($_SESSION['user_id'])) {
         return null;
     }
-    $stmt = db()->prepare('SELECT * FROM users WHERE id = ? AND status = "Active" LIMIT 1');
+    if (!empty($_SESSION['last_activity']) && time() - (int) $_SESSION['last_activity'] > SESSION_TIMEOUT_SECONDS) {
+        session_unset();
+        session_destroy();
+        return null;
+    }
+    $_SESSION['last_activity'] = time();
+
+    $stmt = db()->prepare('SELECT * FROM users WHERE id = ? AND status = "Active" AND deleted_at IS NULL LIMIT 1');
     $stmt->execute([$_SESSION['user_id']]);
     return $stmt->fetch() ?: null;
+}
+
+function role_permissions(): array {
+    return [
+        'Super Admin' => ['*'],
+        'Vice President' => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
+        'OVPRE Staff' => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
+        'Research Coordinator' => ['dashboard', 'documents', 'research', 'reports', 'announcements'],
+        'Extension Coordinator' => ['dashboard', 'documents', 'extension', 'reports', 'announcements'],
+    ];
+}
+
+function role_can(string $role, string $permission): bool {
+    $permissions = role_permissions()[$role] ?? [];
+    return in_array('*', $permissions, true) || in_array($permission, $permissions, true);
 }
 
 function require_login(array $roles = []): array {
@@ -101,6 +125,26 @@ function notify_user(int $userId, string $message): void {
     $stmt->execute([$userId, $message]);
 }
 
+function log_review(string $entityType, int $entityId, ?int $userId, string $action, string $remarks = ''): void {
+    $stmt = db()->prepare('INSERT INTO review_logs (entity_type, entity_id, user_id, action, remarks, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
+    $stmt->execute([$entityType, $entityId, $userId, $action, $remarks]);
+}
+
+function review_timeline(string $entityType, int $entityId): array {
+    $stmt = db()->prepare('SELECT r.*, u.fullname FROM review_logs r LEFT JOIN users u ON u.id = r.user_id WHERE r.entity_type = ? AND r.entity_id = ? ORDER BY r.created_at DESC');
+    $stmt->execute([$entityType, $entityId]);
+    return $stmt->fetchAll();
+}
+
+function log_login_event(?int $userId, string $username, string $status): void {
+    $stmt = db()->prepare('INSERT INTO login_history (user_id, username, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
+    $stmt->execute([$userId, $username, $status, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255)]);
+}
+
+function assignable_users(): array {
+    return db()->query('SELECT id, fullname, role FROM users WHERE status = "Active" AND deleted_at IS NULL ORDER BY fullname')->fetchAll();
+}
+
 function statusClass($status): string {
     return strtolower(str_replace([' ', '/'], '-', (string) $status));
 }
@@ -123,15 +167,24 @@ function dashboard_stats(): array {
     ];
 }
 
-function document_list(bool $archived = false): array {
-    $sql = 'SELECT d.*, c.category_name, u.fullname AS uploader, dep.department_name
+function document_list(bool $archived = false, string $status = 'All'): array {
+    $where = 'd.archived_at IS ' . ($archived ? 'NOT NULL' : 'NULL');
+    $params = [];
+    if ($status !== 'All' && in_array($status, ['Pending', 'Under Review', 'Approved', 'Declined'], true)) {
+        $where .= ' AND d.status = ?';
+        $params[] = $status;
+    }
+    $sql = 'SELECT d.*, c.category_name, u.fullname AS uploader, dep.department_name, au.fullname AS assignee
             FROM documents d
             JOIN categories c ON c.id = d.category_id
             JOIN users u ON u.id = d.uploaded_by
+            LEFT JOIN users au ON au.id = d.assigned_to
             JOIN departments dep ON dep.id = d.department_id
-            WHERE d.archived_at IS ' . ($archived ? 'NOT NULL' : 'NULL') . '
+            WHERE ' . $where . '
             ORDER BY d.created_at DESC';
-    return db()->query($sql)->fetchAll();
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
 }
 
 function save_uploaded_document(array $post, array $file, int $userId): void {

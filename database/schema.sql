@@ -20,6 +20,9 @@ CREATE TABLE users (
   locked_until DATETIME NULL,
   reset_token VARCHAR(255) NULL,
   reset_expires DATETIME NULL,
+  last_login_at DATETIME NULL,
+  created_by INT NULL,
+  deleted_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
 );
@@ -39,7 +42,9 @@ CREATE TABLE documents (
   filename VARCHAR(255) NOT NULL,
   original_filename VARCHAR(255) NOT NULL,
   uploaded_by INT NOT NULL,
+  assigned_to INT NULL,
   status ENUM('Pending','Under Review','Approved','Declined') DEFAULT 'Pending',
+  status_remarks TEXT NULL,
   submission_date DATE NOT NULL,
   archived_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -108,6 +113,30 @@ CREATE TABLE audit_logs (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+CREATE TABLE review_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  entity_type VARCHAR(40) NOT NULL,
+  entity_id INT NOT NULL,
+  user_id INT NULL,
+  action VARCHAR(80) NOT NULL,
+  remarks TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_review_entity (entity_type, entity_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE login_history (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  username VARCHAR(80) NULL,
+  status VARCHAR(30) NOT NULL,
+  ip_address VARCHAR(64) NOT NULL,
+  user_agent VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_login_user (user_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
 CREATE TABLE research_projects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(220) NOT NULL,
@@ -117,6 +146,8 @@ CREATE TABLE research_projects (
   document_id INT NULL,
   submitted_by INT NOT NULL,
   status ENUM('Pending','Under Review','Approved','Declined') DEFAULT 'Pending',
+  assigned_to INT NULL,
+  status_remarks TEXT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE SET NULL,
   FOREIGN KEY (submitted_by) REFERENCES users(id)
@@ -131,6 +162,8 @@ CREATE TABLE extension_projects (
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   progress_status ENUM('Planning','Ongoing','Completed') DEFAULT 'Planning',
+  assigned_to INT NULL,
+  status_remarks TEXT NULL,
   submitted_by INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (submitted_by) REFERENCES users(id)

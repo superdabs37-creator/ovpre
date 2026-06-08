@@ -3,8 +3,19 @@ require_once __DIR__ . '/includes/bootstrap.php';
 
 $pageTitle = 'Secure Login';
 $error = null;
+
+function login_redirect_for_role(string $role): string {
+    return match ($role) {
+        'Vice President' => 'vice-president/dashboard.php',
+        'OVPRE Staff' => 'ovpre-staff/dashboard.php',
+        'Research Coordinator' => 'research-coordinator/dashboard.php',
+        'Extension Coordinator' => 'extension-coordinator/dashboard.php',
+        default => 'dashboard.php',
+    };
+}
+
 if (current_user()) {
-    redirect_to('dashboard.php');
+    redirect_to(login_redirect_for_role((string) current_user()['role']));
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,14 +32,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $lockedUntil = $attempts >= MAX_LOGIN_ATTEMPTS ? date('Y-m-d H:i:s', time() + 900) : null;
             db()->prepare('UPDATE users SET login_attempts = ?, locked_until = ? WHERE id = ?')->execute([$attempts, $lockedUntil, $user['id']]);
             log_action((int) $user['id'], 'Failed login attempt');
+            log_login_event((int) $user['id'], $username, 'Failed');
+        }
+        if (!$user) {
+            log_login_event(null, $username, 'Failed');
         }
         $error = 'Invalid credentials or temporarily locked account.';
     } else {
-        db()->prepare('UPDATE users SET login_attempts = 0, locked_until = NULL WHERE id = ?')->execute([$user['id']]);
+        db()->prepare('UPDATE users SET login_attempts = 0, locked_until = NULL, last_login_at = NOW() WHERE id = ?')->execute([$user['id']]);
         session_regenerate_id(true);
         $_SESSION['user_id'] = (int) $user['id'];
+        $_SESSION['last_activity'] = time();
         log_action((int) $user['id'], 'Login completed');
-        redirect_to('dashboard.php');
+        log_login_event((int) $user['id'], $username, 'Success');
+        redirect_to(login_redirect_for_role((string) $user['role']));
     }
 }
 ?>
@@ -47,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="login-body">
     <main class="login-shell">
         <section class="login-card">
-            <div class="school-mark">
-                <i class="ri-graduation-cap-line"></i>
+            <div class="login-logo">
+                <img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo">
             </div>
             <div class="login-copy">
                 <p><?php echo h(APP_ORG); ?></p>
