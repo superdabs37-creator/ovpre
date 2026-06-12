@@ -283,6 +283,10 @@ renderHeader('Reports Management', 'reports');
         padding: 22px;
     }
 
+    .statistical-card .panel-heading {
+        align-items: flex-start;
+    }
+
     .report-chart-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -291,21 +295,92 @@ renderHeader('Reports Management', 'reports');
     }
 
     .report-chart-box {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 14px;
         min-height: 320px;
-        padding: 16px;
-        background: var(--surface);
+        padding: 18px;
+        background: var(--white);
         border: 1px solid var(--line);
-        border-radius: 16px;
+        border-radius: 18px;
+        box-shadow: 0 12px 28px rgba(15, 61, 36, 0.08);
     }
 
-    .report-chart-box h4 {
-        margin: 0 0 12px;
+    .report-chart-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .report-chart-title {
+        min-width: 0;
+    }
+
+    .report-chart-title h4 {
+        margin: 0 0 4px;
         color: var(--green-900);
+        font-size: 1rem;
     }
 
-    .report-chart-box canvas {
+    .report-chart-title span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+        line-height: 1.35;
+    }
+
+    .report-chart-badge {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        color: var(--green-900);
+        background: var(--green-100);
+        border: 1px solid rgba(21, 128, 61, 0.14);
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .report-chart-frame {
+        position: relative;
+        min-height: 240px;
+        padding: 8px;
+        background: linear-gradient(180deg, #ffffff, var(--surface));
+        border: 1px solid rgba(15, 61, 36, 0.08);
+        border-radius: 14px;
+    }
+
+    .report-chart-frame canvas {
         width: 100%;
-        height: 245px;
+        height: 230px;
+    }
+
+    .report-chart-empty {
+        position: absolute;
+        inset: 8px;
+        display: none;
+        place-items: center;
+        padding: 18px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        text-align: center;
+        font-size: 0.88rem;
+        font-weight: 800;
+    }
+
+    .report-chart-frame.is-empty canvas {
+        opacity: 0;
+    }
+
+    .report-chart-frame.is-empty .report-chart-empty {
+        display: grid;
     }
 
     .report-table-panel {
@@ -344,6 +419,15 @@ renderHeader('Reports Management', 'reports');
         .report-actions .primary-btn,
         .report-actions .ghost-btn {
             width: 100%;
+        }
+
+        .report-chart-head {
+            display: grid;
+        }
+
+        .report-chart-badge {
+            justify-content: center;
+            width: fit-content;
         }
     }
 </style>
@@ -436,9 +520,36 @@ renderHeader('Reports Management', 'reports');
                 <div class="report-metric"><span>Report Rows</span><strong><?php echo number_format(count($documents)); ?></strong></div>
             </div>
             <div class="report-chart-grid">
-                <div class="report-chart-box"><h4>Bar Chart</h4><canvas id="adminReportsBarChart"></canvas></div>
-                <div class="report-chart-box"><h4>Pie Chart</h4><canvas id="adminReportsPieChart"></canvas></div>
-                <div class="report-chart-box"><h4>Line Chart</h4><canvas id="adminReportsLineChart"></canvas></div>
+                <div class="report-chart-box">
+                    <div class="report-chart-head">
+                        <div class="report-chart-title"><h4>Department Output</h4><span>Documents grouped by department</span></div>
+                        <div class="report-chart-badge"><i class="ri-bar-chart-grouped-line"></i> Bar</div>
+                    </div>
+                    <div class="report-chart-frame" data-chart-frame>
+                        <canvas id="adminReportsBarChart"></canvas>
+                        <div class="report-chart-empty">No department data for the selected filters.</div>
+                    </div>
+                </div>
+                <div class="report-chart-box">
+                    <div class="report-chart-head">
+                        <div class="report-chart-title"><h4>Category Share</h4><span>Document mix by category</span></div>
+                        <div class="report-chart-badge"><i class="ri-pie-chart-2-line"></i> Doughnut</div>
+                    </div>
+                    <div class="report-chart-frame" data-chart-frame>
+                        <canvas id="adminReportsPieChart"></canvas>
+                        <div class="report-chart-empty">No category data for the selected filters.</div>
+                    </div>
+                </div>
+                <div class="report-chart-box">
+                    <div class="report-chart-head">
+                        <div class="report-chart-title"><h4>Monthly Trend</h4><span>Submitted records over time</span></div>
+                        <div class="report-chart-badge"><i class="ri-line-chart-line"></i> Line</div>
+                    </div>
+                    <div class="report-chart-frame" data-chart-frame>
+                        <canvas id="adminReportsLineChart"></canvas>
+                        <div class="report-chart-empty">No monthly activity for the selected filters.</div>
+                    </div>
+                </div>
             </div>
             <div class="report-actions" style="margin-top:16px;"><button class="ghost-btn" type="button" data-export-table="reportDocumentsTable"><i class="ri-download-cloud-line"></i> Export Data</button></div>
         </article>
@@ -479,43 +590,123 @@ window.adminReportsDashboard = <?php echo json_encode([
 document.addEventListener('DOMContentLoaded', () => {
     if (!window.Chart || !window.adminReportsDashboard) return;
 
-    const colors = ['#15803d', '#16a34a', '#facc15', '#0f3d24', '#86efac', '#dc2626'];
+    const colors = ['#15803d', '#16a34a', '#facc15', '#0f3d24', '#86efac', '#0ea5e9', '#f97316', '#dc2626'];
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#17231c', usePointStyle: true, boxWidth: 12 } } },
-        scales: { x: { ticks: { color: '#6f7b73' }, grid: { color: '#e6ede8' } }, y: { ticks: { color: '#6f7b73' }, grid: { color: '#e6ede8' } } }
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#17231c',
+                    usePointStyle: true,
+                    boxWidth: 8,
+                    padding: 16,
+                    font: { weight: 700 }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#0f3d24',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                padding: 12,
+                cornerRadius: 10,
+                displayColors: false
+            }
+        },
+        scales: {
+            x: {
+                border: { display: false },
+                ticks: { color: '#6f7b73', font: { weight: 700 }, maxRotation: 0, autoSkip: true },
+                grid: { display: false }
+            },
+            y: {
+                beginAtZero: true,
+                border: { display: false },
+                ticks: { color: '#6f7b73', precision: 0, font: { weight: 700 } },
+                grid: { color: '#e6ede8' }
+            }
+        }
     };
 
-    const categoryRows = window.adminReportsDashboard.categories || [];
-    const departmentRows = window.adminReportsDashboard.departments || [];
-    const monthlyRows = window.adminReportsDashboard.monthly || [];
+    const hasValues = (rows) => rows.some((row) => Number(row.total) > 0);
+    const filteredRows = (rows) => rows.filter((row) => Number(row.total) > 0);
+    const markEmpty = (canvas) => {
+        canvas?.closest('[data-chart-frame]')?.classList.add('is-empty');
+    };
+    const drawChart = (id, config) => {
+        const canvas = document.getElementById(id);
+        if (!canvas || !hasValues(config.rows)) {
+            markEmpty(canvas);
+            return;
+        }
+        new Chart(canvas, config.chart(filteredRows(config.rows)));
+    };
 
-    new Chart(document.getElementById('adminReportsBarChart'), {
-        type: 'bar',
-        data: {
-            labels: departmentRows.map((row) => row.department_name),
-            datasets: [{ label: 'Department Output', data: departmentRows.map((row) => Number(row.total)), backgroundColor: '#15803d', borderRadius: 10 }]
-        },
-        options: chartOptions
+    drawChart('adminReportsBarChart', {
+        rows: window.adminReportsDashboard.departments || [],
+        chart: (rows) => ({
+            type: 'bar',
+            data: {
+                labels: rows.map((row) => row.department_name),
+                datasets: [{
+                    label: 'Documents',
+                    data: rows.map((row) => Number(row.total)),
+                    backgroundColor: rows.map((_, index) => colors[index % colors.length]),
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 44
+                }]
+            },
+            options: chartOptions
+        })
     });
 
-    new Chart(document.getElementById('adminReportsPieChart'), {
-        type: 'pie',
-        data: {
-            labels: categoryRows.map((row) => row.category_name),
-            datasets: [{ data: categoryRows.map((row) => Number(row.total)), backgroundColor: colors, borderColor: '#ffffff', borderWidth: 3 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: chartOptions.plugins }
+    drawChart('adminReportsPieChart', {
+        rows: window.adminReportsDashboard.categories || [],
+        chart: (rows) => ({
+            type: 'doughnut',
+            data: {
+                labels: rows.map((row) => row.category_name),
+                datasets: [{
+                    data: rows.map((row) => Number(row.total)),
+                    backgroundColor: rows.map((_, index) => colors[index % colors.length]),
+                    borderColor: '#ffffff',
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '64%',
+                plugins: chartOptions.plugins
+            }
+        })
     });
 
-    new Chart(document.getElementById('adminReportsLineChart'), {
-        type: 'line',
-        data: {
-            labels: monthlyRows.map((row) => row.label),
-            datasets: [{ label: 'Monthly Records', data: monthlyRows.map((row) => Number(row.total)), borderColor: '#15803d', backgroundColor: 'rgba(21, 128, 61, 0.16)', fill: true, tension: 0.38, pointBackgroundColor: '#facc15', pointBorderColor: '#0f3d24' }]
-        },
-        options: chartOptions
+    drawChart('adminReportsLineChart', {
+        rows: window.adminReportsDashboard.monthly || [],
+        chart: (rows) => ({
+            type: 'line',
+            data: {
+                labels: rows.map((row) => row.label),
+                datasets: [{
+                    label: 'Records',
+                    data: rows.map((row) => Number(row.total)),
+                    borderColor: '#15803d',
+                    backgroundColor: 'rgba(21, 128, 61, 0.14)',
+                    fill: true,
+                    tension: 0.38,
+                    pointBackgroundColor: '#facc15',
+                    pointBorderColor: '#0f3d24',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: chartOptions
+        })
     });
 });
 </script>
