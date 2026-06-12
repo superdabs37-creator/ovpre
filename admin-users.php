@@ -5,7 +5,6 @@ verify_csrf();
 
 $rolePurposes = [
     'Super Admin' => 'System Administrator',
-    'Vice President' => 'Final Approval Authority',
     'OVPRE Staff' => 'Records Management',
     'Research Coordinator' => 'Research Monitoring',
     'Extension Coordinator' => 'Extension Monitoring',
@@ -165,7 +164,7 @@ renderHeader('User Management', 'users');
             <label class="field"><span>Department</span><select name="department_id"><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
             <label class="field"><span>Status</span><select name="status"><option>Active</option><option>Inactive</option><option>Locked</option></select></label>
         </div>
-        <button class="primary-btn post-btn" type="submit"><i class="ri-user-add-line"></i> Add User</button>
+        <button class="primary-btn post-btn add-user-btn" type="submit"><i class="fa-solid fa-user-plus"></i><span>Add User</span></button>
     </form>
 </section>
 <section class="tool-panel"><div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div></section>
@@ -176,11 +175,11 @@ renderHeader('User Management', 'users');
             <tbody>
             <?php foreach ($users as $user): ?>
                 <tr data-table-row>
-                    <td><?php echo (int) $user['id']; ?></td><td><?php echo h($user['fullname']); ?><br><small><?php echo h($rolePurposes[$user['role']] ?? 'Assigned User'); ?></small></td><td><?php echo h($user['email']); ?></td><td><?php echo h($user['username']); ?></td><td><?php echo h($user['department_name'] ?? 'Unassigned'); ?></td><td><?php echo h($user['role']); ?></td><td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td><td><?php echo h($user['created_by_name'] ?? 'System'); ?></td><td><span class="status-pill status-<?php echo h(statusClass($user['status'])); ?>"><?php echo h($user['status']); ?></span></td>
+                    <td><?php echo (int) $user['id']; ?></td><td><?php echo h($user['fullname']); ?><br><small><?php echo h($rolePurposes[$user['role']] ?? 'Assigned User'); ?></small></td><td><?php echo h($user['email']); ?></td><td><?php echo h($user['username']); ?></td><td><?php echo h($user['department_name'] ?? 'Unassigned'); ?></td><td><?php echo h($user['role']); ?></td><td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td><td><?php echo h($user['created_by_name'] ?? 'System'); ?></td><td><span class="live-status <?php echo $user['status'] === 'Active' ? 'is-active' : 'is-inactive'; ?>"><span></span><?php echo h($user['status']); ?></span></td>
                     <td>
                         <div class="user-action-panel">
                             <button class="ghost-btn action-btn" type="button" data-open-modal="edit-user-<?php echo (int) $user['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
-                            <form class="user-status-form" method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="status"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><select class="filter-select" name="status" data-original-status="<?php echo h($user['status']); ?>" aria-label="Change user status"><?php foreach (['Active', 'Inactive', 'Locked'] as $status): ?><option <?php echo $user['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select><button class="primary-btn action-btn" title="Save status" disabled><i class="ri-save-line"></i><span>Save</span></button></form>
+                            <form class="inline-delete-form" method="post" onsubmit="return confirm('Delete this user account? Existing records will remain intact.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Delete</span></button></form>
                         </div>
                     </td>
                 </tr>

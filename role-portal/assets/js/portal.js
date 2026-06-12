@@ -1,14 +1,33 @@
 const roleSidebar = document.getElementById('roleSidebar');
 document.querySelector('[data-role-sidebar]')?.addEventListener('click', () => roleSidebar?.classList.toggle('open'));
 
+const rolePalette = ['#15803d', '#16a34a', '#facc15', '#fde047', '#0f3d24', '#86efac'];
+const roleStatusColors = {
+    approved: '#16a34a',
+    completed: '#16a34a',
+    declined: '#dc2626',
+    rejected: '#dc2626',
+    'under-review': '#facc15',
+    pending: '#fde047'
+};
+
+function roleStatusKey(value) {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, '-');
+}
+
+function roleChartColor(label, index) {
+    return roleStatusColors[roleStatusKey(label)] || rolePalette[index % rolePalette.length];
+}
+
 function drawRoleChart(id, rows, label) {
     const canvas = document.getElementById(id);
     if (!canvas || !window.Chart) return;
+    const labels = rows.map((row) => row.label);
     new Chart(canvas, {
         type: 'doughnut',
         data: {
-            labels: rows.map((row) => row.label),
-            datasets: [{ label, data: rows.map((row) => Number(row.total)), backgroundColor: ['#facc15', '#15803d', '#1d4ed8', '#dc2626', '#b45309'] }]
+            labels,
+            datasets: [{ label, data: rows.map((row) => Number(row.total)), backgroundColor: labels.map(roleChartColor) }]
         },
         options: { responsive: true, maintainAspectRatio: false }
     });

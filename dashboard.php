@@ -1,13 +1,11 @@
 <?php
 require_once 'includes/layout.php';
 $user = require_login();
-$stats = dashboard_stats();
 $recent = db()->query('SELECT l.*, u.fullname FROM audit_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.created_at DESC LIMIT 8')->fetchAll();
 $monthlyDocuments = db()->query("SELECT DATE_FORMAT(created_at, '%b') AS label, COUNT(*) AS total FROM documents WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) GROUP BY YEAR(created_at), MONTH(created_at) ORDER BY MIN(created_at)")->fetchAll();
 $pendingDocuments = db()->query("SELECT d.id, d.title, d.status, d.submission_date, c.category_name, dep.department_name FROM documents d LEFT JOIN categories c ON c.id = d.category_id LEFT JOIN departments dep ON dep.id = d.department_id WHERE d.archived_at IS NULL AND d.status IN ('Pending', 'Under Review') ORDER BY d.updated_at DESC, d.created_at DESC LIMIT 6")->fetchAll();
-$pendingResearch = (int) db()->query("SELECT COUNT(*) FROM research_projects WHERE status IN ('Pending', 'Under Review')")->fetchColumn();
-$pendingExtension = (int) db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status IN ('Pending', 'Under Review')")->fetchColumn();
-$lockedUsers = (int) db()->query("SELECT COUNT(*) FROM users WHERE status = 'Locked' AND deleted_at IS NULL")->fetchColumn();
+$research = db()->query('SELECT status, COUNT(*) total FROM research_projects GROUP BY status')->fetchAll();
+$departmentCounts = db()->query('SELECT dep.department_name, COUNT(d.id) total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND d.archived_at IS NULL GROUP BY dep.id ORDER BY total DESC, dep.department_name')->fetchAll();
 renderHeader('Dashboard', 'dashboard');
 ?>
 <section class="welcome-panel">
@@ -15,27 +13,6 @@ renderHeader('Dashboard', 'dashboard');
         <p>Welcome back, <?php echo h($user['fullname']); ?></p>
     </div>
     <a class="primary-btn" href="upload-document.php"><i class="ri-upload-cloud-line"></i> Upload Record</a>
-</section>
-
-<section class="summary-grid">
-    <?php foreach ([
-        ['label' => 'Total Records', 'value' => $stats['total_records'], 'icon' => 'ri-archive-drawer-line', 'trend' => 'All categories'],
-        ['label' => 'Active Records', 'value' => $stats['active_records'], 'icon' => 'ri-file-list-3-line', 'trend' => 'Available for retrieval'],
-        ['label' => 'Archived Records', 'value' => $stats['archived_records'], 'icon' => 'ri-inbox-archive-line', 'trend' => 'Retention storage'],
-        ['label' => 'Pending Approvals', 'value' => $stats['pending'], 'icon' => 'ri-time-line', 'trend' => 'Needs action'],
-        ['label' => 'Research Queue', 'value' => $pendingResearch, 'icon' => 'ri-flask-line', 'trend' => 'Awaiting review'],
-        ['label' => 'Extension Queue', 'value' => $pendingExtension, 'icon' => 'ri-community-line', 'trend' => 'Awaiting review'],
-        ['label' => 'Locked Accounts', 'value' => $lockedUsers, 'icon' => 'ri-lock-line', 'trend' => 'Security review'],
-    ] as $card): ?>
-        <article class="summary-card">
-            <div class="summary-icon"><i class="<?php echo $card['icon']; ?>"></i></div>
-            <div>
-                <p><?php echo $card['label']; ?></p>
-                <h3><?php echo h($card['value']); ?></h3>
-                <span><?php echo $card['trend']; ?></span>
-            </div>
-        </article>
-    <?php endforeach; ?>
 </section>
 
 <section class="panel">
@@ -64,27 +41,9 @@ renderHeader('Dashboard', 'dashboard');
 </section>
 
 <section class="analytics-grid">
-    <article class="panel chart-panel">
-        <div class="panel-heading">
-            <h2>Department Share</h2>
-            <span>Pie Chart</span>
-        </div>
-        <canvas id="pieChart"></canvas>
-    </article>
-    <article class="panel chart-panel">
-        <div class="panel-heading">
-            <h2>Monthly Uploads</h2>
-            <span>Bar Graph</span>
-        </div>
-        <canvas id="barChart"></canvas>
-    </article>
-    <article class="panel chart-panel wide">
-        <div class="panel-heading">
-            <h2>Review Completion</h2>
-            <span>Line Graph</span>
-        </div>
-        <canvas id="lineChart"></canvas>
-    </article>
+    <article class="panel chart-panel"><div class="panel-heading"><h2>Monthly Submissions</h2><span>Dashboard records</span></div><canvas id="reportMonthlyChart"></canvas></article>
+    <article class="panel chart-panel"><div class="panel-heading"><h2>Approval Rate</h2><span>Research status</span></div><canvas id="reportResearchChart"></canvas></article>
+    <article class="panel chart-panel wide"><div class="panel-heading"><h2>Department Output</h2><span>Document distribution</span></div><canvas id="reportDepartmentChart"></canvas></article>
 </section>
 
 <section class="panel">
@@ -118,10 +77,10 @@ renderHeader('Dashboard', 'dashboard');
     </div>
 </section>
 <script>
-window.irecordCharts = {
+window.reportCharts = {
     monthly: <?php echo json_encode($monthlyDocuments); ?>,
-    status: <?php echo json_encode(db()->query('SELECT status AS label, COUNT(*) AS total FROM documents GROUP BY status')->fetchAll()); ?>,
-    extension: <?php echo json_encode(db()->query("SELECT DATE_FORMAT(created_at, '%b') AS label, COUNT(*) AS total FROM extension_projects GROUP BY YEAR(created_at), MONTH(created_at) ORDER BY MIN(created_at)")->fetchAll()); ?>
+    research: <?php echo json_encode($research); ?>,
+    departments: <?php echo json_encode($departmentCounts); ?>
 };
 </script>
 <?php renderFooter(); ?>

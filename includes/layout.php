@@ -16,11 +16,12 @@ function renderHeader($pageTitle, $currentPage) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($pageTitle); ?> | <?php echo APP_NAME; ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=20260613-record-folders">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-shell">
@@ -40,7 +41,7 @@ function renderHeader($pageTitle, $currentPage) {
                 <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
                 <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                 <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
-                <a class="<?php echo activePage('audit', $currentPage); ?>" href="audit-logs.php"><i class="ri-history-line"></i><span>Audit Logs</span></a>
+                <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
                 <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php"><i class="ri-settings-3-line"></i><span>Settings</span></a>
             </nav>
             <div class="sidebar-footer">
@@ -57,6 +58,17 @@ function renderHeader($pageTitle, $currentPage) {
                     <p><?php echo h(APP_ORG); ?></p>
                     <h1><?php echo h($pageTitle); ?></h1>
                 </div>
+                <form class="topbar-search" role="search" data-global-search-form>
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search this page" aria-label="Search visible page content" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
+                <button class="topbar-icon" type="button" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span></span>
+                </button>
                 <div class="profile-menu">
                     <button class="profile-button" type="button" data-profile-toggle>
                         <span class="avatar"><?php echo h($initials ?: 'IR'); ?></span>
@@ -80,7 +92,7 @@ function renderFooter() {
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/app.js?v=20260613-record-folders"></script>
 </body>
 </html>
 <?php

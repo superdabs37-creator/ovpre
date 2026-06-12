@@ -89,7 +89,7 @@ function portal_header(string $title, string $current): array {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
-    <link rel="stylesheet" href="../role-portal/assets/css/portal.css">
+    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20260612-original">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -123,7 +123,7 @@ function portal_footer(): void {
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="../role-portal/assets/js/portal.js"></script>
+<script src="../role-portal/assets/js/portal.js?v=20260613-status-colors"></script>
 </body>
 </html>
 <?php

@@ -21,6 +21,107 @@ if (profileToggle && profileDropdown) {
     });
 }
 
+const globalSearchForm = document.querySelector('[data-global-search-form]');
+const topbarSearch = document.querySelector('[data-global-search]');
+const topbarSearchClear = document.querySelector('[data-global-search-clear]');
+const topbarSearchCount = document.querySelector('[data-global-search-count]');
+
+function clearGlobalHighlights() {
+    document.querySelectorAll('mark.global-search-hit').forEach((mark) => {
+        mark.replaceWith(document.createTextNode(mark.textContent));
+    });
+}
+
+function highlightFirstMatch(element, query) {
+    if (!query || !element) return;
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+            const parent = node.parentElement;
+            if (!parent || ['SCRIPT', 'STYLE', 'MARK', 'INPUT', 'TEXTAREA', 'SELECT'].includes(parent.tagName)) {
+                return NodeFilter.FILTER_REJECT;
+            }
+            return node.nodeValue.toLowerCase().includes(query) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+        }
+    });
+    const node = walker.nextNode();
+    if (!node) return;
+
+    const text = node.nodeValue;
+    const index = text.toLowerCase().indexOf(query);
+    const range = document.createRange();
+    range.setStart(node, index);
+    range.setEnd(node, index + query.length);
+    const mark = document.createElement('mark');
+    mark.className = 'global-search-hit';
+    range.surroundContents(mark);
+}
+
+if (globalSearchForm && topbarSearch) {
+    const searchableItems = () => Array.from(document.querySelectorAll([
+        '.data-table tbody tr',
+        '[data-file-card]',
+        '[data-announcement-card]',
+        '.summary-card',
+        '.file-card',
+        '.folder-card',
+        '.list-card',
+        '.notification-item',
+        '.panel'
+    ].join(','))).filter((item) => !item.closest('.topbar') && !(item.classList.contains('panel') && item.querySelector('.data-table')));
+
+    function runGlobalSearch() {
+        clearGlobalHighlights();
+        const query = topbarSearch.value.trim().toLowerCase();
+        const items = searchableItems();
+        let matches = 0;
+
+        globalSearchForm.classList.toggle('has-query', Boolean(query));
+
+        items.forEach((item) => {
+            const matched = !query || item.textContent.toLowerCase().includes(query);
+            item.classList.toggle('global-search-hidden', !matched);
+            if (query && matched) {
+                matches += 1;
+                highlightFirstMatch(item, query);
+            }
+        });
+
+        if (topbarSearchCount) {
+            topbarSearchCount.textContent = query ? `${matches} result${matches === 1 ? '' : 's'}` : '';
+        }
+    }
+
+    topbarSearch.addEventListener('input', runGlobalSearch);
+
+    globalSearchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        runGlobalSearch();
+        const firstMatch = document.querySelector('.global-search-hit');
+        if (firstMatch) {
+            firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    if (topbarSearchClear) {
+        topbarSearchClear.addEventListener('click', () => {
+            topbarSearch.value = '';
+            runGlobalSearch();
+            topbarSearch.focus();
+        });
+    }
+}
+
+document.querySelectorAll('.add-user-btn, .content-area .primary-btn:not(.action-btn), .content-area .post-btn, .content-area .ghost-btn:not(.action-btn):not(.mini-btn), .content-area .portal-link, .login-form .primary-btn, .modal-card .primary-btn:not(.action-btn), .modal-card .ghost-btn:not(.action-btn), .tool-panel .primary-btn, .tool-panel .ghost-btn, .report-actions .primary-btn, .report-actions .ghost-btn').forEach((button) => {
+    button.addEventListener('mouseenter', () => {
+        button.classList.remove('is-hovering', 'premium-action-hover');
+        window.requestAnimationFrame(() => button.classList.add('is-hovering', 'premium-action-hover'));
+    });
+
+    button.addEventListener('animationend', () => {
+        button.classList.remove('is-hovering', 'premium-action-hover');
+    });
+});
+
 const chartDefaults = {
     responsive: true,
     maintainAspectRatio: false,
@@ -36,17 +137,41 @@ const chartDefaults = {
 };
 
 const palette = ['#15803d', '#16a34a', '#facc15', '#fde047', '#0f3d24', '#86efac'];
+const statusColors = {
+    approved: '#16a34a',
+    completed: '#16a34a',
+    declined: '#dc2626',
+    rejected: '#dc2626',
+    'under-review': '#facc15',
+    pending: '#fde047'
+};
+
+function normalizeStatusLabel(value) {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, '-');
+}
+
+function chartColorForLabel(value, fallbackIndex = 0) {
+    return statusColors[normalizeStatusLabel(value)] || palette[fallbackIndex % palette.length];
+}
+
+function chartColorsForRows(rows) {
+    return rows.map((row, index) => {
+        const label = row.status || row.label || row.progress_status || row.department_name || row.category_name;
+        return chartColorForLabel(label, index);
+    });
+}
 
 const pieCanvas = document.getElementById('pieChart');
 if (pieCanvas && window.Chart) {
     const statusRows = window.irecordCharts?.status || [];
+    const labels = statusRows.length ? statusRows.map((row) => row.label) : ['Pending', 'Approved'];
     new Chart(pieCanvas, {
         type: 'pie',
         data: {
-            labels: statusRows.length ? statusRows.map((row) => row.label) : ['Pending', 'Approved'],
+            labels,
             datasets: [{
                 data: statusRows.length ? statusRows.map((row) => Number(row.total)) : [0, 0],
-                backgroundColor: palette,
+                backgroundColor: labels.map((label, index) => chartColorForLabel(label, index)),
                 borderColor: '#ffffff',
                 borderWidth: 3
             }]
@@ -111,11 +236,21 @@ if (lineCanvas && window.Chart) {
 function renderReportChart(id, type, rows, label) {
     const canvas = document.getElementById(id);
     if (!canvas || !window.Chart) return;
+    const labels = rows.map((row) => row.label || row.department_name || row.category_name || row.status);
+    const statusAwareColors = chartColorsForRows(rows);
+    const isLine = type === 'line';
     new Chart(canvas, {
         type,
         data: {
-            labels: rows.map((row) => row.label || row.department_name || row.category_name || row.status),
-            datasets: [{ label, data: rows.map((row) => Number(row.total)), backgroundColor: palette, borderColor: '#15803d', tension: 0.35 }]
+            labels,
+            datasets: [{
+                label,
+                data: rows.map((row) => Number(row.total)),
+                backgroundColor: isLine ? statusAwareColors.map((color) => `${color}33`) : statusAwareColors,
+                borderColor: isLine ? statusAwareColors : '#15803d',
+                pointBackgroundColor: statusAwareColors,
+                tension: 0.35
+            }]
         },
         options: chartDefaults
     });
@@ -238,6 +373,10 @@ document.querySelectorAll('[data-open-modal]').forEach((button) => {
 
 const tableSearch = document.querySelector('[data-table-search]');
 const statusFilter = document.querySelector('[data-status-filter]');
+const categoryFilterCards = document.querySelectorAll('[data-category-filter]');
+const recordsPanelTitle = document.getElementById('recordsPanelTitle');
+const recordsPanelSubtitle = document.getElementById('recordsPanelSubtitle');
+let activeRecordsCategory = 'All';
 
 function filterRows() {
     const rows = document.querySelectorAll('[data-table-row]');
@@ -247,12 +386,46 @@ function filterRows() {
     rows.forEach((row) => {
         const matchesText = row.textContent.toLowerCase().includes(query);
         const matchesStatus = status === 'All' || row.dataset.status === status;
-        row.style.display = matchesText && matchesStatus ? '' : 'none';
+        const matchesCategory = activeRecordsCategory === 'All' || !row.dataset.category || row.dataset.category === activeRecordsCategory;
+        row.style.display = matchesText && matchesStatus && matchesCategory ? '' : 'none';
     });
 }
 
 if (tableSearch) tableSearch.addEventListener('input', filterRows);
 if (statusFilter) statusFilter.addEventListener('change', filterRows);
+
+function setRecordsCategoryFilter(card) {
+    activeRecordsCategory = card.dataset.categoryFilter || 'All';
+    const selectedTitle = activeRecordsCategory === 'All' ? 'All Records' : `${activeRecordsCategory} Records`;
+
+    categoryFilterCards.forEach((filterCard) => {
+        const isActive = filterCard === card;
+        filterCard.classList.toggle('active', isActive);
+        filterCard.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    if (recordsPanelTitle) {
+        recordsPanelTitle.textContent = selectedTitle;
+    }
+
+    if (recordsPanelSubtitle) {
+        recordsPanelSubtitle.textContent = activeRecordsCategory === 'All'
+            ? 'Showing records from every category.'
+            : `Showing records filed under ${activeRecordsCategory}.`;
+    }
+
+    filterRows();
+    document.getElementById('recordsTable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+categoryFilterCards.forEach((card) => {
+    card.addEventListener('click', () => setRecordsCategoryFilter(card));
+    card.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        setRecordsCategoryFilter(card);
+    });
+});
 
 const uploadForm = document.getElementById('uploadForm');
 const uploadProgressBar = document.getElementById('uploadProgressBar');
@@ -325,15 +498,13 @@ document.querySelectorAll('[data-export-table]').forEach((button) => {
 
 document.querySelectorAll('.user-status-form').forEach((form) => {
     const select = form.querySelector('select[name="status"]');
-    const button = form.querySelector('button[type="submit"]');
-    if (!select || !button) return;
+    if (!select) return;
 
-    const updateButton = () => {
-        button.disabled = select.value === select.dataset.originalStatus;
-    };
-
-    select.addEventListener('change', updateButton);
-    updateButton();
+    select.addEventListener('change', () => {
+        if (select.value !== select.dataset.originalStatus) {
+            form.submit();
+        }
+    });
 });
 
 const activityCalendarEl = document.getElementById('activityCalendar');

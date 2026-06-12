@@ -86,6 +86,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             log_action((int) $user['id'], "Permanently deleted document #{$id}");
             flash('success', 'Document permanently deleted.');
         }
+    } elseif ($action === 'announcement_restore') {
+        db()->prepare('UPDATE announcements SET status = "Published" WHERE id = ?')->execute([$id]);
+        log_action((int) $user['id'], "Restored announcement #{$id}");
+        flash('success', 'Announcement restored to published announcements.');
     }
     redirect_to('admin-documents.php' . (isset($_GET['archived']) ? '?archived=1' : ''));
 }
@@ -93,6 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $archived = ($_GET['archived'] ?? '') === '1';
 $statusFilter = $_GET['status'] ?? 'All';
 $documents = document_list($archived, $statusFilter);
+$archivedAnnouncements = [];
+if ($archived) {
+    $archivedAnnouncements = db()->query('SELECT a.*, u.fullname FROM announcements a JOIN users u ON u.id = a.posted_by WHERE a.status = "Archived" ORDER BY a.created_at DESC')->fetchAll();
+}
+$researchSubmissions = [];
+$extensionSubmissions = [];
+$activitySubmissions = [];
+if (!$archived) {
+    $researchSubmissions = db()->query('SELECT r.*, u.fullname, au.fullname AS assignee FROM research_projects r JOIN users u ON u.id = r.submitted_by LEFT JOIN users au ON au.id = r.assigned_to ORDER BY r.created_at DESC')->fetchAll();
+    $extensionSubmissions = db()->query('SELECT e.*, u.fullname, au.fullname AS assignee FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN users au ON au.id = e.assigned_to ORDER BY e.created_at DESC')->fetchAll();
+    $activitySubmissions = db()->query('SELECT a.*, u.fullname FROM activities a LEFT JOIN users u ON u.id = a.created_by ORDER BY a.date DESC, a.created_at DESC')->fetchAll();
+}
 $assignableUsers = assignable_users();
 $notice = flash();
 $categoryAnalytics = db()->query('SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND d.archived_at IS NULL GROUP BY c.id ORDER BY c.category_name')->fetchAll();
@@ -105,12 +121,6 @@ renderHeader('Record Management', 'documents');
 </section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-checkbox-circle-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
 
-<section class="summary-grid">
-    <?php foreach ($categoryAnalytics as $row): ?>
-        <article class="summary-card"><div class="summary-icon"><i class="ri-folder-3-line"></i></div><div><p><?php echo h($row['category_name']); ?></p><h3><?php echo (int) $row['total']; ?></h3><span>Records by category</span></div></article>
-    <?php endforeach; ?>
-</section>
-
 <section class="tool-panel">
     <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search by title, author, category, date, or status"></div>
     <form class="action-row" method="get">
@@ -121,25 +131,98 @@ renderHeader('Record Management', 'documents');
     <a class="primary-btn" href="upload-document.php"><i class="ri-upload-cloud-line"></i> Upload Record</a>
 </section>
 
-<section class="panel">
-    <form method="post" id="bulkRecordsForm">
-        <?php echo csrf_field(); ?>
-        <input type="hidden" name="action" value="bulk">
-    </form>
-    <div class="panel-heading"><h2><?php echo $archived ? 'Archived Records' : 'Workflow Queue'; ?></h2><span>Approval remarks and review timelines are recorded.</span></div>
-    <div class="bulk-actions">
-        <select class="filter-select" name="bulk_action" form="bulkRecordsForm" required><option value="">Bulk Action</option><option value="approve">Approve Selected</option><option value="archive">Archive Selected</option><option value="delete">Delete Selected</option></select>
-        <input class="bulk-remarks" name="bulk_remarks" form="bulkRecordsForm" placeholder="Optional bulk remarks / archive reason">
-        <button class="primary-btn" type="submit" form="bulkRecordsForm"><i class="ri-check-double-line"></i> Apply</button>
-        <button class="ghost-btn" type="button" data-export-table="recordsTable"><i class="ri-file-excel-2-line"></i> Export CSV</button>
+<?php if (!$archived): ?>
+<section class="panel submission-folders">
+    <div class="panel-heading"><h2>Submission Folders</h2><span>Research, extension, and activity submissions</span></div>
+
+    <details class="submission-folder" open>
+        <summary><span><i class="ri-flask-line"></i> Research Management Submissions</span><strong><?php echo count($researchSubmissions); ?></strong></summary>
+    <div class="table-scroll">
+        <table class="data-table portal-table">
+            <thead><tr><th>ID</th><th>Research Title</th><th>Researchers</th><th>Submitted By</th><th>Assigned To</th><th>Status</th><th>Date</th><th>Manage</th></tr></thead>
+            <tbody>
+                <?php foreach ($researchSubmissions as $research): ?>
+                    <tr data-table-row data-status="<?php echo h($research['status']); ?>">
+                        <td>RES-<?php echo str_pad((string) $research['id'], 5, '0', STR_PAD_LEFT); ?></td>
+                        <td><?php echo h($research['title']); ?><br><small><?php echo h($research['funding_source'] ?: 'No funding source'); ?></small></td>
+                        <td><?php echo h($research['researchers']); ?></td>
+                        <td><?php echo h($research['fullname']); ?></td>
+                        <td><?php echo h($research['assignee'] ?? 'Unassigned'); ?></td>
+                        <td><span class="status-pill status-<?php echo h(statusClass($research['status'])); ?>"><?php echo h($research['status'] === 'Declined' ? 'Rejected' : $research['status']); ?></span></td>
+                        <td><?php echo h(date('M d, Y', strtotime($research['created_at']))); ?></td>
+                        <td><a class="ghost-btn action-btn" href="research.php?status=<?php echo urlencode($research['status']); ?>"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (!$researchSubmissions): ?><tr><td colspan="8">No research submissions found.</td></tr><?php endif; ?>
+            </tbody>
+        </table>
     </div>
+    </details>
+
+    <details class="submission-folder">
+        <summary><span><i class="ri-community-line"></i> Extension Project Submissions</span><strong><?php echo count($extensionSubmissions); ?></strong></summary>
+    <div class="table-scroll">
+        <table class="data-table portal-table">
+            <thead><tr><th>ID</th><th>Project</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
+            <tbody>
+                <?php foreach ($extensionSubmissions as $extension): ?>
+                    <tr data-table-row data-status="<?php echo h($extension['progress_status']); ?>">
+                        <td>EXT-<?php echo str_pad((string) $extension['id'], 5, '0', STR_PAD_LEFT); ?></td>
+                        <td><?php echo h($extension['project_title']); ?><br><small><?php echo h(date('M d, Y', strtotime($extension['start_date'])) . ' - ' . date('M d, Y', strtotime($extension['end_date']))); ?></small></td>
+                        <td><?php echo h($extension['coordinator']); ?></td>
+                        <td><?php echo h($extension['community_partner']); ?></td>
+                        <td><?php echo h(number_format((float) $extension['budget'], 2)); ?></td>
+                        <td><?php echo h($extension['assignee'] ?? 'Unassigned'); ?></td>
+                        <td><span class="status-pill status-<?php echo h(statusClass($extension['progress_status'])); ?>"><?php echo h($extension['progress_status']); ?></span></td>
+                        <td><a class="ghost-btn action-btn" href="extension.php?status=<?php echo urlencode($extension['progress_status']); ?>"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (!$extensionSubmissions): ?><tr><td colspan="8">No extension project submissions found.</td></tr><?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    </details>
+
+    <details class="submission-folder">
+        <summary><span><i class="ri-calendar-event-line"></i> Activity Submissions</span><strong><?php echo count($activitySubmissions); ?></strong></summary>
+    <div class="table-scroll">
+        <table class="data-table portal-table">
+            <thead><tr><th>ID</th><th>Activity</th><th>Type</th><th>Venue</th><th>Date</th><th>Submitted By</th><th>Manage</th></tr></thead>
+            <tbody>
+                <?php foreach ($activitySubmissions as $activity): ?>
+                    <tr data-table-row>
+                        <td>ACT-<?php echo str_pad((string) $activity['id'], 5, '0', STR_PAD_LEFT); ?></td>
+                        <td><?php echo h($activity['title']); ?><br><small><?php echo h($activity['description'] ?: 'No description'); ?></small></td>
+                        <td><span class="dept-pill"><?php echo h($activity['activity_type']); ?></span></td>
+                        <td><?php echo h($activity['venue']); ?></td>
+                        <td><?php echo h(date('M d, Y', strtotime($activity['date']))); ?></td>
+                        <td><?php echo h($activity['fullname'] ?? 'System'); ?></td>
+                        <td><a class="ghost-btn action-btn" href="activities.php"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (!$activitySubmissions): ?><tr><td colspan="7">No activity submissions found.</td></tr><?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    </details>
+</section>
+<?php endif; ?>
+
+<section class="summary-grid">
+    <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All" aria-pressed="true"><div class="summary-icon"><i class="ri-folder-open-line"></i></div><div><p>All Records</p><h3><?php echo array_sum(array_map(fn($row) => (int) $row['total'], $categoryAnalytics)); ?></h3><span>Open all records</span></div></article>
+    <?php foreach ($categoryAnalytics as $row): ?>
+        <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="<?php echo h($row['category_name']); ?>" aria-pressed="false"><div class="summary-icon"><i class="ri-folder-3-line"></i></div><div><p><?php echo h($row['category_name']); ?></p><h3><?php echo (int) $row['total']; ?></h3><span>Open category records</span></div></article>
+    <?php endforeach; ?>
+</section>
+
+<section class="panel">
+    <div class="panel-heading"><h2 id="recordsPanelTitle"><?php echo $archived ? 'Archived Records' : 'All Records'; ?></h2><span id="recordsPanelSubtitle">Open a category card above to view its documents.</span></div>
     <div class="table-scroll">
         <table class="data-table portal-table" id="recordsTable">
-            <thead><tr><th><input type="checkbox" data-select-all-records></th><th>ID</th><th>Document</th><th>Author</th><th>Department</th><th>Date</th><th>Status</th><th>Assigned</th><th>Uploaded By</th><th>Manage</th></tr></thead>
+            <thead><tr><th>ID</th><th>Document</th><th>Author</th><th>Department</th><th>Date</th><th>Status</th><th>Assigned</th><th>Uploaded By</th><th>Manage</th></tr></thead>
             <tbody>
             <?php foreach ($documents as $doc): ?>
-                <tr data-table-row data-status="<?php echo h($doc['status']); ?>">
-                    <td><input type="checkbox" name="ids[]" form="bulkRecordsForm" value="<?php echo (int) $doc['id']; ?>"></td>
+                <tr data-table-row data-status="<?php echo h($doc['status']); ?>" data-category="<?php echo h($doc['category_name']); ?>">
                     <td>REC-<?php echo str_pad((string) $doc['id'], 5, '0', STR_PAD_LEFT); ?></td>
                     <td><?php echo h($doc['title']); ?><br><small><?php echo h($doc['category_name']); ?> | <?php echo h($doc['original_filename']); ?></small><?php if ($doc['status_remarks']): ?><br><small>Remarks: <?php echo h($doc['status_remarks']); ?></small><?php endif; ?></td>
                     <td><?php echo h($doc['author']); ?></td>
@@ -165,11 +248,44 @@ renderHeader('Record Management', 'documents');
                     </td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$documents): ?><tr><td colspan="10">No records found.</td></tr><?php endif; ?>
+            <?php if (!$documents): ?><tr><td colspan="9">No records found.</td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>
 </section>
+
+
+<?php if ($archived): ?>
+<section class="panel">
+    <div class="panel-heading"><h2>Archived Announcements</h2><span><?php echo count($archivedAnnouncements); ?> archived announcement<?php echo count($archivedAnnouncements) === 1 ? '' : 's'; ?></span></div>
+    <div class="table-scroll">
+        <table class="data-table portal-table">
+            <thead><tr><th>ID</th><th>Announcement</th><th>Audience</th><th>Archived Status</th><th>Posted By</th><th>Date Posted</th><th>Manage</th></tr></thead>
+            <tbody>
+                <?php foreach ($archivedAnnouncements as $announcement): ?>
+                    <tr data-table-row data-status="Archived">
+                        <td>ANN-<?php echo str_pad((string) $announcement['id'], 5, '0', STR_PAD_LEFT); ?></td>
+                        <td><?php echo h($announcement['title']); ?><br><small><?php echo h($announcement['content']); ?></small></td>
+                        <td><span class="dept-pill"><?php echo h($announcement['audience']); ?></span></td>
+                        <td><span class="status-pill status-archived">Archived</span></td>
+                        <td><?php echo h($announcement['fullname']); ?></td>
+                        <td><?php echo h(date('M d, Y', strtotime($announcement['created_at']))); ?></td>
+                        <td>
+                            <form method="post">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="action" value="announcement_restore">
+                                <input type="hidden" name="id" value="<?php echo (int) $announcement['id']; ?>">
+                                <button class="ghost-btn action-btn"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (!$archivedAnnouncements): ?><tr><td colspan="7">No archived announcements found.</td></tr><?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
+<?php endif; ?>
 
 <?php foreach ($documents as $doc): ?>
     <div class="modal" id="status-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Record</h2><input type="hidden" name="action" value="status"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><label class="field"><span>Status</span><select name="status"><?php foreach (['Pending', 'Under Review', 'Approved', 'Declined'] as $status): ?><option <?php echo $doc['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field"><span>Assign Reviewer / Coordinator</span><select name="assigned_to"><option value="">Unassigned</option><?php foreach ($assignableUsers as $assignee): ?><option value="<?php echo (int) $assignee['id']; ?>" <?php echo (int) ($doc['assigned_to'] ?? 0) === (int) $assignee['id'] ? 'selected' : ''; ?>><?php echo h($assignee['fullname'] . ' - ' . $assignee['role']); ?></option><?php endforeach; ?></select></label><label class="field"><span>Approval / Rejection Remarks</span><textarea name="remarks" rows="4"><?php echo h($doc['status_remarks']); ?></textarea></label><button class="primary-btn"><i class="ri-save-line"></i> Save Review</button></form></div>

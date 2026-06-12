@@ -18,7 +18,7 @@ renderHeader('Upload Record', 'documents');
 ?>
 <section class="module-header">
     <div class="module-icon"><i class="ri-upload-cloud-line"></i></div>
-    <div><p>Secure File Upload</p><h2>Upload Record</h2><span>Accepted files: PDF, DOCX, XLSX, and PPTX up to 15 MB.</span></div>
+    <div><p>Secure File Upload</p><h2>Upload Record</h2><span>Accepted files: PDF, DOCX, XLSX, and PPTX.</span></div>
 </section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-error-warning-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
 <section class="panel">
