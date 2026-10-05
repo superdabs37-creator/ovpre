@@ -10,7 +10,10 @@ CREATE TABLE departments (
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   fullname VARCHAR(160) NOT NULL,
+  gender VARCHAR(30) NULL,
+  birthday DATE NULL,
   email VARCHAR(190) NOT NULL UNIQUE,
+  phone VARCHAR(30) NULL,
   username VARCHAR(80) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   role ENUM('Super Admin','Vice President','OVPRE Staff','Research Coordinator','Extension Coordinator','Faculty Researcher','Evaluator/Reviewer','User') NOT NULL,
@@ -91,6 +94,7 @@ CREATE TABLE activities (
   date DATE NOT NULL,
   venue VARCHAR(180) NOT NULL,
   description TEXT NULL,
+  approval_status ENUM('Pending','Approved','Rejected') NOT NULL DEFAULT 'Approved',
   created_by INT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -162,11 +166,13 @@ CREATE TABLE extension_projects (
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   progress_status ENUM('Planning','Ongoing','Completed') DEFAULT 'Planning',
+  document_id INT NULL,
   assigned_to INT NULL,
   status_remarks TEXT NULL,
   submitted_by INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (submitted_by) REFERENCES users(id)
+  FOREIGN KEY (submitted_by) REFERENCES users(id),
+  FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE SET NULL
 );
 
 CREATE TABLE accomplishment_reports (

@@ -512,13 +512,14 @@ const activityModal = document.getElementById('activityEditorModal');
 const activityForm = document.getElementById('activityEditorForm');
 
 function activityById(id) {
-    return (window.activityCalendarEvents || []).find((event) => String(event.id) === String(id));
+    return (window.activityEditorEvents || window.activityCalendarEvents || []).find((event) => String(event.id) === String(id));
 }
 
 function openActivityEditor(eventData) {
     if (!activityModal || !activityForm || !eventData) return;
 
     const props = eventData.extendedProps || {};
+    const approvalStatus = props.approvalStatus || 'Approved';
     document.getElementById('activityModalMode').textContent = props.type || 'Activity';
     document.getElementById('activityModalTitle').textContent = 'Edit Activity';
     document.getElementById('activityAction').value = 'update';
@@ -529,6 +530,16 @@ function openActivityEditor(eventData) {
     document.getElementById('activityVenue').value = props.venue || '';
     document.getElementById('activityDescription').value = props.description || '';
     document.getElementById('deleteActivityButton').style.display = '';
+    const approveButton = document.getElementById('approveActivityButton');
+    const rejectButton = document.getElementById('rejectActivityButton');
+    if (approveButton) {
+        approveButton.style.display = '';
+        approveButton.disabled = approvalStatus === 'Approved';
+        approveButton.innerHTML = approvalStatus === 'Approved'
+            ? '<i class="ri-check-line"></i> Approved'
+            : '<i class="ri-check-line"></i> Approve';
+    }
+    if (rejectButton) rejectButton.style.display = approvalStatus === 'Rejected' ? 'none' : '';
 
     activityModal.classList.add('open');
     activityModal.setAttribute('aria-hidden', 'false');
@@ -548,6 +559,10 @@ function openActivityCreator(dateStr) {
     document.getElementById('activityVenue').value = '';
     document.getElementById('activityDescription').value = '';
     document.getElementById('deleteActivityButton').style.display = 'none';
+    const approveButton = document.getElementById('approveActivityButton');
+    const rejectButton = document.getElementById('rejectActivityButton');
+    if (approveButton) approveButton.style.display = 'none';
+    if (rejectButton) rejectButton.style.display = 'none';
 
     activityModal.classList.add('open');
     activityModal.setAttribute('aria-hidden', 'false');

@@ -47,7 +47,7 @@ button {
 .login-body {
     min-height: 100vh;
     background-color: var(--green-900);
-    background-image: var(--login-background, url("../img/login-background.jpg"));
+    background-image: var(--login-background, url("../img/landing-campus.jpg"));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -172,6 +172,8 @@ button {
         linear-gradient(135deg, rgba(15, 61, 36, 0.34), rgba(21, 128, 61, 0.2) 58%, rgba(250, 204, 21, 0.18));
     pointer-events: none;
     z-index: 0;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
 }
 
 .login-shell {
@@ -186,10 +188,12 @@ button {
 .login-card {
     width: min(100%, 430px);
     padding: 34px;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.58);
     border-radius: 28px;
     box-shadow: var(--shadow);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     animation: riseIn 0.7s ease both;
 }
 
@@ -235,6 +239,18 @@ button {
     margin: 0;
     color: var(--muted);
     font-size: 0.9rem;
+}
+
+.login-copy p {
+    display: inline-block;
+    margin: 8px 0 4px;
+    padding: 8px 12px;
+    color: var(--green-900);
+    background: rgba(250, 204, 21, 0.34);
+    border-left: 4px solid var(--yellow-500);
+    border-radius: 8px;
+    font-weight: 800;
+    line-height: 1.35;
 }
 
 .login-copy h1 {
@@ -831,6 +847,17 @@ button {
 .status-pill {
     color: var(--green-800);
     background: var(--green-100);
+}
+
+.activity-status-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.activity-status-actions form {
+    margin: 0;
 }
 
 .status-pending {
@@ -3236,3 +3263,4 @@ mark.global-search-hit {
         right: auto;
     }
 }
+

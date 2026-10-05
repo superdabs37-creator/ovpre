@@ -26,7 +26,7 @@ const ROLE_PORTALS = [
         'slug' => 'extension-coordinator',
         'title' => 'Extension Coordinator Portal',
         'purpose' => 'Extension monitoring and submissions',
-        'nav' => ['dashboard', 'extension', 'analytics', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'extension', 'analytics', 'calendar', 'reports', 'announcements', 'notifications'],
     ],
 ];
 
@@ -65,7 +65,7 @@ function portal_can(string $page): bool {
 }
 
 function portal_nav_items(): array {
-    return [
+    $items = [
         'dashboard' => ['Dashboard', 'dashboard.php', 'ri-dashboard-line'],
         'research' => ['Research Submission', 'research.php', 'ri-flask-line'],
         'extension' => ['Extension Submission', 'extension.php', 'ri-community-line'],
@@ -76,6 +76,12 @@ function portal_nav_items(): array {
         'notifications' => ['Notifications', 'notifications.php', 'ri-notification-3-line'],
         'status' => ['Submission Status', 'status.php', 'ri-route-line'],
     ];
+    if (PORTAL_ROLE === 'Extension Coordinator') {
+        $items['status'][0] = 'Extension Submission Status';
+    } elseif (PORTAL_ROLE === 'Research Coordinator') {
+        $items['status'][0] = 'Research Submission Status';
+    }
+    return $items;
 }
 
 function portal_header(string $title, string $current): array {
@@ -89,7 +95,7 @@ function portal_header(string $title, string $current): array {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
-    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20260612-original">
+    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261005-activity-approvals">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -123,7 +129,7 @@ function portal_footer(): void {
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="../role-portal/assets/js/portal.js?v=20260613-status-colors"></script>
+<script src="../role-portal/assets/js/portal.js?v=20261005-search-print-v3"></script>
 </body>
 </html>
 <?php
@@ -147,15 +153,22 @@ function portal_stats(): array {
 }
 
 function portal_recent_activities(): array {
-    return db()->query('SELECT * FROM activities ORDER BY date DESC LIMIT 6')->fetchAll();
+    return db()->query('SELECT * FROM activities WHERE approval_status = "Approved" ORDER BY date DESC LIMIT 6')->fetchAll();
 }
 
 function portal_research_projects(): array {
-    return db()->query('SELECT r.*, u.fullname FROM research_projects r JOIN users u ON u.id = r.submitted_by ORDER BY r.created_at DESC')->fetchAll();
+    return db()->query('SELECT r.*, u.fullname, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename FROM research_projects r JOIN users u ON u.id = r.submitted_by LEFT JOIN documents d ON d.id = r.document_id ORDER BY r.created_at DESC')->fetchAll();
 }
 
 function portal_extension_projects(): array {
-    return db()->query('SELECT e.*, u.fullname FROM extension_projects e JOIN users u ON u.id = e.submitted_by ORDER BY e.created_at DESC')->fetchAll();
+    try {
+        return db()->query('SELECT e.*, u.fullname, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN documents d ON d.id = e.document_id ORDER BY e.created_at DESC')->fetchAll();
+    } catch (PDOException $error) {
+        if (stripos($error->getMessage(), 'document_id') === false) {
+            throw $error;
+        }
+        return db()->query('SELECT e.*, u.fullname, NULL AS attachment_filename, NULL AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by ORDER BY e.created_at DESC')->fetchAll();
+    }
 }
 
 function portal_documents(): array {
@@ -163,7 +176,12 @@ function portal_documents(): array {
 }
 
 function portal_announcements(): array {
-    return db()->query('SELECT a.*, u.fullname FROM announcements a JOIN users u ON u.id = a.posted_by WHERE a.status = "Published" ORDER BY a.created_at DESC')->fetchAll();
+    $audienceFilter = match (PORTAL_ROLE) {
+        'Extension Coordinator' => ' AND a.audience IN ("All", "Staff")',
+        'Research Coordinator' => ' AND a.audience IN ("All", "Researchers")',
+        default => '',
+    };
+    return db()->query('SELECT a.*, u.fullname FROM announcements a JOIN users u ON u.id = a.posted_by WHERE a.status = "Published"' . $audienceFilter . ' ORDER BY a.created_at DESC')->fetchAll();
 }
 
 function portal_notifications(int $userId): array {

@@ -71,7 +71,7 @@ $completedResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects
 $totalExtension = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
 $activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Ongoing', 'Active', 'Implementation', 'Planning')", $rangeParams);
 $completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Completed', 'Approved')", $rangeParams);
-$upcomingActivities = (int) report_scalar('SELECT COUNT(*) FROM activities WHERE date >= CURDATE()');
+$upcomingActivities = (int) report_scalar('SELECT COUNT(*) FROM activities WHERE approval_status = "Approved" AND date >= CURDATE()');
 
 $researchFunding = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND funding_source IS NOT NULL AND funding_source <> ''", $rangeParams);
 $extensionFunding = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND budget > 0', $rangeParams);

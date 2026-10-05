@@ -1,0 +1,4 @@
+ALTER TABLE users
+  ADD COLUMN gender VARCHAR(30) NULL AFTER fullname,
+  ADD COLUMN birthday DATE NULL AFTER gender,
+  ADD COLUMN phone VARCHAR(30) NULL AFTER email;
