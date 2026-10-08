@@ -18,7 +18,12 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   role ENUM('Super Admin','Vice President','OVPRE Staff','Research Coordinator','Extension Coordinator','Faculty Researcher','Evaluator/Reviewer','User') NOT NULL,
   department_id INT NULL,
-  status ENUM('Active','Inactive','Locked') DEFAULT 'Active',
+  status ENUM('Pending','Active','Rejected','Suspended','Inactive','Locked') NOT NULL DEFAULT 'Pending',
+  approved_at DATETIME NULL,
+  approved_by INT NULL,
+  rejected_at DATETIME NULL,
+  rejected_by INT NULL,
+  rejection_reason TEXT NULL,
   login_attempts INT DEFAULT 0,
   locked_until DATETIME NULL,
   reset_token VARCHAR(255) NULL,
@@ -27,7 +32,13 @@ CREATE TABLE users (
   created_by INT NULL,
   deleted_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
+  updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_users_approved_by (approved_by),
+  INDEX idx_users_rejected_by (rejected_by),
+  INDEX idx_users_status_created (status, created_at),
+  FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL,
+  FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (rejected_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE categories (

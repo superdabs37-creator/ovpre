@@ -14,6 +14,28 @@ if (session_status() === PHP_SESSION_NONE) {
 
 define('SESSION_TIMEOUT_SECONDS', 1800);
 
+const ROLE_SUPER_ADMIN = 'Super Admin';
+const ROLE_VICE_PRESIDENT = 'Vice President';
+const ROLE_OVPRE_STAFF = 'OVPRE Staff';
+const ROLE_RESEARCH_COORDINATOR = 'Research Coordinator';
+const ROLE_EXTENSION_COORDINATOR = 'Extension Coordinator';
+const SELF_REGISTERABLE_ROLES = [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR];
+
+function role_dashboard_path(string $role): ?string {
+    return match ($role) {
+        ROLE_SUPER_ADMIN, ROLE_VICE_PRESIDENT, ROLE_OVPRE_STAFF,
+        ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR,
+        'Faculty Researcher', 'Evaluator/Reviewer', 'User' => match ($role) {
+            ROLE_VICE_PRESIDENT => 'vice-president/dashboard.php',
+            ROLE_OVPRE_STAFF => 'ovpre-staff/dashboard.php',
+            ROLE_RESEARCH_COORDINATOR => 'research-coordinator/dashboard.php',
+            ROLE_EXTENSION_COORDINATOR => 'extension-coordinator/dashboard.php',
+            default => 'dashboard.php',
+        },
+        default => null,
+    };
+}
+
 function db(): PDO {
     static $pdo = null;
     if ($pdo instanceof PDO) {
@@ -90,11 +112,11 @@ function current_user(): ?array {
 
 function role_permissions(): array {
     return [
-        'Super Admin' => ['*'],
-        'Vice President' => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
-        'OVPRE Staff' => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
-        'Research Coordinator' => ['dashboard', 'documents', 'research', 'reports', 'announcements'],
-        'Extension Coordinator' => ['dashboard', 'documents', 'extension', 'reports', 'announcements'],
+        ROLE_SUPER_ADMIN => ['*'],
+        ROLE_VICE_PRESIDENT => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
+        ROLE_OVPRE_STAFF => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
+        ROLE_RESEARCH_COORDINATOR => ['dashboard', 'documents', 'research', 'reports', 'announcements'],
+        ROLE_EXTENSION_COORDINATOR => ['dashboard', 'documents', 'extension', 'reports', 'announcements'],
     ];
 }
 
@@ -108,11 +130,24 @@ function require_login(array $roles = []): array {
     if (!$user) {
         redirect_to('index.php');
     }
-    if ($roles && !in_array($user['role'], $roles, true)) {
+    if (role_dashboard_path((string) $user['role']) === null || ($roles && !in_array($user['role'], $roles, true))) {
         http_response_code(403);
         exit('You do not have access to this page.');
     }
     return $user;
+}
+
+function has_role(string|array $roles): bool {
+    $user = current_user();
+    return $user !== null && in_array($user['role'] ?? '', (array) $roles, true);
+}
+
+function require_role(array $roles): array {
+    return require_login($roles);
+}
+
+function require_super_admin(): array {
+    return require_login([ROLE_SUPER_ADMIN]);
 }
 
 function log_action(?int $userId, string $action): void {

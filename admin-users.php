@@ -1,12 +1,16 @@
 <?php
-require_once 'includes/layout.php';
-$actor = require_login(['Super Admin']);
+require_once __DIR__ . '/includes/layout.php';
+$actor = require_super_admin();
 verify_csrf();
 
 $rolePurposes = [
-    'Super Admin' => 'System Administrator',
-    'Research Coordinator' => 'Research Monitoring',
-    'Extension Coordinator' => 'Extension Monitoring',
+    ROLE_VICE_PRESIDENT => 'Institutional oversight',
+    ROLE_OVPRE_STAFF => 'Records management',
+    ROLE_RESEARCH_COORDINATOR => 'Research monitoring',
+    ROLE_EXTENSION_COORDINATOR => 'Extension monitoring',
+    'Faculty Researcher' => 'Research submissions',
+    'Evaluator/Reviewer' => 'Proposal evaluation',
+    'User' => 'General access',
 ];
 
 function user_profile_fields(array $input): array {
@@ -31,222 +35,273 @@ function user_profile_fields(array $input): array {
     if ($phone !== '' && !preg_match('/^[0-9+().\s-]{7,30}$/', $phone)) {
         throw new InvalidArgumentException('Enter a valid phone number.');
     }
-
     return [$gender, $birthday, $phone === '' ? null : $phone];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    if ($action === 'create') {
-        try {
-            $role = $_POST['role'] ?? 'OVPRE Staff';
-            if (!array_key_exists($role, $rolePurposes)) {
-                $role = 'OVPRE Staff';
-            }
+    $action = (string) ($_POST['action'] ?? '');
+    $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
 
+    try {
+        if ($action === 'create') {
+            $role = (string) ($_POST['role'] ?? '');
             $fullname = trim((string) ($_POST['fullname'] ?? ''));
             $email = trim((string) ($_POST['email'] ?? ''));
-            [$gender, $birthday, $phone] = user_profile_fields($_POST);
             $username = trim((string) ($_POST['username'] ?? ''));
-            $status = in_array($_POST['status'] ?? 'Active', ['Active', 'Inactive', 'Locked'], true) ? $_POST['status'] : 'Active';
+            $password = (string) ($_POST['password'] ?? '');
+            [$gender, $birthday, $phone] = user_profile_fields($_POST);
+            $departmentId = (int) ($_POST['department_id'] ?? 0);
 
-            $existing = db()->prepare('SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1');
-            $existing->execute([$username, $email]);
-            $duplicate = $existing->fetch();
+            if (!array_key_exists($role, $rolePurposes)) {
+                throw new InvalidArgumentException('Choose a valid user role.');
+            }
+            if ($fullname === '' || strlen($fullname) > 160 || !preg_match('/^[A-Za-z0-9_.-]{3,80}$/', $username)) {
+                throw new InvalidArgumentException('Enter a valid full name and a 3–80 character username.');
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
+                throw new InvalidArgumentException('Enter a valid email address.');
+            }
+            if (strlen($password) < 12 || !preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[^A-Za-z0-9]/', $password)) {
+                throw new InvalidArgumentException('Use a password with at least 12 characters, uppercase and lowercase letters, a number, and a symbol.');
+            }
+            $duplicate = db()->prepare('SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1');
+            $duplicate->execute([$username, $email]);
+            $existing = $duplicate->fetch();
+            if ($existing) {
+                throw new InvalidArgumentException(strcasecmp((string) $existing['username'], $username) === 0 ? 'That username is already in use.' : 'That email address is already registered.');
+            }
 
-            if ($duplicate) {
-                if (strcasecmp((string) $duplicate['username'], $username) === 0) {
-                    flash('error', 'Username "' . $username . '" already exists. Please choose another username.');
-                } else {
-                    flash('error', 'Email "' . $email . '" already exists. Please use another email address.');
+            $insert = db()->prepare('INSERT INTO users (fullname, gender, birthday, email, phone, username, password, role, department_id, status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, "Active", ?, NOW())');
+            $insert->execute([$fullname, $gender, $birthday, $email, $phone, $username, password_hash($password, PASSWORD_DEFAULT), $role, $departmentId > 0 ? $departmentId : null, (int) $actor['id']]);
+            log_action((int) $actor['id'], 'Created user account: ' . $username . ' (' . $role . ')');
+            flash('success', 'User account created and activated.');
+        } elseif (in_array($action, ['suspend', 'reactivate'], true)) {
+            if (!$id || $id <= 0) {
+                throw new InvalidArgumentException('Choose a valid user account.');
+            }
+            $stmt = db()->prepare('SELECT id, username, role, status FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1');
+            $stmt->execute([(int) $id]);
+            $target = $stmt->fetch();
+            if (!$target) {
+                throw new InvalidArgumentException('User account was not found.');
+            }
+            if ((int) $target['id'] === (int) $actor['id'] || $target['role'] === ROLE_SUPER_ADMIN) {
+                throw new InvalidArgumentException('You cannot suspend or reactivate this administrator account here.');
+            }
+            if ($action === 'suspend') {
+                if ($target['status'] !== 'Active') {
+                    throw new InvalidArgumentException('Only active accounts can be suspended.');
                 }
+                db()->prepare('UPDATE users SET status = "Suspended", updated_at = NOW() WHERE id = ? AND status = "Active"')->execute([(int) $id]);
+                log_action((int) $actor['id'], 'Suspended user account: ' . $target['username']);
+                flash('success', 'User account suspended.');
             } else {
-                $stmt = db()->prepare('INSERT INTO users (fullname, gender, birthday, email, phone, username, password, role, department_id, status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
-                $stmt->execute([
-                    $fullname,
-                    $gender,
-                    $birthday,
-                    $email,
-                    $phone,
-                    $username,
-                    password_hash((string) $_POST['password'], PASSWORD_DEFAULT),
-                    $role,
-                    (int) $_POST['department_id'],
-                    $status,
-                    (int) $actor['id'],
-                ]);
-                log_action((int) $actor['id'], 'Created user account: ' . $username);
-                flash('success', 'User account created.');
+                if (!in_array($target['status'], ['Suspended', 'Inactive', 'Locked'], true)) {
+                    throw new InvalidArgumentException('This account cannot be reactivated from its current status.');
+                }
+                db()->prepare('UPDATE users SET status = "Active", login_attempts = 0, locked_until = NULL, updated_at = NOW() WHERE id = ?')->execute([(int) $id]);
+                log_action((int) $actor['id'], 'Reactivated user account: ' . $target['username']);
+                flash('success', 'User account reactivated.');
             }
-        } catch (InvalidArgumentException $error) {
-            flash('error', $error->getMessage());
-        } catch (PDOException $error) {
-            if (($error->errorInfo[1] ?? null) === 1062) {
-                flash('error', 'That username or email is already registered. Please use unique account details.');
-            } else {
-                throw $error;
+        } elseif ($action === 'reset_password') {
+            if (!$id || $id <= 0) {
+                throw new InvalidArgumentException('Choose a valid user account.');
             }
-        }
-    } elseif ($action === 'status') {
-        db()->prepare('UPDATE users SET status = ? WHERE id = ?')->execute([$_POST['status'], (int) $_POST['id']]);
-        log_action((int) $actor['id'], 'Updated user status #' . (int) $_POST['id']);
-        flash('success', 'User status updated.');
-    } elseif ($action === 'reset_password') {
-        $id = (int) ($_POST['id'] ?? 0);
-        $stmt = db()->prepare('SELECT username FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1');
-        $stmt->execute([$id]);
-        $target = $stmt->fetch();
-
-        if (!$target) {
-            flash('error', 'User account was not found.');
-        } else {
-            $temporaryPassword = 'OVPRE-' . random_int(100000, 999999);
-            db()->prepare('UPDATE users SET password = ?, login_attempts = 0, locked_until = NULL, status = "Active" WHERE id = ?')
-                ->execute([password_hash($temporaryPassword, PASSWORD_DEFAULT), $id]);
+            $stmt = db()->prepare('SELECT username, role FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1');
+            $stmt->execute([(int) $id]);
+            $target = $stmt->fetch();
+            if (!$target) {
+                throw new InvalidArgumentException('User account was not found.');
+            }
+            if ($target['role'] === ROLE_SUPER_ADMIN) {
+                throw new InvalidArgumentException('Reset a Super Admin password through the account recovery process.');
+            }
+            $temporaryPassword = 'OVPRE-' . bin2hex(random_bytes(8)) . '!';
+            db()->prepare('UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL, login_attempts = 0, locked_until = NULL, updated_at = NOW() WHERE id = ?')
+                ->execute([password_hash($temporaryPassword, PASSWORD_DEFAULT), (int) $id]);
             log_action((int) $actor['id'], 'Reset password for user account: ' . $target['username']);
             flash('success', 'Temporary password for ' . $target['username'] . ': ' . $temporaryPassword);
-        }
-    } elseif ($action === 'edit') {
-        try {
-            $id = (int) ($_POST['id'] ?? 0);
-            $role = $_POST['role'] ?? 'OVPRE Staff';
-            if (!array_key_exists($role, $rolePurposes)) {
-                $role = 'OVPRE Staff';
+        } elseif ($action === 'edit') {
+            if (!$id || $id <= 0) {
+                throw new InvalidArgumentException('Choose a valid user account.');
+            }
+            $targetStmt = db()->prepare('SELECT id, username, role, status FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1');
+            $targetStmt->execute([(int) $id]);
+            $target = $targetStmt->fetch();
+            if (!$target) {
+                throw new InvalidArgumentException('User account was not found.');
             }
 
             $fullname = trim((string) ($_POST['fullname'] ?? ''));
             $email = trim((string) ($_POST['email'] ?? ''));
-            [$gender, $birthday, $phone] = user_profile_fields($_POST);
             $username = trim((string) ($_POST['username'] ?? ''));
-            $status = in_array($_POST['status'] ?? 'Active', ['Active', 'Inactive', 'Locked'], true) ? $_POST['status'] : 'Active';
             $password = (string) ($_POST['password'] ?? '');
+            [$gender, $birthday, $phone] = user_profile_fields($_POST);
+            $departmentId = (int) ($_POST['department_id'] ?? 0);
+            $submittedRole = (string) ($_POST['role'] ?? '');
 
-            $existing = db()->prepare('SELECT id, username, email FROM users WHERE (username = ? OR email = ?) AND id <> ? LIMIT 1');
-            $existing->execute([$username, $email, $id]);
-            $duplicate = $existing->fetch();
-
-            if ($duplicate) {
-                if (strcasecmp((string) $duplicate['username'], $username) === 0) {
-                    flash('error', 'Username "' . $username . '" already exists. Please choose another username.');
-                } else {
-                    flash('error', 'Email "' . $email . '" already exists. Please use another email address.');
-                }
-            } else {
-                if ($password !== '') {
-                    if (strlen($password) < 8) {
-                        flash('error', 'New password must be at least 8 characters.');
-                    } else {
-                        db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, password = ?, role = ?, department_id = ?, status = ?, login_attempts = 0, locked_until = NULL WHERE id = ?')
-                            ->execute([$fullname, $gender, $birthday, $email, $phone, $username, password_hash($password, PASSWORD_DEFAULT), $role, (int) $_POST['department_id'], $status, $id]);
-                        log_action((int) $actor['id'], 'Edited user account and reset password: ' . $username);
-                        flash('success', 'User account updated and password reset.');
-                    }
-                } else {
-                    db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, role = ?, department_id = ?, status = ? WHERE id = ?')
-                        ->execute([$fullname, $gender, $birthday, $email, $phone, $username, $role, (int) $_POST['department_id'], $status, $id]);
-                    log_action((int) $actor['id'], 'Edited user account: ' . $username);
-                    flash('success', 'User account updated.');
-                }
+            if ($fullname === '' || strlen($fullname) > 160 || !preg_match('/^[A-Za-z0-9_.-]{3,80}$/', $username)) {
+                throw new InvalidArgumentException('Enter a valid full name and a 3–80 character username.');
             }
-        } catch (InvalidArgumentException $error) {
-            flash('error', $error->getMessage());
-        } catch (PDOException $error) {
-            if (($error->errorInfo[1] ?? null) === 1062) {
-                flash('error', 'That username or email is already registered. Please use unique account details.');
-            } else {
-                throw $error;
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
+                throw new InvalidArgumentException('Enter a valid email address.');
             }
-        }
-    } elseif ($action === 'delete') {
-        $id = (int) ($_POST['id'] ?? 0);
+            $duplicate = db()->prepare('SELECT username, email FROM users WHERE (username = ? OR email = ?) AND id <> ? LIMIT 1');
+            $duplicate->execute([$username, $email, (int) $id]);
+            $existing = $duplicate->fetch();
+            if ($existing) {
+                throw new InvalidArgumentException(strcasecmp((string) $existing['username'], $username) === 0 ? 'That username is already in use.' : 'That email address is already registered.');
+            }
 
-        if ($id === (int) $actor['id']) {
-            flash('error', 'You cannot remove your own admin account.');
-        } else {
-            $stmt = db()->prepare('SELECT username FROM users WHERE id = ? LIMIT 1');
-            $stmt->execute([$id]);
+            $role = $target['role'];
+            if ($target['role'] !== ROLE_SUPER_ADMIN && !in_array($target['status'], ['Pending', 'Rejected'], true) && (int) $target['id'] !== (int) $actor['id']) {
+                if (!array_key_exists($submittedRole, $rolePurposes)) {
+                    throw new InvalidArgumentException('Choose a valid user role.');
+                }
+                $role = $submittedRole;
+            }
+            if ($password !== '' && (strlen($password) < 12 || !preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[^A-Za-z0-9]/', $password))) {
+                throw new InvalidArgumentException('Use a password with at least 12 characters, uppercase and lowercase letters, a number, and a symbol.');
+            }
+
+            if ($password !== '') {
+                db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, password = ?, role = ?, department_id = ?, login_attempts = 0, locked_until = NULL, updated_at = NOW() WHERE id = ?')
+                    ->execute([$fullname, $gender, $birthday, $email, $phone, $username, password_hash($password, PASSWORD_DEFAULT), $role, $departmentId > 0 ? $departmentId : null, (int) $id]);
+            } else {
+                db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, role = ?, department_id = ?, updated_at = NOW() WHERE id = ?')
+                    ->execute([$fullname, $gender, $birthday, $email, $phone, $username, $role, $departmentId > 0 ? $departmentId : null, (int) $id]);
+            }
+            if ($role !== $target['role']) {
+                log_action((int) $actor['id'], 'Changed role for ' . $target['username'] . ' from ' . $target['role'] . ' to ' . $role);
+            }
+            log_action((int) $actor['id'], ($password !== '' ? 'Edited account and reset password: ' : 'Edited user account: ') . $username);
+            flash('success', 'User account updated. Its approval status was not changed.');
+        } elseif ($action === 'delete') {
+            if (!$id || $id <= 0 || (int) $id === (int) $actor['id']) {
+                throw new InvalidArgumentException('You cannot deactivate your own administrator account.');
+            }
+            $stmt = db()->prepare('SELECT username, role FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1');
+            $stmt->execute([(int) $id]);
             $target = $stmt->fetch();
-
-            if (!$target) {
-                flash('error', 'User account was not found.');
-            } else {
-                db()->prepare('UPDATE users SET status = "Inactive", deleted_at = NOW() WHERE id = ?')->execute([$id]);
-                log_action((int) $actor['id'], 'Deactivated user account: ' . $target['username']);
-                flash('success', 'User account deactivated. Existing records remain intact.');
+            if (!$target || $target['role'] === ROLE_SUPER_ADMIN) {
+                throw new InvalidArgumentException('That account cannot be deactivated here.');
             }
+            db()->prepare('UPDATE users SET status = "Inactive", deleted_at = NOW(), updated_at = NOW() WHERE id = ?')->execute([(int) $id]);
+            log_action((int) $actor['id'], 'Deactivated user account: ' . $target['username']);
+            flash('success', 'User account deactivated. Existing records remain intact.');
+        } else {
+            throw new InvalidArgumentException('Choose a valid user management action.');
         }
+    } catch (InvalidArgumentException $exception) {
+        flash('error', $exception->getMessage());
+    } catch (PDOException $exception) {
+        if (($exception->errorInfo[1] ?? null) === 1062) {
+            flash('error', 'That username or email address is already registered.');
+        } else {
+            error_log('User management action failed: ' . $exception->getMessage());
+            flash('error', 'The user account change could not be completed. Please try again.');
+        }
+    } catch (Throwable $exception) {
+        error_log('User management action failed: ' . $exception->getMessage());
+        flash('error', 'The user account change could not be completed. Please try again.');
     }
     redirect_to('admin-users.php');
 }
 
-$users = db()->query('SELECT u.*, d.department_name, creator.fullname AS created_by_name FROM users u LEFT JOIN departments d ON d.id = u.department_id LEFT JOIN users creator ON creator.id = u.created_by WHERE u.deleted_at IS NULL ORDER BY u.created_at DESC')->fetchAll();
+$statusOptions = ['All', 'Active', 'Pending', 'Rejected', 'Suspended', 'Inactive', 'Locked'];
+$statusFilter = (string) ($_GET['status'] ?? 'All');
+if (!in_array($statusFilter, $statusOptions, true)) {
+    $statusFilter = 'All';
+}
+$sql = 'SELECT u.*, d.department_name, creator.fullname AS created_by_name, approver.fullname AS approved_by_name, rejecter.fullname AS rejected_by_name FROM users u LEFT JOIN departments d ON d.id = u.department_id LEFT JOIN users creator ON creator.id = u.created_by LEFT JOIN users approver ON approver.id = u.approved_by LEFT JOIN users rejecter ON rejecter.id = u.rejected_by WHERE u.deleted_at IS NULL';
+$params = [];
+if ($statusFilter !== 'All') {
+    $sql .= ' AND u.status = ?';
+    $params[] = $statusFilter;
+}
+$sql .= ' ORDER BY u.created_at DESC';
+$usersStmt = db()->prepare($sql);
+$usersStmt->execute($params);
+$users = $usersStmt->fetchAll();
 $notice = flash();
+$departments = departments();
 renderHeader('User Management', 'users');
 ?>
-<section class="module-header"><div class="module-icon"><i class="ri-team-line"></i></div><div><p>Access Control</p><h2>User Management</h2><span>Manage user roles, responsibilities, departments, and account access.</span></div></section>
-<?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-checkbox-circle-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
+<section class="module-header"><div class="module-icon"><i class="ri-team-line"></i></div><div><p>Access Control</p><h2>User Management</h2><span>Manage roles and access. Registration approval is handled in Pending Account Requests.</span></div></section>
+<?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-information-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
 <section class="panel">
-    <div class="panel-heading"><h2>Create User</h2>
-</div>
+    <div class="panel-heading"><h2>Create User</h2><span>New administrator-created accounts are active immediately.</span></div>
     <form class="editor-panel" method="post">
         <?php echo csrf_field(); ?><input type="hidden" name="action" value="create">
         <div class="form-grid">
-            <label class="field"><span>Full Name</span><input name="fullname" required></label>
-            <label class="field"><span>Email</span><input name="email" type="email" required></label>
+            <label class="field"><span>Full Name</span><input name="fullname" maxlength="160" required></label>
+            <label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label>
             <label class="field"><span>Gender</span><select name="gender"><option value="">Select gender</option><?php foreach (['Male', 'Female', 'Other', 'Prefer not to say'] as $genderOption): ?><option value="<?php echo h($genderOption); ?>"><?php echo h($genderOption); ?></option><?php endforeach; ?></select></label>
             <label class="field"><span>Birthday</span><input name="birthday" type="date" max="<?php echo h(date('Y-m-d')); ?>"></label>
-            <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30" autocomplete="tel" placeholder="e.g. +63 912 345 6789"></label>
-            <label class="field"><span>Username</span><input name="username" required></label>
-            <label class="field"><span>Password</span><input name="password" type="password" minlength="8" required></label>
-            <label class="field"><span>Role</span><select name="role" required><?php foreach ($rolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>"><?php echo h($role); ?> - <?php echo h($purpose); ?></option><?php endforeach; ?></select></label>
-            <label class="field"><span>Department</span><select name="department_id"><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
-            <label class="field"><span>Status</span><select name="status"><option>Active</option><option>Inactive</option><option>Locked</option></select></label>
+            <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30"></label>
+            <label class="field"><span>Username</span><input name="username" maxlength="80" required></label>
+            <label class="field"><span>Password</span><input name="password" type="password" minlength="12" required></label>
+            <label class="field"><span>Role</span><select name="role" required><?php foreach ($rolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>"><?php echo h($role); ?> — <?php echo h($purpose); ?></option><?php endforeach; ?></select></label>
+            <label class="field"><span>Department</span><select name="department_id"><option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
         </div>
-        <button class="primary-btn post-btn add-user-btn" type="submit"><i class="fa-solid fa-user-plus"></i><span>Add User</span></button>
+        <p class="muted">Use at least 12 characters, including uppercase and lowercase letters, a number, and a symbol.</p>
+        <button class="primary-btn post-btn add-user-btn" type="submit"><i class="ri-user-add-line"></i><span>Add User</span></button>
     </form>
 </section>
-<section class="tool-panel"><div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div></section>
+<section class="tool-panel">
+    <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div>
+    <form method="get" class="action-row"><label class="field"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label></form>
+</section>
 <section class="panel">
-    <div class="table-scroll">
-        <table class="data-table portal-table">
-            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Gender</th><th>Birthday</th><th>Phone</th><th>Username</th><th>Department</th><th>Role</th><th>Last Login</th><th>Created By</th><th>Status</th><th>Manage</th></tr></thead>
-            <tbody>
-            <?php foreach ($users as $user): ?>
-                <tr data-table-row>
-                    <td><?php echo (int) $user['id']; ?></td><td><?php echo h($user['fullname']); ?><br><small><?php echo h($rolePurposes[$user['role']] ?? 'Assigned User'); ?></small></td><td><?php echo h($user['email']); ?></td><td><?php echo h($user['gender'] ?? '—'); ?></td><td><?php echo !empty($user['birthday']) ? h(date('M d, Y', strtotime($user['birthday']))) : '—'; ?></td><td><?php echo h($user['phone'] ?? '—'); ?></td><td><?php echo h($user['username']); ?></td><td><?php echo h($user['department_name'] ?? 'Unassigned'); ?></td><td><?php echo h($user['role']); ?></td><td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td><td><?php echo h($user['created_by_name'] ?? 'System'); ?></td><td><span class="live-status <?php echo $user['status'] === 'Active' ? 'is-active' : 'is-inactive'; ?>"><span></span><?php echo h($user['status']); ?></span></td>
-                    <td>
-                        <div class="user-action-panel">
-                            <button class="ghost-btn action-btn" type="button" data-open-modal="edit-user-<?php echo (int) $user['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
-                            <form class="inline-delete-form" method="post" onsubmit="return confirm('Delete this user account? Existing records will remain intact.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Delete</span></button></form>
-                        </div>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+    <div class="table-scroll"><table class="data-table portal-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Username</th><th>Department</th><th>Role</th><th>Registered</th><th>Review</th><th>Last Login</th><th>Status</th><th>Manage</th></tr></thead>
+        <tbody>
+        <?php foreach ($users as $user): ?>
+            <tr data-table-row>
+                <td><?php echo (int) $user['id']; ?></td>
+                <td><?php echo h($user['fullname']); ?></td>
+                <td><?php echo h($user['email']); ?></td>
+                <td><?php echo h($user['username']); ?></td>
+                <td><?php echo h($user['department_name'] ?? 'Unassigned'); ?></td>
+                <td><?php echo h($user['role']); ?></td>
+                <td><?php echo h(date('M d, Y', strtotime($user['created_at']))); ?></td>
+                <td><?php if ($user['status'] === 'Rejected'): ?><?php echo h($user['rejection_reason'] ?? 'No reason recorded'); ?><br><small><?php echo h($user['rejected_by_name'] ?? 'Administrator'); ?> · <?php echo $user['rejected_at'] ? h(date('M d, Y', strtotime($user['rejected_at']))) : ''; ?></small><?php elseif ($user['status'] === 'Active' && $user['approved_at']): ?>Approved by <?php echo h($user['approved_by_name'] ?? 'Administrator'); ?><br><small><?php echo h(date('M d, Y', strtotime($user['approved_at']))); ?></small><?php else: ?>—<?php endif; ?></td>
+                <td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td>
+                <td><span class="status-pill status-<?php echo h(statusClass($user['status'])); ?>"><?php echo h($user['status']); ?></span></td>
+                <td><div class="user-action-panel">
+                    <button class="ghost-btn action-btn" type="button" data-open-modal="edit-user-<?php echo (int) $user['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
+                    <?php if ($user['role'] !== ROLE_SUPER_ADMIN && (int) $user['id'] !== (int) $actor['id']): ?>
+                        <?php if ($user['status'] === 'Active'): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="suspend"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-forbid-line"></i><span>Suspend</span></button></form>
+                        <?php elseif (in_array($user['status'], ['Suspended', 'Inactive', 'Locked'], true)): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reactivate"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-user-follow-line"></i><span>Reactivate</span></button></form><?php endif; ?>
+                        <?php if (in_array($user['status'], ['Active', 'Suspended', 'Inactive', 'Locked'], true)): ?><form method="post" onsubmit="return confirm('Generate a temporary password for this user?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reset_password"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="ghost-btn action-btn" type="submit"><i class="ri-key-2-line"></i><span>Reset Password</span></button></form><?php endif; ?>
+                        <form method="post" onsubmit="return confirm('Deactivate this account? Existing records remain intact.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Deactivate</span></button></form>
+                    <?php endif; ?>
+                </div></td>
+            </tr>
+        <?php endforeach; ?>
+        <?php if (!$users): ?><tr><td colspan="11">No user accounts found for this status.</td></tr><?php endif; ?>
+        </tbody>
+    </table></div>
 </section>
 <?php foreach ($users as $user): ?>
     <div class="modal" id="edit-user-<?php echo (int) $user['id']; ?>" aria-hidden="true">
         <div class="modal-backdrop" data-close-modal></div>
         <form class="modal-card" method="post">
             <button class="modal-close" type="button" data-close-modal aria-label="Close edit user form"><i class="ri-close-line"></i></button>
-            <span class="category-badge">Edit User</span>
-            <h2><?php echo h($user['fullname']); ?></h2>
-            <?php echo csrf_field(); ?>
-            <input type="hidden" name="action" value="edit">
-            <input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>">
+            <span class="category-badge">Edit User</span><h2><?php echo h($user['fullname']); ?></h2>
+            <?php echo csrf_field(); ?><input type="hidden" name="action" value="edit"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>">
             <div class="form-grid">
-                <label class="field"><span>Full Name</span><input name="fullname" value="<?php echo h($user['fullname']); ?>" required></label>
-                <label class="field"><span>Email</span><input name="email" type="email" value="<?php echo h($user['email']); ?>" required></label>
+                <label class="field"><span>Full Name</span><input name="fullname" maxlength="160" value="<?php echo h($user['fullname']); ?>" required></label>
+                <label class="field"><span>Email</span><input name="email" type="email" maxlength="190" value="<?php echo h($user['email']); ?>" required></label>
                 <label class="field"><span>Gender</span><select name="gender"><option value="">Not specified</option><?php foreach (['Male', 'Female', 'Other', 'Prefer not to say'] as $genderOption): ?><option value="<?php echo h($genderOption); ?>" <?php echo ($user['gender'] ?? '') === $genderOption ? 'selected' : ''; ?>><?php echo h($genderOption); ?></option><?php endforeach; ?></select></label>
                 <label class="field"><span>Birthday</span><input name="birthday" type="date" max="<?php echo h(date('Y-m-d')); ?>" value="<?php echo h($user['birthday'] ?? ''); ?>"></label>
-                <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30" autocomplete="tel" value="<?php echo h($user['phone'] ?? ''); ?>" placeholder="e.g. +63 912 345 6789"></label>
-                <label class="field"><span>Username</span><input name="username" value="<?php echo h($user['username']); ?>" required></label>
-                <label class="field"><span>New Password</span><input name="password" type="password" minlength="8" placeholder="Leave blank to keep current password"></label>
-                <label class="field"><span>Role</span><select name="role" required><?php foreach ($rolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?> - <?php echo h($purpose); ?></option><?php endforeach; ?></select></label>
-                <label class="field"><span>Department</span><select name="department_id"><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (int) ($user['department_id'] ?? 0) === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
-                <label class="field"><span>Status</span><select name="status"><?php foreach (['Active', 'Inactive', 'Locked'] as $status): ?><option <?php echo $user['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label>
+                <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30" value="<?php echo h($user['phone'] ?? ''); ?>"></label>
+                <label class="field"><span>Username</span><input name="username" maxlength="80" value="<?php echo h($user['username']); ?>" required></label>
+                <label class="field"><span>New Password</span><input name="password" type="password" minlength="12" autocomplete="new-password" placeholder="Leave blank to keep current password"></label>
+                <label class="field"><span>Department</span><select name="department_id"><option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (int) ($user['department_id'] ?? 0) === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
+                <?php if ($user['role'] === ROLE_SUPER_ADMIN || in_array($user['status'], ['Pending', 'Rejected'], true) || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account in its current state.</small></div>
+                <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($rolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?> — <?php echo h($purpose); ?></option><?php endforeach; ?></select></label><?php endif; ?>
+                <div class="field"><span>Account Status</span><strong><?php echo h($user['status']); ?></strong><small>Use the account action buttons to suspend or reactivate. Registration status is not changed here.</small></div>
             </div>
             <button class="primary-btn" type="submit"><i class="ri-save-line"></i> Save User</button>
         </form>

@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/data.php';
 require_once 'includes/layout.php';
+$actor = require_super_admin();
 renderHeader('Student Accounts', 'accounts');
 ?>
 <section class="tool-panel">

@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-require_login(['Super Admin']);
+require_super_admin();
 $logs = db()->query('SELECT l.*, u.fullname FROM audit_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.created_at DESC LIMIT 200')->fetchAll();
 renderHeader('Audit Logs', 'audit');
 ?>

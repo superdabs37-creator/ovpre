@@ -1,6 +1,9 @@
 <?php
 require_once 'includes/layout.php';
 $user = require_login();
+$pendingAccountCount = $user['role'] === ROLE_SUPER_ADMIN
+    ? (int) db()->query('SELECT COUNT(*) FROM users WHERE status = "Pending" AND deleted_at IS NULL AND role IN ("Research Coordinator", "Extension Coordinator")')->fetchColumn()
+    : 0;
 $recent = db()->query('SELECT l.*, u.fullname FROM audit_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.created_at DESC LIMIT 8')->fetchAll();
 $monthlyDocuments = db()->query("SELECT DATE_FORMAT(created_at, '%b') AS label, COUNT(*) AS total FROM documents WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) GROUP BY YEAR(created_at), MONTH(created_at) ORDER BY MIN(created_at)")->fetchAll();
 $pendingDocuments = db()->query("SELECT d.id, d.title, d.status, d.submission_date, c.category_name, dep.department_name FROM documents d LEFT JOIN categories c ON c.id = d.category_id LEFT JOIN departments dep ON dep.id = d.department_id WHERE d.archived_at IS NULL AND d.status IN ('Pending', 'Under Review') ORDER BY d.updated_at DESC, d.created_at DESC LIMIT 6")->fetchAll();
@@ -14,6 +17,12 @@ renderHeader('Dashboard', 'dashboard');
     </div>
     <a class="primary-btn" href="upload-document.php"><i class="ri-upload-cloud-line"></i> Upload Record</a>
 </section>
+
+<?php if ($user['role'] === ROLE_SUPER_ADMIN): ?>
+<section class="summary-grid">
+    <a class="summary-card" href="admin-pending-users.php"><div class="summary-icon"><i class="ri-user-follow-line"></i></div><div><p>Pending Account Requests</p><h3><?php echo $pendingAccountCount; ?></h3><span>Review coordinator registrations</span></div></a>
+</section>
+<?php endif; ?>
 
 <section class="panel">
     <div class="panel-heading">

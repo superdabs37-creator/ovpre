@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/layout.php';
 require_once 'includes/admin-shell.php';
+$user = require_super_admin();
 renderHeader('System Settings', 'settings');
 renderModuleHeader('System Settings', 'Configure security rules, upload limits, notifications, and workflow defaults.', 'ri-settings-3-line');
 ?>

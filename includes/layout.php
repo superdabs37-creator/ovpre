@@ -9,6 +9,8 @@ function renderHeader($pageTitle, $currentPage) {
     $user = current_user();
     $name = $user['fullname'] ?? 'Guest';
     $initials = implode('', array_map(fn($part) => strtoupper(substr($part, 0, 1)), array_slice(preg_split('/\s+/', trim($name)), 0, 2)));
+    $isSuperAdmin = ($user['role'] ?? '') === ROLE_SUPER_ADMIN;
+    $pendingAccountCount = $isSuperAdmin ? (int) db()->query('SELECT COUNT(*) FROM users WHERE status = "Pending" AND deleted_at IS NULL AND role IN ("Research Coordinator", "Extension Coordinator")')->fetchColumn() : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,16 +35,19 @@ function renderHeader($pageTitle, $currentPage) {
             <nav class="sidebar-nav">
                 <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                 <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
-                <?php if (($user['role'] ?? '') === 'Super Admin'): ?>
+                <?php if ($isSuperAdmin): ?>
                     <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php"><i class="ri-team-line"></i><span>Users</span></a>
+                    <a class="<?php echo activePage('pending-users', $currentPage); ?>" href="admin-pending-users.php"><i class="ri-user-follow-line"></i><span>Pending Accounts<?php if ($pendingAccountCount): ?> (<?php echo $pendingAccountCount; ?>)<?php endif; ?></span></a>
                 <?php endif; ?>
                 <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                 <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
                 <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
                 <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                 <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
-                <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
-                <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+                <?php if ($isSuperAdmin): ?>
+                    <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
+                    <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+                <?php endif; ?>
             </nav>
             <div class="sidebar-footer">
                 <i class="ri-shield-check-line"></i>
@@ -76,8 +81,7 @@ function renderHeader($pageTitle, $currentPage) {
                         <i class="ri-arrow-down-s-line"></i>
                     </button>
                     <div class="profile-dropdown" data-profile-dropdown>
-                        <a href="admin-settings.php"><i class="ri-user-line"></i> Profile</a>
-                        <a href="#"><i class="ri-settings-3-line"></i> Settings</a>
+                        <?php if ($isSuperAdmin): ?><a href="admin-settings.php"><i class="ri-user-line"></i> Profile &amp; Settings</a><?php endif; ?>
                         <a href="logout.php"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
                 </div>
