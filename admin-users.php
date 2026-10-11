@@ -12,6 +12,10 @@ $rolePurposes = [
     'Evaluator/Reviewer' => 'Proposal evaluation',
     'User' => 'General access',
 ];
+$availableRolePurposes = array_diff_key($rolePurposes, [
+    'Evaluator/Reviewer' => true,
+    'User' => true,
+]);
 
 function user_profile_fields(array $input): array {
     $allowedGenders = ['Male', 'Female', 'Other', 'Prefer not to say'];
@@ -43,39 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
 
     try {
-        if ($action === 'create') {
-            $role = (string) ($_POST['role'] ?? '');
-            $fullname = trim((string) ($_POST['fullname'] ?? ''));
-            $email = trim((string) ($_POST['email'] ?? ''));
-            $username = trim((string) ($_POST['username'] ?? ''));
-            $password = (string) ($_POST['password'] ?? '');
-            [$gender, $birthday, $phone] = user_profile_fields($_POST);
-            $departmentId = (int) ($_POST['department_id'] ?? 0);
-
-            if (!array_key_exists($role, $rolePurposes)) {
-                throw new InvalidArgumentException('Choose a valid user role.');
-            }
-            if ($fullname === '' || strlen($fullname) > 160 || !preg_match('/^[A-Za-z0-9_.-]{3,80}$/', $username)) {
-                throw new InvalidArgumentException('Enter a valid full name and a 3–80 character username.');
-            }
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
-                throw new InvalidArgumentException('Enter a valid email address.');
-            }
-            if (strlen($password) < 12 || !preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[^A-Za-z0-9]/', $password)) {
-                throw new InvalidArgumentException('Use a password with at least 12 characters, uppercase and lowercase letters, a number, and a symbol.');
-            }
-            $duplicate = db()->prepare('SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1');
-            $duplicate->execute([$username, $email]);
-            $existing = $duplicate->fetch();
-            if ($existing) {
-                throw new InvalidArgumentException(strcasecmp((string) $existing['username'], $username) === 0 ? 'That username is already in use.' : 'That email address is already registered.');
-            }
-
-            $insert = db()->prepare('INSERT INTO users (fullname, gender, birthday, email, phone, username, password, role, department_id, status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, "Active", ?, NOW())');
-            $insert->execute([$fullname, $gender, $birthday, $email, $phone, $username, password_hash($password, PASSWORD_DEFAULT), $role, $departmentId > 0 ? $departmentId : null, (int) $actor['id']]);
-            log_action((int) $actor['id'], 'Created user account: ' . $username . ' (' . $role . ')');
-            flash('success', 'User account created and activated.');
-        } elseif (in_array($action, ['suspend', 'reactivate'], true)) {
+        if (in_array($action, ['suspend', 'reactivate'], true)) {
             if (!$id || $id <= 0) {
                 throw new InvalidArgumentException('Choose a valid user account.');
             }
@@ -155,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $role = $target['role'];
             if ($target['role'] !== ROLE_SUPER_ADMIN && !in_array($target['status'], ['Pending', 'Rejected'], true) && (int) $target['id'] !== (int) $actor['id']) {
-                if (!array_key_exists($submittedRole, $rolePurposes)) {
+                if ($submittedRole !== $target['role'] && !array_key_exists($submittedRole, $availableRolePurposes)) {
                     throw new InvalidArgumentException('Choose a valid user role.');
                 }
                 $role = $submittedRole;
@@ -229,25 +201,6 @@ renderHeader('User Management', 'users');
 ?>
 <section class="module-header"><div class="module-icon"><i class="ri-team-line"></i></div><div><p>Access Control</p><h2>User Management</h2><span>Manage roles and access. Registration approval is handled in Pending Account Requests.</span></div></section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-information-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
-<section class="panel">
-    <div class="panel-heading"><h2>Create User</h2><span>New administrator-created accounts are active immediately.</span></div>
-    <form class="editor-panel" method="post">
-        <?php echo csrf_field(); ?><input type="hidden" name="action" value="create">
-        <div class="form-grid">
-            <label class="field"><span>Full Name</span><input name="fullname" maxlength="160" required></label>
-            <label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label>
-            <label class="field"><span>Gender</span><select name="gender"><option value="">Select gender</option><?php foreach (['Male', 'Female', 'Other', 'Prefer not to say'] as $genderOption): ?><option value="<?php echo h($genderOption); ?>"><?php echo h($genderOption); ?></option><?php endforeach; ?></select></label>
-            <label class="field"><span>Birthday</span><input name="birthday" type="date" max="<?php echo h(date('Y-m-d')); ?>"></label>
-            <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30"></label>
-            <label class="field"><span>Username</span><input name="username" maxlength="80" required></label>
-            <label class="field"><span>Password</span><input name="password" type="password" minlength="12" required></label>
-            <label class="field"><span>Role</span><select name="role" required><?php foreach ($rolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>"><?php echo h($role); ?> — <?php echo h($purpose); ?></option><?php endforeach; ?></select></label>
-            <label class="field"><span>Department</span><select name="department_id"><option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
-        </div>
-        <p class="muted">Use at least 12 characters, including uppercase and lowercase letters, a number, and a symbol.</p>
-        <button class="primary-btn post-btn add-user-btn" type="submit"><i class="ri-user-add-line"></i><span>Add User</span></button>
-    </form>
-</section>
 <section class="tool-panel">
     <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div>
     <form method="get" class="action-row"><label class="field"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label></form>
@@ -300,7 +253,8 @@ renderHeader('User Management', 'users');
                 <label class="field"><span>New Password</span><input name="password" type="password" minlength="12" autocomplete="new-password" placeholder="Leave blank to keep current password"></label>
                 <label class="field"><span>Department</span><select name="department_id"><option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (int) ($user['department_id'] ?? 0) === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
                 <?php if ($user['role'] === ROLE_SUPER_ADMIN || in_array($user['status'], ['Pending', 'Rejected'], true) || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account in its current state.</small></div>
-                <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($rolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?> — <?php echo h($purpose); ?></option><?php endforeach; ?></select></label><?php endif; ?>
+                <?php elseif (!array_key_exists($user['role'], $availableRolePurposes)): ?><label class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>This legacy role is no longer available for assignment.</small><input type="hidden" name="role" value="<?php echo h($user['role']); ?>"></label>
+                <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($availableRolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?> — <?php echo h($purpose); ?></option><?php endforeach; ?></select></label><?php endif; ?>
                 <div class="field"><span>Account Status</span><strong><?php echo h($user['status']); ?></strong><small>Use the account action buttons to suspend or reactivate. Registration status is not changed here.</small></div>
             </div>
             <button class="primary-btn" type="submit"><i class="ri-save-line"></i> Save User</button>

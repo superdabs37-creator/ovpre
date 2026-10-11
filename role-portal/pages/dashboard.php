@@ -4,10 +4,10 @@ $isExtensionCoordinator = PORTAL_ROLE === 'Extension Coordinator';
 $isResearchCoordinator = PORTAL_ROLE === 'Research Coordinator';
 if ($isExtensionCoordinator) {
     $stats = db()->query('SELECT COUNT(*) AS total, SUM(progress_status = "Planning") AS planning, SUM(progress_status = "Ongoing") AS ongoing, SUM(progress_status = "Completed") AS completed FROM extension_projects')->fetch();
-    $activities = db()->query('SELECT * FROM activities WHERE approval_status = "Approved" AND activity_type IN ("Training", "Workshop", "Community Outreach") ORDER BY date ASC LIMIT 6')->fetchAll();
+    $activities = db()->query('SELECT * FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL AND activity_type IN ("Training", "Workshop", "Community Outreach") ORDER BY date ASC LIMIT 6')->fetchAll();
 } elseif ($isResearchCoordinator) {
     $stats = db()->query('SELECT COUNT(*) AS total, SUM(status IN ("Pending", "Under Review")) AS in_review, SUM(status = "Approved") AS approved, SUM(status = "Declined") AS declined FROM research_projects')->fetch();
-    $activities = db()->query('SELECT * FROM activities WHERE approval_status = "Approved" AND activity_type = "Project Defense" ORDER BY date ASC LIMIT 6')->fetchAll();
+    $activities = db()->query('SELECT * FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL AND activity_type = "Project Defense" ORDER BY date ASC LIMIT 6')->fetchAll();
 } else {
     $stats = portal_stats();
     $activities = portal_recent_activities();

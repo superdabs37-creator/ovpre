@@ -306,6 +306,61 @@ button {
     padding: 8px 0;
 }
 
+.password-requirements {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 12px;
+    margin: -2px 0 2px;
+    padding: 12px;
+    list-style: none;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 0.82rem;
+}
+
+.password-requirements li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.password-requirements li i {
+    color: #9ca3af;
+    font-size: 1rem;
+}
+
+.password-requirements li.is-valid,
+.password-match-feedback.is-valid {
+    color: var(--green-700);
+}
+
+.password-requirements li.is-valid i {
+    color: var(--green-700);
+}
+
+.password-requirements li.is-invalid,
+.password-match-feedback.is-invalid {
+    color: var(--danger);
+}
+
+.password-requirements li.is-invalid i {
+    color: var(--danger);
+}
+
+.password-match-feedback {
+    min-height: 0;
+    margin: -4px 0 0;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.password-match-feedback:empty {
+    display: none;
+}
+
 .field input,
 .field select,
 .field textarea {
@@ -544,22 +599,35 @@ button {
     height: 36px;
     display: grid;
     place-items: center;
+    overflow: hidden;
     color: var(--green-900);
     background: var(--yellow-500);
     border-radius: 50%;
+}
+
+.avatar img,
+.profile-dropdown-avatar img,
+.role-avatar img,
+.role-profile-large-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 }
 
 .profile-dropdown {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    width: 190px;
+    z-index: 100;
+    width: 250px;
     display: none;
-    padding: 8px;
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: var(--soft-shadow);
+    padding: 12px;
+    color: #f8fafc;
+    background: #202729;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
 }
 
 .profile-dropdown.open {
@@ -573,12 +641,45 @@ button {
     gap: 10px;
     padding: 11px;
     border-radius: 12px;
-    color: var(--muted);
+    color: rgba(248, 250, 252, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .profile-dropdown a:hover {
-    color: var(--green-900);
-    background: var(--green-100);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-dropdown-identity {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    padding: 8px 8px 15px;
+    text-align: center;
+}
+
+.profile-dropdown-avatar {
+    width: 74px;
+    height: 74px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin-bottom: 4px;
+    color: #fff;
+    background: #080b0c;
+    border: 2px solid rgba(255, 255, 255, 0.13);
+    border-radius: 50%;
+    font-size: 2.6rem;
+}
+
+.profile-dropdown-identity strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 0.97rem;
+}
+
+.profile-dropdown-identity small {
+    color: rgba(248, 250, 252, 0.68);
 }
 
 .content-area {
@@ -857,13 +958,57 @@ button {
 
 .activity-status-actions {
     display: flex;
+    width: 100%;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-wrap: nowrap;
+    gap: 7px;
 }
 
 .activity-status-actions form {
+    flex: 0 0 auto;
     margin: 0;
+}
+
+.activities-table {
+    min-width: 880px;
+}
+
+.activities-table th:nth-last-child(-n + 2),
+.activities-table td:nth-last-child(-n + 2) {
+    min-width: 112px;
+    text-align: center;
+}
+
+.activities-table .activity-status-actions {
+    justify-content: center;
+}
+
+.activities-table .activity-status-actions .mini-btn,
+.activities-table .file-actions .primary-btn.mini-btn {
+    width: auto;
+    min-width: 84px;
+    min-height: 36px;
+    padding: 0 10px;
+    white-space: nowrap;
+}
+
+.activities-table .file-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 7px;
+}
+
+.activities-table .file-actions form {
+    margin: 0;
+}
+
+.activities-table .file-actions .ghost-btn.mini-btn {
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    flex: 0 0 36px;
 }
 
 .status-pending {
@@ -1268,6 +1413,16 @@ button {
     padding: 18px;
 }
 
+.archive-toolbar > div:first-child {
+    display: grid;
+    gap: 4px;
+}
+
+.archive-toolbar > div:first-child span {
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
 .search-control {
     width: min(100%, 430px);
 }
@@ -1423,6 +1578,38 @@ button {
 
 .pagination button.active {
     background: var(--yellow-500);
+}
+
+.admin-table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.admin-table-pagination[hidden] {
+    display: none;
+}
+
+.admin-table-pagination button {
+    min-height: 36px;
+    padding: 0 13px;
+    color: var(--green-800);
+    background: var(--green-100);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-table-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 .announcements-page {
@@ -1880,6 +2067,30 @@ button {
     animation: riseIn 0.22s ease both;
 }
 
+.simple-submit-modal {
+    width: min(100%, 760px);
+    max-height: min(92vh, 900px);
+    overflow-y: auto;
+}
+
+.simple-submit-modal .editor-panel,
+.simple-submit-modal .announcement-form {
+    display: grid;
+    gap: 14px;
+}
+
+.simple-submit-modal .post-btn {
+    width: 100%;
+}
+
+.modal-launcher-panel .panel-heading > div {
+    min-width: 0;
+}
+
+.modal-launcher-panel .panel-heading > .primary-btn {
+    flex: 0 0 auto;
+}
+
 .modal-card h2 {
     margin: 0;
     color: var(--green-900);
@@ -1913,7 +2124,68 @@ button {
 }
 
 .activity-modal-card {
+    max-height: min(92vh, 900px);
+    overflow-y: auto;
     padding-top: 34px;
+}
+
+.profile-modal-card {
+    width: min(100%, 820px);
+    max-height: min(92vh, 900px);
+    overflow-y: auto;
+    padding-top: 34px;
+}
+
+.profile-modal-card .portal-form {
+    display: grid;
+    gap: 14px;
+}
+
+.profile-photo-editor {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+}
+
+.profile-photo-preview {
+    width: 78px;
+    height: 78px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: var(--green-900);
+    background: var(--green-100);
+    border-radius: 50%;
+    font-size: 2.5rem;
+}
+
+.profile-photo-preview img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.profile-photo-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-photo-field input {
+    width: 100%;
+}
+
+.profile-photo-field small {
+    color: var(--muted);
+}
+
+.profile-modal-card .modal-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .activity-modal-head {
@@ -1966,6 +2238,16 @@ button {
     background: linear-gradient(135deg, var(--green-900), var(--green-700));
     border-radius: 24px;
     box-shadow: var(--shadow);
+}
+
+/* Keep page context in the topbar and hide repeated module banners. */
+.module-header {
+    display: none !important;
+}
+
+.module-header > .primary-btn {
+    flex: 0 0 auto;
+    margin-left: auto;
 }
 
 .module-icon {
@@ -2507,6 +2789,7 @@ button {
 .upcoming-list article {
     display: flex;
     gap: 12px;
+    min-width: 0;
     padding: 13px;
     background: var(--surface);
     border: 1px solid var(--line);
@@ -2544,6 +2827,7 @@ button {
 }
 
 .upcoming-list h3 {
+    overflow-wrap: anywhere;
     color: var(--green-900);
     font-size: 0.96rem;
 }
@@ -2564,7 +2848,13 @@ button {
 
 .calendar-side {
     display: grid;
+    min-width: 0;
     gap: 18px;
+}
+
+.calendar-create-btn {
+    width: 100%;
+    min-height: 48px;
 }
 
 .calendar-form {
@@ -2574,13 +2864,14 @@ button {
 
 .fullcalendar-panel {
     min-width: 0;
+    overflow-x: auto;
     padding: 16px;
     border-top: 4px solid var(--yellow-500);
     border-radius: 10px;
 }
 
 #activityCalendar {
-    min-width: 760px;
+    min-width: 0;
 }
 
 #activityCalendar .fc {
@@ -2677,7 +2968,37 @@ button {
 }
 
 .modal-actions {
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.activity-modal-card .modal-actions > button {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    height: 48px;
+    padding: 0 10px;
+    white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+    .modal-launcher-panel .panel-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .modal-launcher-panel .panel-heading > .primary-btn {
+        width: 100%;
+    }
+
+    .simple-submit-modal {
+        padding: 22px 18px;
+    }
+
+    .activity-modal-card .modal-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @keyframes riseIn {
@@ -2804,6 +3125,26 @@ button {
     }
 }
 
+@media (max-width: 700px) {
+    .archive-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .archive-toolbar .action-row,
+    .archive-toolbar .action-row a {
+        width: 100%;
+    }
+
+    #activityCalendar {
+        min-width: 640px;
+    }
+
+    .fullcalendar-panel {
+        padding: 12px;
+    }
+}
+
 @media (max-width: 620px) {
     .login-card {
         padding: 24px;
@@ -2857,6 +3198,11 @@ button {
     .timeline-step {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .module-header > .primary-btn {
+        width: 100%;
+        margin-left: 0;
     }
 
     .calendar-toolbar {

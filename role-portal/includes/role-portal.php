@@ -20,13 +20,13 @@ const ROLE_PORTALS = [
         'slug' => 'research-coordinator',
         'title' => 'Research Coordinator Portal',
         'purpose' => 'Research monitoring and submissions',
-        'nav' => ['dashboard', 'research', 'analytics', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
     ],
     'Extension Coordinator' => [
         'slug' => 'extension-coordinator',
         'title' => 'Extension Coordinator Portal',
         'purpose' => 'Extension monitoring and submissions',
-        'nav' => ['dashboard', 'extension', 'analytics', 'calendar', 'reports', 'announcements', 'notifications'],
+        'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications'],
     ],
 ];
 
@@ -80,14 +80,20 @@ function portal_nav_items(): array {
         $items['status'][0] = 'Extension Submission Status';
     } elseif (PORTAL_ROLE === 'Research Coordinator') {
         $items['status'][0] = 'Research Submission Status';
+        $items['calendar'][0] = 'Activities';
     }
     return $items;
 }
 
 function portal_header(string $title, string $current): array {
     $user = portal_require_user();
+    ensure_activity_archived_at_column();
     $config = portal_config();
     $name = $user['fullname'] ?? PORTAL_ROLE;
+    $savedProfilePhoto = (string) ($user['profile_photo'] ?? '');
+    $profilePhotoUrl = preg_match('#^uploads/profile-photos/[A-Za-z0-9._-]+\.(jpg|png|webp)$#', $savedProfilePhoto)
+        ? '../' . $savedProfilePhoto
+        : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -95,7 +101,8 @@ function portal_header(string $title, string $current): array {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
-    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261005-activity-approvals">
+    <link rel="icon" type="image/jpeg" href="../assets/img/ovpre-logo.jpg?v=20261012">
+    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261011-profile-photo-menu">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -113,10 +120,24 @@ function portal_header(string $title, string $current): array {
     <div class="role-page">
         <header class="role-topbar">
             <button class="icon-btn" type="button" data-role-sidebar><i class="ri-menu-line"></i></button>
-            <div><p><?php echo h(APP_ORG); ?></p><h1><?php echo h($title); ?></h1></div>
+            <div><h1><?php echo h($title); ?></h1></div>
             <span class="role-chip"><?php echo h(PORTAL_ROLE); ?></span>
-            <span class="role-avatar"><?php echo h(portal_initials($name)); ?></span>
-            <a class="ghost-btn" href="../logout.php"><i class="ri-logout-circle-line"></i> Logout</a>
+            <div class="role-profile-menu">
+                <button class="role-profile-button" type="button" data-role-profile-toggle aria-expanded="false" aria-haspopup="true" aria-label="Open profile menu">
+                    <span class="role-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><?php echo h(portal_initials($name)); ?><?php endif; ?></span>
+                    <i class="ri-arrow-down-s-line"></i>
+                </button>
+                <div class="role-profile-dropdown" data-role-profile-dropdown>
+                    <div class="role-profile-identity">
+                        <span class="role-profile-large-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><i class="ri-user-3-fill"></i><?php endif; ?></span>
+                        <strong><?php echo h($name); ?></strong>
+                        <small><?php echo h(PORTAL_ROLE); ?></small>
+                    </div>
+                    <a href="../profile.php"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                    <a href="../profile.php?section=password"><i class="ri-lock-password-line"></i> Change Password</a>
+                    <a href="../logout.php"><i class="ri-logout-circle-line"></i> Log out</a>
+                </div>
+            </div>
         </header>
         <main class="role-content">
 <?php
@@ -129,7 +150,7 @@ function portal_footer(): void {
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="../role-portal/assets/js/portal.js?v=20261005-search-print-v3"></script>
+<script src="../role-portal/assets/js/portal.js?v=20261012-schedule-request-actions"></script>
 </body>
 </html>
 <?php
@@ -153,7 +174,7 @@ function portal_stats(): array {
 }
 
 function portal_recent_activities(): array {
-    return db()->query('SELECT * FROM activities WHERE approval_status = "Approved" ORDER BY date DESC LIMIT 6')->fetchAll();
+    return db()->query('SELECT * FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL ORDER BY date DESC LIMIT 6')->fetchAll();
 }
 
 function portal_research_projects(): array {

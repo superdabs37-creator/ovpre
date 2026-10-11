@@ -79,6 +79,7 @@ $notice = flash();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($pageTitle); ?> | <?php echo APP_NAME; ?></title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
     <link rel="stylesheet" href="assets/css/style.css?v=20261006-login-office-highlight">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

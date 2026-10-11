@@ -54,6 +54,43 @@ function db(): PDO {
     return $pdo;
 }
 
+function ensure_profile_photo_column(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $column = db()->query("SHOW COLUMNS FROM users LIKE 'profile_photo'")->fetch();
+    if (!$column) {
+        db()->exec('ALTER TABLE users ADD COLUMN profile_photo VARCHAR(255) DEFAULT NULL');
+    }
+    $checked = true;
+}
+
+function ensure_activity_date_to_column(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $column = db()->query("SHOW COLUMNS FROM activities LIKE 'date_to'")->fetch();
+    if (!$column) {
+        db()->exec('ALTER TABLE activities ADD COLUMN date_to DATE DEFAULT NULL AFTER date');
+    }
+    db()->exec('UPDATE activities SET date_to = date WHERE date_to IS NULL');
+    $checked = true;
+}
+
+function ensure_activity_archived_at_column(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $column = db()->query("SHOW COLUMNS FROM activities LIKE 'archived_at'")->fetch();
+    if (!$column) {
+        db()->exec('ALTER TABLE activities ADD COLUMN archived_at DATETIME DEFAULT NULL');
+    }
+    $checked = true;
+}
+
 function h($value): string {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }

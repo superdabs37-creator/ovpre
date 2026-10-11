@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/layout.php';
 require_login(['Super Admin', 'Vice President', 'OVPRE Staff', 'Research Coordinator', 'Extension Coordinator']);
+ensure_activity_archived_at_column();
 
 function report_scalar(string $sql, array $params = []): int|float {
     $stmt = db()->prepare($sql);
@@ -71,7 +72,7 @@ $completedResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects
 $totalExtension = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
 $activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Ongoing', 'Active', 'Implementation', 'Planning')", $rangeParams);
 $completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Completed', 'Approved')", $rangeParams);
-$upcomingActivities = (int) report_scalar('SELECT COUNT(*) FROM activities WHERE approval_status = "Approved" AND date >= CURDATE()');
+$upcomingActivities = (int) report_scalar('SELECT COUNT(*) FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL AND date >= CURDATE()');
 
 $researchFunding = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND funding_source IS NOT NULL AND funding_source <> ''", $rangeParams);
 $extensionFunding = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND budget > 0', $rangeParams);
@@ -433,14 +434,6 @@ renderHeader('Reports Management', 'reports');
 </style>
 
 <div class="reports-page">
-    <section class="reports-hero report-print-header">
-        <nav class="report-breadcrumb" aria-label="Breadcrumb">
-            <a href="dashboard.php">Dashboard</a><i class="ri-arrow-right-s-line"></i><strong>Reports Management</strong>
-        </nav>
-        <h2>Reports Management</h2>
-        <p>Generate, filter, export, and review research, extension, funding, accomplishment, and statistical reports for the selected reporting period.</p>
-    </section>
-
     <section class="reports-filter-panel no-print">
         <form class="report-filter-grid" method="get">
             <label class="field compact-field"><span>Date From</span><input type="date" name="from" value="<?php echo h($from); ?>"></label>

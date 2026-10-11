@@ -18,11 +18,11 @@ renderHeader('Dashboard', 'dashboard');
     <a class="primary-btn" href="upload-document.php"><i class="ri-upload-cloud-line"></i> Upload Record</a>
 </section>
 
-<?php if ($user['role'] === ROLE_SUPER_ADMIN): ?>
-<section class="summary-grid">
-    <a class="summary-card" href="admin-pending-users.php"><div class="summary-icon"><i class="ri-user-follow-line"></i></div><div><p>Pending Account Requests</p><h3><?php echo $pendingAccountCount; ?></h3><span>Review coordinator registrations</span></div></a>
+<section class="analytics-grid">
+    <article class="panel chart-panel"><div class="panel-heading"><h2>Monthly Submissions</h2><span>Dashboard records</span></div><canvas id="reportMonthlyChart"></canvas></article>
+    <article class="panel chart-panel"><div class="panel-heading"><h2>Approval Rate</h2><span>Research status</span></div><canvas id="reportResearchChart"></canvas></article>
+    <article class="panel chart-panel wide"><div class="panel-heading"><h2>Department Output</h2><span>Document distribution</span></div><canvas id="reportDepartmentChart"></canvas></article>
 </section>
-<?php endif; ?>
 
 <section class="panel">
     <div class="panel-heading">
@@ -47,12 +47,6 @@ renderHeader('Dashboard', 'dashboard');
             </tbody>
         </table>
     </div>
-</section>
-
-<section class="analytics-grid">
-    <article class="panel chart-panel"><div class="panel-heading"><h2>Monthly Submissions</h2><span>Dashboard records</span></div><canvas id="reportMonthlyChart"></canvas></article>
-    <article class="panel chart-panel"><div class="panel-heading"><h2>Approval Rate</h2><span>Research status</span></div><canvas id="reportResearchChart"></canvas></article>
-    <article class="panel chart-panel wide"><div class="panel-heading"><h2>Department Output</h2><span>Document distribution</span></div><canvas id="reportDepartmentChart"></canvas></article>
 </section>
 
 <section class="panel">

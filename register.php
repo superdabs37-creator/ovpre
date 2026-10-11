@@ -79,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account | <?php echo h(APP_NAME); ?></title>
-    <link rel="stylesheet" href="assets/css/style.css?v=20261009-registration">
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261011-live-password-validation">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -103,14 +104,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="role">Account Type</label>
                 <div class="input-control"><i class="ri-shield-user-line"></i><select id="role" name="role" required><option value="">Choose account type</option><?php foreach (SELF_REGISTERABLE_ROLES as $role): ?><option value="<?php echo h($role); ?>" <?php echo $form['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?></option><?php endforeach; ?></select></div>
                 <label for="password">Password</label>
-                <div class="input-control"><i class="ri-lock-line"></i><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" required></div>
+                <div class="input-control"><i class="ri-lock-line"></i><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" aria-describedby="password-requirements" required></div>
+                <ul class="password-requirements" id="password-requirements" aria-live="polite">
+                    <li data-password-rule="length"><i class="ri-checkbox-circle-line"></i><span>At least 12 characters</span></li>
+                    <li data-password-rule="lower"><i class="ri-checkbox-circle-line"></i><span>One lowercase letter</span></li>
+                    <li data-password-rule="upper"><i class="ri-checkbox-circle-line"></i><span>One uppercase letter</span></li>
+                    <li data-password-rule="number"><i class="ri-checkbox-circle-line"></i><span>One number</span></li>
+                    <li data-password-rule="symbol"><i class="ri-checkbox-circle-line"></i><span>One symbol</span></li>
+                </ul>
                 <label for="confirm-password">Confirm Password</label>
-                <div class="input-control"><i class="ri-lock-password-line"></i><input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="12" required></div>
-                <p class="muted">Use at least 12 characters, including uppercase and lowercase letters, a number, and a symbol.</p>
+                <div class="input-control"><i class="ri-lock-password-line"></i><input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="12" aria-describedby="confirm-password-feedback" required></div>
+                <p class="password-match-feedback" id="confirm-password-feedback" aria-live="polite"></p>
                 <button class="primary-btn full-btn" type="submit"><i class="ri-user-add-line"></i> Create Account</button>
                 <a class="portal-link full-btn" href="index.php">Back to Login</a>
             </form>
         </section>
     </main>
+    <script>
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const passwordRuleChecks = {
+            length: (value) => value.length >= 12,
+            lower: (value) => /[a-z]/.test(value),
+            upper: (value) => /[A-Z]/.test(value),
+            number: (value) => /[0-9]/.test(value),
+            symbol: (value) => /[^A-Za-z0-9]/.test(value),
+        };
+
+        function updatePasswordFeedback() {
+            const value = passwordInput.value;
+            const rules = Object.entries(passwordRuleChecks);
+            let allRulesPass = true;
+
+            rules.forEach(([rule, check]) => {
+                const item = document.querySelector(`[data-password-rule="${rule}"]`);
+                const passed = check(value);
+                item.classList.toggle('is-valid', value.length > 0 && passed);
+                item.classList.toggle('is-invalid', value.length > 0 && !passed);
+                allRulesPass = allRulesPass && passed;
+            });
+
+            passwordInput.setCustomValidity(value && !allRulesPass
+                ? 'Use at least 12 characters with uppercase and lowercase letters, a number, and a symbol.'
+                : '');
+            passwordInput.setAttribute('aria-invalid', value.length > 0 && !allRulesPass ? 'true' : 'false');
+
+            const feedback = document.getElementById('confirm-password-feedback');
+            const confirmation = confirmPasswordInput.value;
+            const matches = confirmation.length > 0 && confirmation === value;
+            const mismatch = confirmation.length > 0 && !matches;
+            feedback.textContent = matches ? 'Passwords match.' : (mismatch ? 'Passwords do not match yet.' : '');
+            feedback.classList.toggle('is-valid', matches);
+            feedback.classList.toggle('is-invalid', mismatch);
+            confirmPasswordInput.setCustomValidity(mismatch ? 'The passwords do not match.' : '');
+            confirmPasswordInput.setAttribute('aria-invalid', mismatch ? 'true' : 'false');
+        }
+
+        passwordInput.addEventListener('input', updatePasswordFeedback);
+        confirmPasswordInput.addEventListener('input', updatePasswordFeedback);
+    </script>
 </body>
 </html>

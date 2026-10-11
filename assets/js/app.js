@@ -11,12 +11,14 @@ if (sidebarToggle && sidebar) {
 
 if (profileToggle && profileDropdown) {
     profileToggle.addEventListener('click', () => {
-        profileDropdown.classList.toggle('open');
+        const isOpen = profileDropdown.classList.toggle('open');
+        profileToggle.setAttribute('aria-expanded', String(isOpen));
     });
 
     document.addEventListener('click', (event) => {
         if (!profileToggle.contains(event.target) && !profileDropdown.contains(event.target)) {
             profileDropdown.classList.remove('open');
+            profileToggle.setAttribute('aria-expanded', 'false');
         }
     });
 }
@@ -85,6 +87,8 @@ if (globalSearchForm && topbarSearch) {
                 highlightFirstMatch(item, query);
             }
         });
+        resetAdminTablePagination();
+        refreshAdminTablePagination();
 
         if (topbarSearchCount) {
             topbarSearchCount.textContent = query ? `${matches} result${matches === 1 ? '' : 's'}` : '';
@@ -357,6 +361,11 @@ document.querySelectorAll('[data-close-modal]').forEach((element) => {
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+        const profileModal = document.getElementById('profileEditorModal');
+        if (profileModal && profileModal.classList.contains('open')) {
+            window.location.href = profileModal.dataset.returnUrl || 'dashboard.php';
+            return;
+        }
         document.querySelectorAll('.modal.open').forEach(closeModal);
     }
 });
@@ -387,12 +396,78 @@ function filterRows() {
         const matchesText = row.textContent.toLowerCase().includes(query);
         const matchesStatus = status === 'All' || row.dataset.status === status;
         const matchesCategory = activeRecordsCategory === 'All' || !row.dataset.category || row.dataset.category === activeRecordsCategory;
-        row.style.display = matchesText && matchesStatus && matchesCategory ? '' : 'none';
+        row.dataset.localFilterMatch = String(matchesText && matchesStatus && matchesCategory);
     });
+    resetAdminTablePagination();
+    refreshAdminTablePagination();
 }
 
 if (tableSearch) tableSearch.addEventListener('input', filterRows);
 if (statusFilter) statusFilter.addEventListener('change', filterRows);
+
+const adminTablePages = new Map();
+
+function resetAdminTablePagination() {
+    adminTablePages.forEach((state) => { state.page = 1; });
+}
+
+function refreshAdminTablePagination() {
+    adminTablePages.forEach((state) => {
+        const matches = state.rows.filter((row) => row.dataset.localFilterMatch !== 'false' && !row.classList.contains('global-search-hidden'));
+        const pageCount = Math.max(1, Math.ceil(matches.length / state.pageSize));
+        state.page = Math.min(state.page, pageCount);
+        const first = (state.page - 1) * state.pageSize;
+        const visibleRows = new Set(matches.slice(first, first + state.pageSize));
+
+        state.rows.forEach((row) => { row.hidden = !visibleRows.has(row); });
+        state.emptyRows.forEach((row) => {
+            row.hidden = matches.length > 0 || row.classList.contains('global-search-hidden');
+        });
+
+        state.summary.textContent = matches.length
+            ? `Showing ${first + 1}–${Math.min(first + state.pageSize, matches.length)} of ${matches.length}`
+            : 'Showing 0 of 0';
+        state.previous.disabled = state.page <= 1;
+        state.next.disabled = state.page >= pageCount;
+        state.controls.hidden = matches.length <= state.pageSize;
+    });
+}
+
+document.querySelectorAll('.content-area table.data-table').forEach((table) => {
+    const body = table.tBodies[0];
+    if (!body) return;
+    const children = [...body.rows];
+    const emptyRows = children.filter((row) => row.hasAttribute('data-pagination-empty') || (row.cells.length === 1 && row.cells[0].colSpan > 1));
+    const rows = children.filter((row) => !emptyRows.includes(row));
+    rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
+
+    const controls = document.createElement('nav');
+    controls.className = 'admin-table-pagination';
+    controls.setAttribute('aria-label', 'Table pages');
+    controls.innerHTML = '<button type="button" data-table-page-previous>Previous</button><span data-table-page-summary></span><button type="button" data-table-page-next>Next</button>';
+    (table.closest('.table-scroll') || table).insertAdjacentElement('afterend', controls);
+
+    const state = {
+        rows,
+        emptyRows,
+        controls,
+        summary: controls.querySelector('[data-table-page-summary]'),
+        previous: controls.querySelector('[data-table-page-previous]'),
+        next: controls.querySelector('[data-table-page-next]'),
+        pageSize: 10,
+        page: 1
+    };
+    adminTablePages.set(table, state);
+    state.previous.addEventListener('click', () => {
+        state.page -= 1;
+        refreshAdminTablePagination();
+    });
+    state.next.addEventListener('click', () => {
+        state.page += 1;
+        refreshAdminTablePagination();
+    });
+});
+refreshAdminTablePagination();
 
 function setRecordsCategoryFilter(card) {
     activeRecordsCategory = card.dataset.categoryFilter || 'All';
@@ -526,10 +601,19 @@ function openActivityEditor(eventData) {
     document.getElementById('activityId').value = eventData.id || '';
     document.getElementById('activityTitle').value = eventData.title || '';
     document.getElementById('activityType').value = props.type || 'Seminar';
-    document.getElementById('activityDate').value = (eventData.startStr || props.date || '').slice(0, 10);
+    const dateFrom = (eventData.startStr || props.date || '').slice(0, 10);
+    const exclusiveEnd = (eventData.endStr || '').slice(0, 10);
+    const inclusiveEnd = exclusiveEnd ? new Date(`${exclusiveEnd}T00:00:00`) : null;
+    if (inclusiveEnd) inclusiveEnd.setDate(inclusiveEnd.getDate() - 1);
+    const dateTo = props.dateTo || (inclusiveEnd ? `${inclusiveEnd.getFullYear()}-${String(inclusiveEnd.getMonth() + 1).padStart(2, '0')}-${String(inclusiveEnd.getDate()).padStart(2, '0')}` : dateFrom);
+    document.getElementById('activityDateFrom').value = dateFrom;
+    document.getElementById('activityDateTo').value = dateTo;
+    document.getElementById('activityDateTo').min = dateFrom;
     document.getElementById('activityVenue').value = props.venue || '';
     document.getElementById('activityDescription').value = props.description || '';
-    document.getElementById('deleteActivityButton').style.display = '';
+    document.getElementById('archiveActivityButton').style.display = '';
+    document.getElementById('createActivityButton').style.display = 'none';
+    document.getElementById('saveActivityButton').style.display = '';
     const approveButton = document.getElementById('approveActivityButton');
     const rejectButton = document.getElementById('rejectActivityButton');
     if (approveButton) {
@@ -555,10 +639,15 @@ function openActivityCreator(dateStr) {
     document.getElementById('activityId').value = '';
     document.getElementById('activityTitle').value = '';
     document.getElementById('activityType').value = 'Seminar';
-    document.getElementById('activityDate').value = dateStr || new Date().toISOString().slice(0, 10);
+    const date = (dateStr || new Date().toISOString().slice(0, 10)).slice(0, 10);
+    document.getElementById('activityDateFrom').value = date;
+    document.getElementById('activityDateTo').value = date;
+    document.getElementById('activityDateTo').min = date;
     document.getElementById('activityVenue').value = '';
     document.getElementById('activityDescription').value = '';
-    document.getElementById('deleteActivityButton').style.display = 'none';
+    document.getElementById('archiveActivityButton').style.display = 'none';
+    document.getElementById('createActivityButton').style.display = '';
+    document.getElementById('saveActivityButton').style.display = 'none';
     const approveButton = document.getElementById('approveActivityButton');
     const rejectButton = document.getElementById('rejectActivityButton');
     if (approveButton) approveButton.style.display = 'none';
@@ -568,6 +657,19 @@ function openActivityCreator(dateStr) {
     activityModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
 }
+
+document.querySelectorAll('[data-create-activity]').forEach((button) => {
+    button.addEventListener('click', () => openActivityCreator());
+});
+
+const activityDateFrom = document.getElementById('activityDateFrom');
+const activityDateTo = document.getElementById('activityDateTo');
+activityDateFrom?.addEventListener('change', () => {
+    activityDateTo.min = activityDateFrom.value;
+    if (activityDateTo.value && activityDateTo.value < activityDateFrom.value) {
+        activityDateTo.value = activityDateFrom.value;
+    }
+});
 
 if (activityCalendarEl && window.FullCalendar) {
     const calendar = new FullCalendar.Calendar(activityCalendarEl, {
