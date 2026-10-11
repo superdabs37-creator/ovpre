@@ -3,6 +3,10 @@ require_once __DIR__ . '/includes/bootstrap.php';
 
 $pageTitle = 'Secure Login';
 $error = null;
+if (($_GET['restart'] ?? '') === '1') {
+    unset($_SESSION['login_otp']);
+}
+$otpChallenge = $_SESSION['login_otp'] ?? null;
 
 $currentUser = current_user();
 if ($currentUser) {
@@ -19,6 +23,93 @@ if ($currentUser) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+    $authAction = (string) ($_POST['auth_action'] ?? 'login');
+
+    if ($authAction === 'verify_otp') {
+        $challenge = $_SESSION['login_otp'] ?? null;
+        $code = trim((string) ($_POST['otp'] ?? ''));
+        if (!$challenge || (int) ($challenge['expires_at'] ?? 0) < time()) {
+            unset($_SESSION['login_otp']);
+            $otpChallenge = null;
+            $error = 'Your verification code expired. Sign in again to get a new code.';
+        } elseif ((int) ($challenge['attempts'] ?? 0) >= 5) {
+            unset($_SESSION['login_otp']);
+            $otpChallenge = null;
+            $error = 'Too many incorrect codes. Sign in again to request a new code.';
+        } else {
+            $_SESSION['login_otp']['attempts'] = (int) $challenge['attempts'] + 1;
+            $userStmt = db()->prepare('SELECT * FROM users WHERE id = ? AND status = "Active" AND deleted_at IS NULL LIMIT 1');
+            $userStmt->execute([(int) $challenge['user_id']]);
+            $user = $userStmt->fetch();
+            $isLocked = $user && !empty($user['locked_until']) && strtotime($user['locked_until']) > time();
+            if (preg_match('/^\d{6}$/', $code) && password_verify($code, (string) $challenge['code_hash']) && $user && !$isLocked) {
+                $destination = role_dashboard_path((string) $user['role']);
+                if ($destination === null) {
+                    unset($_SESSION['login_otp']);
+                    $otpChallenge = null;
+                    $error = 'This account is not configured for access. Contact the System Administrator.';
+                } else {
+                    unset($_SESSION['login_otp']);
+                    session_regenerate_id(true);
+                    $_SESSION['user_id'] = (int) $user['id'];
+                    $_SESSION['last_activity'] = time();
+                    db()->prepare('UPDATE users SET login_attempts = 0, locked_until = NULL, last_login_at = NOW() WHERE id = ?')->execute([$user['id']]);
+                    log_action((int) $user['id'], 'Login completed with email OTP');
+                    log_login_event((int) $user['id'], (string) $user['username'], 'Success: email OTP');
+                    redirect_to($destination);
+                }
+            } else {
+                if ($user) {
+                    $attempts = (int) $user['login_attempts'] + 1;
+                    $lockedUntil = $attempts >= MAX_LOGIN_ATTEMPTS ? date('Y-m-d H:i:s', time() + 900) : null;
+                    db()->prepare('UPDATE users SET login_attempts = ?, locked_until = ? WHERE id = ?')->execute([$attempts, $lockedUntil, $user['id']]);
+                    log_action((int) $user['id'], 'Failed email OTP verification');
+                    log_login_event((int) $user['id'], (string) $user['username'], 'Failed: email OTP');
+                }
+                $otpChallenge = $_SESSION['login_otp'];
+                $error = 'The verification code is incorrect or the account is no longer active.';
+                if ((int) $_SESSION['login_otp']['attempts'] >= 5 || ($user && $attempts >= MAX_LOGIN_ATTEMPTS)) {
+                    unset($_SESSION['login_otp']);
+                    $otpChallenge = null;
+                    $error = 'Too many incorrect codes. Sign in again to request a new code.';
+                }
+            }
+        }
+    } elseif ($authAction === 'resend_otp') {
+        $challenge = $_SESSION['login_otp'] ?? null;
+        if (!$challenge || (int) ($challenge['expires_at'] ?? 0) < time()) {
+            unset($_SESSION['login_otp']);
+            $otpChallenge = null;
+            $error = 'Your verification session expired. Sign in again to get a new code.';
+        } elseif ((int) ($challenge['resends'] ?? 0) >= 3 || time() - (int) ($challenge['sent_at'] ?? 0) < 60 || login_otp_rate_limited((int) $challenge['user_id'])) {
+            $otpChallenge = $challenge;
+            $error = 'Please wait before requesting another code. Codes are limited to four per 10 minutes.';
+        } else {
+            $code = (string) random_int(100000, 999999);
+            $sent = send_app_email((string) $challenge['email'], APP_NAME . ' sign-in verification code', "Your sign-in verification code is {$code}. It expires in 5 minutes. If you did not try to sign in, secure your account by changing your password.");
+            if ($sent) {
+                $_SESSION['login_otp']['code_hash'] = password_hash($code, PASSWORD_DEFAULT);
+                $_SESSION['login_otp']['sent_at'] = time();
+                $_SESSION['login_otp']['expires_at'] = time() + 300;
+                $_SESSION['login_otp']['attempts'] = 0;
+                $_SESSION['login_otp']['resends'] = (int) $challenge['resends'] + 1;
+                $otpChallenge = $_SESSION['login_otp'];
+                $error = null;
+                $userStmt = db()->prepare('SELECT username FROM users WHERE id = ? LIMIT 1');
+                $userStmt->execute([(int) $challenge['user_id']]);
+                log_login_event((int) $challenge['user_id'], (string) ($userStmt->fetchColumn() ?: ''), 'OTP sent');
+                flash('success', 'A new verification code was sent to your email.');
+            } else {
+                $otpChallenge = $challenge;
+                $userStmt = db()->prepare('SELECT username FROM users WHERE id = ? LIMIT 1');
+                $userStmt->execute([(int) $challenge['user_id']]);
+                log_login_event((int) $challenge['user_id'], (string) ($userStmt->fetchColumn() ?: ''), 'OTP delivery failed');
+                $error = 'We could not send a verification code. Check the email service configuration and try again.';
+            }
+        }
+    } else {
+        unset($_SESSION['login_otp']);
+        $otpChallenge = null;
     $usernameValue = $_POST['username'] ?? '';
     $passwordValue = $_POST['password'] ?? '';
     $username = is_string($usernameValue) ? trim($usernameValue) : '';
@@ -62,13 +153,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         log_login_event((int) $user['id'], $username, 'Denied: invalid role');
         $error = 'This account is not configured for access. Contact the System Administrator.';
     } else {
-        db()->prepare('UPDATE users SET login_attempts = 0, locked_until = NULL, last_login_at = NOW() WHERE id = ?')->execute([$user['id']]);
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = (int) $user['id'];
-        $_SESSION['last_activity'] = time();
-        log_action((int) $user['id'], 'Login completed');
-        log_login_event((int) $user['id'], $username, 'Success');
-        redirect_to($destination);
+        $sent = false;
+        $rateLimited = login_otp_rate_limited((int) $user['id']);
+        if (!$rateLimited) {
+            $code = (string) random_int(100000, 999999);
+            $sent = send_app_email((string) $user['email'], APP_NAME . ' sign-in verification code', "Your sign-in verification code is {$code}. It expires in 5 minutes. If you did not try to sign in, secure your account by changing your password.");
+        }
+        if ($sent) {
+            $_SESSION['login_otp'] = [
+                'user_id' => (int) $user['id'],
+                'email' => (string) $user['email'],
+                'code_hash' => password_hash($code, PASSWORD_DEFAULT),
+                'expires_at' => time() + 300,
+                'sent_at' => time(),
+                'attempts' => 0,
+                'resends' => 0,
+            ];
+            $otpChallenge = $_SESSION['login_otp'];
+            log_action((int) $user['id'], 'Email OTP sent for login');
+            log_login_event((int) $user['id'], $username, 'OTP sent');
+        } else {
+            if (!$rateLimited) {
+                log_login_event((int) $user['id'], $username, 'OTP delivery failed');
+            }
+            $error = $rateLimited ? 'Too many verification codes were requested. Please wait 10 minutes before trying again.' : 'We could not send a verification code to your registered email. Please try again later or contact the System Administrator.';
+        }
+    }
     }
 }
 $notice = flash();
@@ -98,34 +208,31 @@ $notice = flash();
             </div>
             <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-information-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
             <?php if ($error): ?><div class="notice error"><i class="ri-error-warning-line"></i><?php echo h($error); ?></div><?php endif; ?>
-            <form class="login-form" method="post">
-                <?php echo csrf_field(); ?>
-                <label for="username">Username</label>
-                <div class="input-control">
-                    <i class="ri-user-line"></i>
-                    <input type="text" id="username" name="username" placeholder="Enter username" required>
-                </div>
-
-                <label for="password">Password</label>
-                <div class="input-control">
-                    <i class="ri-lock-line"></i>
-                    <input type="password" id="password" name="password" placeholder="Enter password" required>
-                </div>
-
-                <div class="login-tools">
-                    <label class="check-control">
-                        <input type="checkbox" name="remember">
-                        <span>Remember me</span>
-                    </label>
-                    <a href="forgot-password.php">Forgot Password?</a>
-                </div>
-
-                <button class="primary-btn full-btn" type="submit">
-                    <i class="ri-login-circle-line"></i>
-                    Login
-                </button>
-                <p class="portal-link full-btn">Don't have an account? <a href="register.php">Register here</a></p>
-            </form>
+            <?php if ($otpChallenge): ?>
+                <form class="login-form" method="post" autocomplete="off">
+                    <?php echo csrf_field(); ?><input type="hidden" name="auth_action" value="verify_otp">
+                    <p class="portal-link full-btn">Enter the 6-digit code sent to <?php echo h(preg_replace('/(?<=.).(?=[^@]*?@)/', '*', (string) $otpChallenge['email'])); ?>. The code expires in 5 minutes.</p>
+                    <label for="otp">Email verification code</label>
+                    <div class="input-control"><i class="ri-shield-keyhole-line"></i><input type="text" id="otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="Enter 6-digit code" required autofocus></div>
+                    <button class="primary-btn full-btn" type="submit"><i class="ri-shield-check-line"></i> Verify and Login</button>
+                </form>
+                <form class="login-form" method="post">
+                    <?php echo csrf_field(); ?><input type="hidden" name="auth_action" value="resend_otp">
+                    <button class="ghost-btn full-btn" type="submit">Resend Code</button>
+                </form>
+                <p class="portal-link full-btn"><a href="index.php?restart=1">Back to Login</a></p>
+            <?php else: ?>
+                <form class="login-form" method="post">
+                    <?php echo csrf_field(); ?><input type="hidden" name="auth_action" value="login">
+                    <label for="username">Username</label>
+                    <div class="input-control"><i class="ri-user-line"></i><input type="text" id="username" name="username" placeholder="Enter username" required></div>
+                    <label for="password">Password</label>
+                    <div class="input-control"><i class="ri-lock-line"></i><input type="password" id="password" name="password" placeholder="Enter password" required></div>
+                    <div class="login-tools"><label class="check-control"><input type="checkbox" name="remember"><span>Remember me</span></label><a href="forgot-password.php">Forgot Password?</a></div>
+                    <button class="primary-btn full-btn" type="submit"><i class="ri-login-circle-line"></i> Login</button>
+                    <p class="portal-link full-btn">Don't have an account? <a href="register.php">Register here</a></p>
+                </form>
+            <?php endif; ?>
         </section>
     </main>
 </body>

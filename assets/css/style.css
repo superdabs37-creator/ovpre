@@ -1103,12 +1103,65 @@ button {
     gap: 8px;
 }
 
-.user-action-panel {
-    min-width: 260px;
-    display: flex;
+.user-actions-dropdown {
+    position: relative;
+    min-width: 128px;
+}
+
+.user-actions-trigger {
+    min-height: 38px;
+    display: inline-flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 12px;
+    color: var(--green-900);
+    background: var(--green-100);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 800;
+    list-style: none;
+    white-space: nowrap;
+}
+
+.user-actions-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.user-actions-trigger > i:first-child {
+    font-size: 1.1rem;
+}
+
+.user-actions-chevron {
+    transition: transform 0.18s ease;
+}
+
+.user-actions-dropdown[open] .user-actions-chevron {
+    transform: rotate(180deg);
+}
+
+.user-action-menu {
+    width: max-content;
+    min-width: 190px;
+    display: grid;
+    gap: 7px;
+    margin-top: 7px;
+    padding: 9px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(15, 60, 38, 0.14);
+}
+
+.user-action-menu form,
+.user-action-menu .action-btn {
+    width: 100%;
+    margin: 0;
+}
+
+.user-action-menu .action-btn {
+    justify-content: flex-start;
 }
 
 .user-status-form {

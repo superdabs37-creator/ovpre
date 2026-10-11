@@ -380,6 +380,15 @@ document.querySelectorAll('[data-open-modal]').forEach((button) => {
     });
 });
 
+document.addEventListener('click', (event) => {
+    const clickedDropdown = event.target.closest('.user-actions-dropdown');
+    document.querySelectorAll('.user-actions-dropdown[open]').forEach((dropdown) => {
+        if (dropdown !== clickedDropdown || event.target.closest('.user-action-menu .action-btn')) {
+            dropdown.open = false;
+        }
+    });
+});
+
 const tableSearch = document.querySelector('[data-table-search]');
 const statusFilter = document.querySelector('[data-status-filter]');
 const categoryFilterCards = document.querySelectorAll('[data-category-filter]');

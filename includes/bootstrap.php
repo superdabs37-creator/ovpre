@@ -54,6 +54,53 @@ function db(): PDO {
     return $pdo;
 }
 
+function send_app_email(string $to, string $subject, string $body): bool {
+    if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+    require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/Exception.php';
+    require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
+    require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+
+    try {
+        $mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
+        $mailer->CharSet = \PHPMailer\PHPMailer\PHPMailer::CHARSET_UTF8;
+        $mailer->Timeout = 15;
+        $mailer->setFrom(MAIL_FROM, MAIL_FROM_NAME);
+        $mailer->addAddress($to);
+        $mailer->Subject = $subject;
+        $mailer->Body = $body;
+        $mailer->isHTML(false);
+
+        if (SMTP_HOST !== '') {
+            $mailer->isSMTP();
+            $mailer->Host = SMTP_HOST;
+            $mailer->Port = SMTP_PORT;
+            $mailer->SMTPAuth = SMTP_USER !== '';
+            if ($mailer->SMTPAuth) {
+                $mailer->Username = SMTP_USER;
+                $mailer->Password = SMTP_PASS;
+            }
+            $mailer->SMTPSecure = SMTP_PORT === 465
+                ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
+                : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        } else {
+            $mailer->isMail();
+        }
+
+        return $mailer->send();
+    } catch (Throwable $error) {
+        error_log('Email delivery failed: ' . $error->getMessage());
+        return false;
+    }
+}
+
+function login_otp_rate_limited(int $userId): bool {
+    $stmt = db()->prepare('SELECT COUNT(*) FROM login_history WHERE user_id = ? AND status IN ("OTP sent", "OTP delivery failed") AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)');
+    $stmt->execute([$userId]);
+    return (int) $stmt->fetchColumn() >= 4;
+}
+
 function ensure_profile_photo_column(): void {
     static $checked = false;
     if ($checked) {

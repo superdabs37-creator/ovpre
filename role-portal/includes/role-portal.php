@@ -102,7 +102,7 @@ function portal_header(string $title, string $current): array {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
     <link rel="icon" type="image/jpeg" href="../assets/img/ovpre-logo.jpg?v=20261012">
-    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261011-profile-photo-menu">
+    <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261012-extension-modal">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>

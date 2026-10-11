@@ -12,9 +12,10 @@ define('DB_PASS', getenv('DB_PASS') ?: '');
 
 define('MAIL_FROM', getenv('MAIL_FROM') ?: 'no-reply@plsp.edu.ph');
 define('MAIL_FROM_NAME', getenv('MAIL_FROM_NAME') ?: APP_NAME . ' Security');
-define('SMTP_HOST', getenv('SMTP_HOST') ?: '');
-define('SMTP_USER', getenv('SMTP_USER') ?: '');
-define('SMTP_PASS', getenv('SMTP_PASS') ?: '');
+// Set these in the PHP/Apache environment for outbound email (587 = STARTTLS, 465 = SSL).
+define('SMTP_HOST', getenv('SMTP_HOST') ?: 'smtp.gmail.com');
+define('SMTP_USER', getenv('SMTP_USER') ?: 'superdabs37@gmail.com');
+define('SMTP_PASS', getenv('SMTP_PASS') ?: 'enzk fwsu wjrm stjt');
 define('SMTP_PORT', (int) (getenv('SMTP_PORT') ?: 587));
 
 define('UPLOAD_DIR', __DIR__ . '/uploads/records');

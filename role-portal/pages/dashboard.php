@@ -13,10 +13,18 @@ if ($isExtensionCoordinator) {
     $activities = portal_recent_activities();
 }
 $announcements = array_slice(portal_announcements(), 0, 3);
+$heroDescription = $isExtensionCoordinator
+    ? 'Manage your community projects and keep track of their progress.'
+    : ($isResearchCoordinator
+        ? 'Manage your research proposals and follow each submission through review.'
+        : portal_config()['purpose']);
+$submissionLabel = $isExtensionCoordinator
+    ? 'Submit Extension Project'
+    : ($isResearchCoordinator ? 'Submit Research Proposal' : 'New Submission');
 ?>
 <section class="hero">
-    <div><p>Welcome, <?php echo h($user['fullname']); ?></p><h2><?php echo h(portal_config()['purpose']); ?></h2></div>
-    <a class="primary-btn" href="<?php echo portal_can('research') ? 'research.php' : 'extension.php'; ?>"><i class="ri-add-circle-line"></i> New Submission</a>
+    <div><p>Welcome back, <?php echo h($user['fullname']); ?></p><h2><?php echo h($heroDescription); ?></h2></div>
+    <a class="primary-btn" href="<?php echo portal_can('research') ? 'research.php' : 'extension.php'; ?>"><i class="ri-add-circle-line"></i> <?php echo h($submissionLabel); ?></a>
 </section>
 <section class="stats-grid">
     <?php if ($isExtensionCoordinator): ?>
