@@ -17,7 +17,8 @@ $availableRolePurposes = array_diff_key($rolePurposes, [
     'User' => true,
 ]);
 
-function user_profile_fields(array $input): array {
+function user_profile_fields(array $input): array
+{
     $allowedGenders = ['Male', 'Female', 'Other', 'Prefer not to say'];
     $gender = trim((string) ($input['gender'] ?? ''));
     $gender = $gender === '' ? null : $gender;
@@ -199,62 +200,93 @@ $notice = flash();
 $departments = departments();
 renderHeader('User Management', 'users');
 ?>
-<section class="module-header"><div class="module-icon"><i class="ri-team-line"></i></div><div><p>Access Control</p><h2>User Management</h2><span>Manage roles and access. Registration approval is handled in Pending Account Requests.</span></div></section>
+<section class="module-header">
+    <div class="module-icon"><i class="ri-team-line"></i></div>
+    <div>
+        <p>Access Control</p>
+        <h2>User Management</h2><span>Manage roles and access. Registration approval is handled in Pending Account Requests.</span>
+    </div>
+</section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-information-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
 <section class="tool-panel">
     <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div>
     <form method="get" class="action-row"><label class="field"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label></form>
 </section>
 <section class="panel">
-    <div class="table-scroll"><table class="data-table portal-table">
-        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Username</th><th>Department</th><th>Role</th><th>Registered</th><th>Review</th><th>Last Login</th><th>Status</th><th>Manage</th></tr></thead>
-        <tbody>
-        <?php foreach ($users as $user): ?>
-            <tr data-table-row>
-                <td><?php echo (int) $user['id']; ?></td>
-                <td><?php echo h($user['fullname']); ?></td>
-                <td><?php echo h($user['email']); ?></td>
-                <td><?php echo h($user['username']); ?></td>
-                <td><?php echo h($user['department_name'] ?? 'Unassigned'); ?></td>
-                <td><?php echo h($user['role']); ?></td>
-                <td><?php echo h(date('M d, Y', strtotime($user['created_at']))); ?></td>
-                <td><?php if ($user['status'] === 'Rejected'): ?><?php echo h($user['rejection_reason'] ?? 'No reason recorded'); ?><br><small><?php echo h($user['rejected_by_name'] ?? 'Administrator'); ?> · <?php echo $user['rejected_at'] ? h(date('M d, Y', strtotime($user['rejected_at']))) : ''; ?></small><?php elseif ($user['status'] === 'Active' && $user['approved_at']): ?>Approved by <?php echo h($user['approved_by_name'] ?? 'Administrator'); ?><br><small><?php echo h(date('M d, Y', strtotime($user['approved_at']))); ?></small><?php else: ?>—<?php endif; ?></td>
-                <td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td>
-                <td><span class="status-pill status-<?php echo h(statusClass($user['status'])); ?>"><?php echo h($user['status']); ?></span></td>
-                <td><details class="user-actions-dropdown">
-                    <summary class="user-actions-trigger"><i class="ri-more-2-fill"></i><span>Manage</span><i class="ri-arrow-down-s-line user-actions-chevron"></i></summary>
-                    <div class="user-action-menu">
-                        <button class="ghost-btn action-btn" type="button" data-open-modal="edit-user-<?php echo (int) $user['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
-                        <?php if ($user['role'] !== ROLE_SUPER_ADMIN && (int) $user['id'] !== (int) $actor['id']): ?>
-                            <?php if ($user['status'] === 'Active'): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="suspend"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-forbid-line"></i><span>Suspend</span></button></form>
-                            <?php elseif (in_array($user['status'], ['Suspended', 'Inactive', 'Locked'], true)): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reactivate"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-user-follow-line"></i><span>Reactivate</span></button></form><?php endif; ?>
-                            <?php if (in_array($user['status'], ['Active', 'Suspended', 'Inactive', 'Locked'], true)): ?><form method="post" onsubmit="return confirm('Generate a temporary password for this user?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reset_password"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="ghost-btn action-btn" type="submit"><i class="ri-key-2-line"></i><span>Reset Password</span></button></form><?php endif; ?>
-                            <form method="post" onsubmit="return confirm('Deactivate this account? Existing records remain intact.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Deactivate</span></button></form>
-                        <?php endif; ?>
-                    </div>
-                </details></td>
-            </tr>
-        <?php endforeach; ?>
-        <?php if (!$users): ?><tr><td colspan="11">No user accounts found for this status.</td></tr><?php endif; ?>
-        </tbody>
-    </table></div>
+    <div class="table-scroll">
+        <table class="data-table portal-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Registered</th>
+                    <th>Review</th>
+                    <th>Last Login</th>
+                    <th>Status</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($users as $user): ?>
+                    <tr data-table-row>
+                        <td><?php echo (int) $user['id']; ?></td>
+                        <td><?php echo h($user['fullname']); ?></td>
+                        <td><?php echo h($user['email']); ?></td>
+                        <td><?php echo h($user['username']); ?></td>
+                        <td><?php echo h($user['department_name'] ?? 'Unassigned'); ?></td>
+                        <td><?php echo h($user['role']); ?></td>
+                        <td><?php echo h(date('M d, Y', strtotime($user['created_at']))); ?></td>
+                        <td><?php if ($user['status'] === 'Rejected'): ?><?php echo h($user['rejection_reason'] ?? 'No reason recorded'); ?><br><small><?php echo h($user['rejected_by_name'] ?? 'Administrator'); ?> · <?php echo $user['rejected_at'] ? h(date('M d, Y', strtotime($user['rejected_at']))) : ''; ?></small><?php elseif ($user['status'] === 'Active' && $user['approved_at']): ?>Approved by <?php echo h($user['approved_by_name'] ?? 'Administrator'); ?><br><small><?php echo h(date('M d, Y', strtotime($user['approved_at']))); ?></small><?php else: ?>—<?php endif; ?></td>
+                        <td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td>
+                        <td><span class="status-pill status-<?php echo h(statusClass($user['status'])); ?>"><?php echo h($user['status']); ?></span></td>
+                        <td>
+                            <details class="user-actions-dropdown">
+                                <summary class="user-actions-trigger"><i class="ri-more-2-fill"></i><span>Manage</span><i class="ri-arrow-down-s-line user-actions-chevron"></i></summary>
+                                <div class="user-action-menu">
+                                    <button class="ghost-btn action-btn" type="button" data-open-modal="edit-user-<?php echo (int) $user['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
+                                    <?php if ($user['role'] !== ROLE_SUPER_ADMIN && (int) $user['id'] !== (int) $actor['id']): ?>
+                                        <?php if ($user['status'] === 'Active'): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="suspend"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-forbid-line"></i><span>Suspend</span></button></form>
+                                        <?php elseif (in_array($user['status'], ['Suspended', 'Inactive', 'Locked'], true)): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reactivate"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-user-follow-line"></i><span>Reactivate</span></button></form><?php endif; ?>
+                                        <?php if (in_array($user['status'], ['Active', 'Suspended', 'Inactive', 'Locked'], true)): ?><form method="post" onsubmit="return confirm('Generate a temporary password for this user?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reset_password"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="ghost-btn action-btn" type="submit"><i class="ri-key-2-line"></i><span>Reset Password</span></button></form><?php endif; ?>
+                                        <form method="post" onsubmit="return confirm('Deactivate this account? Existing records remain intact.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Deactivate</span></button></form>
+                                    <?php endif; ?>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (!$users): ?><tr>
+                        <td colspan="11">No user accounts found for this status.</td>
+                    </tr><?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </section>
 <?php foreach ($users as $user): ?>
     <div class="modal" id="edit-user-<?php echo (int) $user['id']; ?>" aria-hidden="true">
         <div class="modal-backdrop" data-close-modal></div>
         <form class="modal-card" method="post">
             <button class="modal-close" type="button" data-close-modal aria-label="Close edit user form"><i class="ri-close-line"></i></button>
-            <span class="category-badge">Edit User</span><h2><?php echo h($user['fullname']); ?></h2>
+            <span class="category-badge">Edit User</span>
+            <h2><?php echo h($user['fullname']); ?></h2>
             <?php echo csrf_field(); ?><input type="hidden" name="action" value="edit"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>">
             <div class="form-grid">
                 <label class="field"><span>Full Name</span><input name="fullname" maxlength="160" value="<?php echo h($user['fullname']); ?>" required></label>
                 <label class="field"><span>Email</span><input name="email" type="email" maxlength="190" value="<?php echo h($user['email']); ?>" required></label>
-                <label class="field"><span>Gender</span><select name="gender"><option value="">Not specified</option><?php foreach (['Male', 'Female', 'Other', 'Prefer not to say'] as $genderOption): ?><option value="<?php echo h($genderOption); ?>" <?php echo ($user['gender'] ?? '') === $genderOption ? 'selected' : ''; ?>><?php echo h($genderOption); ?></option><?php endforeach; ?></select></label>
+                <label class="field"><span>Gender</span><select name="gender">
+                        <option value="">Not specified</option><?php foreach (['Male', 'Female', 'Other', 'Prefer not to say'] as $genderOption): ?><option value="<?php echo h($genderOption); ?>" <?php echo ($user['gender'] ?? '') === $genderOption ? 'selected' : ''; ?>><?php echo h($genderOption); ?></option><?php endforeach; ?>
+                    </select></label>
                 <label class="field"><span>Birthday</span><input name="birthday" type="date" max="<?php echo h(date('Y-m-d')); ?>" value="<?php echo h($user['birthday'] ?? ''); ?>"></label>
                 <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30" value="<?php echo h($user['phone'] ?? ''); ?>"></label>
                 <label class="field"><span>Username</span><input name="username" maxlength="80" value="<?php echo h($user['username']); ?>" required></label>
                 <label class="field"><span>New Password</span><input name="password" type="password" minlength="12" autocomplete="new-password" placeholder="Leave blank to keep current password"></label>
-                <label class="field"><span>Department</span><select name="department_id"><option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (int) ($user['department_id'] ?? 0) === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
+                <label class="field"><span>Department</span><select name="department_id">
+                        <option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (int) ($user['department_id'] ?? 0) === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?>
+                    </select></label>
                 <?php if ($user['role'] === ROLE_SUPER_ADMIN || in_array($user['status'], ['Pending', 'Rejected'], true) || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account in its current state.</small></div>
                 <?php elseif (!array_key_exists($user['role'], $availableRolePurposes)): ?><label class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>This legacy role is no longer available for assignment.</small><input type="hidden" name="role" value="<?php echo h($user['role']); ?>"></label>
                 <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($availableRolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?> — <?php echo h($purpose); ?></option><?php endforeach; ?></select></label><?php endif; ?>

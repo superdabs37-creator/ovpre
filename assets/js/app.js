@@ -99,11 +99,8 @@ if (globalSearchForm && topbarSearch) {
 
     globalSearchForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        runGlobalSearch();
-        const firstMatch = document.querySelector('.global-search-hit');
-        if (firstMatch) {
-            firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        const query = topbarSearch.value.trim();
+        if (query) window.location.href = `search.php?q=${encodeURIComponent(query)}`;
     });
 
     if (topbarSearchClear) {
@@ -620,7 +617,6 @@ function openActivityEditor(eventData) {
     document.getElementById('activityDateTo').min = dateFrom;
     document.getElementById('activityVenue').value = props.venue || '';
     document.getElementById('activityDescription').value = props.description || '';
-    document.getElementById('archiveActivityButton').style.display = '';
     document.getElementById('createActivityButton').style.display = 'none';
     document.getElementById('saveActivityButton').style.display = '';
     const approveButton = document.getElementById('approveActivityButton');
@@ -654,7 +650,6 @@ function openActivityCreator(dateStr) {
     document.getElementById('activityDateTo').min = date;
     document.getElementById('activityVenue').value = '';
     document.getElementById('activityDescription').value = '';
-    document.getElementById('archiveActivityButton').style.display = 'none';
     document.getElementById('createActivityButton').style.display = '';
     document.getElementById('saveActivityButton').style.display = 'none';
     const approveButton = document.getElementById('approveActivityButton');

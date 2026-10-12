@@ -34,9 +34,9 @@ $announcementStmt->execute([$announcementStatus]);
 $announcements = $announcementStmt->fetchAll();
 renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announcements');
 ?>
-<section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Create, publish, archive, and notify faculty, researchers, and staff.</span></div></section>
+<section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Create and publish updates for faculty, researchers, and staff.</span></div></section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><?php echo h($notice['message']); ?></div><?php endif; ?>
-<section class="panel modal-launcher-panel"><div class="panel-heading"><div><h2><?php echo $archived ? 'Archived Announcements' : 'Announcements'; ?></h2><span><?php echo $archived ? 'View and retrieve archived announcements.' : 'Create and publish an update for your audience.'; ?></span></div><div class="action-row"><a class="<?php echo $archived ? 'ghost-btn' : 'primary-btn'; ?>" href="announcements.php<?php echo $archived ? '' : '?archived=1'; ?>"><i class="ri-inbox-archive-line"></i> <?php echo $archived ? 'Active Announcements' : 'View Archived'; ?></a><?php if (!$archived): ?><button class="primary-btn" type="button" data-open-modal="createAnnouncementModal"><i class="ri-add-line"></i> Create Announcement</button><?php endif; ?></div></div></section>
+<section class="panel modal-launcher-panel"><div class="panel-heading"><div><h2><?php echo $archived ? 'Archived Announcements' : 'Announcements'; ?></h2><span><?php echo $archived ? 'Archived announcements.' : 'Create and publish an update for your audience.'; ?></span></div><div class="action-row"><?php if (!$archived): ?><button class="primary-btn" type="button" data-open-modal="createAnnouncementModal"><i class="ri-add-line"></i> Create Announcement</button><?php endif; ?></div></div></section>
 <?php if (!$archived): ?>
 <div class="modal" id="createAnnouncementModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createAnnouncementTitle">
     <div class="modal-backdrop" data-close-modal></div>
@@ -59,7 +59,6 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
         <?php foreach ($announcements as $item): ?>
             <article class="list-card">
                 <div><h3><?php echo h($item['title']); ?></h3><p><span class="dept-pill"><?php echo h($item['audience']); ?></span> <?php echo h($item['status']); ?> by <?php echo h($item['fullname']); ?> on <?php echo h(date('M d, Y', strtotime($item['created_at']))); ?></p></div>
-                <form method="post" onsubmit="return confirm('<?php echo $archived ? 'Retrieve this announcement?' : 'Archive this announcement?'; ?>');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="<?php echo $archived ? 'restore' : 'archive'; ?>"><input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>"><button class="<?php echo $archived ? 'primary-btn' : 'danger-btn'; ?>"><i class="<?php echo $archived ? 'ri-arrow-go-back-line' : 'ri-inbox-archive-line'; ?>"></i> <?php echo $archived ? 'Retrieve' : 'Archive'; ?></button></form>
             </article>
         <?php endforeach; ?>
     </div>

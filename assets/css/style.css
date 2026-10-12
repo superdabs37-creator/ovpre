@@ -52,6 +52,7 @@ button {
     background-position: center;
     background-repeat: no-repeat;
 }
+
 /* Premium Add User Button */
 .add-user-btn {
     position: relative;
@@ -136,15 +137,19 @@ button {
     from {
         transform: translateX(-120%) skewX(-18deg);
     }
+
     to {
         transform: translateX(520%) skewX(-18deg);
     }
 }
 
 @keyframes addUserIconPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0) rotate(0deg) scale(1);
     }
+
     50% {
         transform: translateY(-2px) rotate(-8deg) scale(1.12);
     }
@@ -238,7 +243,7 @@ button {
 .folder-card p {
     margin: 0;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 1.5rem;
 }
 
 .login-copy p {
@@ -623,8 +628,8 @@ button {
     width: 250px;
     display: none;
     padding: 12px;
-    color: #f8fafc;
-    background: #202729;
+    color: #202729;
+    background: #f8fafc;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
     box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
@@ -641,13 +646,13 @@ button {
     gap: 10px;
     padding: 11px;
     border-radius: 12px;
-    color: rgba(248, 250, 252, 0.8);
+    color: #202729;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .profile-dropdown a:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.08);
+    background: #16a34a;
 }
 
 .profile-dropdown-identity {
@@ -667,7 +672,7 @@ button {
     margin-bottom: 4px;
     color: #fff;
     background: #080b0c;
-    border: 2px solid rgba(255, 255, 255, 0.13);
+    border: 2px solid #16a34a;
     border-radius: 50%;
     font-size: 2.6rem;
 }
@@ -710,12 +715,28 @@ button {
     overflow: hidden;
 }
 
-.welcome-panel h2 {
+.welcome-panel .welcome-description {
     max-width: 760px;
     margin: 6px 0 0;
-    color: var(--green-900);
-    font-size: clamp(1.45rem, 4vw, 2.45rem);
-    line-height: 1.12;
+    color: #202729;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.welcome-panel .welcome-greeting,
+.hero .welcome-greeting {
+    color: #16a34a;
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.hero .welcome-description {
+    margin: 6px 0 0;
+    color: #202729;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 .summary-grid {
@@ -723,6 +744,9 @@ button {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 18px;
 }
+
+.report-filter-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; align-items: end; gap: 12px; }
+.search-results-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px; margin-bottom: 18px; }
 
 .summary-card {
     display: flex;
@@ -837,7 +861,7 @@ button {
     border-radius: 16px;
 }
 
-.notification-item > span {
+.notification-item>span {
     width: 42px;
     height: 42px;
     flex: 0 0 auto;
@@ -882,8 +906,9 @@ button {
 
 .panel-heading h2 {
     margin: 0;
-    color: var(--green-900);
-    font-size: 1.12rem;
+    color: var(--green-600);
+    font-size: clamp(1.6rem, 2.8vw, 2rem);
+    font-weight: 800;
 }
 
 .panel-heading span,
@@ -1129,7 +1154,7 @@ button {
     display: none;
 }
 
-.user-actions-trigger > i:first-child {
+.user-actions-trigger>i:first-child {
     font-size: 1.1rem;
 }
 
@@ -1413,6 +1438,7 @@ button {
 }
 
 @media print {
+
     .sidebar,
     .topbar,
     .no-print,
@@ -1466,12 +1492,12 @@ button {
     padding: 18px;
 }
 
-.archive-toolbar > div:first-child {
+.archive-toolbar>div:first-child {
     display: grid;
     gap: 4px;
 }
 
-.archive-toolbar > div:first-child span {
+.archive-toolbar>div:first-child span {
     color: var(--muted);
     font-size: 0.86rem;
 }
@@ -2136,11 +2162,11 @@ button {
     width: 100%;
 }
 
-.modal-launcher-panel .panel-heading > div {
+.modal-launcher-panel .panel-heading>div {
     min-width: 0;
 }
 
-.modal-launcher-panel .panel-heading > .primary-btn {
+.modal-launcher-panel .panel-heading>.primary-btn {
     flex: 0 0 auto;
 }
 
@@ -2298,7 +2324,7 @@ button {
     display: none !important;
 }
 
-.module-header > .primary-btn {
+.module-header>.primary-btn {
     flex: 0 0 auto;
     margin-left: auto;
 }
@@ -2465,7 +2491,7 @@ button {
     box-shadow: var(--soft-shadow);
 }
 
-.timeline-step > span {
+.timeline-step>span {
     width: 46px;
     height: 46px;
     flex: 0 0 auto;
@@ -2477,7 +2503,7 @@ button {
     font-size: 1.4rem;
 }
 
-.timeline-step.done > span {
+.timeline-step.done>span {
     color: var(--green-800);
     background: var(--green-100);
 }
@@ -2551,7 +2577,7 @@ button {
     gap: 14px;
 }
 
-.setting-card > i {
+.setting-card>i {
     width: 52px;
     height: 52px;
     display: grid;
@@ -3026,7 +3052,7 @@ button {
     align-items: stretch;
 }
 
-.activity-modal-card .modal-actions > button {
+.activity-modal-card .modal-actions>button {
     width: 100%;
     min-width: 0;
     min-height: 48px;
@@ -3041,7 +3067,7 @@ button {
         flex-direction: column;
     }
 
-    .modal-launcher-panel .panel-heading > .primary-btn {
+    .modal-launcher-panel .panel-heading>.primary-btn {
         width: 100%;
     }
 
@@ -3059,6 +3085,7 @@ button {
         opacity: 0;
         transform: translateY(14px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -3066,6 +3093,7 @@ button {
 }
 
 @media (max-width: 1180px) {
+
     .summary-grid,
     .folder-grid,
     .stats-grid,
@@ -3253,7 +3281,7 @@ button {
         flex-direction: column;
     }
 
-    .module-header > .primary-btn {
+    .module-header>.primary-btn {
         width: 100%;
         margin-left: 0;
     }
@@ -3470,6 +3498,7 @@ button {
 }
 
 @media (max-width: 900px) {
+
     .content-area .primary-btn:not(.action-btn),
     .content-area .post-btn,
     .content-area .ghost-btn:not(.action-btn):not(.mini-btn),
@@ -3486,6 +3515,7 @@ button {
 }
 
 @media (max-width: 620px) {
+
     .content-area .primary-btn:not(.action-btn),
     .content-area .post-btn,
     .content-area .ghost-btn:not(.action-btn):not(.mini-btn),
@@ -3531,7 +3561,7 @@ button {
     box-shadow: 0 14px 32px rgba(15, 61, 36, 0.13), 0 0 0 4px rgba(22, 163, 74, 0.11);
 }
 
-.topbar-search > i {
+.topbar-search>i {
     color: var(--green-700);
     font-size: 1.15rem;
 }
@@ -3634,6 +3664,7 @@ mark.global-search-hit {
 }
 
 @media (max-width: 1180px) {
+
     .topbar-search,
     .topbar-search:focus-within {
         width: min(360px, 34vw);
@@ -3669,3 +3700,11 @@ mark.global-search-hit {
     }
 }
 
+@media (max-width: 900px) {
+    .report-filter-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+    .report-filter-form,
+    .search-results-form { grid-template-columns: 1fr; }
+}

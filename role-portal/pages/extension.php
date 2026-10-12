@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $documentId = portal_save_document($_POST, $_FILES['required_document'] ?? [], $user);
         db()->prepare('INSERT INTO extension_projects (project_title, coordinator, community_partner, budget, start_date, end_date, progress_status, document_id, submitted_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())')
             ->execute([trim($_POST['project_title']), trim($_POST['coordinator']), trim($_POST['community_partner']), (float) $_POST['budget'], $_POST['start_date'], $_POST['end_date'], $_POST['progress_status'], $documentId, $user['id']]);
+        log_review('extension', (int) db()->lastInsertId(), (int) $user['id'], 'Submitted', trim($_POST['project_title']));
         log_action((int) $user['id'], 'Submitted extension project: ' . trim($_POST['project_title']));
         flash('success', 'Extension project submitted. Please wait for approval.');
         redirect_to('extension.php');

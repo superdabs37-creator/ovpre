@@ -13,15 +13,31 @@ renderHeader('Dashboard', 'dashboard');
 ?>
 <section class="welcome-panel">
     <div>
-        <p>Welcome back, <?php echo h($user['fullname']); ?></p>
+        <p class="welcome-greeting">Welcome back, <?php echo h($user['fullname']); ?></p>
+        <p class="welcome-description">Manage your research proposals and follow each submission through review.</p>
     </div>
-    <a class="primary-btn" href="upload-document.php"><i class="ri-upload-cloud-line"></i> Upload Record</a>
+    <a class="primary-btn" href="research.php">
+        <i class="ri-add-circle-line" aria-hidden="true"></i>
+        <span>Submit<br>Research Proposal</span>
+    </a>
 </section>
 
 <section class="analytics-grid">
-    <article class="panel chart-panel"><div class="panel-heading"><h2>Monthly Submissions</h2><span>Dashboard records</span></div><canvas id="reportMonthlyChart"></canvas></article>
-    <article class="panel chart-panel"><div class="panel-heading"><h2>Approval Rate</h2><span>Research status</span></div><canvas id="reportResearchChart"></canvas></article>
-    <article class="panel chart-panel wide"><div class="panel-heading"><h2>Department Output</h2><span>Document distribution</span></div><canvas id="reportDepartmentChart"></canvas></article>
+    <article class="panel chart-panel">
+        <div class="panel-heading">
+            <h2>Monthly Submissions</h2><span>Dashboard records</span>
+        </div><canvas id="reportMonthlyChart"></canvas>
+    </article>
+    <article class="panel chart-panel">
+        <div class="panel-heading">
+            <h2>Approval Rate</h2><span>Research status</span>
+        </div><canvas id="reportResearchChart"></canvas>
+    </article>
+    <article class="panel chart-panel wide">
+        <div class="panel-heading">
+            <h2>Department Output</h2><span>Document distribution</span>
+        </div><canvas id="reportDepartmentChart"></canvas>
+    </article>
 </section>
 
 <section class="panel">
@@ -31,7 +47,16 @@ renderHeader('Dashboard', 'dashboard');
     </div>
     <div class="table-scroll">
         <table class="data-table portal-table">
-            <thead><tr><th>Record</th><th>Category</th><th>Department</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Record</th>
+                    <th>Category</th>
+                    <th>Department</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
             <tbody>
                 <?php foreach ($pendingDocuments as $document): ?>
                     <tr>
@@ -43,7 +68,9 @@ renderHeader('Dashboard', 'dashboard');
                         <td><a class="ghost-btn action-btn" href="admin-documents.php?status=<?php echo urlencode($document['status']); ?>"><i class="ri-arrow-right-line"></i><span>Review</span></a></td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if (!$pendingDocuments): ?><tr><td colspan="6">No records need approval right now.</td></tr><?php endif; ?>
+                <?php if (!$pendingDocuments): ?><tr>
+                        <td colspan="6">No records need approval right now.</td>
+                    </tr><?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -80,10 +107,10 @@ renderHeader('Dashboard', 'dashboard');
     </div>
 </section>
 <script>
-window.reportCharts = {
-    monthly: <?php echo json_encode($monthlyDocuments); ?>,
-    research: <?php echo json_encode($research); ?>,
-    departments: <?php echo json_encode($departmentCounts); ?>
-};
+    window.reportCharts = {
+        monthly: <?php echo json_encode($monthlyDocuments); ?>,
+        research: <?php echo json_encode($research); ?>,
+        departments: <?php echo json_encode($departmentCounts); ?>
+    };
 </script>
 <?php renderFooter(); ?>

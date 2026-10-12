@@ -197,3 +197,4 @@ CREATE TABLE accomplishment_reports (
   FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE SET NULL,
   FOREIGN KEY (submitted_by) REFERENCES users(id)
 );
+

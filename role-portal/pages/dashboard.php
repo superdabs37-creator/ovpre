@@ -23,7 +23,7 @@ $submissionLabel = $isExtensionCoordinator
     : ($isResearchCoordinator ? 'Submit Research Proposal' : 'New Submission');
 ?>
 <section class="hero">
-    <div><p>Welcome back, <?php echo h($user['fullname']); ?></p><h2><?php echo h($heroDescription); ?></h2></div>
+    <div><p class="welcome-greeting">Welcome back, <?php echo h($user['fullname']); ?></p><p class="welcome-description"><?php echo h($heroDescription); ?></p></div>
     <a class="primary-btn" href="<?php echo portal_can('research') ? 'research.php' : 'extension.php'; ?>"><i class="ri-add-circle-line"></i> <?php echo h($submissionLabel); ?></a>
 </section>
 <section class="stats-grid">

@@ -10,7 +10,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
 
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/landing.css?v=20261005-campus-bg">
+    <link rel="stylesheet" href="assets/css/landing.css?v=20261012-centered-hero">
 </head>
 
 <body>
@@ -21,11 +21,17 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
 <header class="header">
     <div class="container nav-container">
 
+        <a class="landing-brand" href="#home" aria-label="I-Record home">
+            <img src="assets/img/ovpre-logo.jpg" alt="">
+            <span><strong>I-Record</strong><small>Research &amp; Extension</small></span>
+        </a>
+
         <nav class="navbar">
             <a href="#home">Home</a>
             <a href="#about">About</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
+            <a class="login-btn" href="index.php">Sign in</a>
         </nav>
 
     </div>
@@ -41,40 +47,34 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
 
         <div class="hero-text">
 
-            <span class="welcome-text">
+            <div class="hero-identity">
+                <div class="welcome-logos">
                 <img src="assets/img/dlsp-seal.jpg" alt="Dalubhasaan ng Lungsod ng San Pablo seal">
                 <img src="assets/img/ovpre-logo.jpg" alt="Pamantasan ng Lungsod ng San Pablo OVPRE seal">
-                OFFICE OF THE VICE PRESIDENT FOR RESEARCH AND EXTENSION
-            </span>
+                </div>
+                <span class="welcome-text">OFFICE OF THE VICE PRESIDENT FOR RESEARCH AND EXTENSION</span>
+            </div>
 
-            <h1>
-                Welcome to <span>I-Record</span>
-            </h1>
-
-            <h2>
-                Web-Based Record Management System
-            </h2>
+            <h2>I-Record Management System</h2>
 
             <p>
-                A centralized platform designed to organize, manage,
-                store, and retrieve research and extension records
-                efficiently and securely.
+                One secure workspace to submit proposals, track projects,
+                schedule activities, and find important records with ease.
             </p>
 
             <div class="hero-buttons">
 
                 <a href="index.php" class="primary-btn">
-                    Get Started
+                    Sign in to I-Record
                 </a>
 
                 <a href="#about" class="secondary-btn">
-                    Learn More
+                    Explore the system
                 </a>
 
             </div>
 
         </div>
-
 
     </div>
 

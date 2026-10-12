@@ -19,6 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $assignedTo = ($_POST['assigned_to'] ?? '') === '' ? null : (int) $_POST['assigned_to'];
         $remarks = trim($_POST['remarks'] ?? '');
         db()->prepare('UPDATE extension_projects SET progress_status = ?, assigned_to = ?, status_remarks = ? WHERE id = ?')->execute([$progress, $assignedTo, $remarks, $id]);
+        $ownerStmt = db()->prepare('SELECT submitted_by, project_title FROM extension_projects WHERE id = ?');
+        $ownerStmt->execute([$id]);
+        if ($owner = $ownerStmt->fetch()) {
+            notify_user((int) $owner['submitted_by'], 'Your extension project "' . $owner['project_title'] . '" progress is now ' . $progress . '.');
+        }
         log_review('extension', $id, (int) $user['id'], 'Progress: ' . $progress, $remarks);
         log_action((int) $user['id'], "Reviewed extension #{$id}: {$progress}");
         flash('success', 'Extension project updated.');

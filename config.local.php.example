@@ -1,0 +1,11 @@
+<?php
+// Copy this file to config.local.php and enter your real SMTP settings there.
+// For Gmail, use an App Password (not your normal account password).
+return [
+    'MAIL_FROM' => 'your-sender@example.com',
+    'MAIL_FROM_NAME' => 'I-Record Security',
+    'SMTP_HOST' => 'smtp.example.com',
+    'SMTP_PORT' => '587',
+    'SMTP_USER' => 'your-sender@example.com',
+    'SMTP_PASS' => 'your-app-password',
+];

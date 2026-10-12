@@ -33,9 +33,29 @@ html {
 
 .nav-container {
     min-height: 78px;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 24px;
 }
+
+.landing-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: #0f3d24;
+}
+
+.landing-brand img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 3px 12px rgba(15, 61, 36, .14);
+}
+
+.landing-brand span { display: grid; gap: 2px; }
+.landing-brand strong { font-size: 1rem; }
+.landing-brand small { color: #6f7b73; font-size: .72rem; }
 
 .logo {
     gap: 12px;
@@ -122,7 +142,7 @@ html {
 }
 
 .hero-text {
-    max-width: 800px;
+    max-width: 900px;
     text-align: center;
 }
 
@@ -136,17 +156,25 @@ html {
 }
 
 .welcome-text {
-    display: inline-flex;
+    display: block;
+    margin-top: 12px;
+    max-width: 100%;
+    font-size: clamp(0.88rem, 1.35vw, 1.08rem);
+    line-height: 1.45;
+    letter-spacing: 0.1em;
+    text-wrap: balance;
+}
+
+.welcome-logos {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 14px;
-    max-width: 100%;
 }
 
-.welcome-text img {
+.welcome-logos img {
     width: 58px;
     height: 58px;
-    flex: 0 0 auto;
     object-fit: contain;
     border-radius: 50%;
 }
@@ -163,9 +191,11 @@ html {
 }
 
 .hero-text h2 {
-    margin: 0;
+    margin: 4px 0 0;
     color: #315440;
-    font-size: clamp(1.25rem, 3vw, 1.8rem);
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    line-height: 1.15;
+    text-wrap: balance;
 }
 
 .hero-text p,
@@ -178,7 +208,7 @@ html {
 
 .hero-text p {
     max-width: 650px;
-    margin: 18px 0 26px;
+    margin: 18px auto 26px;
 }
 
 .hero-buttons {
@@ -200,7 +230,11 @@ html {
 .hero-buttons .primary-btn {
     color: #0f3d24;
     background: #facc15;
+    box-shadow: 0 9px 22px rgba(202, 153, 0, .18);
+    transition: transform .2s ease, box-shadow .2s ease;
 }
+
+.hero-buttons .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 13px 26px rgba(202, 153, 0, .25); }
 
 .hero-buttons .secondary-btn {
     color: #166534;
@@ -401,7 +435,10 @@ html {
 @media (max-width: 900px) {
     .hero-content {
         grid-template-columns: 1fr;
+        justify-items: center;
     }
+
+    .hero-text { max-width: 900px; text-align: center; }
 
     .hero-card {
         max-width: 560px;
@@ -423,15 +460,19 @@ html {
     }
 
     .nav-container {
-        align-items: flex-start;
+        align-items: center;
         flex-direction: column;
         padding: 14px 0;
     }
+
+    .landing-brand { flex: 0 0 auto; }
 
     .navbar {
         width: 100%;
         flex-wrap: wrap;
         gap: 2px;
+        margin: 0;
+        justify-content: center;
     }
 
     .navbar a {
@@ -440,7 +481,7 @@ html {
     }
 
     .navbar .login-btn {
-        margin-left: auto;
+        margin-left: 2px;
     }
 
     .hero {
@@ -448,17 +489,18 @@ html {
         padding: 58px 0;
     }
 
+    .hero-text { text-align: center; }
+
     .hero-card {
         padding: 24px;
     }
 
     .welcome-text {
-        gap: 9px;
-        font-size: 0.68rem;
-        letter-spacing: 0.08em;
+        font-size: clamp(0.74rem, 3.2vw, 0.92rem);
+        letter-spacing: 0.07em;
     }
 
-    .welcome-text img {
+    .welcome-logos img {
         width: 44px;
         height: 44px;
     }
@@ -480,3 +522,4 @@ html {
         flex-direction: column;
     }
 }
+
