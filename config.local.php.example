@@ -1,11 +1,16 @@
 <?php
-// Copy this file to config.local.php and enter your real SMTP settings there.
+// Copy this file to config.local.php and enter your local SMTP and Supabase settings.
 // For Gmail, use an App Password (not your normal account password).
+// Keep SUPABASE_SECRET_KEY private; never put it in browser code or commit config.local.php.
 return [
+    'APP_BASE_URL' => 'http://localhost/ovpre',
     'MAIL_FROM' => 'your-sender@example.com',
     'MAIL_FROM_NAME' => 'I-Record Security',
     'SMTP_HOST' => 'smtp.example.com',
     'SMTP_PORT' => '587',
     'SMTP_USER' => 'your-sender@example.com',
     'SMTP_PASS' => 'your-app-password',
+    'SUPABASE_URL' => 'https://your-project.supabase.co',
+    'SUPABASE_ANON_KEY' => 'your-publishable-or-anon-key',
+    'SUPABASE_SECRET_KEY' => 'your-server-only-secret-or-service-role-key',
 ];

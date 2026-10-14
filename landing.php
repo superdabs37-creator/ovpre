@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/includes/bootstrap.php';
+$currentUser = current_user();
+$dashboardUrl = $currentUser ? role_dashboard_path((string) ($currentUser['role'] ?? '')) : null;
 $pageTitle = "I-Record | Office of the Vice President for Research and Extension";
 ?>
 <!DOCTYPE html>
@@ -10,7 +13,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
 
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/landing.css?v=20261012-centered-hero">
+    <link rel="stylesheet" href="assets/css/landing.css?v=20261015-fixed-nav-frame">
 </head>
 
 <body>
@@ -31,7 +34,11 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
             <a href="#about">About</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
-            <a class="login-btn" href="index.php">Sign in</a>
+            <?php if ($currentUser && $dashboardUrl): ?>
+                <a class="login-btn" href="<?php echo h($dashboardUrl); ?>">Go to Dashboard</a>
+            <?php else: ?>
+                <a class="login-btn" href="index.php">Sign in</a>
+            <?php endif; ?>
         </nav>
 
     </div>
@@ -64,9 +71,15 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
 
             <div class="hero-buttons">
 
-                <a href="index.php" class="primary-btn">
-                    Sign in to I-Record
-                </a>
+                <?php if ($currentUser && $dashboardUrl): ?>
+                    <a href="<?php echo h($dashboardUrl); ?>" class="primary-btn">
+                        Go to Dashboard
+                    </a>
+                <?php else: ?>
+                    <a href="index.php" class="primary-btn">
+                        Sign in to I-Record
+                    </a>
+                <?php endif; ?>
 
                 <a href="#about" class="secondary-btn">
                     Explore the system

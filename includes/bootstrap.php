@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/supabase.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
@@ -15,30 +16,75 @@ if (session_status() === PHP_SESSION_NONE) {
 define('SESSION_TIMEOUT_SECONDS', 1800);
 
 const ROLE_SUPER_ADMIN = 'Super Admin';
-const ROLE_VICE_PRESIDENT = 'Vice President';
-const ROLE_OVPRE_STAFF = 'OVPRE Staff';
+const ROLE_OVPRE_ADMIN = 'OVPRE Admin';
 const ROLE_RESEARCH_COORDINATOR = 'Research Coordinator';
 const ROLE_EXTENSION_COORDINATOR = 'Extension Coordinator';
-const SELF_REGISTERABLE_ROLES = [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR];
+const ROLE_FACULTY_EXTENSIONIST = 'Faculty Extensionist';
+const ROLE_RESEARCHER = 'Researcher';
+const SELF_REGISTERABLE_ROLES = [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER];
 
 function role_dashboard_path(string $role): ?string {
     return match ($role) {
-        ROLE_SUPER_ADMIN, ROLE_VICE_PRESIDENT, ROLE_OVPRE_STAFF,
+        ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN,
         ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR,
-        'Faculty Researcher', 'Evaluator/Reviewer', 'User' => match ($role) {
-            ROLE_VICE_PRESIDENT => 'vice-president/dashboard.php',
-            ROLE_OVPRE_STAFF => 'ovpre-staff/dashboard.php',
+        ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER => match ($role) {
+            ROLE_OVPRE_ADMIN => 'ovpre-admin/dashboard.php',
             ROLE_RESEARCH_COORDINATOR => 'research-coordinator/dashboard.php',
             ROLE_EXTENSION_COORDINATOR => 'extension-coordinator/dashboard.php',
+            ROLE_FACULTY_EXTENSIONIST => 'faculty-extensionist/dashboard.php',
+            ROLE_RESEARCHER => 'researcher/dashboard.php',
             default => 'dashboard.php',
         },
         default => null,
     };
 }
 
+class SupabasePDO extends PDO {
+    public static function normalizeSql(string $sql): string {
+        $sql = preg_replace('/DATE_SUB\(NOW\(\),\s*INTERVAL\s*(\d+)\s*MINUTE\)/i', "(NOW() - INTERVAL '$1 MINUTE')", $sql);
+        $sql = preg_replace('/DATE_ADD\(NOW\(\),\s*INTERVAL\s*(\d+)\s*MINUTE\)/i', "(NOW() + INTERVAL '$1 MINUTE')", $sql);
+        $sql = preg_replace('/DATE_SUB\(CURDATE\(\),\s*INTERVAL\s*(\d+)\s*MONTH\)/i', "(CURRENT_DATE - INTERVAL '$1 MONTH')", $sql);
+        $sql = preg_replace('/CURDATE\(\)/i', 'CURRENT_DATE', $sql);
+        $sql = preg_replace('/DATE_FORMAT\(([^,]+),\s*\'%b\'\)/i', "TO_CHAR($1, 'Mon')", $sql);
+
+        $sql = preg_replace('/SUM\(([^)]+?)\s*=\s*("[^"]+"|\'[^\']+\')\)/i', 'COUNT(CASE WHEN $1 = $2 THEN 1 END)', $sql);
+        $sql = preg_replace('/SUM\(([^)]+?)\s+IN\s*\(([^)]+?)\)\)/i', 'COUNT(CASE WHEN $1 IN ($2) THEN 1 END)', $sql);
+
+        $sql = preg_replace('/"([^"]+)"/', "'$1'", $sql);
+
+        return $sql;
+    }
+
+    public function prepare(string $query, array $options = []): PDOStatement {
+        return parent::prepare(self::normalizeSql($query), $options);
+    }
+
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement {
+        return parent::query(self::normalizeSql($query), $fetchMode, ...$fetchModeArgs);
+    }
+
+    public function exec(string $statement): int|false {
+        return parent::exec(self::normalizeSql($statement));
+    }
+}
+
 function db(): PDO {
     static $pdo = null;
     if ($pdo instanceof PDO) {
+        return $pdo;
+    }
+
+    if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+        $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require', DB_HOST, DB_PORT, DB_NAME);
+        $pdo = new SupabasePDO(
+            $dsn,
+            DB_USER,
+            DB_PASS,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
         return $pdo;
     }
 
@@ -102,6 +148,9 @@ function login_otp_rate_limited(int $userId): bool {
 }
 
 function ensure_profile_photo_column(): void {
+    if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+        return;
+    }
     static $checked = false;
     if ($checked) {
         return;
@@ -114,6 +163,9 @@ function ensure_profile_photo_column(): void {
 }
 
 function ensure_activity_date_to_column(): void {
+    if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+        return;
+    }
     static $checked = false;
     if ($checked) {
         return;
@@ -127,6 +179,9 @@ function ensure_activity_date_to_column(): void {
 }
 
 function ensure_activity_archived_at_column(): void {
+    if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+        return;
+    }
     static $checked = false;
     if ($checked) {
         return;
@@ -197,10 +252,11 @@ function current_user(): ?array {
 function role_permissions(): array {
     return [
         ROLE_SUPER_ADMIN => ['*'],
-        ROLE_VICE_PRESIDENT => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
-        ROLE_OVPRE_STAFF => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements'],
-        ROLE_RESEARCH_COORDINATOR => ['dashboard', 'documents', 'research', 'reports', 'announcements'],
-        ROLE_EXTENSION_COORDINATOR => ['dashboard', 'documents', 'extension', 'reports', 'announcements'],
+        ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements', 'users'],
+        ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
+        ROLE_EXTENSION_COORDINATOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
+        ROLE_FACULTY_EXTENSIONIST => ['dashboard', 'extension', 'status'],
+        ROLE_RESEARCHER => ['dashboard', 'research', 'status'],
     ];
 }
 
@@ -239,9 +295,23 @@ function log_action(?int $userId, string $action): void {
     $stmt->execute([$userId, $action, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
 }
 
-function notify_user(int $userId, string $message): void {
-    $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at) VALUES (?, ?, "Unread", NOW())');
-    $stmt->execute([$userId, $message]);
+function notify_user(int $userId, string $message, ?string $link = null): void {
+    $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at, link) VALUES (?, ?, "Unread", NOW(), ?)');
+    $stmt->execute([$userId, $message, $link]);
+}
+
+function notify_all_accounts(string $message, ?string $link = null, ?int $excludeUserId = null): void {
+    $sql = 'SELECT id FROM users WHERE status = ? AND deleted_at IS NULL';
+    $params = ['Active'];
+    if ($excludeUserId !== null) {
+        $sql .= ' AND id <> ?';
+        $params[] = $excludeUserId;
+    }
+    $users = db()->prepare($sql);
+    $users->execute($params);
+    foreach ($users->fetchAll(PDO::FETCH_COLUMN) as $userId) {
+        notify_user((int) $userId, $message, $link);
+    }
 }
 
 function log_review(string $entityType, int $entityId, ?int $userId, string $action, string $remarks = ''): void {
@@ -333,14 +403,10 @@ function save_uploaded_document(array $post, array $file, int $userId): void {
 
     $category = (int) $post['category_id'];
     $department = (int) $post['department_id'];
-    $folder = UPLOAD_DIR . '/' . $category;
-    if (!is_dir($folder)) {
-        mkdir($folder, 0775, true);
-    }
     $stored = bin2hex(random_bytes(16)) . '.' . $ext;
-    if (!move_uploaded_file($file['tmp_name'], $folder . '/' . $stored)) {
-        throw new RuntimeException('Upload failed. Check folder permissions.');
-    }
+    $objectPath = $category . '/' . $stored;
+    supabase_storage_upload((string) $file['tmp_name'], $objectPath, (string) ($mime ?: $allowed[$ext]));
+    $storedName = 'storage:' . $objectPath;
 
     $stmt = db()->prepare('INSERT INTO documents (title, category_id, description, author, department_id, filename, original_filename, uploaded_by, status, submission_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "Pending", ?, NOW())');
     $stmt->execute([
@@ -349,13 +415,22 @@ function save_uploaded_document(array $post, array $file, int $userId): void {
         trim($post['description'] ?? ''),
         trim($post['author']),
         $department,
-        $category . '/' . $stored,
+        $storedName,
         $file['name'],
         $userId,
         $post['submission_date'] ?: date('Y-m-d'),
     ]);
     $documentId = (int) db()->lastInsertId();
     db()->prepare('INSERT INTO document_versions (document_id, version_label, filename, modified_by, created_at) VALUES (?, "Original Version", ?, ?, NOW())')
-        ->execute([$documentId, $category . '/' . $stored, $userId]);
+        ->execute([$documentId, $storedName, $userId]);
     log_action($userId, 'Uploaded document: ' . trim($post['title']));
+    notify_all_accounts('New file uploaded: ' . trim($post['title']), 'submitted-files.php#document-' . $documentId);
+}
+
+function record_access_url(string $filename, string $localPrefix = '', ?int $documentId = null, ?int $versionId = null): string
+{
+    if (!$documentId) {
+        throw new InvalidArgumentException('A document reference is required for a secure file link.');
+    }
+    return $localPrefix . 'download-document.php?id=' . $documentId . ($versionId ? '&version=' . $versionId : '');
 }

@@ -30,7 +30,7 @@ function renderHeader($pageTitle, $currentPage)
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($pageTitle); ?> | <?php echo APP_NAME; ?></title>
         <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
-        <link rel="stylesheet" href="assets/css/style.css?v=20261012-project-tracking-search">
+        <link rel="stylesheet" href="assets/css/style.css?v=20261015-hidden-sidebar">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -70,7 +70,7 @@ function renderHeader($pageTitle, $currentPage)
             </aside>
             <div class="page-wrap">
                 <header class="topbar">
-                    <button class="icon-btn menu-toggle" type="button" aria-label="Toggle sidebar" data-toggle-sidebar>
+                    <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
                         <i class="ri-menu-line"></i>
                     </button>
                     <div class="topbar-title">
@@ -117,7 +117,7 @@ function renderHeader($pageTitle, $currentPage)
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="assets/js/app.js?v=20261012-project-tracking-search"></script>
+        <script src="assets/js/app.js?v=20261015-hidden-sidebar"></script>
     </body>
 
     </html>

@@ -46,11 +46,12 @@ button {
 
 .login-body {
     min-height: 100vh;
-    background-color: var(--green-900);
-    background-image: var(--login-background, url("../img/landing-campus.jpg"));
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-color: #f3f8f4;
+    background-image:
+        radial-gradient(ellipse at 12% 8%, rgba(250, 204, 21, 0.16), transparent 32%),
+        radial-gradient(ellipse at 88% 90%, rgba(22, 163, 74, 0.15), transparent 36%),
+        linear-gradient(135deg, #edf6ef 0%, #f8fbf8 48%, #e8f2ea 100%);
+    background-attachment: fixed;
 }
 
 /* Premium Add User Button */
@@ -173,12 +174,12 @@ button {
     content: "";
     position: fixed;
     inset: 0;
-    background:
-        linear-gradient(135deg, rgba(15, 61, 36, 0.34), rgba(21, 128, 61, 0.2) 58%, rgba(250, 204, 21, 0.18));
+    background-image:
+        radial-gradient(circle at 18% 24%, rgba(21, 128, 61, 0.08), transparent 28%),
+        radial-gradient(circle at 82% 72%, rgba(15, 61, 36, 0.07), transparent 32%),
+        repeating-linear-gradient(135deg, rgba(15, 61, 36, 0.018) 0 1px, transparent 1px 30px);
     pointer-events: none;
     z-index: 0;
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
 }
 
 .login-shell {
@@ -193,12 +194,10 @@ button {
 .login-card {
     width: min(100%, 430px);
     padding: 34px;
-    background: rgba(255, 255, 255, 0.32);
-    border: 1px solid rgba(255, 255, 255, 0.58);
-    border-radius: 28px;
-    box-shadow: var(--shadow);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    background: var(--white);
+    border: 1px solid rgba(15, 61, 36, 0.08);
+    border-radius: 22px;
+    box-shadow: 0 20px 55px rgba(15, 61, 36, 0.14), 0 3px 10px rgba(15, 61, 36, 0.05);
     animation: riseIn 0.7s ease both;
 }
 
@@ -247,26 +246,66 @@ button {
 }
 
 .login-copy p {
-    display: inline-block;
+    display: block;
     margin: 8px 0 4px;
-    padding: 8px 12px;
+    padding: 0;
     color: var(--green-900);
-    background: rgba(250, 204, 21, 0.34);
-    border-left: 4px solid var(--yellow-500);
-    border-radius: 8px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
     font-weight: 800;
     line-height: 1.35;
+    text-align: center;
 }
 
 .login-copy h1 {
     margin: 6px 0 26px;
     color: var(--green-900);
     font-size: clamp(2rem, 7vw, 2.7rem);
+    text-align: center;
+}
+
+.otp-expiry {
+    margin: 0;
+    padding: 10px 12px;
+    color: var(--green-800);
+    background: var(--green-100);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.otp-expiry time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+}
+
+.otp-expiry.is-expired {
+    color: var(--danger);
+    background: #fee2e2;
+}
+
+#verifyOtpButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .login-form {
     display: grid;
     gap: 12px;
+}
+
+.login-form > .portal-link {
+    margin: 0;
+}
+
+.login-card > .login-form + .login-form {
+    margin-top: 8px;
+}
+
+.login-card > .portal-link {
+    display: flex;
+    margin-top: 8px;
 }
 
 .login-form label,
@@ -477,19 +516,28 @@ button {
 .app-shell {
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: minmax(0, 1fr);
 }
 
 .sidebar {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    width: 280px;
     height: 100vh;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 24px;
     padding: 24px;
     color: var(--white);
     background: linear-gradient(180deg, var(--green-900), var(--green-700));
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+}
+
+.sidebar.open {
+    transform: translateX(0);
 }
 
 .brand {
@@ -571,7 +619,22 @@ button {
 }
 
 .menu-toggle {
-    display: none;
+    display: inline-flex;
+}
+
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(15, 35, 23, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .icon-btn {
@@ -1662,8 +1725,8 @@ button {
 .admin-table-pagination {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 16px;
     margin-top: 12px;
     color: var(--muted);
     font-size: 0.84rem;
@@ -1689,6 +1752,144 @@ button {
 .admin-table-pagination button:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+.data-table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.data-table-toolbar.has-table-search {
+    justify-content: space-between;
+}
+
+.data-table-search {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: min(100%, 320px);
+    min-height: 42px;
+    padding: 0 12px;
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+}
+
+.data-table-search input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+}
+
+.data-table-length,
+.data-table-filter,
+.admin-table-page-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.data-table-length select {
+    min-height: 36px;
+    padding: 0 28px 0 10px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+}
+
+.data-table-filter select {
+    min-height: 36px;
+    max-width: 190px;
+    padding: 0 26px 0 10px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+}
+
+.data-table-export {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 0 12px;
+    color: var(--green-800);
+    background: var(--green-100);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-table-page-buttons > span {
+    display: inline-flex;
+    gap: 5px;
+}
+
+.admin-table-pagination button.is-current {
+    color: var(--white);
+    background: var(--green-700);
+    border-color: var(--green-700);
+}
+
+.data-table th.data-table-sortable {
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.data-table th.data-table-sortable::after {
+    content: '↕';
+    display: inline-block;
+    margin-left: 7px;
+    color: var(--muted);
+    font-size: 0.78em;
+}
+
+.data-table th.data-table-sortable[aria-sort="ascending"]::after {
+    content: '↑';
+    color: var(--green-700);
+}
+
+.data-table th.data-table-sortable[aria-sort="descending"]::after {
+    content: '↓';
+    color: var(--green-700);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 680px) {
+    .data-table-toolbar,
+    .admin-table-pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-table-page-buttons {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
 }
 
 .announcements-page {

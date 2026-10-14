@@ -12,18 +12,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newPassword = (string) ($_POST['new_password'] ?? '');
         $confirmPassword = (string) ($_POST['confirm_password'] ?? '');
 
-        if (!password_verify($currentPassword, (string) $user['password'])) {
-            $error = 'Your current password is incorrect.';
-        } elseif (strlen($newPassword) < 12 || !preg_match('/[a-z]/', $newPassword) || !preg_match('/[A-Z]/', $newPassword) || !preg_match('/[0-9]/', $newPassword) || !preg_match('/[^A-Za-z0-9]/', $newPassword)) {
+        if (strlen($newPassword) < 12 || !preg_match('/[a-z]/', $newPassword) || !preg_match('/[A-Z]/', $newPassword) || !preg_match('/[0-9]/', $newPassword) || !preg_match('/[^A-Za-z0-9]/', $newPassword)) {
             $error = 'New password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.';
         } elseif (!hash_equals($newPassword, $confirmPassword)) {
             $error = 'New password and confirmation do not match.';
         } else {
-            db()->prepare('UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?')
-                ->execute([password_hash($newPassword, PASSWORD_DEFAULT), (int) $user['id']]);
-            log_action((int) $user['id'], 'Changed own password');
-            flash('success', 'Your password has been changed.');
-            redirect_to('profile.php?section=password');
+            try {
+                $auth = supabase_auth_password_login((string) $user['email'], $currentPassword);
+                $authUser = supabase_auth_user((string) ($auth['access_token'] ?? ''));
+                if (empty($user['auth_user_id']) || strcasecmp((string) ($authUser['id'] ?? ''), (string) $user['auth_user_id']) !== 0) {
+                    throw new RuntimeException('The profile is not linked to the signed-in Auth account.');
+                }
+                supabase_auth_set_password((string) $auth['access_token'], $newPassword);
+                log_action((int) $user['id'], 'Changed own Supabase Auth password');
+                flash('success', 'Your password has been changed.');
+                redirect_to('profile.php?section=password');
+            } catch (Throwable $exception) {
+                $error = 'Your current password is incorrect, or the Auth service is unavailable.';
+            }
         }
     } else {
     $fullname = trim((string) ($_POST['fullname'] ?? ''));
@@ -36,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Enter your name (up to 160 characters).';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) {
         $error = 'Enter a valid email address.';
+    } elseif (!empty($user['auth_user_id']) && strcasecmp($email, (string) $user['email']) !== 0) {
+        $error = 'Ask the System Administrator to change the email linked to your Auth account.';
     } elseif ($gender !== '' && !in_array($gender, ['Male', 'Female', 'Other', 'Prefer not to say'], true)) {
         $error = 'Choose a valid gender option.';
     } elseif ($birthday !== '' && (!($date = DateTime::createFromFormat('!Y-m-d', $birthday)) || $date->format('Y-m-d') !== $birthday || $date > new DateTime('today'))) {

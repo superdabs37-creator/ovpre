@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'Vice President', 'OVPRE Staff', 'Research Coordinator']);
+$user = require_login(['Super Admin', 'OVPRE Admin', 'Research Coordinator']);
 verify_csrf();
 $assignableUsers = assignable_users();
 
@@ -40,15 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException('A document category and department must be configured before uploading.');
                 }
 
-                $folder = UPLOAD_DIR . '/' . $categoryId;
-                if (!is_dir($folder) && !mkdir($folder, 0775, true) && !is_dir($folder)) {
-                    throw new RuntimeException('The upload folder could not be created.');
-                }
                 $storedName = bin2hex(random_bytes(16)) . '.' . $extension;
-                $relativePath = $categoryId . '/' . $storedName;
-                if (!move_uploaded_file($file['tmp_name'], $folder . '/' . $storedName)) {
-                    throw new RuntimeException('The research document could not be saved.');
-                }
+                $relativePath = 'storage:' . $categoryId . '/' . $storedName;
+                $mime = (new finfo(FILEINFO_MIME_TYPE))->file((string) $file['tmp_name']) ?: 'application/octet-stream';
+                supabase_storage_upload((string) $file['tmp_name'], substr($relativePath, 8), $mime);
 
                 db()->beginTransaction();
                 db()->prepare('INSERT INTO documents (title, category_id, description, author, department_id, filename, original_filename, uploaded_by, status, submission_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "Pending", CURDATE(), NOW())')
@@ -74,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             log_review('research', $id, (int) $user['id'], 'Submitted', $abstract);
             log_action((int) $user['id'], 'Submitted research proposal: ' . $title);
+            notify_all_accounts('New research proposal submitted: ' . $title, 'submitted-files.php' . ($documentId ? '#document-' . $documentId : ''));
             flash('success', 'Research proposal submitted successfully.');
         } catch (Throwable $error) {
             if (db()->inTransaction()) {
@@ -164,7 +160,7 @@ renderHeader('Research Management', 'research');
                         <td><?php echo h($project['fullname']); ?></td>
                         <td><?php echo h($project['assignee'] ?? 'Unassigned'); ?></td>
                         <td><span class="status-pill status-<?php echo h(statusClass($project['status'])); ?>"><?php echo h($project['status'] === 'Declined' ? 'Rejected' : $project['status']); ?></span></td>
-                        <td><?php if (!empty($project['document_filename'])): ?><a href="<?php echo h('uploads/records/' . $project['document_filename']); ?>" target="_blank" rel="noopener" class="ghost-btn mini-btn" aria-label="Open <?php echo h($project['document_original_filename'] ?? 'research document'); ?>"><i class="ri-file-download-line"></i></a><?php else: ?><span class="muted">None</span><?php endif; ?></td>
+                        <td><?php if (!empty($project['document_filename'])): ?><a href="<?php echo h(record_access_url($project['document_filename'], '', (int) $project['document_id'])); ?>" target="_blank" rel="noopener" class="ghost-btn mini-btn" aria-label="Open <?php echo h($project['document_original_filename'] ?? 'research document'); ?>"><i class="ri-file-download-line"></i></a><?php else: ?><span class="muted">None</span><?php endif; ?></td>
                         <td><?php echo h(date('M d, Y', strtotime($project['created_at']))); ?></td>
                         <td><button class="ghost-btn action-btn" type="button" data-open-modal="research-<?php echo (int) $project['id']; ?>"><i class="ri-edit-line"></i><span>Review</span></button></td>
                     </tr><?php endforeach; ?><?php if (!$projects): ?><tr>
@@ -179,7 +175,7 @@ renderHeader('Research Management', 'research');
         <form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button>
             <h2>Review Research</h2><input type="hidden" name="action" value="review"><input type="hidden" name="id" value="<?php echo (int) $project['id']; ?>"><label class="field"><span>Status</span><select name="status"><?php foreach (['Pending', 'Under Review', 'Approved', 'Declined'] as $status): ?><option value="<?php echo h($status); ?>" <?php echo $project['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field"><span>Assign Reviewer / Coordinator</span><select name="assigned_to">
                     <option value="">Unassigned</option><?php foreach ($assignableUsers as $assignee): ?><option value="<?php echo (int) $assignee['id']; ?>" <?php echo (int) ($project['assigned_to'] ?? 0) === (int) $assignee['id'] ? 'selected' : ''; ?>><?php echo h($assignee['fullname'] . ' - ' . $assignee['role']); ?></option><?php endforeach; ?>
-                </select></label><label class="field"><span>Remarks</span><textarea name="remarks" rows="4"><?php echo h($project['status_remarks'] ?? ''); ?></textarea></label><?php if (!empty($project['document_filename'])): ?><p><a href="<?php echo h('uploads/records/' . $project['document_filename']); ?>" target="_blank" rel="noopener" class="primary-btn"><i class="ri-download-cloud-line"></i> Download Attached Document</a></p><?php endif; ?><div class="timeline-list"><?php foreach (review_timeline('research', (int) $project['id']) as $log): ?><div><strong><?php echo h($log['action']); ?></strong>
+                </select></label><label class="field"><span>Remarks</span><textarea name="remarks" rows="4"><?php echo h($project['status_remarks'] ?? ''); ?></textarea></label><?php if (!empty($project['document_filename'])): ?><p><a href="<?php echo h(record_access_url($project['document_filename'], '', (int) $project['document_id'])); ?>" target="_blank" rel="noopener" class="primary-btn"><i class="ri-download-cloud-line"></i> Download Attached Document</a></p><?php endif; ?><div class="timeline-list"><?php foreach (review_timeline('research', (int) $project['id']) as $log): ?><div><strong><?php echo h($log['action']); ?></strong>
                         <p><?php echo h($log['remarks']); ?></p><small><?php echo h(($log['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($log['created_at']))); ?></small>
                     </div><?php endforeach; ?></div><button class="primary-btn"><i class="ri-save-line"></i> Save Review</button>
         </form>

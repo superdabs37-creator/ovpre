@@ -7,7 +7,17 @@ $isResearchCoordinator = PORTAL_ROLE === 'Research Coordinator';
 $canSchedule = $isExtensionCoordinator || $isResearchCoordinator;
 $activityTypes = $isExtensionCoordinator
     ? ['Training', 'Workshop', 'Community Outreach']
-    : ['Seminar', 'Project Defense'];
+    : [
+        'Seminar',
+        'Project Defense',
+        'Research Proposal',
+        'Research Colloquium',
+        'Research Completion and Final Presentation',
+        'Research Publication',
+        'Research Seminar',
+        'Workshop',
+        'Research Monitoring and Evaluation',
+    ];
 verify_csrf();
 $notice = flash();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $canSchedule) {

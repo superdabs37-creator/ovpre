@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'Vice President', 'OVPRE Staff', 'Extension Coordinator']);
+$user = require_login(['Super Admin', 'OVPRE Admin', 'Extension Coordinator']);
 verify_csrf();
 $assignableUsers = assignable_users();
 
@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int) db()->lastInsertId();
         log_review('extension', $id, (int) $user['id'], 'Submitted', trim($_POST['project_title']));
         log_action((int) $user['id'], 'Submitted extension project: ' . trim($_POST['project_title']));
+        notify_all_accounts('New extension project submitted: ' . trim($_POST['project_title']), 'submitted-files.php');
         flash('success', 'Extension project saved.');
     } elseif ($action === 'review') {
         $id = (int) $_POST['id'];

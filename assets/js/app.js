@@ -4,8 +4,25 @@ const profileToggle = document.querySelector('[data-profile-toggle]');
 const profileDropdown = document.querySelector('[data-profile-dropdown]');
 
 if (sidebarToggle && sidebar) {
+    const backdrop = document.createElement('button');
+    backdrop.type = 'button';
+    backdrop.className = 'sidebar-backdrop';
+    backdrop.setAttribute('aria-label', 'Close navigation menu');
+    sidebar.insertAdjacentElement('afterend', backdrop);
+
+    const setSidebarOpen = (isOpen) => {
+        sidebar.classList.toggle('open', isOpen);
+        backdrop.classList.toggle('open', isOpen);
+        sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+    };
+
     sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
+        setSidebarOpen(!sidebar.classList.contains('open'));
+    });
+    backdrop.addEventListener('click', () => setSidebarOpen(false));
+    sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setSidebarOpen(false)));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') setSidebarOpen(false);
     });
 }
 
@@ -404,6 +421,9 @@ function filterRows() {
         const matchesCategory = activeRecordsCategory === 'All' || !row.dataset.category || row.dataset.category === activeRecordsCategory;
         row.dataset.localFilterMatch = String(matchesText && matchesStatus && matchesCategory);
     });
+    adminTablePages.forEach((state) => {
+        if (tableSearch) state.query = query;
+    });
     resetAdminTablePagination();
     refreshAdminTablePagination();
 }
@@ -419,7 +439,11 @@ function resetAdminTablePagination() {
 
 function refreshAdminTablePagination() {
     adminTablePages.forEach((state) => {
-        const matches = state.rows.filter((row) => row.dataset.localFilterMatch !== 'false' && !row.classList.contains('global-search-hidden'));
+        const query = state.query.trim().toLowerCase();
+        const matches = state.rows.filter((row) => row.dataset.localFilterMatch !== 'false'
+            && !row.classList.contains('global-search-hidden')
+            && Object.entries(state.columnFilters).every(([column, value]) => !value || (row.cells[Number(column)]?.textContent || '').trim() === value)
+            && (!query || row.textContent.toLowerCase().includes(query)));
         const pageCount = Math.max(1, Math.ceil(matches.length / state.pageSize));
         state.page = Math.min(state.page, pageCount);
         const first = (state.page - 1) * state.pageSize;
@@ -428,14 +452,35 @@ function refreshAdminTablePagination() {
         state.rows.forEach((row) => { row.hidden = !visibleRows.has(row); });
         state.emptyRows.forEach((row) => {
             row.hidden = matches.length > 0 || row.classList.contains('global-search-hidden');
+            const cell = row.cells[0];
+            if (cell) {
+                cell.textContent = query ? 'No matching entries found.' : (row.dataset.emptyMessage || cell.textContent);
+            }
         });
 
         state.summary.textContent = matches.length
-            ? `Showing ${first + 1}–${Math.min(first + state.pageSize, matches.length)} of ${matches.length}`
-            : 'Showing 0 of 0';
+            ? `Showing ${first + 1}–${Math.min(first + state.pageSize, matches.length)} of ${matches.length} entries`
+            : 'Showing 0 of 0 entries';
         state.previous.disabled = state.page <= 1;
         state.next.disabled = state.page >= pageCount;
-        state.controls.hidden = matches.length <= state.pageSize;
+
+        const pageButtons = state.pageButtons;
+        pageButtons.replaceChildren();
+        const startPage = Math.max(1, Math.min(state.page - 2, pageCount - 4));
+        const endPage = Math.min(pageCount, Math.max(5, state.page + 2));
+        for (let page = startPage; page <= endPage; page += 1) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = String(page);
+            button.setAttribute('aria-label', `Page ${page}`);
+            button.setAttribute('aria-current', page === state.page ? 'page' : 'false');
+            if (page === state.page) button.classList.add('is-current');
+            button.addEventListener('click', () => {
+                state.page = page;
+                refreshAdminTablePagination();
+            });
+            pageButtons.append(button);
+        }
     });
 }
 
@@ -446,12 +491,76 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
     const emptyRows = children.filter((row) => row.hasAttribute('data-pagination-empty') || (row.cells.length === 1 && row.cells[0].colSpan > 1));
     const rows = children.filter((row) => !emptyRows.includes(row));
     rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
+    emptyRows.forEach((row) => { row.dataset.emptyMessage = row.cells[0]?.textContent || ''; });
+
+    const wrapper = table.closest('.table-scroll') || table;
+    const toolbar = document.createElement('div');
+    toolbar.className = 'data-table-toolbar';
+    const columnFilters = {};
+    if (!tableSearch) {
+        toolbar.classList.add('has-table-search');
+        const searchLabel = document.createElement('label');
+        searchLabel.className = 'data-table-search';
+        searchLabel.innerHTML = '<i class="ri-search-line" aria-hidden="true"></i><span class="sr-only">Search this table</span>';
+        const searchInput = document.createElement('input');
+        searchInput.type = 'search';
+        searchInput.placeholder = 'Search this table';
+        searchInput.setAttribute('aria-label', 'Search this table');
+        searchLabel.append(searchInput);
+        toolbar.append(searchLabel);
+        searchInput.addEventListener('input', () => {
+            state.query = searchInput.value;
+            state.page = 1;
+            refreshAdminTablePagination();
+        });
+    }
+
+    const lengthLabel = document.createElement('label');
+    lengthLabel.className = 'data-table-length';
+    lengthLabel.innerHTML = '<span>Show</span>';
+    const lengthSelect = document.createElement('select');
+    lengthSelect.setAttribute('aria-label', 'Rows per page');
+    [['10', '10'], ['25', '25'], ['50', '50'], ['100', '100'], ['all', 'All']].forEach(([value, label]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        lengthSelect.append(option);
+    });
+    lengthLabel.append(lengthSelect, document.createTextNode(' entries'));
+    toolbar.append(lengthLabel);
+    const exportButton = document.createElement('button');
+    exportButton.type = 'button';
+    exportButton.className = 'data-table-export';
+    exportButton.innerHTML = '<i class="ri-download-2-line" aria-hidden="true"></i> Export CSV';
+    exportButton.addEventListener('click', () => {
+        const query = state.query.trim().toLowerCase();
+        const exportRows = rows.filter((row) => row.dataset.localFilterMatch !== 'false'
+            && !row.classList.contains('global-search-hidden')
+            && Object.entries(state.columnFilters).every(([column, value]) => !value || (row.cells[Number(column)]?.textContent || '').trim() === value)
+            && (!query || row.textContent.toLowerCase().includes(query)));
+        const csvCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
+        const headers = [...table.tHead.rows[table.tHead.rows.length - 1].cells]
+            .map((cell) => cell.innerText.trim());
+        const lines = [headers.map(csvCell).join(',')];
+        exportRows.forEach((row) => {
+            lines.push([...row.cells].map((cell) => csvCell(cell.innerText.trim())).join(','));
+        });
+        const blob = new Blob([`\uFEFF${lines.join('\r\n')}`], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${(document.querySelector('.topbar-title h1')?.textContent || 'table').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+    toolbar.append(exportButton);
+    wrapper.insertAdjacentElement('beforebegin', toolbar);
 
     const controls = document.createElement('nav');
     controls.className = 'admin-table-pagination';
     controls.setAttribute('aria-label', 'Table pages');
-    controls.innerHTML = '<button type="button" data-table-page-previous>Previous</button><span data-table-page-summary></span><button type="button" data-table-page-next>Next</button>';
-    (table.closest('.table-scroll') || table).insertAdjacentElement('afterend', controls);
+    controls.innerHTML = '<span class="admin-table-page-summary" data-table-page-summary></span><div class="admin-table-page-buttons"><button type="button" data-table-page-previous aria-label="Previous page">Previous</button><span data-table-page-buttons></span><button type="button" data-table-page-next aria-label="Next page">Next</button></div>';
+    wrapper.insertAdjacentElement('afterend', controls);
 
     const state = {
         rows,
@@ -460,10 +569,18 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
         summary: controls.querySelector('[data-table-page-summary]'),
         previous: controls.querySelector('[data-table-page-previous]'),
         next: controls.querySelector('[data-table-page-next]'),
+        pageButtons: controls.querySelector('[data-table-page-buttons]'),
+        columnFilters,
+        query: tableSearch ? tableSearch.value : '',
         pageSize: 10,
         page: 1
     };
     adminTablePages.set(table, state);
+    lengthSelect.addEventListener('change', () => {
+        state.pageSize = lengthSelect.value === 'all' ? Math.max(rows.length, 1) : Number(lengthSelect.value);
+        state.page = 1;
+        refreshAdminTablePagination();
+    });
     state.previous.addEventListener('click', () => {
         state.page -= 1;
         refreshAdminTablePagination();
@@ -471,6 +588,82 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
     state.next.addEventListener('click', () => {
         state.page += 1;
         refreshAdminTablePagination();
+    });
+
+    table.querySelectorAll('thead th').forEach((header, columnIndex) => {
+        if (!/status|category|department|role/i.test(header.textContent)) return;
+        const values = [...new Set(rows.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
+        if (values.length < 2 || values.length > 12) return;
+        const label = document.createElement('label');
+        label.className = 'data-table-filter';
+        label.append(document.createTextNode(`${header.textContent.trim()}: `));
+        const select = document.createElement('select');
+        select.setAttribute('aria-label', `Filter by ${header.textContent.trim()}`);
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = 'All';
+        select.append(allOption);
+        values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).forEach((value) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.append(option);
+        });
+        select.addEventListener('change', () => {
+            state.columnFilters[columnIndex] = select.value;
+            state.page = 1;
+            refreshAdminTablePagination();
+        });
+        label.append(select);
+        toolbar.append(label);
+    });
+
+    table.querySelectorAll('thead th').forEach((header, columnIndex) => {
+        if (!header.textContent.trim() || /^(manage|review|actions?)$/i.test(header.textContent.trim())) return;
+        header.classList.add('data-table-sortable');
+        header.tabIndex = 0;
+        header.setAttribute('aria-sort', 'none');
+
+        const sortByHeader = () => {
+            const direction = header.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
+            table.querySelectorAll('thead th[data-sort-direction]').forEach((otherHeader) => {
+                otherHeader.removeAttribute('data-sort-direction');
+                otherHeader.setAttribute('aria-sort', 'none');
+            });
+            header.dataset.sortDirection = direction;
+            header.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex];
+                const cellB = rowB.cells[columnIndex];
+                const valueA = (cellA?.dataset.sortValue || cellA?.innerText || '').trim();
+                const valueB = (cellB?.dataset.sortValue || cellB?.innerText || '').trim();
+                const numericPattern = /^[-+]?[^\dA-Za-z]*[\d,]+(?:\.\d+)?%?$/;
+                let comparison;
+                if (numericPattern.test(valueA) && numericPattern.test(valueB)) {
+                    const numberA = Number(valueA.replace(/[^\d.+-]/g, '')) || 0;
+                    const numberB = Number(valueB.replace(/[^\d.+-]/g, '')) || 0;
+                    comparison = numberA - numberB;
+                } else {
+                    const dateA = Date.parse(valueA);
+                    const dateB = Date.parse(valueB);
+                    comparison = Number.isNaN(dateA) || Number.isNaN(dateB)
+                        ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
+                        : dateA - dateB;
+                }
+                return direction === 'asc' ? comparison : -comparison;
+            });
+            rows.forEach((row) => body.append(row));
+            state.page = 1;
+            refreshAdminTablePagination();
+        };
+
+        header.addEventListener('click', sortByHeader);
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                sortByHeader();
+            }
+        });
     });
 });
 refreshAdminTablePagination();

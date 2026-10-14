@@ -1,14 +1,14 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'Vice President', 'OVPRE Staff', 'Research Coordinator', 'Extension Coordinator']);
+$user = require_login(['Super Admin', 'OVPRE Admin']);
 verify_csrf();
 
-function record_file_url(string $filename): string {
-    return 'uploads/records/' . implode('/', array_map('rawurlencode', explode('/', $filename)));
+function record_file_url(string $filename, int $documentId, ?int $versionId = null): string {
+    return record_access_url($filename, '', $documentId, $versionId);
 }
 
 function record_is_previewable(string $filename): bool {
-    return in_array(strtolower(pathinfo($filename, PATHINFO_EXTENSION)), ['pdf', 'jpg', 'jpeg', 'png'], true);
+    return in_array(strtolower(pathinfo(preg_replace('/^storage:/', '', $filename), PATHINFO_EXTENSION)), ['pdf', 'jpg', 'jpeg', 'png'], true);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 flash('success', 'Selected records archived.');
             } elseif ($bulkAction === 'delete') {
+                if (($user['role'] ?? '') !== 'Super Admin') {
+                    flash('error', 'Only the Super Admin can permanently delete records.');
+                    redirect_to('admin-documents.php');
+                }
                 $stmt = db()->prepare("SELECT id, filename FROM documents WHERE id IN ($placeholders)");
                 $stmt->execute($ids);
                 foreach ($stmt->fetchAll() as $doc) {
@@ -74,6 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         log_action((int) $user['id'], "Restored document #{$id}");
         flash('success', 'Document restored.');
     } elseif ($action === 'delete') {
+        if (($user['role'] ?? '') !== 'Super Admin') {
+            flash('error', 'Only the Super Admin can permanently delete records.');
+            redirect_to('admin-documents.php');
+        }
         $stmt = db()->prepare('SELECT filename FROM documents WHERE id = ?');
         $stmt->execute([$id]);
         $doc = $stmt->fetch();
@@ -234,7 +242,7 @@ renderHeader('Record Management', 'documents');
                     <td>
                         <div class="record-action-panel">
                             <?php if (record_is_previewable($doc['filename'])): ?><button class="ghost-btn action-btn" type="button" data-open-modal="preview-<?php echo (int) $doc['id']; ?>"><i class="ri-eye-line"></i><span>Preview</span></button><?php endif; ?>
-                            <a class="ghost-btn action-btn" href="<?php echo h(record_file_url($doc['filename'])); ?>" title="Download"><i class="ri-download-line"></i><span>Download</span></a>
+                            <a class="ghost-btn action-btn" href="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" title="Download"><i class="ri-download-line"></i><span>Download</span></a>
                             <button class="ghost-btn action-btn" type="button" data-open-modal="timeline-<?php echo (int) $doc['id']; ?>"><i class="ri-time-line"></i><span>Timeline</span></button>
                             <button class="ghost-btn action-btn" type="button" data-open-modal="versions-<?php echo (int) $doc['id']; ?>"><i class="ri-git-branch-line"></i><span>Versions</span></button>
                             <?php if (!$archived): ?>
@@ -291,7 +299,7 @@ renderHeader('Record Management', 'documents');
     <div class="modal" id="restore-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Retrieve Record</h2><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><p>Retrieve this archived record to the active workflow?</p><button class="primary-btn"><i class="ri-arrow-go-back-line"></i> Retrieve Record</button></form></div>
     <div class="modal" id="delete-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Delete Record</h2><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><p>This permanently deletes the record and its stored file.</p><button class="danger-btn"><i class="ri-delete-bin-line"></i> Permanently Delete</button></form></div>
     <div class="modal" id="timeline-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Timeline</h2><div class="timeline-list"><?php foreach (review_timeline('document', (int) $doc['id']) as $log): ?><div><strong><?php echo h($log['action']); ?></strong><p><?php echo h($log['remarks'] ?: 'No remarks.'); ?></p><small><?php echo h(($log['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($log['created_at']))); ?></small></div><?php endforeach; ?><div><strong>Uploaded</strong><p><?php echo h($doc['description'] ?: 'Record submitted.'); ?></p><small><?php echo h(date('M d, Y h:i A', strtotime($doc['created_at']))); ?></small></div></div></article></div>
-    <div class="modal" id="versions-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Version History</h2><div class="timeline-list"><?php $versions = db()->prepare('SELECT v.*, u.fullname FROM document_versions v LEFT JOIN users u ON u.id = v.modified_by WHERE v.document_id = ? ORDER BY v.created_at DESC'); $versions->execute([(int) $doc['id']]); foreach ($versions->fetchAll() as $version): ?><div><strong><?php echo h($version['version_label']); ?></strong><p><a href="<?php echo h(record_file_url($version['filename'])); ?>">Download version</a></p><small><?php echo h(($version['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($version['created_at']))); ?></small></div><?php endforeach; ?></div></article></div>
-    <?php if (record_is_previewable($doc['filename'])): ?><div class="modal" id="preview-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card preview-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2><?php echo h($doc['title']); ?></h2><?php $ext = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION)); if ($ext === 'pdf'): ?><iframe class="document-preview" src="<?php echo h(record_file_url($doc['filename'])); ?>"></iframe><?php else: ?><img class="document-preview-image" src="<?php echo h(record_file_url($doc['filename'])); ?>" alt="<?php echo h($doc['title']); ?>"><?php endif; ?></article></div><?php endif; ?>
+    <div class="modal" id="versions-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Version History</h2><div class="timeline-list"><?php $versions = db()->prepare('SELECT v.*, u.fullname FROM document_versions v LEFT JOIN users u ON u.id = v.modified_by WHERE v.document_id = ? ORDER BY v.created_at DESC'); $versions->execute([(int) $doc['id']]); foreach ($versions->fetchAll() as $version): ?><div><strong><?php echo h($version['version_label']); ?></strong><p><a href="<?php echo h(record_file_url($version['filename'], (int) $version['document_id'], (int) $version['id'])); ?>">Download version</a></p><small><?php echo h(($version['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($version['created_at']))); ?></small></div><?php endforeach; ?></div></article></div>
+    <?php if (record_is_previewable($doc['filename'])): ?><div class="modal" id="preview-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card preview-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2><?php echo h($doc['title']); ?></h2><?php $ext = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION)); if ($ext === 'pdf'): ?><iframe class="document-preview" src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>"></iframe><?php else: ?><img class="document-preview-image" src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" alt="<?php echo h($doc['title']); ?>"><?php endif; ?></article></div><?php endif; ?>
 <?php endforeach; ?>
 <?php renderFooter(); ?>

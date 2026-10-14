@@ -11,8 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $documentId = portal_save_document($_POST, $_FILES['supporting_document'] ?? [], $user);
         db()->prepare('INSERT INTO research_projects (title, researchers, abstract, document_id, submitted_by, status, created_at) VALUES (?, ?, ?, ?, ?, "Pending", NOW())')
             ->execute([trim($_POST['title']), trim($_POST['researchers']), trim($_POST['abstract']), $documentId, $user['id']]);
-        log_review('research', (int) db()->lastInsertId(), (int) $user['id'], 'Submitted', trim($_POST['abstract']));
+        $projectId = (int) db()->lastInsertId();
+        log_review('research', $projectId, (int) $user['id'], 'Submitted', trim($_POST['abstract']));
         log_action((int) $user['id'], 'Submitted research proposal: ' . trim($_POST['title']));
+        $fileLink = 'submitted-files.php' . ($documentId ? '#document-' . $documentId : '');
+        notify_all_accounts('New research proposal submitted: ' . trim($_POST['title']), $fileLink);
         flash('success', 'Research proposal submitted. Please wait for approval.');
         redirect_to('research.php');
     } catch (Throwable $error) {
@@ -26,7 +29,7 @@ $projects = portal_research_projects();
 <section class="panel proposal-launcher">
     <div class="panel-heading">
         <div>
-            <h2>Research Proposal</h2><span>Submit a proposal for Super Admin review.</span>
+            <h2>Research Proposal</h2><span>Submit a proposal for OVPRE review.</span>
         </div><button class="primary-btn" type="button" data-open-modal="researchProposalModal"><i class="ri-add-line"></i> New Proposal</button>
     </div>
 </section>
@@ -36,7 +39,7 @@ $projects = portal_research_projects();
         <button class="modal-close" type="button" data-close-modal aria-label="Close proposal form"><i class="ri-close-line"></i></button>
         <div class="panel-heading">
             <div>
-                <h2 style="font-size: small;" id="researchProposalModalTitle">Submit Research Proposal</h2><span>Visible to Super Admin</span>
+                <h2 style="font-size: small;" id="researchProposalModalTitle">Submit Research Proposal</h2><span>Visible to OVPRE reviewers</span>
             </div>
         </div>
         <form class="portal-form" method="post" enctype="multipart/form-data">
@@ -77,7 +80,7 @@ $projects = portal_research_projects();
                     <td><?php echo h($project['researchers']); ?></td>
                     <td><?php echo h($project['fullname']); ?></td>
                     <td><span class="status-pill status-<?php echo h(statusClass($project['status'])); ?>"><?php echo h($project['status'] === 'Declined' ? 'Rejected' : $project['status']); ?></span></td>
-                    <td><?php if (!empty($project['attachment_filename'])): ?><div class="file-actions"><a class="ghost-btn mini-btn" href="<?php echo h('../uploads/records/' . $project['attachment_filename']); ?>" target="_blank" rel="noopener"><i class="ri-download-line"></i> File</a><button class="ghost-btn mini-btn" type="button" data-print-file="<?php echo h('../uploads/records/' . $project['attachment_filename']); ?>"><i class="ri-printer-line"></i> Print</button></div><?php else: ?><span class="muted">None</span><?php endif; ?></td>
+<td><?php if (!empty($project['attachment_filename'])): ?><?php $attachmentUrl = record_access_url($project['attachment_filename'], '../', (int) $project['document_id']); ?><div class="file-actions"><a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener"><i class="ri-download-line"></i> File</a><button class="ghost-btn mini-btn" type="button" data-print-file="<?php echo h($attachmentUrl); ?>"><i class="ri-printer-line"></i> Print</button></div><?php else: ?><span class="muted">None</span><?php endif; ?></td>
                     <td><button class="ghost-btn action-btn" type="button" data-open-modal="research-feedback-<?php echo (int) $project['id']; ?>"><i class="ri-chat-3-line"></i><span>View Feedback</span></button></td>
                     <td><?php echo h(date('M d, Y', strtotime($project['created_at']))); ?></td>
                 </tr><?php endforeach; ?><?php if (!$projects): ?><tr data-pagination-empty>

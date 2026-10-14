@@ -5,17 +5,11 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../includes/bootstrap.php';
 
 const ROLE_PORTALS = [
-    'Vice President' => [
-        'slug' => 'vice-president',
-        'title' => 'Vice President Portal',
-        'purpose' => 'Final approval authority',
-        'nav' => ['dashboard', 'analytics', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
-    ],
-    'OVPRE Staff' => [
-        'slug' => 'ovpre-staff',
-        'title' => 'OVPRE Staff Portal',
-        'purpose' => 'Records management and monitoring',
-        'nav' => ['dashboard', 'research', 'extension', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+    'OVPRE Admin' => [
+        'slug' => 'ovpre-admin',
+        'title' => 'OVPRE Admin Portal',
+        'purpose' => 'Manage authorized research and extension office operations',
+        'nav' => ['dashboard', 'research', 'extension', 'analytics', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
     ],
     'Research Coordinator' => [
         'slug' => 'research-coordinator',
@@ -29,12 +23,24 @@ const ROLE_PORTALS = [
         'purpose' => 'Extension monitoring and submissions',
         'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications'],
     ],
+    'Faculty Extensionist' => [
+        'slug' => 'faculty-extensionist',
+        'title' => 'Faculty Extensionist Portal',
+        'purpose' => 'Submit extension work and follow your authorized records',
+        'nav' => ['dashboard', 'extension', 'notifications', 'status'],
+    ],
+    'Researcher' => [
+        'slug' => 'researcher',
+        'title' => 'Researcher Portal',
+        'purpose' => 'Submit research work and follow your authorized records',
+        'nav' => ['dashboard', 'research', 'notifications', 'status'],
+    ],
 ];
 
 function portal_config(): array
 {
     $role = PORTAL_ROLE;
-    return ROLE_PORTALS[$role] ?? ROLE_PORTALS['OVPRE Staff'];
+    return ROLE_PORTALS[$role] ?? ROLE_PORTALS['Researcher'];
 }
 
 function portal_require_user(): array
@@ -84,9 +90,9 @@ function portal_nav_items(): array
         'notifications' => ['Notifications', 'notifications.php', 'ri-notification-3-line'],
         'status' => ['Submission Status', 'status.php', 'ri-route-line'],
     ];
-    if (PORTAL_ROLE === 'Extension Coordinator') {
+    if (PORTAL_ROLE === 'Extension Coordinator' || PORTAL_ROLE === 'Faculty Extensionist') {
         $items['status'][0] = 'Extension Submission Status';
-    } elseif (PORTAL_ROLE === 'Research Coordinator') {
+    } elseif (PORTAL_ROLE === 'Research Coordinator' || PORTAL_ROLE === 'Researcher') {
         $items['status'][0] = 'Research Submission Status';
         $items['calendar'][0] = 'Activities';
     }
@@ -112,7 +118,7 @@ function portal_header(string $title, string $current): array
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
         <link rel="icon" type="image/jpeg" href="../assets/img/ovpre-logo.jpg?v=20261012">
-        <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261012-project-tracking-search">
+        <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261015-hidden-sidebar">
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     </head>
@@ -130,7 +136,7 @@ function portal_header(string $title, string $current): array
             </aside>
             <div class="role-page">
                 <header class="role-topbar">
-                    <button class="icon-btn" type="button" data-role-sidebar><i class="ri-menu-line"></i></button>
+                    <button class="icon-btn" type="button" aria-label="Open navigation menu" aria-controls="roleSidebar" aria-expanded="false" data-role-sidebar><i class="ri-menu-line"></i></button>
                     <div>
                         <h1><?php echo h($title); ?></h1>
                     </div>
@@ -165,7 +171,7 @@ function portal_header(string $title, string $current): array
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="../role-portal/assets/js/portal.js?v=20261012-schedule-request-actions"></script>
+        <script src="../role-portal/assets/js/portal.js?v=20261015-hidden-sidebar"></script>
     </body>
 
     </html>
@@ -181,6 +187,28 @@ function portal_header(string $title, string $current): array
 
             function portal_stats(): array
             {
+                $userId = (int) (current_user()['id'] ?? 0);
+                $departmentId = (int) (current_user()['department_id'] ?? 0);
+                if (in_array(PORTAL_ROLE, ['Researcher', 'Faculty Extensionist'], true)) {
+                    $stmt = db()->prepare('SELECT COUNT(*) FROM research_projects WHERE submitted_by = ?');
+                    $stmt->execute([$userId]);
+                    $researchTotal = (int) $stmt->fetchColumn();
+                    $stmt = db()->prepare('SELECT COUNT(*) FROM extension_projects WHERE submitted_by = ?');
+                    $stmt->execute([$userId]);
+                    $extensionTotal = (int) $stmt->fetchColumn();
+                    return ['research_total' => $researchTotal, 'extension_total' => $extensionTotal, 'pending_research' => 0, 'approved_research' => 0, 'pending_documents' => 0, 'approved_documents' => 0];
+                }
+                if (in_array(PORTAL_ROLE, ['Research Coordinator', 'Extension Coordinator'], true)) {
+                    $deptFilter = $departmentId > 0 ? ' AND submitter.department_id = ?' : ' AND submitter.id = ?';
+                    $scopeId = $departmentId > 0 ? $departmentId : $userId;
+                    $researchStmt = db()->prepare('SELECT COUNT(*) total, COUNT(CASE WHEN r.status IN ("Pending", "Under Review") THEN 1 END) pending, COUNT(CASE WHEN r.status = "Approved" THEN 1 END) approved FROM research_projects r JOIN users submitter ON submitter.id = r.submitted_by WHERE 1=1' . $deptFilter);
+                    $researchStmt->execute([$scopeId]);
+                    $researchStats = $researchStmt->fetch();
+                    $extensionStmt = db()->prepare('SELECT COUNT(*) total FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE 1=1' . $deptFilter);
+                    $extensionStmt->execute([$scopeId]);
+                    $extensionTotal = (int) $extensionStmt->fetchColumn();
+                    return ['research_total' => (int) $researchStats['total'], 'extension_total' => $extensionTotal, 'pending_research' => (int) $researchStats['pending'], 'approved_research' => (int) $researchStats['approved'], 'pending_documents' => 0, 'approved_documents' => 0];
+                }
                 return [
                     'research_total' => (int) db()->query('SELECT COUNT(*) FROM research_projects')->fetchColumn(),
                     'extension_total' => (int) db()->query('SELECT COUNT(*) FROM extension_projects')->fetchColumn(),
@@ -198,31 +226,83 @@ function portal_header(string $title, string $current): array
 
             function portal_research_projects(): array
             {
-                return db()->query('SELECT r.*, u.fullname, dep.department_name, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename FROM research_projects r JOIN users u ON u.id = r.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id LEFT JOIN documents d ON d.id = r.document_id ORDER BY r.created_at DESC')->fetchAll();
+                $sql = 'SELECT r.*, u.fullname, dep.department_name, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename FROM research_projects r JOIN users u ON u.id = r.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id LEFT JOIN documents d ON d.id = r.document_id';
+                $params = [];
+                if (PORTAL_ROLE === 'Researcher') {
+                    $sql .= ' WHERE r.submitted_by = ?';
+                    $params[] = (int) current_user()['id'];
+                } elseif (PORTAL_ROLE === 'Research Coordinator') {
+                    $departmentId = (int) (current_user()['department_id'] ?? 0);
+                    $sql .= $departmentId > 0 ? ' WHERE u.department_id = ?' : ' WHERE r.submitted_by = ?';
+                    $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
+                }
+                $sql .= ' ORDER BY r.created_at DESC';
+                $stmt = db()->prepare($sql);
+                $stmt->execute($params);
+                return $stmt->fetchAll();
             }
 
             function portal_extension_projects(): array
             {
                 try {
-                    return db()->query('SELECT e.*, u.fullname, dep.department_name, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id LEFT JOIN documents d ON d.id = e.document_id ORDER BY e.created_at DESC')->fetchAll();
+                    $sql = 'SELECT e.*, u.fullname, dep.department_name, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id LEFT JOIN documents d ON d.id = e.document_id';
+                    $params = [];
+                    if (PORTAL_ROLE === 'Faculty Extensionist') {
+                        $sql .= ' WHERE e.submitted_by = ?';
+                        $params[] = (int) current_user()['id'];
+                    } elseif (PORTAL_ROLE === 'Extension Coordinator') {
+                        $departmentId = (int) (current_user()['department_id'] ?? 0);
+                        $sql .= $departmentId > 0 ? ' WHERE u.department_id = ?' : ' WHERE e.submitted_by = ?';
+                        $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
+                    }
+                    $sql .= ' ORDER BY e.created_at DESC';
+                    $stmt = db()->prepare($sql);
+                    $stmt->execute($params);
+                    return $stmt->fetchAll();
                 } catch (PDOException $error) {
                     if (stripos($error->getMessage(), 'document_id') === false) {
                         throw $error;
                     }
-                    return db()->query('SELECT e.*, u.fullname, dep.department_name, NULL AS attachment_filename, NULL AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id ORDER BY e.created_at DESC')->fetchAll();
+                    $sql = 'SELECT e.*, u.fullname, dep.department_name, NULL AS attachment_filename, NULL AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id';
+                    $params = [];
+                    if (PORTAL_ROLE === 'Faculty Extensionist') { $sql .= ' WHERE e.submitted_by = ?'; $params[] = (int) current_user()['id']; }
+                    elseif (PORTAL_ROLE === 'Extension Coordinator') {
+                        $departmentId = (int) (current_user()['department_id'] ?? 0);
+                        $sql .= $departmentId > 0 ? ' WHERE u.department_id = ?' : ' WHERE e.submitted_by = ?';
+                        $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
+                    }
+                    $sql .= ' ORDER BY e.created_at DESC';
+                    $stmt = db()->prepare($sql);
+                    $stmt->execute($params);
+                    return $stmt->fetchAll();
                 }
             }
 
             function portal_documents(): array
             {
-                return db()->query('SELECT d.*, c.category_name, u.fullname, dep.department_name FROM documents d JOIN categories c ON c.id = d.category_id JOIN users u ON u.id = d.uploaded_by LEFT JOIN departments dep ON dep.id = d.department_id WHERE d.archived_at IS NULL ORDER BY d.created_at DESC')->fetchAll();
+                $sql = 'SELECT d.*, c.category_name, u.fullname, dep.department_name FROM documents d JOIN categories c ON c.id = d.category_id JOIN users u ON u.id = d.uploaded_by LEFT JOIN departments dep ON dep.id = d.department_id WHERE d.archived_at IS NULL';
+                $params = [];
+                if (in_array(PORTAL_ROLE, ['Researcher', 'Faculty Extensionist'], true)) {
+                    $sql .= ' AND d.uploaded_by = ?';
+                    $params[] = (int) current_user()['id'];
+                } elseif (in_array(PORTAL_ROLE, ['Research Coordinator', 'Extension Coordinator'], true)) {
+                    $departmentId = (int) (current_user()['department_id'] ?? 0);
+                    $sql .= $departmentId > 0 ? ' AND d.department_id = ?' : ' AND d.uploaded_by = ?';
+                    $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
+                }
+                $sql .= ' ORDER BY d.created_at DESC';
+                $stmt = db()->prepare($sql);
+                $stmt->execute($params);
+                return $stmt->fetchAll();
             }
 
             function portal_announcements(): array
             {
                 $audienceFilter = match (PORTAL_ROLE) {
                     'Extension Coordinator' => ' AND a.audience IN ("All", "Staff")',
+                    'Faculty Extensionist' => ' AND a.audience IN ("All", "Staff")',
                     'Research Coordinator' => ' AND a.audience IN ("All", "Researchers")',
+                    'Researcher' => ' AND a.audience IN ("All", "Researchers")',
                     default => '',
                 };
                 return db()->query('SELECT a.*, u.fullname FROM announcements a JOIN users u ON u.id = a.posted_by WHERE a.status = "Published"' . $audienceFilter . ' ORDER BY a.created_at DESC')->fetchAll();
@@ -250,19 +330,16 @@ function portal_header(string $title, string $current): array
                 if ($department <= 0) {
                     $department = (int) (db()->query('SELECT id FROM departments ORDER BY id LIMIT 1')->fetch()['id'] ?? 0);
                 }
-                $folder = UPLOAD_DIR . '/' . $category;
-                if (!is_dir($folder)) {
-                    mkdir($folder, 0775, true);
-                }
                 $stored = bin2hex(random_bytes(16)) . '.' . $ext;
-                if (!move_uploaded_file((string) $file['tmp_name'], $folder . '/' . $stored)) {
-                    throw new RuntimeException('File upload failed.');
-                }
+                $objectPath = $category . '/' . $stored;
+                $mime = (new finfo(FILEINFO_MIME_TYPE))->file((string) $file['tmp_name']) ?: 'application/octet-stream';
+                supabase_storage_upload((string) $file['tmp_name'], $objectPath, $mime);
+                $storedName = 'storage:' . $objectPath;
                 db()->prepare('INSERT INTO documents (title, category_id, description, author, department_id, filename, original_filename, uploaded_by, status, submission_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "Pending", CURDATE(), NOW())')
-                    ->execute([trim((string) $post['document_title']), $category, trim((string) ($post['document_description'] ?? '')), $user['fullname'], $department, $category . '/' . $stored, basename((string) $file['name']), $user['id']]);
+                    ->execute([trim((string) $post['document_title']), $category, trim((string) ($post['document_description'] ?? '')), $user['fullname'], $department, $storedName, basename((string) $file['name']), $user['id']]);
                 $documentId = (int) db()->lastInsertId();
                 db()->prepare('INSERT INTO document_versions (document_id, version_label, filename, modified_by, created_at) VALUES (?, "Portal Upload", ?, ?, NOW())')
-                    ->execute([$documentId, $category . '/' . $stored, $user['id']]);
+                    ->execute([$documentId, $storedName, $user['id']]);
                 return $documentId;
             }
 

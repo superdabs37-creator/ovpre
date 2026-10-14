@@ -353,6 +353,7 @@ CREATE TABLE `notifications` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `message` text NOT NULL,
+  `link` varchar(500) DEFAULT NULL,
   `status` enum('Unread','Read') DEFAULT 'Unread',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -402,15 +403,17 @@ CREATE TABLE `users` (
   `email` varchar(190) NOT NULL,
   `profile_photo` varchar(255) DEFAULT NULL,
   `username` varchar(80) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('Super Admin','Vice President','OVPRE Staff','Research Coordinator','Extension Coordinator','Faculty Researcher','Evaluator/Reviewer','User') NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `auth_user_id` char(36) DEFAULT NULL,
+  `role` enum('Super Admin','OVPRE Admin','Research Coordinator','Extension Coordinator','Faculty Extensionist','Researcher') NOT NULL,
   `department_id` int(11) DEFAULT NULL,
-  `status` enum('Active','Inactive','Locked') DEFAULT 'Active',
+  `status` enum('Pending Invitation','Pending Approval','Active','Inactive') DEFAULT 'Pending Approval',
   `login_attempts` int(11) DEFAULT 0,
   `locked_until` datetime DEFAULT NULL,
   `reset_token` varchar(255) DEFAULT NULL,
   `reset_expires` datetime DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  UNIQUE KEY `users_auth_user_id_unique` (`auth_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -419,11 +422,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `fullname`, `email`, `username`, `password`, `role`, `department_id`, `status`, `login_attempts`, `locked_until`, `reset_token`, `reset_expires`, `created_at`) VALUES
 (1, 'System Administrator', 'admin@plsp.edu.ph', 'admin', '$2y$10$ApePRZk2RoQdlV6WuRB6gOqViGhiMlIxFITLUdSvbVwekPgEgd3Dm', 'Super Admin', 1, 'Active', 0, NULL, NULL, NULL, '2026-06-07 14:57:39'),
-(2, 'OVPRE Records Staff', 'staff@plsp.edu.ph', 'staff', '$2y$10$ApePRZk2RoQdlV6WuRB6gOqViGhiMlIxFITLUdSvbVwekPgEgd3Dm', 'OVPRE Staff', 1, 'Inactive', 0, NULL, NULL, NULL, '2026-06-07 14:57:39'),
-(3, 'Maria Santos', 'faculty@plsp.edu.ph', 'faculty', '$2y$10$ApePRZk2RoQdlV6WuRB6gOqViGhiMlIxFITLUdSvbVwekPgEgd3Dm', 'Faculty Researcher', 2, 'Active', 1, NULL, '$2y$10$vr/Dey9d9WZmY6xWD7/M.eCF2JffVd98L8EFEtliRDw9yvNf5Qoh6', '2026-06-08 01:30:14', '2026-06-07 14:57:39'),
+(2, 'OVPRE Records Staff', 'staff@plsp.edu.ph', 'staff', '$2y$10$ApePRZk2RoQdlV6WuRB6gOqViGhiMlIxFITLUdSvbVwekPgEgd3Dm', 'OVPRE Admin', 1, 'Inactive', 0, NULL, NULL, NULL, '2026-06-07 14:57:39'),
+(3, 'Maria Santos', 'faculty@plsp.edu.ph', 'faculty', '$2y$10$ApePRZk2RoQdlV6WuRB6gOqViGhiMlIxFITLUdSvbVwekPgEgd3Dm', 'Researcher', 2, 'Active', 1, NULL, '$2y$10$vr/Dey9d9WZmY6xWD7/M.eCF2JffVd98L8EFEtliRDw9yvNf5Qoh6', '2026-06-08 01:30:14', '2026-06-07 14:57:39'),
 (4, 'Carlo Reyes', 'extension@plsp.edu.ph', 'extension', '$2y$10$ApePRZk2RoQdlV6WuRB6gOqViGhiMlIxFITLUdSvbVwekPgEgd3Dm', 'Extension Coordinator', 6, 'Inactive', 0, NULL, NULL, NULL, '2026-06-07 14:57:39'),
-(6, 'jerome', 'facultyplsp@gmail.com', 'edrian', '$2y$10$fPi4FaichiIAm7lK8x5FVeBoRfSx9PTyXGGWrkkEhPHFjPoM71VvG', 'User', 9, 'Inactive', 2, NULL, '$2y$10$9metdNw2kO.apkMYyhFyL.4IDU3Jgj7dW5Gj7WXvHyMqcQBqylTWO', '2026-06-08 02:01:11', '2026-06-07 17:08:04'),
-(7, 'Jiro', 'jiro@gmail.com', 'jiro', '$2y$10$9DFNe4u31TBdA/59PpUg5Oc.puYPU25yJaiAJGj8RalKBMhiLvO6a', 'Vice President', 6, 'Active', 0, NULL, NULL, NULL, '2026-06-08 14:46:36');
+(6, 'jerome', 'facultyplsp@gmail.com', 'edrian', '$2y$10$fPi4FaichiIAm7lK8x5FVeBoRfSx9PTyXGGWrkkEhPHFjPoM71VvG', 'Researcher', 9, 'Inactive', 2, NULL, '$2y$10$9metdNw2kO.apkMYyhFyL.4IDU3Jgj7dW5Gj7WXvHyMqcQBqylTWO', '2026-06-08 02:01:11', '2026-06-07 17:08:04'),
+(7, 'Jiro', 'jiro@gmail.com', 'jiro', '$2y$10$9DFNe4u31TBdA/59PpUg5Oc.puYPU25yJaiAJGj8RalKBMhiLvO6a', 'OVPRE Admin', 6, 'Active', 0, NULL, NULL, NULL, '2026-06-08 14:46:36');
 
 --
 -- Indexes for dumped tables

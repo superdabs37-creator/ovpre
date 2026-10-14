@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-require_login(['Super Admin', 'Vice President', 'OVPRE Staff', 'Research Coordinator', 'Extension Coordinator']);
+require_login(['Super Admin', 'OVPRE Admin', 'Research Coordinator', 'Extension Coordinator']);
 ensure_activity_archived_at_column();
 
 function report_scalar(string $sql, array $params = []): int|float {
@@ -26,7 +26,7 @@ $yearOptions = range((int) date('Y') + 1, (int) date('Y') - 5);
 $documentConditions = ['d.created_at BETWEEN ? AND ?'];
 $documentParams = [$fromDateTime, $toDateTime];
 if ($selectedYear !== 'All') {
-    $documentConditions[] = 'YEAR(d.created_at) = ?';
+    $documentConditions[] = 'EXTRACT(YEAR FROM d.created_at) = ?';
     $documentParams[] = (int) $selectedYear;
 }
 if ($selectedDepartment !== 'All') {
@@ -39,15 +39,15 @@ if ($selectedStatus !== 'All') {
 }
 $documentWhere = implode(' AND ', $documentConditions);
 
-$categoryStmt = db()->prepare("SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND {$documentWhere} GROUP BY c.id ORDER BY c.category_name");
+$categoryStmt = db()->prepare("SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND {$documentWhere} GROUP BY c.id, c.category_name ORDER BY c.category_name");
 $categoryStmt->execute($documentParams);
 $categoryCounts = $categoryStmt->fetchAll();
 
-$departmentStmt = db()->prepare("SELECT dep.department_name, COUNT(d.id) total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND {$documentWhere} GROUP BY dep.id ORDER BY total DESC, dep.department_name");
+$departmentStmt = db()->prepare("SELECT dep.department_name, COUNT(d.id) total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND {$documentWhere} GROUP BY dep.id, dep.department_name ORDER BY total DESC, dep.department_name");
 $departmentStmt->execute($documentParams);
 $departmentCounts = $departmentStmt->fetchAll();
 
-$monthlyStmt = db()->prepare("SELECT DATE_FORMAT(d.created_at, '%b %Y') AS label, COUNT(*) AS total FROM documents d WHERE {$documentWhere} GROUP BY YEAR(d.created_at), MONTH(d.created_at) ORDER BY MIN(d.created_at)");
+$monthlyStmt = db()->prepare("SELECT TO_CHAR(DATE_TRUNC('month', d.created_at), 'Mon YYYY') AS label, COUNT(*) AS total FROM documents d WHERE {$documentWhere} GROUP BY DATE_TRUNC('month', d.created_at) ORDER BY DATE_TRUNC('month', d.created_at)");
 $monthlyStmt->execute($documentParams);
 $monthlySubmissions = $monthlyStmt->fetchAll();
 
@@ -67,25 +67,25 @@ $extension = $extensionStmt->fetchAll();
 $totalResearch = (int) report_scalar('SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
 $publishedResearch = (int) report_scalar("SELECT COUNT(*) FROM documents d JOIN categories c ON c.id = d.category_id WHERE c.category_name = 'Publication' AND d.created_at BETWEEN ? AND ?", $rangeParams);
 $ongoingResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review')", $rangeParams);
-$completedResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Approved', 'Completed')", $rangeParams);
+$completedResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status = 'Approved'", $rangeParams);
 
 $totalExtension = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
-$activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Ongoing', 'Active', 'Implementation', 'Planning')", $rangeParams);
-$completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Completed', 'Approved')", $rangeParams);
-$upcomingActivities = (int) report_scalar('SELECT COUNT(*) FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL AND date >= CURDATE()');
+$activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status = 'Ongoing'", $rangeParams);
+$completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status = 'Completed'", $rangeParams);
+$upcomingActivities = (int) report_scalar("SELECT COUNT(*) FROM activities WHERE approval_status = 'Approved' AND archived_at IS NULL AND date >= CURRENT_DATE");
 
 $researchFunding = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND funding_source IS NOT NULL AND funding_source <> ''", $rangeParams);
 $extensionFunding = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND budget > 0', $rangeParams);
 $totalGrants = $researchFunding + $extensionFunding;
-$approvedFunding = (float) report_scalar("SELECT COALESCE(SUM(budget), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Approved', 'Completed', 'Ongoing')", $rangeParams);
+$approvedFunding = (float) report_scalar("SELECT COALESCE(SUM(budget), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Completed', 'Ongoing')", $rangeParams);
 $requestedFunding = (float) report_scalar('SELECT COALESCE(SUM(budget), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
 $pendingRequests = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review')", $rangeParams)
-    + (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Planning', 'Pending', 'Under Review')", $rangeParams);
+    + (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status = 'Planning'", $rangeParams);
 $fundingUtilization = $requestedFunding > 0 ? round(($approvedFunding / $requestedFunding) * 100) : 0;
 
 $totalAccomplishments = (int) report_scalar('SELECT COUNT(*) FROM accomplishment_reports WHERE created_at BETWEEN ? AND ?', $rangeParams);
-$facultyAccomplishments = (int) report_scalar("SELECT COUNT(*) FROM accomplishment_reports ar JOIN users u ON u.id = ar.submitted_by WHERE ar.created_at BETWEEN ? AND ? AND u.role <> 'Student'", $rangeParams);
-$studentAccomplishments = (int) report_scalar("SELECT COUNT(*) FROM accomplishment_reports ar JOIN users u ON u.id = ar.submitted_by WHERE ar.created_at BETWEEN ? AND ? AND u.role = 'Student'", $rangeParams);
+$facultyAccomplishments = (int) report_scalar("SELECT COUNT(*) FROM accomplishment_reports ar JOIN users u ON u.id = ar.submitted_by WHERE ar.created_at BETWEEN ? AND ? AND u.role = 'Faculty Extensionist'", $rangeParams);
+$studentAccomplishments = (int) report_scalar("SELECT COUNT(*) FROM accomplishment_reports ar JOIN users u ON u.id = ar.submitted_by WHERE ar.created_at BETWEEN ? AND ? AND u.role = 'User'", $rangeParams);
 $extensionAccomplishments = (int) report_scalar('SELECT COUNT(*) FROM accomplishment_reports WHERE created_at BETWEEN ? AND ? AND project_id IS NOT NULL', $rangeParams);
 $researchAccomplishments = (int) report_scalar("SELECT COUNT(*) FROM documents d JOIN categories c ON c.id = d.category_id WHERE c.category_name = 'Accomplishment Report' AND d.created_at BETWEEN ? AND ?", $rangeParams);
 
@@ -496,8 +496,8 @@ renderHeader('Reports Management', 'reports');
         <article class="report-module-card">
             <div class="report-module-head"><div><h3>Accomplishments</h3><p>Institutional accomplishment reporting</p></div><div class="report-module-icon"><i class="ri-medal-line"></i></div></div>
             <div class="report-metrics">
-                <div class="report-metric"><span>Faculty Accomplishments</span><strong><?php echo number_format($facultyAccomplishments); ?></strong></div>
-                <div class="report-metric"><span>Student Accomplishments</span><strong><?php echo number_format($studentAccomplishments); ?></strong></div>
+                <div class="report-metric"><span>Faculty Extensionist Accomplishments</span><strong><?php echo number_format($facultyAccomplishments); ?></strong></div>
+                <div class="report-metric"><span>User Accomplishments</span><strong><?php echo number_format($studentAccomplishments); ?></strong></div>
                 <div class="report-metric"><span>Extension Accomplishments</span><strong><?php echo number_format($extensionAccomplishments); ?></strong></div>
                 <div class="report-metric"><span>Research Accomplishments</span><strong><?php echo number_format($researchAccomplishments); ?></strong></div>
             </div>

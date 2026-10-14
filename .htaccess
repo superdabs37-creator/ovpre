@@ -1,0 +1,6 @@
+# Set landing.php as default directory index page
+DirectoryIndex landing.php index.php
+
+<FilesMatch "^(config\.local\.php|.*\.(sql|ini|log))$">
+    Require all denied
+</FilesMatch>

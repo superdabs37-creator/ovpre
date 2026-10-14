@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'Vice President', 'OVPRE Staff']);
+$user = require_login(['Super Admin', 'OVPRE Admin']);
 verify_csrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

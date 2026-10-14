@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'OVPRE Staff', 'Research Coordinator', 'Extension Coordinator', 'Faculty Researcher']);
+$user = require_login(['Super Admin', 'OVPRE Admin', 'Research Coordinator', 'Extension Coordinator', 'Faculty Extensionist', 'Researcher']);
 verify_csrf();
 $notice = null;
 

@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'OVPRE Staff', 'Research Coordinator']);
+$user = require_login(['Super Admin', 'OVPRE Admin', 'Research Coordinator']);
 ensure_activity_date_to_column();
 ensure_activity_archived_at_column();
 if (($user['role'] ?? '') === 'Research Coordinator') {

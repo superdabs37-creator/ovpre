@@ -1,5 +1,25 @@
 const roleSidebar = document.getElementById('roleSidebar');
-document.querySelector('[data-role-sidebar]')?.addEventListener('click', () => roleSidebar?.classList.toggle('open'));
+const roleSidebarToggle = document.querySelector('[data-role-sidebar]');
+if (roleSidebar && roleSidebarToggle) {
+    const backdrop = document.createElement('button');
+    backdrop.type = 'button';
+    backdrop.className = 'role-sidebar-backdrop';
+    backdrop.setAttribute('aria-label', 'Close navigation menu');
+    roleSidebar.insertAdjacentElement('afterend', backdrop);
+
+    const setRoleSidebarOpen = (isOpen) => {
+        roleSidebar.classList.toggle('open', isOpen);
+        backdrop.classList.toggle('open', isOpen);
+        roleSidebarToggle.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    roleSidebarToggle.addEventListener('click', () => setRoleSidebarOpen(!roleSidebar.classList.contains('open')));
+    backdrop.addEventListener('click', () => setRoleSidebarOpen(false));
+    roleSidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setRoleSidebarOpen(false)));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') setRoleSidebarOpen(false);
+    });
+}
 
 const roleProfileToggle = document.querySelector('[data-role-profile-toggle]');
 const roleProfileDropdown = document.querySelector('[data-role-profile-dropdown]');
@@ -106,8 +126,10 @@ const portalPagination = new Map();
 function renderPortalPagination(container) {
     const state = portalPagination.get(container);
     if (!state) return;
-    const { items, emptyItem, controls, pageSize, searchInput } = state;
-    const matchingItems = items.filter((item) => item.dataset.searchMatch !== 'false');
+    const { items, emptyItem, controls, searchInput } = state;
+    const pageSize = state.pageSize;
+    const matchingItems = items.filter((item) => item.dataset.searchMatch !== 'false'
+        && Object.entries(state.columnFilters || {}).every(([column, value]) => !value || (item.cells[Number(column)]?.textContent || '').trim() === value));
     const pageCount = Math.max(1, Math.ceil(matchingItems.length / pageSize));
     state.currentPage = Math.min(state.currentPage, pageCount);
     const startIndex = (state.currentPage - 1) * pageSize;
@@ -116,7 +138,11 @@ function renderPortalPagination(container) {
 
     items.forEach((item) => { item.hidden = !visibleItems.has(item); });
     if (emptyItem) {
-        emptyItem.hidden = matchingItems.length > 0 || Boolean(searchInput?.value.trim());
+        const query = searchInput?.value.trim() || '';
+        emptyItem.hidden = matchingItems.length > 0 || (Boolean(query) && Boolean(state.searchEmpty));
+        if (emptyItem.cells?.[0]) {
+            emptyItem.cells[0].textContent = query ? 'No matching entries found.' : (emptyItem.dataset.emptyMessage || emptyItem.cells[0].textContent);
+        }
     }
 
     const summary = controls.querySelector('[data-pagination-summary]');
@@ -126,23 +152,141 @@ function renderPortalPagination(container) {
     controls.querySelector('[data-pagination-previous]').disabled = state.currentPage <= 1;
     controls.querySelector('[data-pagination-next]').disabled = state.currentPage >= pageCount;
     controls.hidden = matchingItems.length === 0;
+
+    const pageButtons = controls.querySelector('[data-pagination-pages]');
+    if (pageButtons) {
+        pageButtons.replaceChildren();
+        const startPage = Math.max(1, Math.min(state.currentPage - 2, pageCount - 4));
+        const endPage = Math.min(pageCount, Math.max(5, state.currentPage + 2));
+        for (let page = startPage; page <= endPage; page += 1) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = String(page);
+            button.setAttribute('aria-label', `Page ${page}`);
+            button.setAttribute('aria-current', page === state.currentPage ? 'page' : 'false');
+            if (page === state.currentPage) button.classList.add('is-current');
+            button.addEventListener('click', () => {
+                state.currentPage = page;
+                renderPortalPagination(container);
+            });
+            pageButtons.append(button);
+        }
+    }
 }
 
-document.querySelectorAll('[data-paginate]').forEach((container) => {
+document.querySelectorAll('[data-paginate], .role-content table.data-table').forEach((container, tableIndex) => {
     const isTable = container instanceof HTMLTableElement;
     const itemParent = isTable ? container.tBodies[0] : container;
     if (!itemParent) return;
     const children = [...itemParent.children];
-    const emptyItem = children.find((item) => item.hasAttribute('data-pagination-empty')) || null;
+    const emptyItem = children.find((item) => item.hasAttribute('data-pagination-empty') || (isTable && item.cells.length === 1 && item.cells[0].colSpan > 1)) || null;
+    if (emptyItem?.cells?.[0]) emptyItem.dataset.emptyMessage = emptyItem.cells[0].textContent;
     const items = children.filter((item) => item !== emptyItem);
     items.forEach((item) => { item.dataset.searchMatch = 'true'; });
+    const columnFilters = {};
 
     const controls = document.createElement('nav');
     controls.className = 'table-pagination';
-    controls.setAttribute('aria-label', 'List pages');
-    controls.innerHTML = '<button type="button" data-pagination-previous>Previous</button><span data-pagination-summary></span><button type="button" data-pagination-next>Next</button>';
+    controls.setAttribute('aria-label', isTable ? 'Table pages' : 'List pages');
+    controls.innerHTML = '<span data-pagination-summary></span><div class="table-page-buttons"><button type="button" data-pagination-previous aria-label="Previous page">Previous</button><span data-pagination-pages></span><button type="button" data-pagination-next aria-label="Next page">Next</button></div>';
     const anchor = isTable ? (container.closest('.table-scroll') || container) : container;
     anchor.insertAdjacentElement('afterend', controls);
+
+    if (isTable) {
+        if (!container.id) container.id = `portalDataTable${tableIndex + 1}`;
+        const toolbar = document.createElement('div');
+        toolbar.className = 'portal-table-toolbar';
+        const existingSearch = document.querySelector(`[data-table-search="${container.id}"]`);
+        if (!existingSearch) {
+            const label = document.createElement('label');
+            label.className = 'table-search';
+            label.innerHTML = '<span class="sr-only">Search this table</span><i class="ri-search-line" aria-hidden="true"></i>';
+            const input = document.createElement('input');
+            input.type = 'search';
+            input.placeholder = 'Search this table';
+            input.dataset.tableSearch = container.id;
+            input.setAttribute('aria-label', 'Search this table');
+            label.append(input);
+            toolbar.append(label);
+        }
+
+        const lengthLabel = document.createElement('label');
+        lengthLabel.className = 'portal-table-length';
+        lengthLabel.innerHTML = '<span>Show</span>';
+        const lengthSelect = document.createElement('select');
+        lengthSelect.setAttribute('aria-label', 'Rows per page');
+        [['10', '10'], ['25', '25'], ['50', '50'], ['100', '100'], ['all', 'All']].forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            lengthSelect.append(option);
+        });
+        lengthLabel.append(lengthSelect, document.createTextNode(' entries'));
+        toolbar.append(lengthLabel);
+
+        const exportButton = document.createElement('button');
+        exportButton.type = 'button';
+        exportButton.className = 'portal-table-export';
+        exportButton.innerHTML = '<i class="ri-download-2-line" aria-hidden="true"></i> Export CSV';
+        exportButton.addEventListener('click', () => {
+            const query = state.searchInput?.value.trim().toLowerCase() || '';
+            const exportRows = items.filter((row) => row.dataset.searchMatch !== 'false'
+                && Object.entries(state.columnFilters).every(([column, value]) => !value || (row.cells[Number(column)]?.textContent || '').trim() === value)
+                && (!query || row.textContent.toLowerCase().includes(query)));
+            const csvCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
+            const headers = [...container.tHead.rows[container.tHead.rows.length - 1].cells].map((cell) => cell.innerText.trim());
+            const lines = [headers.map(csvCell).join(',')];
+            exportRows.forEach((row) => lines.push([...row.cells].map((cell) => csvCell(cell.innerText.trim())).join(',')));
+            const blob = new Blob([`\uFEFF${lines.join('\r\n')}`], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${document.querySelector('.role-topbar h1')?.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'table'}.csv`;
+            link.click();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        });
+        toolbar.append(exportButton);
+        anchor.insertAdjacentElement('beforebegin', toolbar);
+
+        container.querySelectorAll('thead th').forEach((header, columnIndex) => {
+            if (!header.textContent.trim() || /^(manage|review|actions?)$/i.test(header.textContent.trim())) return;
+            header.classList.add('portal-sortable');
+            header.tabIndex = 0;
+            header.setAttribute('aria-sort', 'none');
+            const sortRows = () => {
+                const direction = header.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
+                container.querySelectorAll('thead th[data-sort-direction]').forEach((other) => {
+                    other.removeAttribute('data-sort-direction');
+                    other.setAttribute('aria-sort', 'none');
+                });
+                header.dataset.sortDirection = direction;
+                header.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+                items.sort((rowA, rowB) => {
+                    const valueA = (rowA.cells[columnIndex]?.dataset.sortValue || rowA.cells[columnIndex]?.innerText || '').trim();
+                    const valueB = (rowB.cells[columnIndex]?.dataset.sortValue || rowB.cells[columnIndex]?.innerText || '').trim();
+                    const numericPattern = /^[-+]?[^\dA-Za-z]*[\d,]+(?:\.\d+)?%?$/;
+                    let comparison;
+                    if (numericPattern.test(valueA) && numericPattern.test(valueB)) {
+                        comparison = (Number(valueA.replace(/[^\d.+-]/g, '')) || 0) - (Number(valueB.replace(/[^\d.+-]/g, '')) || 0);
+                    } else {
+                        const dateA = Date.parse(valueA);
+                        const dateB = Date.parse(valueB);
+                        comparison = Number.isNaN(dateA) || Number.isNaN(dateB)
+                            ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
+                            : dateA - dateB;
+                    }
+                    return direction === 'asc' ? comparison : -comparison;
+                });
+                items.forEach((row) => itemParent.append(row));
+                state.currentPage = 1;
+                renderPortalPagination(container);
+            };
+            header.addEventListener('click', sortRows);
+            header.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); sortRows(); }
+            });
+        });
+    }
 
     const tableId = isTable ? container.id : '';
     const searchInput = tableId
@@ -154,9 +298,50 @@ document.querySelectorAll('[data-paginate]').forEach((container) => {
         controls,
         pageSize: Math.max(1, Number(container.dataset.paginate) || 10),
         searchInput,
+        searchEmpty: isTable ? document.querySelector(`[data-search-empty="${tableId}"]`) : null,
+        columnFilters,
         currentPage: 1
     };
     portalPagination.set(container, state);
+    if (isTable) {
+        const tableAnchor = container.closest('.table-scroll') || container;
+        const toolbar = tableAnchor.previousElementSibling;
+        const lengthSelect = toolbar?.querySelector('.portal-table-length select');
+        lengthSelect?.addEventListener('change', () => {
+            state.pageSize = lengthSelect.value === 'all' ? Math.max(items.length, 1) : Number(lengthSelect.value);
+            state.currentPage = 1;
+            renderPortalPagination(container);
+        });
+
+        container.querySelectorAll('thead th').forEach((header, columnIndex) => {
+            if (!/status|category|department|role/i.test(header.textContent)) return;
+            const values = [...new Set(items.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
+            if (values.length < 2 || values.length > 12) return;
+            if (!toolbar?.classList.contains('portal-table-toolbar')) return;
+            const label = document.createElement('label');
+            label.className = 'portal-table-filter';
+            label.append(document.createTextNode(`${header.textContent.trim()}: `));
+            const select = document.createElement('select');
+            select.setAttribute('aria-label', `Filter by ${header.textContent.trim()}`);
+            const allOption = document.createElement('option');
+            allOption.value = '';
+            allOption.textContent = 'All';
+            select.append(allOption);
+            values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).forEach((value) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                select.append(option);
+            });
+            select.addEventListener('change', () => {
+                state.columnFilters[columnIndex] = select.value;
+                state.currentPage = 1;
+                renderPortalPagination(container);
+            });
+            label.append(select);
+            toolbar.append(label);
+        });
+    }
     controls.querySelector('[data-pagination-previous]').addEventListener('click', () => {
         state.currentPage -= 1;
         renderPortalPagination(container);
