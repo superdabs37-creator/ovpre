@@ -5,7 +5,7 @@ $query = trim((string) ($_GET['q'] ?? ''));
 $query = mb_substr($query, 0, 100);
 $results = [];
 $like = '%' . $query . '%';
-$role = (string) $user['role'];
+$role = role_access_group((string) $user['role']);
 $dashboard = role_dashboard_path($role) ?? 'dashboard.php';
 $portalBase = dirname($dashboard);
 $portalBase = $portalBase === '.' ? '' : $portalBase . '/';
@@ -18,18 +18,22 @@ if ($query !== '') {
         elseif ($role === ROLE_RESEARCH_COORDINATOR) { $scope = !empty($user['department_id']) ? ' AND owner.department_id = ?' : ' AND r.submitted_by = ?'; $scopeParams[] = !empty($user['department_id']) ? (int) $user['department_id'] : (int) $user['id']; }
         $stmt = db()->prepare('SELECT r.id, r.title AS label, r.status, r.created_at FROM research_projects r JOIN users owner ON owner.id = r.submitted_by WHERE (r.title LIKE ? OR r.researchers LIKE ? OR r.abstract LIKE ?)' . $scope . ' ORDER BY r.created_at DESC LIMIT 10');
         $stmt->execute([$like, $like, $like, ...$scopeParams]);
-        $researchUrl = in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_OVPRE_ADMIN], true) ? $portalBase . 'research.php' : 'research.php';
-        foreach ($stmt->fetchAll() as $row) $results[] = ['type' => 'Research proposal', 'label' => $row['label'], 'detail' => $row['status'], 'date' => $row['created_at'], 'url' => $researchUrl];
+        foreach ($stmt->fetchAll() as $row) {
+            $researchUrl = ($portalBase !== '' ? $portalBase . 'research.php' : 'research.php') . '#project-' . (int) $row['id'];
+            $results[] = ['type' => 'Research proposal', 'label' => $row['label'], 'detail' => $row['status'], 'date' => $row['created_at'], 'url' => $researchUrl];
+        }
     }
     if (role_can($role, 'extension')) {
         $scope = '';
         $scopeParams = [];
         if ($role === ROLE_FACULTY_EXTENSIONIST) { $scope = ' AND e.submitted_by = ?'; $scopeParams[] = (int) $user['id']; }
         elseif ($role === ROLE_EXTENSION_COORDINATOR) { $scope = !empty($user['department_id']) ? ' AND owner.department_id = ?' : ' AND e.submitted_by = ?'; $scopeParams[] = !empty($user['department_id']) ? (int) $user['department_id'] : (int) $user['id']; }
-        $stmt = db()->prepare('SELECT e.id, e.project_title AS label, e.progress_status AS status, e.created_at FROM extension_projects e JOIN users owner ON owner.id = e.submitted_by WHERE (e.project_title LIKE ? OR e.coordinator LIKE ? OR e.community_partner LIKE ?)' . $scope . ' ORDER BY e.created_at DESC LIMIT 10');
-        $stmt->execute([$like, $like, $like, ...$scopeParams]);
-        $extensionUrl = in_array($role, [ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_ADMIN], true) ? $portalBase . 'extension.php' : 'extension.php';
-        foreach ($stmt->fetchAll() as $row) $results[] = ['type' => 'Extension project', 'label' => $row['label'], 'detail' => $row['status'], 'date' => $row['created_at'], 'url' => $extensionUrl];
+        $stmt = db()->prepare('SELECT e.id, e.project_title AS label, COALESCE(e.status, e.progress_status) AS status, e.created_at FROM extension_projects e JOIN users owner ON owner.id = e.submitted_by WHERE (e.project_title LIKE ? OR e.coordinator LIKE ? OR e.community_partner LIKE ? OR e.location LIKE ? OR e.target_beneficiaries LIKE ?)' . $scope . ' ORDER BY e.created_at DESC LIMIT 10');
+        $stmt->execute([$like, $like, $like, $like, $like, ...$scopeParams]);
+        foreach ($stmt->fetchAll() as $row) {
+            $extensionUrl = ($portalBase !== '' ? $portalBase . 'extension.php' : 'extension.php') . '#project-' . (int) $row['id'];
+            $results[] = ['type' => 'Extension project', 'label' => $row['label'], 'detail' => $row['status'], 'date' => $row['created_at'], 'url' => $extensionUrl];
+        }
     }
     if (role_can($role, 'documents')) {
         $scope = '';
@@ -42,15 +46,10 @@ if ($query !== '') {
         foreach ($stmt->fetchAll() as $row) $results[] = ['type' => 'Record', 'label' => $row['label'], 'detail' => $row['status'], 'date' => $row['created_at'], 'url' => $recordsUrl];
     }
     if (role_can($role, 'announcements')) {
-        $audience = match ($role) {
-            ROLE_RESEARCH_COORDINATOR => ' AND audience IN ("All", "Researchers")',
-            ROLE_EXTENSION_COORDINATOR => ' AND audience IN ("All", "Staff")',
-            ROLE_FACULTY_EXTENSIONIST => ' AND audience IN ("All", "Staff")',
-            ROLE_RESEARCHER => ' AND audience IN ("All", "Researchers")',
-            default => '',
-        };
-        $stmt = db()->prepare('SELECT id, title AS label, created_at FROM announcements WHERE status = "Published"' . $audience . ' AND (title LIKE ? OR content LIKE ?) ORDER BY created_at DESC LIMIT 10');
-        $stmt->execute([$like, $like]);
+        $audiences = announcement_viewable_audiences((string) $user['role']);
+        $audiencePlaceholders = implode(', ', array_fill(0, count($audiences), '?'));
+        $stmt = db()->prepare('SELECT id, title AS label, created_at FROM announcements WHERE status = "Published" AND audience IN (' . $audiencePlaceholders . ') AND (title LIKE ? OR content LIKE ?) ORDER BY created_at DESC LIMIT 10');
+        $stmt->execute([...$audiences, $like, $like]);
         $announcementUrl = in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true) ? 'announcements.php' : $portalBase . 'announcements.php';
         foreach ($stmt->fetchAll() as $row) $results[] = ['type' => 'Announcement', 'label' => $row['label'], 'detail' => 'Published', 'date' => $row['created_at'], 'url' => $announcementUrl];
     }

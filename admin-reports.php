@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-require_login(['Super Admin', 'OVPRE Admin', 'Research Coordinator', 'Extension Coordinator']);
+require_login(['Super Admin', 'OVPRE Admin', 'Research Director', 'Extension Director', 'Research Coordinator', 'Extension Coordinator']);
 ensure_activity_archived_at_column();
 
 function report_scalar(string $sql, array $params = []): int|float {
@@ -20,7 +20,7 @@ $fromDateTime = $from . ' 00:00:00';
 $toDateTime = $to . ' 23:59:59';
 
 $departments = db()->query('SELECT id, department_name FROM departments ORDER BY department_name')->fetchAll();
-$statusOptions = ['Pending', 'Under Review', 'Approved', 'Declined'];
+$statusOptions = ['Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined', 'Pending', 'Under Review'];
 $yearOptions = range((int) date('Y') + 1, (int) date('Y') - 5);
 
 $documentConditions = ['d.created_at BETWEEN ? AND ?'];
@@ -60,27 +60,27 @@ $researchStmt = db()->prepare('SELECT status, COUNT(*) total FROM research_proje
 $researchStmt->execute($rangeParams);
 $research = $researchStmt->fetchAll();
 
-$extensionStmt = db()->prepare('SELECT progress_status status, COUNT(*) total FROM extension_projects WHERE created_at BETWEEN ? AND ? GROUP BY progress_status');
+$extensionStmt = db()->prepare('SELECT COALESCE(status, progress_status) status, COUNT(*) total FROM extension_projects WHERE created_at BETWEEN ? AND ? GROUP BY COALESCE(status, progress_status)');
 $extensionStmt->execute($rangeParams);
 $extension = $extensionStmt->fetchAll();
 
 $totalResearch = (int) report_scalar('SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
 $publishedResearch = (int) report_scalar("SELECT COUNT(*) FROM documents d JOIN categories c ON c.id = d.category_id WHERE c.category_name = 'Publication' AND d.created_at BETWEEN ? AND ?", $rangeParams);
-$ongoingResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review')", $rangeParams);
+$ongoingResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review', 'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Needs Revision')", $rangeParams);
 $completedResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status = 'Approved'", $rangeParams);
 
 $totalExtension = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
-$activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status = 'Ongoing'", $rangeParams);
-$completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status = 'Completed'", $rangeParams);
+$activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status IN ('Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Needs Revision') OR progress_status = 'Ongoing')", $rangeParams);
+$completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status = 'Approved' OR progress_status = 'Completed')", $rangeParams);
 $upcomingActivities = (int) report_scalar("SELECT COUNT(*) FROM activities WHERE approval_status = 'Approved' AND archived_at IS NULL AND date >= CURRENT_DATE");
 
-$researchFunding = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND funding_source IS NOT NULL AND funding_source <> ''", $rangeParams);
-$extensionFunding = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND budget > 0', $rangeParams);
+$researchFunding = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND ((funding_source IS NOT NULL AND funding_source <> '') OR grant_amount > 0)", $rangeParams);
+$extensionFunding = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (budget > 0 OR approved_budget > 0)', $rangeParams);
 $totalGrants = $researchFunding + $extensionFunding;
-$approvedFunding = (float) report_scalar("SELECT COALESCE(SUM(budget), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status IN ('Completed', 'Ongoing')", $rangeParams);
+$approvedFunding = (float) report_scalar("SELECT COALESCE(SUM(COALESCE(approved_budget, budget)), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status = 'Approved' OR progress_status IN ('Completed', 'Ongoing'))", $rangeParams);
 $requestedFunding = (float) report_scalar('SELECT COALESCE(SUM(budget), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
-$pendingRequests = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review')", $rangeParams)
-    + (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND progress_status = 'Planning'", $rangeParams);
+$pendingRequests = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review', 'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval')", $rangeParams)
+    + (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status IN ('Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval') OR progress_status = 'Planning')", $rangeParams);
 $fundingUtilization = $requestedFunding > 0 ? round(($approvedFunding / $requestedFunding) * 100) : 0;
 
 $totalAccomplishments = (int) report_scalar('SELECT COUNT(*) FROM accomplishment_reports WHERE created_at BETWEEN ? AND ?', $rangeParams);
@@ -551,7 +551,7 @@ renderHeader('Reports Management', 'reports');
     <section class="panel report-table-panel">
         <div class="panel-heading"><h2>Report Records</h2><span><?php echo h(date('M d, Y', strtotime($from))); ?> to <?php echo h(date('M d, Y', strtotime($to))); ?></span></div>
         <div class="table-scroll">
-            <table class="data-table portal-table" id="reportDocumentsTable">
+            <table class="data-table portal-table" id="reportDocumentsTable" data-filter-options="<?php echo h(json_encode(['Department' => array_column($departments, 'department_name')])); ?>">
                 <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Department</th><th>Date</th><th>Status</th></tr></thead>
                 <tbody>
                     <?php foreach ($documents as $document): ?>

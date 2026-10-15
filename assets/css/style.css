@@ -981,12 +981,58 @@ button {
     font-weight: 700;
 }
 
+.invite-account-launcher .panel-heading > div {
+    min-width: 0;
+}
+
+.invite-account-modal {
+    width: min(100%, 860px);
+    max-height: min(92vh, 900px);
+    overflow-y: auto;
+}
+
+.invite-account-modal > p {
+    margin-top: -8px;
+}
+
+.invite-account-modal > .primary-btn {
+    width: 100%;
+}
+
 .chart-panel {
     min-height: 330px;
 }
 
+.dashboard-summary-chart {
+    min-height: 295px;
+}
+
+.dashboard-summary-chart canvas {
+    max-height: 220px;
+}
+
 .chart-panel.wide {
     grid-column: 1 / -1;
+}
+
+.department-output-panel {
+    min-height: 370px;
+    border: 2px solid #86efac;
+    background: linear-gradient(120deg, #f0fdf4 0%, var(--white) 48%);
+    box-shadow: 0 14px 30px rgba(21, 128, 61, 0.12);
+}
+
+.department-output-panel .panel-heading {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #bbf7d0;
+}
+
+.department-output-panel .panel-heading h2 {
+    color: var(--green-800);
+}
+
+.chart-panel.department-output-panel canvas {
+    max-height: 290px;
 }
 
 .chart-panel canvas {
@@ -1102,6 +1148,30 @@ button {
 .status-pending {
     color: var(--green-900);
     background: var(--yellow-100);
+}
+
+.status-pending-coordinator-review {
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+}
+
+.status-pending-director-review {
+    color: #1e40af;
+    background: #dbeafe;
+    border: 1px solid #bfdbfe;
+}
+
+.status-pending-executive-approval {
+    color: #6b21a8;
+    background: #f3e8ff;
+    border: 1px solid #e9d5ff;
+}
+
+.status-needs-revision {
+    color: #c2410c;
+    background: #ffedd5;
+    border: 1px solid #fed7aa;
 }
 
 .status-approved {
@@ -1395,6 +1465,96 @@ button {
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.record-manage-modal {
+    width: min(100%, 520px);
+}
+
+.record-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.activity-actions-modal .record-modal-actions form {
+    display: contents;
+}
+
+.record-archive-form {
+    display: contents;
+}
+
+.archive-record-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.archive-record-actions form {
+    margin: 0;
+}
+
+.research-selection-toolbar,
+.table-selection-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.research-selection-toolbar[hidden],
+.table-selection-toolbar[hidden] {
+    display: none;
+}
+
+.table-selection-toolbar form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.table-selection-toolbar button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#researchSubmissionTable th:first-child,
+#researchSubmissionTable td:first-child,
+#extensionSubmissionTable th:first-child,
+#extensionSubmissionTable td:first-child,
+#activitySubmissionTable th:first-child,
+#activitySubmissionTable td:first-child,
+#recordsTable th:first-child,
+#recordsTable td:first-child,
+#archivedAnnouncementsTable th:first-child,
+#archivedAnnouncementsTable td:first-child,
+#archivedRecordsTable th:first-child,
+#archivedRecordsTable td:first-child {
+    width: 100px;
+    text-align: center;
+}
+
+.select-all-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+#researchSubmissionTable input[type="checkbox"],
+#extensionSubmissionTable input[type="checkbox"],
+#activitySubmissionTable input[type="checkbox"],
+#recordsTable input[type="checkbox"],
+#archivedAnnouncementsTable input[type="checkbox"],
+#archivedRecordsTable input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--green-700);
+    cursor: pointer;
 }
 
 .record-status-form {

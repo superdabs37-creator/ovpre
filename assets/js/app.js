@@ -386,12 +386,56 @@ document.addEventListener('keydown', (event) => {
 
 document.querySelectorAll('[data-open-modal]').forEach((button) => {
     button.addEventListener('click', () => {
+        if (button.hasAttribute('data-dismiss-modal')) {
+            const currentModal = button.closest('.modal');
+            if (currentModal) closeModal(currentModal);
+        }
         const modal = document.getElementById(button.dataset.openModal);
         if (!modal) return;
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
     });
+});
+
+document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
+    const tableId = selectAll.dataset.selectAll;
+    const table = document.getElementById(tableId);
+    const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
+    if (!table || !toolbar) return;
+    const rowCheckboxes = () => Array.from(table.querySelectorAll('[data-row-select]'));
+    const countLabel = toolbar.querySelector('[data-selection-count]');
+    const openSelected = toolbar.querySelector('[data-open-selected-research]');
+    const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
+    const updateSelection = () => {
+        const checkboxes = rowCheckboxes();
+        const selected = checkboxes.filter((checkbox) => checkbox.checked);
+        selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
+        selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+        toolbar.hidden = selected.length === 0;
+        if (countLabel) countLabel.textContent = `${selected.length} selected`;
+        if (openSelected) openSelected.disabled = selected.length === 0;
+        bulkButtons.forEach((button) => { button.disabled = selected.length === 0; });
+    };
+    selectAll.addEventListener('change', () => {
+        rowCheckboxes().forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+        updateSelection();
+    });
+    table.addEventListener('change', (event) => {
+        if (event.target.matches('[data-row-select]')) updateSelection();
+    });
+    if (openSelected) {
+        openSelected.addEventListener('click', () => {
+            const ids = rowCheckboxes().filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+            if (ids.length) window.location.href = `research.php?ids=${encodeURIComponent(ids.join(','))}`;
+        });
+    }
+    toolbar.querySelectorAll('[data-confirm-delete]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            if (!window.confirm('Permanently delete all selected items? This cannot be undone.')) event.preventDefault();
+        });
+    });
+    updateSelection();
 });
 
 document.addEventListener('click', (event) => {
@@ -592,8 +636,13 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
 
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {
         if (!/status|category|department|role/i.test(header.textContent)) return;
-        const values = [...new Set(rows.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
-        if (values.length < 2 || values.length > 12) return;
+        let presetOptions = null;
+        try { presetOptions = JSON.parse(table.dataset.filterOptions || '{}')[header.textContent.trim()] || null; } catch (e) { presetOptions = null; }
+        const values = presetOptions
+            ? [...new Set(presetOptions.map((value) => String(value).trim()).filter(Boolean))]
+            : [...new Set(rows.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
+        if (!presetOptions && (values.length < 2 || values.length > 12)) return;
+        if (!values.length) return;
         const label = document.createElement('label');
         label.className = 'data-table-filter';
         label.append(document.createTextNode(`${header.textContent.trim()}: `));
@@ -921,6 +970,8 @@ if (activityCalendarEl && window.FullCalendar) {
 
     document.querySelectorAll('[data-edit-activity]').forEach((button) => {
         button.addEventListener('click', () => {
+            const parentModal = button.closest('.modal');
+            if (parentModal && parentModal !== activityModal) closeModal(parentModal);
             openActivityEditor(activityById(button.dataset.editActivity));
         });
     });

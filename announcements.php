@@ -6,14 +6,34 @@ verify_csrf();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
+        $audience = (string) ($_POST['audience'] ?? '');
+        $audienceRoles = announcement_audience_roles($audience);
+        if ($audienceRoles === null) {
+            flash('error', 'Choose a valid announcement audience.');
+            redirect_to('announcements.php');
+        }
+        $title = trim((string) ($_POST['title'] ?? ''));
+        $content = trim((string) ($_POST['content'] ?? ''));
+        if ($title === '' || $content === '') {
+            flash('error', 'Enter an announcement title and content.');
+            redirect_to('announcements.php');
+        }
         db()->prepare('INSERT INTO announcements (title, content, audience, status, posted_by, created_at) VALUES (?, ?, ?, "Published", ?, NOW())')
-            ->execute([trim($_POST['title']), trim($_POST['content']), $_POST['audience'], $user['id']]);
+            ->execute([$title, $content, $audience, $user['id']]);
         $announcementId = (int) db()->lastInsertId();
-        foreach (db()->query('SELECT id FROM users WHERE status = "Active"') as $recipient) {
-            notify_user((int) $recipient['id'], 'New announcement: ' . trim($_POST['title']));
+        if ($audienceRoles === []) {
+            $recipients = db()->query('SELECT id FROM users WHERE status = "Active" AND deleted_at IS NULL');
+        } else {
+            $rolePlaceholders = implode(', ', array_fill(0, count($audienceRoles), '?'));
+            $recipientStmt = db()->prepare('SELECT id FROM users WHERE status = "Active" AND deleted_at IS NULL AND role IN (' . $rolePlaceholders . ')');
+            $recipientStmt->execute($audienceRoles);
+            $recipients = $recipientStmt;
+        }
+        foreach ($recipients as $recipient) {
+            notify_user((int) $recipient['id'], 'New announcement: ' . $title);
         }
         log_action((int) $user['id'], "Published announcement #{$announcementId}");
-        flash('success', 'Announcement published and notifications sent.');
+        flash('success', 'Announcement published and notifications sent to the selected audience.');
     } elseif ($action === 'archive') {
         db()->prepare('UPDATE announcements SET status = "Archived" WHERE id = ? AND status <> "Archived"')->execute([(int) $_POST['id']]);
         log_action((int) $user['id'], 'Archived announcement #' . (int) $_POST['id']);
@@ -34,7 +54,7 @@ $announcementStmt->execute([$announcementStatus]);
 $announcements = $announcementStmt->fetchAll();
 renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announcements');
 ?>
-<section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Create and publish updates for faculty, researchers, and staff.</span></div></section>
+<section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Publish updates for directors, coordinators, faculty extensionists, OVPRE staff, or other authorized users.</span></div></section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><?php echo h($notice['message']); ?></div><?php endif; ?>
 <section class="panel modal-launcher-panel"><div class="panel-heading"><div><h2><?php echo $archived ? 'Archived Announcements' : 'Announcements'; ?></h2><span><?php echo $archived ? 'Archived announcements.' : 'Create and publish an update for your audience.'; ?></span></div><div class="action-row"><?php if (!$archived): ?><button class="primary-btn" type="button" data-open-modal="createAnnouncementModal"><i class="ri-add-line"></i> Create Announcement</button><?php endif; ?></div></div></section>
 <?php if (!$archived): ?>
@@ -45,7 +65,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
         <div class="activity-modal-head"><span class="category-badge">Announcement</span><h2 id="createAnnouncementTitle">Create Announcement</h2><p>Choose who can see this announcement.</p></div>
         <form class="announcement-form" method="post">
             <?php echo csrf_field(); ?><input type="hidden" name="action" value="create">
-            <label class="field"><span>Audience</span><select name="audience"><option>All</option><option>Faculty</option><option>Researchers</option><option>Staff</option></select></label>
+            <label class="field"><span>Audience</span><select name="audience" required><option value="" selected disabled>Choose audience</option><?php foreach (['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Other Authorized Users'] as $audienceOption): ?><option value="<?php echo h($audienceOption); ?>"><?php echo h($audienceOption); ?></option><?php endforeach; ?></select></label>
             <label class="field"><span>Announcement Title</span><input name="title" required></label>
             <label class="field"><span>Announcement Content</span><textarea name="content" rows="6" required></textarea></label>
             <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Publish Announcement</button>
@@ -54,7 +74,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
 </div>
 <?php endif; ?>
 <section class="panel">
-    <div class="panel-heading"><h2><?php echo $archived ? 'Archived Announcements' : 'Announcement List'; ?></h2><span><?php echo count($announcements); ?> total</span></div>
+    <div class="panel-heading"><span><?php echo count($announcements); ?> total</span></div>
     <div class="announcement-list">
         <?php foreach ($announcements as $item): ?>
             <article class="list-card">

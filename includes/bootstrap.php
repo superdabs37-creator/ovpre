@@ -21,14 +21,73 @@ const ROLE_RESEARCH_COORDINATOR = 'Research Coordinator';
 const ROLE_EXTENSION_COORDINATOR = 'Extension Coordinator';
 const ROLE_FACULTY_EXTENSIONIST = 'Faculty Extensionist';
 const ROLE_RESEARCHER = 'Researcher';
+const ROLE_RESEARCH_DIRECTOR = 'Research Director';
+const ROLE_EXTENSION_DIRECTOR = 'Extension Director';
+const ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR = 'Director for Research and Creative Works';
+const ROLE_OVPRE_SECRETARIAT = 'OVPRE Secretariat';
 const SELF_REGISTERABLE_ROLES = [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER];
 
+function role_access_group(string $role): string {
+    return match ($role) {
+        ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR => ROLE_RESEARCH_DIRECTOR,
+        ROLE_EXTENSION_DIRECTOR => ROLE_EXTENSION_DIRECTOR,
+        ROLE_OVPRE_SECRETARIAT => ROLE_OVPRE_ADMIN,
+        default => $role,
+    };
+}
+
+function announcement_audience_roles(string $audience): ?array {
+    return match ($audience) {
+        'All' => [],
+        'Directors' => [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR],
+        'Coordinators' => [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR],
+        'Faculty Extensionists' => [ROLE_FACULTY_EXTENSIONIST],
+        'OVPRE Staff' => [ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT],
+        'Other Authorized Users' => [ROLE_RESEARCHER],
+        default => null,
+    };
+}
+
+function announcement_audience_for_role(string $role): ?string {
+    return match ($role) {
+        ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR => 'Directors',
+        ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR => 'Coordinators',
+        ROLE_FACULTY_EXTENSIONIST => 'Faculty Extensionist',
+        ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT => 'OVPRE Staff',
+        ROLE_RESEARCHER => 'Other Authorized Users',
+        default => null,
+    };
+}
+
+function announcement_viewable_audiences(string $role): array {
+    if (in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
+        return ['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'];
+    }
+    $audiences = ['All'];
+    $audience = announcement_audience_for_role($role);
+    if ($audience !== null) {
+        $audiences[] = $audience;
+    }
+    $legacyAudiences = match ($role) {
+        ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCHER => ['Researchers'],
+        ROLE_EXTENSION_DIRECTOR, ROLE_EXTENSION_COORDINATOR => ['Staff'],
+        ROLE_FACULTY_EXTENSIONIST => ['Faculty', 'Staff'],
+        ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT => ['Staff'],
+        default => [],
+    };
+    return array_values(array_unique(array_merge($audiences, $legacyAudiences)));
+}
+
 function role_dashboard_path(string $role): ?string {
+    $role = role_access_group($role);
     return match ($role) {
         ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN,
+        ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR,
         ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR,
         ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER => match ($role) {
             ROLE_OVPRE_ADMIN => 'ovpre-admin/dashboard.php',
+            ROLE_RESEARCH_DIRECTOR => 'research-director/dashboard.php',
+            ROLE_EXTENSION_DIRECTOR => 'extension-director/dashboard.php',
             ROLE_RESEARCH_COORDINATOR => 'research-coordinator/dashboard.php',
             ROLE_EXTENSION_COORDINATOR => 'extension-coordinator/dashboard.php',
             ROLE_FACULTY_EXTENSIONIST => 'faculty-extensionist/dashboard.php',
@@ -253,6 +312,8 @@ function role_permissions(): array {
     return [
         ROLE_SUPER_ADMIN => ['*'],
         ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements', 'users'],
+        ROLE_RESEARCH_DIRECTOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
+        ROLE_EXTENSION_DIRECTOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
         ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
         ROLE_EXTENSION_COORDINATOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
         ROLE_FACULTY_EXTENSIONIST => ['dashboard', 'extension', 'status'],
@@ -261,6 +322,7 @@ function role_permissions(): array {
 }
 
 function role_can(string $role, string $permission): bool {
+    $role = role_access_group($role);
     $permissions = role_permissions()[$role] ?? [];
     return in_array('*', $permissions, true) || in_array($permission, $permissions, true);
 }
@@ -270,7 +332,9 @@ function require_login(array $roles = []): array {
     if (!$user) {
         redirect_to('index.php');
     }
-    if (role_dashboard_path((string) $user['role']) === null || ($roles && !in_array($user['role'], $roles, true))) {
+    $userRole = (string) $user['role'];
+    $allowedRoles = array_map('role_access_group', $roles);
+    if (role_dashboard_path($userRole) === null || ($roles && !in_array(role_access_group($userRole), $allowedRoles, true))) {
         http_response_code(403);
         exit('You do not have access to this page.');
     }
@@ -295,9 +359,34 @@ function log_action(?int $userId, string $action): void {
     $stmt->execute([$userId, $action, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
 }
 
+function notification_link_column_exists(): bool {
+    static $exists = null;
+    if ($exists !== null) {
+        return $exists;
+    }
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            $stmt = db()->query("SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'notifications' AND column_name = 'link' LIMIT 1");
+            $exists = (bool) $stmt->fetchColumn();
+        } else {
+            $stmt = db()->query("SHOW COLUMNS FROM notifications LIKE 'link'");
+            $exists = (bool) $stmt->fetch();
+        }
+    } catch (Throwable $error) {
+        error_log('Could not check the notifications.link column: ' . $error->getMessage());
+        $exists = false;
+    }
+    return $exists;
+}
+
 function notify_user(int $userId, string $message, ?string $link = null): void {
-    $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at, link) VALUES (?, ?, "Unread", NOW(), ?)');
-    $stmt->execute([$userId, $message, $link]);
+    if (notification_link_column_exists()) {
+        $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at, link) VALUES (?, ?, ?, NOW(), ?)');
+        $stmt->execute([$userId, $message, 'Unread', $link]);
+        return;
+    }
+    $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at) VALUES (?, ?, ?, NOW())');
+    $stmt->execute([$userId, $message, 'Unread']);
 }
 
 function notify_all_accounts(string $message, ?string $link = null, ?int $excludeUserId = null): void {

@@ -3,7 +3,7 @@ require_once 'includes/layout.php';
 $user = require_login(['Super Admin', 'OVPRE Admin', 'Research Coordinator']);
 ensure_activity_date_to_column();
 ensure_activity_archived_at_column();
-if (($user['role'] ?? '') === 'Research Coordinator') {
+if (role_access_group((string) ($user['role'] ?? '')) === ROLE_RESEARCH_COORDINATOR) {
     redirect_to('research-coordinator/calendar.php');
 }
 verify_csrf();
@@ -61,12 +61,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect_to('activities.php');
     }
 
-    if (in_array($action, ['archive', 'delete'], true)) {
+    if ($action === 'archive') {
         $id = (int) ($_POST['id'] ?? 0);
-        db()->prepare('UPDATE activities SET archived_at = NOW() WHERE id = ? AND archived_at IS NULL')->execute([$id]);
-        log_action((int) $user['id'], 'Archived activity #' . $id);
-        flash('success', 'Activity archived.');
+        $stmt = db()->prepare('UPDATE activities SET archived_at = NOW() WHERE id = ? AND archived_at IS NULL');
+        $stmt->execute([$id]);
+        if ($stmt->rowCount()) {
+            log_action((int) $user['id'], 'Archived activity #' . $id);
+            flash('success', 'Activity archived.');
+        } else {
+            flash('error', 'That activity could not be found or is already archived.');
+        }
         redirect_to('activities.php');
+    }
+
+    if ($action === 'delete') {
+        if (($user['role'] ?? '') !== 'Super Admin') {
+            http_response_code(403);
+            exit('Only the Super Admin can permanently delete activities.');
+        }
+        $id = (int) ($_POST['id'] ?? 0);
+        $stmt = db()->prepare('SELECT title FROM activities WHERE id = ? LIMIT 1');
+        $stmt->execute([$id]);
+        $activity = $stmt->fetch();
+        if (!$activity) {
+            flash('error', 'That activity could not be found.');
+        } else {
+            db()->prepare('DELETE FROM activities WHERE id = ?')->execute([$id]);
+            log_action((int) $user['id'], 'Permanently deleted activity #' . $id . ': ' . $activity['title']);
+            flash('success', 'Activity permanently deleted.');
+        }
+        redirect_to('activities.php' . (($_GET['archived'] ?? '') === '1' ? '?archived=1' : ''));
     }
 
     if ($action === 'restore') {
@@ -262,8 +286,8 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                         <td><?php echo h($activity['activity_type']); ?></td>
                         <td><?php echo h($activity['venue']); ?></td>
                         <td><?php echo h($activity['creator_name'] ?? 'System Administrator'); ?></td>
-                        <td><div class="activity-status-actions"><span class="status-pill status-<?php echo h(strtolower($activity['approval_status'])); ?>"><?php echo h($activity['approval_status']); ?></span><?php if (!$archived && $activity['approval_status'] !== 'Rejected' && ($user['role'] ?? '') === 'Super Admin'): ?><form method="post" onsubmit="return confirm('Reject this activity and remove it from the shared calendar?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="reject"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="danger-btn mini-btn" type="submit"><i class="ri-close-line"></i> Reject</button></form><?php endif; ?></div></td>
-                        <td><div class="file-actions"><?php if ($archived): ?><form method="post" onsubmit="return confirm('Retrieve this activity and put it back on the calendar?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button></form><?php else: ?><button class="ghost-btn mini-btn" type="button" data-edit-activity="<?php echo (int) $activity['id']; ?>" aria-label="Edit activity"><i class="ri-edit-line"></i></button><?php if ($activity['approval_status'] === 'Pending' && ($user['role'] ?? '') === 'Super Admin'): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="review"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="primary-btn mini-btn" type="submit"><i class="ri-check-line"></i> Approve</button></form><?php endif; ?><?php endif; ?></div></td>
+                        <td><div class="activity-status-actions"><span class="status-pill status-<?php echo h(strtolower($activity['approval_status'])); ?>"><?php echo h($activity['approval_status']); ?></span></div></td>
+                        <td><button class="ghost-btn action-btn" type="button" data-open-modal="activity-actions-<?php echo (int) $activity['id']; ?>"><i class="ri-more-2-fill"></i><span>Manage</span></button></td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if (!$activities): ?><tr><td colspan="7">No activities recorded.</td></tr><?php endif; ?>
@@ -271,6 +295,26 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
         </table>
     </div>
 </section>
+
+<?php foreach ($activities as $activity): ?>
+<div class="modal" id="activity-actions-<?php echo (int) $activity['id']; ?>" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <article class="modal-card record-manage-modal activity-actions-modal">
+        <button class="modal-close" type="button" data-close-modal aria-label="Close actions"><i class="ri-close-line"></i></button>
+        <h2><?php echo $archived ? 'Archived Activity' : 'Activity Actions'; ?></h2>
+        <p><?php echo h($activity['title']); ?></p>
+        <div class="record-modal-actions">
+            <?php if ($archived): ?>
+                <form method="post" onsubmit="return confirm('Retrieve this activity and put it back on the calendar?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button></form>
+            <?php else: ?>
+                <button class="ghost-btn action-btn" type="button" data-edit-activity="<?php echo (int) $activity['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <?php if ($activity['approval_status'] === 'Pending' && ($user['role'] ?? '') === 'Super Admin'): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="review"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-check-line"></i><span>Approve</span></button></form><?php endif; ?>
+            <?php endif; ?>
+            <?php if (($user['role'] ?? '') === 'Super Admin'): ?><form method="post" onsubmit="return confirm('Permanently delete this activity? This cannot be undone.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Delete</span></button></form><?php endif; ?>
+        </div>
+    </article>
+</div>
+<?php endforeach; ?>
 
 <?php if (!$archived): ?><div class="modal" id="activityEditorModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="activityModalTitle">
     <div class="modal-backdrop" data-close-modal></div>

@@ -1,12 +1,13 @@
 <?php
 require_once __DIR__ . '/includes/layout.php';
 $user = require_login();
+$role = role_access_group((string) ($user['role'] ?? ''));
 $params = [];
 $scope = '';
-if (in_array($user['role'], [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST], true)) {
+if (in_array($role, [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST], true)) {
     $scope = ' AND d.uploaded_by = ?';
     $params[] = (int) $user['id'];
-} elseif (in_array($user['role'], [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR], true)) {
+} elseif (in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR], true)) {
     if (!empty($user['department_id'])) {
         $scope = ' AND d.department_id = ?';
         $params[] = (int) $user['department_id'];
@@ -14,7 +15,9 @@ if (in_array($user['role'], [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST], true))
         $scope = ' AND d.uploaded_by = ?';
         $params[] = (int) $user['id'];
     }
-} elseif (!in_array($user['role'], [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
+} elseif (in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN, ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR], true)) {
+    $scope = '';
+} else {
     http_response_code(403);
     exit('You do not have permission to view submitted files.');
 }

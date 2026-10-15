@@ -72,7 +72,7 @@ CREATE TABLE `announcements` (
   `id` int(11) NOT NULL,
   `title` varchar(220) NOT NULL,
   `content` text NOT NULL,
-  `audience` enum('All','Faculty','Researchers','Staff') DEFAULT 'All',
+  `audience` enum('All','Faculty','Researchers','Staff','Directors','Coordinators','Faculty Extensionists','OVPRE Staff','Other Authorized Users') DEFAULT 'All',
   `status` enum('Draft','Published','Archived') DEFAULT 'Published',
   `posted_by` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -405,7 +405,7 @@ CREATE TABLE `users` (
   `username` varchar(80) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `auth_user_id` char(36) DEFAULT NULL,
-  `role` enum('Super Admin','OVPRE Admin','Research Coordinator','Extension Coordinator','Faculty Extensionist','Researcher') NOT NULL,
+  `role` enum('Super Admin','OVPRE Admin','Research Coordinator','Extension Coordinator','Faculty Extensionist','Researcher','Research Director','Extension Director','Director for Research and Creative Works','OVPRE Secretariat') NOT NULL,
   `department_id` int(11) DEFAULT NULL,
   `status` enum('Pending Invitation','Pending Approval','Active','Inactive') DEFAULT 'Pending Approval',
   `login_attempts` int(11) DEFAULT 0,

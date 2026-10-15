@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'sent_at' => time(),
                 'attempts' => 0,
                 'resends' => 0,
-                'supabase_access_token' => (string) $auth['access_token'],
+                'supabase_access_token' => (string) ($auth['access_token'] ?? ''),
                 'supabase_refresh_token' => (string) ($auth['refresh_token'] ?? ''),
             ];
             $otpChallenge = $_SESSION['login_otp'];
@@ -248,7 +248,13 @@ $notice = flash();
                     <label for="username">Username or email</label>
                     <div class="input-control"><i class="ri-user-line"></i><input type="text" id="username" name="username" placeholder="Enter username or email" required></div>
                     <label for="password">Password</label>
-                    <div class="input-control"><i class="ri-lock-line"></i><input type="password" id="password" name="password" placeholder="Enter password" required></div>
+                    <div class="input-control">
+                        <i class="ri-lock-line"></i>
+                        <input type="password" id="password" name="password" placeholder="Enter password" required>
+                        <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Show password" style="background:none;border:none;padding:0;cursor:pointer;color:var(--muted);display:flex;align-items:center;margin-left:auto;">
+                            <i class="ri-eye-line" id="togglePasswordIcon"></i>
+                        </button>
+                    </div>
                     <div class="login-tools"><label class="check-control"><input type="checkbox" name="remember"><span>Remember me</span></label><a href="forgot-password.php">Forgot Password?</a></div>
                     <button class="primary-btn full-btn" type="submit"><i class="ri-login-circle-line"></i> Sign in</button>
                     <p class="portal-link full-btn"><a href="landing.php"><i class="ri-arrow-left-line"></i> Back to Home</a></p>
@@ -283,7 +289,24 @@ $notice = flash();
 
                 updateCountdown();
             })();
-        </script>
     <?php endif; ?>
+    <script>
+        (() => {
+            const toggleBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+
+            if (toggleBtn && passwordInput && toggleIcon) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    toggleIcon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+                    toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                    toggleIcon.style.color = isPassword ? '#15803d' : '#6f7b73';
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
