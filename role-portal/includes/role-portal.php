@@ -21,7 +21,7 @@ const ROLE_PORTALS = [
         'slug' => 'research-director',
         'title' => 'Research Director Portal',
         'purpose' => 'Institutional research evaluation, policy enforcement, AIHR, and grant recommendations',
-        'nav' => ['dashboard', 'research', 'analytics', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
     ],
     'Research Coordinator' => [
         'slug' => 'research-coordinator',
@@ -33,7 +33,7 @@ const ROLE_PORTALS = [
         'slug' => 'extension-director',
         'title' => 'Extension Director Portal',
         'purpose' => 'Institutional extension oversight, community policy guidelines, project evaluation, and resource allocation',
-        'nav' => ['dashboard', 'extension', 'analytics', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
     ],
     'Extension Coordinator' => [
         'slug' => 'extension-coordinator',
@@ -121,6 +121,7 @@ function portal_header(string $title, string $current): array
 {
     $user = portal_require_user();
     ensure_activity_archived_at_column();
+    ensure_research_archived_at_column();
     $config = portal_config();
     $name = $user['fullname'] ?? PORTAL_ROLE;
     $savedProfilePhoto = (string) ($user['profile_photo'] ?? '');
@@ -136,7 +137,7 @@ function portal_header(string $title, string $current): array
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
         <link rel="icon" type="image/jpeg" href="../assets/img/ovpre-logo.jpg?v=20261012">
-        <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261015-hidden-sidebar">
+        <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261016-director-analytics">
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     </head>
@@ -145,7 +146,6 @@ function portal_header(string $title, string $current): array
         <div class="role-shell">
             <aside class="role-sidebar" id="roleSidebar">
                 <a class="role-brand" href="dashboard.php"><span><i class="ri-building-4-line"></i></span><strong><?php echo h($config['title']); ?></strong></a>
-                <p class="role-purpose"><?php echo h($config['purpose']); ?></p>
                 <nav class="role-nav">
                     <?php foreach (portal_nav_items() as $key => [$label, $href, $icon]): ?>
                         <?php if (portal_can($key)): ?><a class="<?php echo portal_active($key, $current); ?>" href="<?php echo h($href); ?>"><i class="<?php echo h($icon); ?>"></i><span><?php echo h($label); ?></span></a><?php endif; ?>
@@ -189,7 +189,7 @@ function portal_header(string $title, string $current): array
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="../role-portal/assets/js/portal.js?v=20261015-hidden-sidebar"></script>
+        <script src="../role-portal/assets/js/portal.js?v=20261016-director-analytics"></script>
     </body>
 
     </html>
@@ -219,10 +219,10 @@ function portal_header(string $title, string $current): array
                 if (in_array(PORTAL_ROLE, ['Research Coordinator', 'Extension Coordinator'], true)) {
                     $deptFilter = $departmentId > 0 ? ' AND submitter.department_id = ?' : ' AND submitter.id = ?';
                     $scopeId = $departmentId > 0 ? $departmentId : $userId;
-                    $researchStmt = db()->prepare('SELECT COUNT(*) total, COUNT(CASE WHEN r.status IN ("Pending", "Under Review", "Pending Coordinator Review") THEN 1 END) pending, COUNT(CASE WHEN r.status = "Approved" THEN 1 END) approved FROM research_projects r JOIN users submitter ON submitter.id = r.submitted_by WHERE 1=1' . $deptFilter);
+                    $researchStmt = db()->prepare("SELECT COUNT(*) total, COUNT(CASE WHEN r.status IN ('Pending', 'Under Review', 'Pending Coordinator Review') THEN 1 END) pending, COUNT(CASE WHEN r.status = 'Approved' THEN 1 END) approved FROM research_projects r JOIN users submitter ON submitter.id = r.submitted_by WHERE r.archived_at IS NULL" . $deptFilter);
                     $researchStmt->execute([$scopeId]);
                     $researchStats = $researchStmt->fetch();
-                    $extensionStmt = db()->prepare('SELECT COUNT(*) total, COUNT(CASE WHEN e.status IN ("Pending", "Under Review", "Pending Coordinator Review") THEN 1 END) pending, COUNT(CASE WHEN e.status = "Approved" THEN 1 END) approved FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE 1=1' . $deptFilter);
+                    $extensionStmt = db()->prepare("SELECT COUNT(*) total, COUNT(CASE WHEN e.status IN ('Pending', 'Under Review', 'Pending Coordinator Review') THEN 1 END) pending, COUNT(CASE WHEN e.status = 'Approved' THEN 1 END) approved FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE e.archived_at IS NULL" . $deptFilter);
                     $extensionStmt->execute([$scopeId]);
                     $extensionStats = $extensionStmt->fetch();
                     return ['research_total' => (int) $researchStats['total'], 'extension_total' => (int) $extensionStats['total'], 'pending_research' => (int) $researchStats['pending'], 'approved_research' => (int) $researchStats['approved'], 'pending_extension' => (int) $extensionStats['pending'], 'approved_extension' => (int) $extensionStats['approved'], 'pending_documents' => 0, 'approved_documents' => 0];
@@ -249,12 +249,22 @@ function portal_header(string $title, string $current): array
                 ];
             }
 
-            function portal_recent_activities(): array
+            function ensure_research_archived_at_column(): void
             {
-                return db()->query('SELECT * FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL ORDER BY date DESC LIMIT 6')->fetchAll();
+                static $checked = false;
+                if ($checked) return;
+                try {
+                    db()->exec('ALTER TABLE research_projects ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ DEFAULT NULL');
+                } catch (Throwable $e) {}
+                $checked = true;
             }
 
-            function portal_research_projects(): array
+            function portal_recent_activities(): array
+            {
+                return db()->query("SELECT * FROM activities WHERE approval_status = 'Approved' AND archived_at IS NULL ORDER BY date DESC LIMIT 6")->fetchAll();
+            }
+
+            function portal_research_projects(bool $archived = false): array
             {
                 $sql = 'SELECT r.*, u.fullname, dep.department_name, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename,
                                coord.fullname AS coordinator_name, dir.fullname AS director_name, exec.fullname AS executive_name
@@ -266,19 +276,67 @@ function portal_header(string $title, string $current): array
                         LEFT JOIN users dir ON dir.id = r.director_id
                         LEFT JOIN users exec ON exec.id = r.executive_id';
                 $params = [];
+                $where = [];
+
+                if ($archived) {
+                    $where[] = 'r.archived_at IS NOT NULL';
+                } else {
+                    $where[] = 'r.archived_at IS NULL';
+                }
+
                 if (PORTAL_ROLE === 'Researcher') {
-                    $sql .= ' WHERE r.submitted_by = ?';
+                    $where[] = 'r.submitted_by = ?';
                     $params[] = (int) current_user()['id'];
                 } elseif (PORTAL_ROLE === 'Research Coordinator') {
                     $departmentId = (int) (current_user()['department_id'] ?? 0);
-                    $sql .= $departmentId > 0 ? ' WHERE u.department_id = ?' : ' WHERE r.submitted_by = ?';
-                    $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
+                    if ($departmentId > 0) {
+                        $where[] = 'u.department_id = ?';
+                        $params[] = $departmentId;
+                    } else {
+                        $where[] = 'r.submitted_by = ?';
+                        $params[] = (int) current_user()['id'];
+                    }
+                }
+
+                if ($where) {
+                    $sql .= ' WHERE ' . implode(' AND ', $where);
                 }
                 $sql .= ' ORDER BY r.created_at DESC';
                 $stmt = db()->prepare($sql);
                 $stmt->execute($params);
                 return $stmt->fetchAll();
             }
+
+            function portal_research_counts(): array
+            {
+                $user = current_user();
+                $departmentId = (int) ($user['department_id'] ?? 0);
+                $userId = (int) ($user['id'] ?? 0);
+                $params = [];
+                $scope = '';
+                if (PORTAL_ROLE === 'Researcher') {
+                    $scope = ' AND r.submitted_by = ?';
+                    $params[] = $userId;
+                } elseif (PORTAL_ROLE === 'Research Coordinator') {
+                    if ($departmentId > 0) {
+                        $scope = ' AND u.department_id = ?';
+                        $params[] = $departmentId;
+                    } else {
+                        $scope = ' AND r.submitted_by = ?';
+                        $params[] = $userId;
+                    }
+                }
+                $activeStmt = db()->prepare("SELECT COUNT(*) FROM research_projects r JOIN users u ON u.id = r.submitted_by WHERE r.archived_at IS NULL {$scope}");
+                $activeStmt->execute($params);
+                $active = (int) $activeStmt->fetchColumn();
+
+                $archivedStmt = db()->prepare("SELECT COUNT(*) FROM research_projects r JOIN users u ON u.id = r.submitted_by WHERE r.archived_at IS NOT NULL {$scope}");
+                $archivedStmt->execute($params);
+                $archived = (int) $archivedStmt->fetchColumn();
+
+                return ['active' => $active, 'archived' => $archived];
+            }
+
 
             function portal_extension_projects(): array
             {
@@ -350,14 +408,27 @@ function portal_header(string $title, string $current): array
                 return $stmt->fetchAll();
             }
 
-            function portal_announcements(): array
+            function portal_announcements(bool $archived = false): array
             {
                 $audiences = announcement_viewable_audiences((string) (current_user()['role'] ?? PORTAL_ROLE));
                 $placeholders = implode(', ', array_fill(0, count($audiences), '?'));
-                $stmt = db()->prepare('SELECT a.*, u.fullname FROM announcements a JOIN users u ON u.id = a.posted_by WHERE a.status = "Published" AND a.audience IN (' . $placeholders . ') ORDER BY a.created_at DESC');
-                $stmt->execute($audiences);
+                $status = $archived ? 'Archived' : 'Published';
+                $stmt = db()->prepare("SELECT a.*, u.fullname FROM announcements a JOIN users u ON u.id = a.posted_by WHERE a.status = ? AND a.audience IN ({$placeholders}) ORDER BY a.created_at DESC");
+                $stmt->execute(array_merge([$status], $audiences));
                 return $stmt->fetchAll();
             }
+
+            function portal_announcement_counts(): array
+            {
+                $audiences = announcement_viewable_audiences((string) (current_user()['role'] ?? PORTAL_ROLE));
+                $placeholders = implode(', ', array_fill(0, count($audiences), '?'));
+                $pubStmt = db()->prepare("SELECT COUNT(*) FROM announcements a WHERE a.status = 'Published' AND a.audience IN ({$placeholders})");
+                $pubStmt->execute($audiences);
+                $archStmt = db()->prepare("SELECT COUNT(*) FROM announcements a WHERE a.status = 'Archived' AND a.audience IN ({$placeholders})");
+                $archStmt->execute($audiences);
+                return ['active' => (int) $pubStmt->fetchColumn(), 'archived' => (int) $archStmt->fetchColumn()];
+            }
+
 
             function portal_notifications(int $userId): array
             {
@@ -399,7 +470,7 @@ function portal_header(string $title, string $current): array
                 return [
                     'research' => db()->query('SELECT status AS label, COUNT(*) AS total FROM research_projects GROUP BY status')->fetchAll(),
                     'documents' => db()->query('SELECT status AS label, COUNT(*) AS total FROM documents WHERE archived_at IS NULL GROUP BY status')->fetchAll(),
-                    'extension' => db()->query('SELECT COALESCE(status, progress_status) AS label, COUNT(*) AS total FROM extension_projects GROUP BY COALESCE(status, progress_status)')->fetchAll(),
+                    'extension' => db()->query('SELECT COALESCE(status, CAST(progress_status AS VARCHAR)) AS label, COUNT(*) AS total FROM extension_projects GROUP BY COALESCE(status, CAST(progress_status AS VARCHAR))')->fetchAll(),
                 ];
             }
 

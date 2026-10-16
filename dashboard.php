@@ -29,7 +29,6 @@ renderHeader('Dashboard', 'dashboard');
 <section class="welcome-panel">
     <div>
         <p class="welcome-greeting">Welcome back, <?php echo h($user['fullname']); ?></p>
-        <p class="welcome-description">Oversee institutional research and extension proposals, track milestones, and manage executive approvals.</p>
     </div>
     <div class="welcome-actions" style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-left:auto;">
         <a class="primary-btn" href="research.php">

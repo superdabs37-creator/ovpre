@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             log_action((int) $user['id'], 'Submitted research proposal: ' . $title);
 
             // Notify college coordinators
-            $coordStmt = db()->prepare('SELECT id FROM users WHERE department_id = ? AND role = "Research Coordinator" AND status = "Active"');
+            $coordStmt = db()->prepare("SELECT id FROM users WHERE department_id = ? AND role = 'Research Coordinator' AND status = 'Active'");
             $coordStmt->execute([(int) ($user['department_id'] ?? 0)]);
             $coords = $coordStmt->fetchAll(PDO::FETCH_COLUMN);
             foreach ($coords as $coordId) {
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 notify_user((int) $owner['submitted_by'], 'Your research proposal "' . $owner['title'] . '" was endorsed by your Coordinator to the Research Director.', 'research.php#proposal-' . $projectId);
             }
             // Notify Directors
-            $directors = db()->query('SELECT id FROM users WHERE role IN ("Research Director", "Director for Research and Creative Works") AND status = "Active"')->fetchAll(PDO::FETCH_COLUMN);
+            $directors = db()->query("SELECT id FROM users WHERE role IN ('Research Director', 'Director for Research and Creative Works') AND status = 'Active'")->fetchAll(PDO::FETCH_COLUMN);
             foreach ($directors as $dirId) {
                 notify_user((int) $dirId, 'New proposal awaiting AIHR & director evaluation: ' . ($owner['title'] ?? ''), 'research.php#proposal-' . $projectId);
             }
@@ -165,24 +165,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $grantAmount = ($_POST['grant_amount'] ?? '') !== '' ? (float) $_POST['grant_amount'] : null;
             $remarks = trim((string) ($_POST['remarks'] ?? 'Evaluated under university research guidelines and recommended for executive funding approval.'));
 
-            db()->prepare('UPDATE research_projects SET status = "Pending Executive Approval", director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
+            db()->prepare("UPDATE research_projects SET status = 'Pending Executive Approval', director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $aihrStatus, $aihrScore, $grantAmount, $remarks, $projectId]);
 
-            $logDetails = "AIHR Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Recommended Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
+            $logDetails = "AIHR Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Recommended Grant: PHP " . number_format((float) ($grantAmount ?? 0), 2) . "\n" . $remarks;
             log_review('research', $projectId, (int) $user['id'], 'Stage 3: Endorsed by Research Director', $logDetails);
-            log_action((int) $user['id'], 'Research Director endorsed research #' . $projectId . ' with score ' . $aihrScore);
+            log_action((int) $user['id'], 'Research Director endorsed research #' . $projectId . ' with score ' . ($aihrScore ?? 'N/A'));
 
             $owner = db()->query('SELECT submitted_by, title FROM research_projects WHERE id = ' . $projectId)->fetch();
             if ($owner) {
-                notify_user((int) $owner['submitted_by'], 'Your research proposal passed AIHR evaluation and is forwarded to OVPRE Executive for final approval.', 'research.php#proposal-' . $projectId);
+                notify_user((int) $owner['submitted_by'], 'Your research proposal has been approved and endorsed by the Research Director to System Admin for final approval.', 'research.php#proposal-' . $projectId);
             }
             // Notify System Admin / VP
-            $admins = db()->query('SELECT id FROM users WHERE role IN ("Super Admin", "OVPRE Admin", "Vice President") AND status = "Active"')->fetchAll(PDO::FETCH_COLUMN);
+            $admins = db()->query("SELECT id FROM users WHERE role IN ('Super Admin', 'OVPRE Admin', 'Vice President') AND status = 'Active'")->fetchAll(PDO::FETCH_COLUMN);
             foreach ($admins as $adminId) {
-                notify_user((int) $adminId, 'Proposal awaiting Final Executive Approval: ' . ($owner['title'] ?? ''), 'research.php#proposal-' . $projectId);
+                notify_user((int) $adminId, 'Proposal awaiting Final Executive Approval from Research Director: ' . ($owner['title'] ?? ''), 'research.php#proposal-' . $projectId);
             }
 
-            flash('success', 'AIHR evaluation completed and endorsed to VP / OVPRE Executive!');
+            flash('success', 'Proposal approved and endorsed to System Admin / Executive for final approval!');
             redirect_to('research.php');
 
         } elseif ($action === 'director_return') {
@@ -192,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $projectId = (int) ($_POST['id'] ?? 0);
             $remarks = trim((string) ($_POST['remarks'] ?? 'Returned by Research Director for amendment.'));
 
-            db()->prepare('UPDATE research_projects SET status = "Needs Revision", director_id = ?, director_remarks = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
+            db()->prepare("UPDATE research_projects SET status = 'Needs Revision', director_id = ?, director_remarks = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $remarks, $projectId]);
 
             log_review('research', $projectId, (int) $user['id'], 'Returned for Revision by Research Director', $remarks);
@@ -240,14 +240,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             flash('success', 'Proposal has been declined.');
             redirect_to('research.php');
+        } elseif ($action === 'archive_proposal') {
+            $projectId = (int) ($_POST['id'] ?? 0);
+            db()->prepare('UPDATE research_projects SET archived_at = NOW() WHERE id = ?')->execute([$projectId]);
+            log_review('research', $projectId, (int) $user['id'], 'Proposal Archived', 'Research proposal archived.');
+            log_action((int) $user['id'], 'Archived research proposal #' . $projectId);
+            flash('success', 'Research proposal archived.');
+            redirect_to('research.php' . (!empty($_POST['archived_view']) ? '?archived=1' : ''));
+        } elseif ($action === 'restore_proposal') {
+            $projectId = (int) ($_POST['id'] ?? 0);
+            db()->prepare('UPDATE research_projects SET archived_at = NULL WHERE id = ?')->execute([$projectId]);
+            log_review('research', $projectId, (int) $user['id'], 'Proposal Restored', 'Research proposal restored from archive.');
+            log_action((int) $user['id'], 'Restored research proposal #' . $projectId);
+            flash('success', 'Research proposal restored.');
+            redirect_to('research.php?archived=1');
+        } elseif ($action === 'bulk_archive') {
+            $ids = array_map('intval', $_POST['ids'] ?? []);
+            $bulkAction = (string) ($_POST['bulk_action'] ?? 'archive');
+            $isArchivedView = !empty($_POST['archived_view']);
+            if (!empty($ids)) {
+                $marks = implode(',', array_fill(0, count($ids), '?'));
+                if ($bulkAction === 'restore') {
+                    db()->prepare("UPDATE research_projects SET archived_at = NULL WHERE id IN ($marks)")->execute($ids);
+                    foreach ($ids as $projId) {
+                        log_review('research', $projId, (int) $user['id'], 'Bulk Restored', 'Restored from archive via bulk action.');
+                        log_action((int) $user['id'], 'Bulk restored research proposal #' . $projId);
+                    }
+                    flash('success', count($ids) . ' research proposal(s) restored.');
+                    redirect_to('research.php?archived=1');
+                } else {
+                    db()->prepare("UPDATE research_projects SET archived_at = NOW() WHERE id IN ($marks)")->execute($ids);
+                    foreach ($ids as $projId) {
+                        log_review('research', $projId, (int) $user['id'], 'Bulk Archived', 'Archived via bulk action.');
+                        log_action((int) $user['id'], 'Bulk archived research proposal #' . $projId);
+                    }
+                    flash('success', count($ids) . ' research proposal(s) archived.');
+                    redirect_to('research.php');
+                }
+            } else {
+                flash('error', 'No research proposals were selected.');
+                redirect_to('research.php' . ($isArchivedView ? '?archived=1' : ''));
+            }
         }
     } catch (Throwable $error) {
         $notice = ['type' => 'error', 'message' => $error->getMessage()];
     }
 }
 
-$user = portal_header('Research Management & Workflow', 'research');
-$projects = portal_research_projects();
+$viewArchived = ($_GET['archived'] ?? '') === '1';
+$user = portal_header('Research Management', 'research');
+$projects = portal_research_projects($viewArchived);
+$researchCounts = portal_research_counts();
+
 
 // Stage count helpers
 $pendingCoordinatorCount = 0;
@@ -263,60 +307,6 @@ foreach ($projects as $p) {
 ?>
 
 <?php portal_notice($notice); ?>
-
-<!-- WORKFLOW PROGRESS BANNER -->
-<section class="panel" style="margin-bottom: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 5px solid #16a34a;">
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-        <div>
-            <h2 style="margin: 0; color: #166534; font-size: 1.25rem;">
-                <i class="ri-git-merge-line"></i> Research Review & Approval Pipeline
-            </h2>
-            <p style="margin: 4px 0 0; color: #4b5563; font-size: 0.9rem;">
-                Hierarchical Academic Flow: <strong>Faculty Researcher</strong> &rarr; <strong>Research Coordinator</strong> &rarr; <strong>Research Director</strong> &rarr; <strong>Vice President / Admin</strong>
-            </p>
-        </div>
-        <div>
-            <span class="role-chip" style="font-size: 0.9rem; padding: 6px 12px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">
-                <i class="ri-user-star-line"></i> Active Role: <?php echo h(PORTAL_ROLE); ?>
-            </span>
-        </div>
-    </div>
-
-    <!-- PIPELINE STEPPER -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px;">
-        <div style="background: #ffffff; padding: 12px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #15803d;">
-                <span style="background: #dcfce7; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">1</span>
-                Faculty Researcher
-            </div>
-            <small style="color: #6b7280; display: block; margin-top: 4px; line-height: 1.3;">Proposal Submission, Milestones, Liquidation, Dissemination</small>
-        </div>
-
-        <div style="background: #ffffff; padding: 12px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #b45309;">
-                <span style="background: #fef3c7; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">2</span>
-                Research Coordinator
-            </div>
-            <small style="color: #6b7280; display: block; margin-top: 4px; line-height: 1.3;">College Liaison, Initial Screening & Endorsement, Local Monitoring</small>
-        </div>
-
-        <div style="background: #ffffff; padding: 12px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #1d4ed8;">
-                <span style="background: #dbeafe; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">3</span>
-                Research Director
-            </div>
-            <small style="color: #6b7280; display: block; margin-top: 4px; line-height: 1.3;">Agency In-House Review (AIHR), Policies & Manuals, Funding & Grants</small>
-        </div>
-
-        <div style="background: #ffffff; padding: 12px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #7e22ce;">
-                <span style="background: #f3e8ff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">4</span>
-                VP for Research & Ext.
-            </div>
-            <small style="color: #6b7280; display: block; margin-top: 4px; line-height: 1.3;">Strategic Direction, External Linkages, Final Institutional Approval</small>
-        </div>
-    </div>
-</section>
 
 <!-- FACULTY RESEARCHER SUBMIT BUTTON -->
 <?php if ($isResearcher || $isExecutive): ?>
@@ -372,42 +362,83 @@ foreach ($projects as $p) {
 <!-- RESEARCH PROJECTS LIST -->
 <section class="panel">
     <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <?php if (!$isDirector): ?>
         <div>
             <h2>
                 <?php
-                if ($isCoordinator) echo 'College Research Proposals & Monitoring';
-                elseif ($isDirector) echo 'Institutional Research Evaluation & AIHR';
+                if ($viewArchived) echo 'Archived Research Records';
+                elseif ($isCoordinator) echo 'College Research Proposals';
                 elseif ($isExecutive) echo 'Executive Research Oversight & Approvals';
                 else echo 'My Research Submissions';
                 ?>
             </h2>
             <small style="color: #6b7280;">
                 <?php
-                if ($isCoordinator) echo 'Proposals and reports from your College/Department.';
-                elseif ($isDirector) echo 'Proposals endorsed by College Coordinators for AIHR and institutional grant review.';
+                if ($viewArchived) echo 'Archived proposals and records. You can select and restore records anytime.';
+                elseif ($isCoordinator) echo 'Proposals and reports from your College/Department.';
                 elseif ($isExecutive) echo 'Proposals ready for Final Executive Approval by the OVPRE.';
                 else echo 'Track proposal status from College Coordinator screening to Final Executive Approval.';
                 ?>
             </small>
         </div>
-        <label class="table-search">
-            <span class="sr-only">Search research submissions</span>
-            <i class="ri-search-line"></i>
-            <input type="search" data-table-search="researchSubmissionTable" placeholder="Search title, proponent, or status...">
-        </label>
+        <?php endif; ?>
+        <div class="panel-heading-actions" style="display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-left:auto;">
+            <div class="portal-table-tabs" style="margin-left:auto;">
+                <a class="portal-table-tab <?php echo !$viewArchived ? 'active' : ''; ?>" href="research.php">
+                    <i class="ri-folder-open-line"></i>
+                    <span>Active Submissions</span>
+                    <span class="tab-count"><?php echo $researchCounts['active']; ?></span>
+                </a>
+                <a class="portal-table-tab <?php echo $viewArchived ? 'active' : ''; ?>" href="research.php?archived=1">
+                    <i class="ri-archive-line"></i>
+                    <span>Archived Records</span>
+                    <span class="tab-count"><?php echo $researchCounts['archived']; ?></span>
+                </a>
+            </div>
+            <label class="table-search" style="margin-left:auto;">
+                <span class="sr-only">Search research submissions</span>
+                <i class="ri-search-line"></i>
+                <input type="search" data-table-search="researchSubmissionTable" placeholder="Search title, proponent, or status...">
+            </label>
+        </div>
+    </div>
+
+    <!-- Bulk Selection Toolbar (System Admin Style) -->
+    <div class="table-selection-toolbar" data-selection-toolbar="researchSubmissionTable" hidden>
+        <span data-selection-count>0 selected</span>
+        <form id="bulk-researchSubmissionTable" method="post" data-bulk-selection-form>
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="action" value="bulk_archive">
+            <?php if ($viewArchived): ?>
+                <input type="hidden" name="archived_view" value="1">
+                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit>
+                    <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
+                </button>
+            <?php else: ?>
+                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected proposals?');">
+                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                </button>
+            <?php endif; ?>
+        </form>
     </div>
 
     <div class="table-scroll">
         <table class="data-table" id="researchSubmissionTable" data-paginate="10">
             <thead>
                 <tr>
+                    <th class="table-checkbox-col">
+                        <label class="select-all-control">
+                            <input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable">
+                            <span>Select all</span>
+                        </label>
+                    </th>
                     <th>Research Title</th>
                     <th>Proponent</th>
                     <th>College / Dept</th>
                     <th>Workflow Stage</th>
                     <th>Status</th>
                     <th>Document</th>
-                    <th>Action / Review</th>
+                    <th>Manage</th>
                 </tr>
             </thead>
             <tbody>
@@ -416,8 +447,14 @@ foreach ($projects as $p) {
                     $pStatus = $project['status'];
                     $stage = $project['workflow_stage'] ?? 'Proposal';
                     $progressReports = portal_progress_reports((int) $project['id']);
+                    $attachmentUrl = !empty($project['attachment_filename'])
+                        ? record_access_url($project['attachment_filename'], '../', (int) $project['document_id'])
+                        : '';
                     ?>
                     <tr id="proposal-<?php echo (int) $project['id']; ?>">
+                        <td class="table-checkbox-col">
+                            <input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research proposal <?php echo (int) $project['id']; ?>" value="<?php echo (int) $project['id']; ?>" data-row-select="researchSubmissionTable">
+                        </td>
                         <td>
                             <strong><?php echo h($project['title']); ?></strong>
                             <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -443,8 +480,7 @@ foreach ($projects as $p) {
                             </span>
                         </td>
                         <td>
-                            <?php if (!empty($project['attachment_filename'])): ?>
-                                <?php $attachmentUrl = record_access_url($project['attachment_filename'], '../', (int) $project['document_id']); ?>
+                            <?php if ($attachmentUrl): ?>
                                 <div class="file-actions">
                                     <a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener" title="Download Document">
                                         <i class="ri-download-line"></i> File
@@ -455,47 +491,80 @@ foreach ($projects as $p) {
                             <?php endif; ?>
                         </td>
                         <td>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                <!-- REVIEW / ACTION BUTTON -->
-                                <?php if ($isCoordinator && $pStatus === 'Pending Coordinator Review'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="coordinator-review-<?php echo (int) $project['id']; ?>" style="background: #b45309;">
-                                        <i class="ri-check-double-line"></i> Screen & Endorse
-                                    </button>
-                                <?php elseif ($isDirector && $pStatus === 'Pending Director Review'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8;">
-                                        <i class="ri-medal-line"></i> AIHR Evaluation
-                                    </button>
-                                <?php elseif ($isExecutive && $pStatus === 'Pending Executive Approval'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce;">
-                                        <i class="ri-shield-check-line"></i> Final Approval
-                                    </button>
-                                <?php endif; ?>
+                            <details class="user-actions-dropdown">
+                                <summary class="user-actions-trigger">
+                                    <i class="ri-more-2-fill"></i>
+                                    <span>Manage</span>
+                                    <i class="ri-arrow-down-s-line user-actions-chevron"></i>
+                                </summary>
+                                <div class="user-action-menu">
+                                    <?php if ($isCoordinator && in_array($pStatus, ['Pending Coordinator Review', 'Pending', 'Under Review'], true)): ?>
+                                        <button class="primary-btn action-btn" type="button" data-open-modal="coordinator-review-<?php echo (int) $project['id']; ?>" style="background: #15803d; color: #fff;">
+                                            <i class="ri-check-double-line"></i><span>Endorse to Director</span>
+                                        </button>
+                                        <button class="ghost-btn action-btn" type="button" data-open-modal="coordinator-review-<?php echo (int) $project['id']; ?>" style="color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa;">
+                                            <i class="ri-arrow-go-back-line"></i><span>Return for Revision</span>
+                                        </button>
+                                    <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
+                                        <button class="primary-btn action-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;">
+                                            <i class="ri-medal-line"></i><span>AIHR Evaluation</span>
+                                        </button>
+                                    <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
+                                        <button class="primary-btn action-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;">
+                                            <i class="ri-shield-check-line"></i><span>Final Approval</span>
+                                        </button>
+                                    <?php endif; ?>
 
-                                <!-- VIEW TIMELINE & DETAILS BUTTON -->
-                                <button class="ghost-btn mini-btn" type="button" data-open-modal="project-details-<?php echo (int) $project['id']; ?>">
-                                    <i class="ri-eye-line"></i> Details & History
-                                </button>
-
-                                <!-- FOR RESEARCHER: IF APPROVED, ALLOW PROGRESS/LIQUIDATION/OUTPUT SUBMISSION -->
-                                <?php if ($isResearcher && $pStatus === 'Approved'): ?>
-                                    <button class="ghost-btn mini-btn" type="button" data-open-modal="progress-report-<?php echo (int) $project['id']; ?>" style="color: #15803d; border-color: #86efac;">
-                                        <i class="ri-upload-cloud-line"></i> Submit Output / Liquidation
+                                    <button class="ghost-btn action-btn" type="button" data-open-modal="project-details-<?php echo (int) $project['id']; ?>">
+                                        <i class="ri-eye-line"></i><span>Details & History</span>
                                     </button>
-                                <?php endif; ?>
 
-                                <!-- FOR RESEARCHER: IF NEEDS REVISION -->
-                                <?php if ($isResearcher && $pStatus === 'Needs Revision'): ?>
-                                    <button class="ghost-btn mini-btn" type="button" data-open-modal="resubmit-<?php echo (int) $project['id']; ?>" style="color: #c2410c; border-color: #fed7aa;">
-                                        <i class="ri-edit-line"></i> Resubmit
-                                    </button>
-                                <?php endif; ?>
-                            </div>
+                                    <?php if ($isResearcher && $pStatus === 'Approved'): ?>
+                                        <button class="ghost-btn action-btn" type="button" data-open-modal="progress-report-<?php echo (int) $project['id']; ?>" style="color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0;">
+                                            <i class="ri-upload-cloud-line"></i><span>Submit Output / Liquidation</span>
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($isResearcher && $pStatus === 'Needs Revision'): ?>
+                                        <button class="ghost-btn action-btn" type="button" data-open-modal="resubmit-<?php echo (int) $project['id']; ?>" style="color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa;">
+                                            <i class="ri-edit-line"></i><span>Resubmit Proposal</span>
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($attachmentUrl): ?>
+                                        <a class="ghost-btn action-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener">
+                                            <i class="ri-download-line"></i><span>Download Document</span>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <!-- Archive / Restore Action -->
+                                    <?php if ($viewArchived || !empty($project['archived_at'])): ?>
+                                        <form method="post" style="margin: 0; width: 100%;">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="action" value="restore_proposal">
+                                            <input type="hidden" name="id" value="<?php echo (int) $project['id']; ?>">
+                                            <button class="ghost-btn action-btn" type="submit" style="width: 100%; justify-content: flex-start;">
+                                                <i class="ri-arrow-go-back-line"></i><span>Restore Proposal</span>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <form method="post" style="margin: 0; width: 100%;" onsubmit="return confirm('Archive this research proposal?');">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="action" value="archive_proposal">
+                                            <input type="hidden" name="id" value="<?php echo (int) $project['id']; ?>">
+                                            <button class="ghost-btn action-btn" type="submit" style="width: 100%; justify-content: flex-start; color: #b45309;">
+                                                <i class="ri-archive-line"></i><span>Archive Proposal</span>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+                            </details>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if (!$projects): ?>
                     <tr data-pagination-empty>
-                        <td colspan="7" style="text-align: center; padding: 24px; color: #6b7280;">No research records found.</td>
+                        <td colspan="8" style="text-align: center; padding: 24px; color: #6b7280;"><?php echo $viewArchived ? 'No archived research records found.' : 'No research records found.'; ?></td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -600,17 +669,32 @@ foreach ($projects as $p) {
         <div class="modal-backdrop" data-close-modal></div>
         <div class="modal-card" role="dialog" aria-modal="true" style="max-width: 600px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close"><i class="ri-close-line"></i></button>
-            <h2 style="color: #b45309;"><i class="ri-shield-check-line"></i> College Research Coordinator Screening</h2>
+            <h2 style="color: #b45309;"><i class="ri-shield-check-line"></i> College Research Coordinator Screening & Action</h2>
             <p><strong><?php echo h($project['title']); ?></strong></p>
             <p style="font-size: 0.9rem; color: #4b5563;">Proponent: <?php echo h($project['fullname']); ?> (<?php echo h($project['department_name'] ?? 'College'); ?>)</p>
 
-            <form method="post" style="display: grid; gap: 14px; margin-top: 12px;">
+            <?php if (!empty($project['attachment_filename'])): ?>
+                <div style="margin: 6px 0 10px;">
+                    <a class="ghost-btn mini-btn" href="<?php echo h(record_access_url($project['attachment_filename'], '../', (int) $project['document_id'])); ?>" target="_blank" rel="noopener">
+                        <i class="ri-file-download-line"></i> View / Download Submitted Document
+                    </a>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($project['abstract'])): ?>
+                <div style="background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.85rem; color: #374151; margin-bottom: 8px; max-height: 120px; overflow-y: auto;">
+                    <strong>Abstract:</strong>
+                    <div style="margin-top: 4px;"><?php echo nl2br(h($project['abstract'])); ?></div>
+                </div>
+            <?php endif; ?>
+
+            <form method="post" style="display: grid; gap: 14px; margin-top: 8px;">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="id" value="<?php echo $projId; ?>">
                 
                 <label class="field">
-                    <span>Endorsement Remarks / Feedback (College-level screening findings):</span>
-                    <textarea name="remarks" rows="4" placeholder="e.g. Proposal screened. Documentation is complete and aligned with the college research agenda." required></textarea>
+                    <span>Coordinator Endorsement Remarks / Revision Instructions:</span>
+                    <textarea name="remarks" rows="4" placeholder="Enter endorsement notes for the Research Director, or specific revision instructions for the faculty researcher..." required></textarea>
                 </label>
 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">

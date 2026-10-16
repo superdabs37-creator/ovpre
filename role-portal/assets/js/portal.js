@@ -36,6 +36,15 @@ if (roleProfileToggle && roleProfileDropdown) {
     });
 }
 
+document.addEventListener('click', (event) => {
+    const clickedDropdown = event.target.closest('.user-actions-dropdown');
+    document.querySelectorAll('.user-actions-dropdown[open]').forEach((dropdown) => {
+        if (dropdown !== clickedDropdown || event.target.closest('.user-action-menu .action-btn')) {
+            dropdown.open = false;
+        }
+    });
+});
+
 let activeRoleModal = null;
 let modalOpener = null;
 
@@ -79,34 +88,35 @@ scheduleLauncher?.addEventListener('click', () => {
     }
     if (scheduleAction) scheduleAction.value = 'create';
     if (scheduleRequestId) scheduleRequestId.value = '';
-    if (scheduleModalTitle) scheduleModalTitle.textContent = 'Schedule an Activity';
-    if (scheduleModalDescription) scheduleModalDescription.textContent = 'The Super Admin must approve your request before it appears on the shared calendar.';
+    if (scheduleModalTitle) scheduleModalTitle.textContent = scheduleModalTitle.dataset.defaultTitle || 'Schedule an Activity';
+    if (scheduleModalDescription) scheduleModalDescription.textContent = scheduleModalDescription.dataset.defaultDesc || 'The Super Admin must approve your request before it appears on the shared calendar.';
     if (scheduleSubmit) scheduleSubmit.innerHTML = '<i class="ri-calendar-event-line"></i> Schedule Activity';
 });
 
-document.querySelectorAll('[data-edit-schedule]').forEach((button) => {
-    button.addEventListener('click', () => {
-        if (!scheduleForm || !scheduleLauncher) return;
-        let request;
-        try {
-            request = JSON.parse(button.dataset.editSchedule || '{}');
-        } catch {
-            return;
-        }
-        scheduleLauncher.click();
-        scheduleAction.value = 'update';
-        scheduleRequestId.value = request.id || '';
-        scheduleForm.elements.title.value = request.title || '';
-        scheduleForm.elements.activity_type.value = request.type || '';
-        scheduleForm.elements.date_from.value = request.dateFrom || '';
+document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-edit-schedule]');
+    if (!button || !scheduleForm || !scheduleLauncher) return;
+    let request;
+    try {
+        request = JSON.parse(button.dataset.editSchedule || '{}');
+    } catch {
+        return;
+    }
+    scheduleLauncher.click();
+    scheduleAction.value = 'update';
+    scheduleRequestId.value = request.id || '';
+    if (scheduleForm.elements.title) scheduleForm.elements.title.value = request.title || '';
+    if (scheduleForm.elements.activity_type) scheduleForm.elements.activity_type.value = request.type || '';
+    if (scheduleForm.elements.date_from) scheduleForm.elements.date_from.value = request.dateFrom || '';
+    if (scheduleForm.elements.date_to) {
         scheduleForm.elements.date_to.value = request.dateTo || request.dateFrom || '';
         scheduleForm.elements.date_to.min = request.dateFrom || '';
-        scheduleForm.elements.venue.value = request.venue || '';
-        scheduleForm.elements.description.value = request.description || '';
-        scheduleModalTitle.textContent = 'Edit Schedule Request';
-        scheduleModalDescription.textContent = 'Update your request. It will be sent to the Super Admin for approval.';
-        scheduleSubmit.innerHTML = '<i class="ri-save-line"></i> Update Request';
-    });
+    }
+    if (scheduleForm.elements.venue) scheduleForm.elements.venue.value = request.venue || '';
+    if (scheduleForm.elements.description) scheduleForm.elements.description.value = request.description || '';
+    if (scheduleModalTitle) scheduleModalTitle.textContent = 'Edit Activity';
+    if (scheduleModalDescription) scheduleModalDescription.textContent = 'Update activity details and schedule.';
+    if (scheduleSubmit) scheduleSubmit.innerHTML = '<i class="ri-save-line"></i> Save Changes';
 });
 
 document.querySelectorAll('[data-close-modal]').forEach((element) => {
@@ -429,14 +439,20 @@ document.querySelectorAll('[data-print-report]').forEach((button) => {
     });
 });
 
-const rolePalette = ['#15803d', '#16a34a', '#facc15', '#fde047', '#0f3d24', '#86efac'];
+const rolePalette = ['#15803d', '#16a34a', '#facc15', '#fde047', '#0f3d24', '#86efac', '#3b82f6', '#8b5cf6', '#ec4899'];
 const roleStatusColors = {
     approved: '#16a34a',
     completed: '#16a34a',
     declined: '#dc2626',
     rejected: '#dc2626',
-    'under-review': '#f97316',
-    pending: '#fde047'
+    'under-review': '#facc15',
+    pending: '#fde047',
+    'pending-coordinator-review': '#f59e0b',
+    'pending-director-review': '#3b82f6',
+    'pending-executive-approval': '#8b5cf6',
+    'needs-revision': '#ef4444',
+    planning: '#0ea5e9',
+    ongoing: '#10b981'
 };
 
 function roleStatusKey(value) {
@@ -445,6 +461,100 @@ function roleStatusKey(value) {
 
 function roleChartColor(label, index) {
     return roleStatusColors[roleStatusKey(label)] || rolePalette[index % rolePalette.length];
+}
+
+function renderReportChart(id, type, rows, label) {
+    const canvas = document.getElementById(id);
+    if (!canvas || !window.Chart) return;
+    const labels = rows.map((row) => row.label || row.department_name || row.category_name || row.status);
+    const isLine = type === 'line';
+    const isDoughnut = type === 'doughnut';
+    const statusAwareColors = rows.map((row, index) => {
+        const rowLabel = row.status || row.label || row.progress_status || row.department_name || row.category_name;
+        return roleChartColor(rowLabel, index);
+    });
+
+    new Chart(canvas, {
+        type,
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data: rows.map((row) => Number(row.total || 0)),
+                backgroundColor: isDoughnut
+                    ? statusAwareColors
+                    : (isLine ? statusAwareColors.map((color) => `${color}33`) : (type === 'bar' && id === 'reportMonthlyChart' ? '#15803d' : statusAwareColors)),
+                borderColor: isDoughnut ? '#ffffff' : (isLine ? statusAwareColors : '#15803d'),
+                borderWidth: isDoughnut ? 3 : 1,
+                borderRadius: type === 'bar' ? 8 : 0,
+                pointBackgroundColor: statusAwareColors,
+                tension: 0.35
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: isDoughnut ? '65%' : undefined,
+            plugins: {
+                legend: {
+                    display: isDoughnut,
+                    position: 'bottom',
+                    labels: {
+                        color: '#17231c',
+                        boxWidth: 12,
+                        padding: 12,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(items) {
+                            if (!items.length) return '';
+                            const idx = items[0].dataIndex;
+                            const row = rows[idx];
+                            return row?.department_name || row?.label || row?.status || items[0].label;
+                        }
+                    }
+                }
+            },
+            ...(type === 'bar' ? {
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#6f7b73',
+                            font: { size: 11, weight: '600' },
+                            maxRotation: 45,
+                            minRotation: 0,
+                            callback: function(val) {
+                                const lbl = this.getLabelForValue(val) || '';
+                                return lbl.length > 25 ? lbl.substring(0, 22) + '...' : lbl;
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e6ede8' },
+                        ticks: { color: '#6f7b73', precision: 0 }
+                    }
+                }
+            } : {})
+        }
+    });
+}
+
+function initReportCharts() {
+    if (!window.reportCharts || !window.Chart) return;
+    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Department Output');
+    renderReportChart('reportMonthlyChart', 'bar', window.reportCharts.monthly || [], 'Submissions');
+    renderReportChart('reportResearchChart', 'doughnut', window.reportCharts.research || window.reportCharts.extension || [], 'Status');
+    renderReportChart('reportExtensionChart', 'doughnut', window.reportCharts.extension || [], 'Status');
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReportCharts);
+} else {
+    initReportCharts();
 }
 
 function drawRoleChart(id, rows, label) {
@@ -526,3 +636,41 @@ document.querySelectorAll('[data-export-table]').forEach((button) => {
         URL.revokeObjectURL(link.href);
     });
 });
+
+// Table selection toolbar & select all checkboxes
+document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
+    const tableId = selectAll.dataset.selectAll;
+    const table = document.getElementById(tableId);
+    const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
+    if (!table || !toolbar) return;
+    const rowCheckboxes = () => Array.from(table.querySelectorAll(`[data-row-select="${tableId}"]`));
+    const countLabel = toolbar.querySelector('[data-selection-count]');
+    const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
+
+    const updateSelection = () => {
+        const checkboxes = rowCheckboxes();
+        const selected = checkboxes.filter((checkbox) => checkbox.checked);
+        selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
+        selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+        toolbar.hidden = selected.length === 0;
+        if (countLabel) {
+            countLabel.textContent = `${selected.length} selected`;
+        }
+        bulkButtons.forEach((button) => {
+            button.disabled = selected.length === 0;
+        });
+    };
+
+    selectAll.addEventListener('change', () => {
+        rowCheckboxes().forEach((checkbox) => {
+            checkbox.checked = selectAll.checked;
+        });
+        updateSelection();
+    });
+
+    table.addEventListener('change', (event) => {
+        if (!event.target.matches(`[data-row-select="${tableId}"]`)) return;
+        updateSelection();
+    });
+});
+

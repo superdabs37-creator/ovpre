@@ -2,13 +2,13 @@
 $user = portal_require_user();
 verify_csrf();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    db()->prepare('UPDATE notifications SET status = "Read" WHERE id = ? AND user_id = ?')->execute([(int) $_POST['id'], (int) $user['id']]);
+    db()->prepare("UPDATE notifications SET status = 'Read' WHERE id = ? AND user_id = ?")->execute([(int) $_POST['id'], (int) $user['id']]);
     redirect_to('notifications.php');
 }
 $user = portal_header('Notifications', 'notifications');
 $notifications = portal_notifications((int) $user['id']);
 ?>
-<section class="panel"><div class="panel-heading"><div><h2>File and Submission Alerts</h2><span>Updates about uploads and coordinator submissions.</span></div><a class="primary-btn" href="../submitted-files.php"><i class="ri-folder-open-line"></i> View All Files</a></div></section>
+<section class="panel"><div class="panel-heading"><div><h2>File and Submission Alerts</h2></div><a class="primary-btn" href="../submitted-files.php"><i class="ri-folder-open-line"></i> View All Files</a></div></section>
 <section class="notification-list" data-paginate="10"><?php foreach ($notifications as $note): ?><?php
     $targetLink = (string) ($note['link'] ?? '');
     if ($targetLink !== '' && !str_starts_with($targetLink, 'http://') && !str_starts_with($targetLink, 'https://') && !str_starts_with($targetLink, '/')) {

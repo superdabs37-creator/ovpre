@@ -403,7 +403,7 @@ $projects = portal_extension_projects();
                     <th>Workflow Stage</th>
                     <th>Status</th>
                     <th>Document</th>
-                    <th>Action / Review</th>
+                    <th>Manage</th>
                 </tr>
             </thead>
             <tbody>
@@ -412,6 +412,9 @@ $projects = portal_extension_projects();
                     $pStatus = $project['status'] ?? 'Approved';
                     $stage = $project['workflow_stage'] ?? 'Proposal';
                     $progressReports = portal_extension_progress_reports((int) $project['id']);
+                    $attachmentUrl = !empty($project['attachment_filename'])
+                        ? record_access_url($project['attachment_filename'], '../', (int) $project['document_id'])
+                        : '';
                     ?>
                     <tr id="project-<?php echo (int) $project['id']; ?>">
                         <td>
@@ -445,8 +448,7 @@ $projects = portal_extension_projects();
                             </span>
                         </td>
                         <td>
-                            <?php if (!empty($project['attachment_filename'])): ?>
-                                <?php $attachmentUrl = record_access_url($project['attachment_filename'], '../', (int) $project['document_id']); ?>
+                            <?php if ($attachmentUrl): ?>
                                 <div class="file-actions">
                                     <a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener" title="Download Document">
                                         <i class="ri-download-line"></i> File
@@ -457,41 +459,53 @@ $projects = portal_extension_projects();
                             <?php endif; ?>
                         </td>
                         <td>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                <!-- REVIEW / ACTION BUTTON -->
-                                <?php if ($isCoordinator && $pStatus === 'Pending Coordinator Review'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="coordinator-review-<?php echo (int) $project['id']; ?>" style="background: #b45309;">
-                                        <i class="ri-check-double-line"></i> Screen & Endorse
-                                    </button>
-                                <?php elseif ($isDirector && $pStatus === 'Pending Director Review'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8;">
-                                        <i class="ri-medal-line"></i> Evaluate Project
-                                    </button>
-                                <?php elseif ($isExecutive && $pStatus === 'Pending Executive Approval'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce;">
-                                        <i class="ri-shield-check-line"></i> Final Approval
-                                    </button>
-                                <?php endif; ?>
+                            <details class="user-actions-dropdown">
+                                <summary class="user-actions-trigger">
+                                    <i class="ri-more-2-fill"></i>
+                                    <span>Manage</span>
+                                    <i class="ri-arrow-down-s-line user-actions-chevron"></i>
+                                </summary>
+                                <div class="user-action-menu">
+                                    <?php if ($isCoordinator && in_array($pStatus, ['Pending Coordinator Review', 'Pending', 'Under Review'], true)): ?>
+                                        <button class="primary-btn action-btn" type="button" data-open-modal="coordinator-review-<?php echo (int) $project['id']; ?>" style="background: #15803d; color: #fff;">
+                                            <i class="ri-check-double-line"></i><span>Endorse to Director</span>
+                                        </button>
+                                        <button class="ghost-btn action-btn" type="button" data-open-modal="coordinator-review-<?php echo (int) $project['id']; ?>" style="color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa;">
+                                            <i class="ri-arrow-go-back-line"></i><span>Return for Revision</span>
+                                        </button>
+                                    <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
+                                        <button class="primary-btn action-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;">
+                                            <i class="ri-medal-line"></i><span>Evaluate Project</span>
+                                        </button>
+                                    <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
+                                        <button class="primary-btn action-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;">
+                                            <i class="ri-shield-check-line"></i><span>Final Approval</span>
+                                        </button>
+                                    <?php endif; ?>
 
-                                <!-- VIEW DETAILS & TIMELINE -->
-                                <button class="ghost-btn mini-btn" type="button" data-open-modal="project-details-<?php echo (int) $project['id']; ?>">
-                                    <i class="ri-eye-line"></i> Details & History
-                                </button>
-
-                                <!-- FOR FACULTY EXTENSIONIST: IF APPROVED, ALLOW PROGRESS/LIQUIDATION/OUTPUT SUBMISSION -->
-                                <?php if ($isExtensionist && $pStatus === 'Approved'): ?>
-                                    <button class="ghost-btn mini-btn" type="button" data-open-modal="progress-report-<?php echo (int) $project['id']; ?>" style="color: #15803d; border-color: #86efac;">
-                                        <i class="ri-upload-cloud-line"></i> Submit Output / Liquidation
+                                    <button class="ghost-btn action-btn" type="button" data-open-modal="project-details-<?php echo (int) $project['id']; ?>">
+                                        <i class="ri-eye-line"></i><span>Details & History</span>
                                     </button>
-                                <?php endif; ?>
 
-                                <!-- FOR FACULTY EXTENSIONIST: IF NEEDS REVISION -->
-                                <?php if ($isExtensionist && $pStatus === 'Needs Revision'): ?>
-                                    <button class="ghost-btn mini-btn" type="button" data-open-modal="resubmit-<?php echo (int) $project['id']; ?>" style="color: #c2410c; border-color: #fed7aa;">
-                                        <i class="ri-edit-line"></i> Resubmit
-                                    </button>
-                                <?php endif; ?>
-                            </div>
+                                    <?php if ($isExtensionist && $pStatus === 'Approved'): ?>
+                                        <button class="ghost-btn action-btn" type="button" data-open-modal="progress-report-<?php echo (int) $project['id']; ?>" style="color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0;">
+                                            <i class="ri-upload-cloud-line"></i><span>Submit Output / Liquidation</span>
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($isExtensionist && $pStatus === 'Needs Revision'): ?>
+                                        <button class="ghost-btn action-btn" type="button" data-open-modal="resubmit-<?php echo (int) $project['id']; ?>" style="color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa;">
+                                            <i class="ri-edit-line"></i><span>Resubmit Project</span>
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($attachmentUrl): ?>
+                                        <a class="ghost-btn action-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener">
+                                            <i class="ri-download-line"></i><span>Download Document</span>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </details>
                         </td>
                     </tr>
                 <?php endforeach; ?>

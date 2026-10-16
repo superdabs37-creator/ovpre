@@ -1,5 +1,5 @@
 <?php
-if (!portal_can('analytics')) { http_response_code(403); exit('Analytics is not available for this role.'); }
+if (!portal_can('analytics')) { redirect_to('dashboard.php'); }
 $user = portal_header('Analytics Dashboard', 'analytics');
 $isExtensionCoordinator = PORTAL_ROLE === 'Extension Coordinator';
 $isResearchCoordinator = PORTAL_ROLE === 'Research Coordinator';

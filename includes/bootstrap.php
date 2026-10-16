@@ -110,6 +110,7 @@ class SupabasePDO extends PDO {
         $sql = preg_replace('/SUM\(([^)]+?)\s+IN\s*\(([^)]+?)\)\)/i', 'COUNT(CASE WHEN $1 IN ($2) THEN 1 END)', $sql);
 
         $sql = preg_replace('/"([^"]+)"/', "'$1'", $sql);
+        $sql = preg_replace('/COALESCE\(\s*([^,]+?\.status|status)\s*,\s*([^,]+?\.progress_status|progress_status)\s*\)/i', 'COALESCE($1, CAST($2 AS VARCHAR))', $sql);
 
         return $sql;
     }
@@ -303,7 +304,7 @@ function current_user(): ?array {
     }
     $_SESSION['last_activity'] = time();
 
-    $stmt = db()->prepare('SELECT * FROM users WHERE id = ? AND status = "Active" AND deleted_at IS NULL LIMIT 1');
+    $stmt = db()->prepare("SELECT * FROM users WHERE id = ? AND status = 'Active' AND deleted_at IS NULL LIMIT 1");
     $stmt->execute([$_SESSION['user_id']]);
     return $stmt->fetch() ?: null;
 }

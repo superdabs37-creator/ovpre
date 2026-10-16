@@ -19,7 +19,15 @@ $isAdmin = in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true);
 $isOwner = (int) $document['uploaded_by'] === (int) $user['id'];
 $isDepartmentCoordinator = in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR], true)
     && !empty($user['department_id']) && (int) $document['department_id'] === (int) $user['department_id'];
-if (!$isAdmin && !$isOwner && !$isDepartmentCoordinator) {
+$isDirectorOrExecutive = in_array($role, [
+    ROLE_RESEARCH_DIRECTOR,
+    ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR,
+    ROLE_EXTENSION_DIRECTOR,
+    'Vice President',
+    ROLE_OVPRE_SECRETARIAT,
+], true) || in_array(role_access_group($role), [ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_OVPRE_ADMIN], true);
+
+if (!$isAdmin && !$isDirectorOrExecutive && !$isOwner && !$isDepartmentCoordinator) {
     http_response_code(403);
     exit('You do not have access to this file.');
 }

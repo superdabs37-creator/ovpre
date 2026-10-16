@@ -239,28 +239,6 @@ renderHeader('Extension Management', 'extension');
 
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><?php echo h($notice['message']); ?></div><?php endif; ?>
 
-<!-- PIPELINE FLOW HIGHLIGHT -->
-<section class="panel" style="margin-bottom: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 5px solid #16a34a;">
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-        <div>
-            <h3 style="margin: 0; color: #166534;"><i class="ri-git-merge-line"></i> Extension Review & Approval Pipeline</h3>
-            <p style="margin: 4px 0 0; color: #4b5563; font-size: 0.9rem;">
-                Currently logged in as: <strong><?php echo h($user['fullname']); ?></strong> (<?php echo h($user['role']); ?>)
-            </p>
-        </div>
-        <div>
-            <span class="role-chip" style="font-size: 0.85rem; padding: 4px 10px; background: #dcfce7; color: #166534;">
-                <?php
-                if ($isCoordinator) echo 'College Extension Coordinator Scope';
-                elseif ($isDirector) echo 'Extension Director Evaluation Scope (University Wide)';
-                elseif ($isExecutive) echo 'OVPRE Executive Scope (Final Approval)';
-                else echo 'Faculty Extensionist Scope';
-                ?>
-            </span>
-        </div>
-    </div>
-</section>
-
 <!-- SUBMIT EXTENSION PROJECT PANEL -->
 <?php if (!$isSuperAdmin): ?>
 <section class="panel modal-launcher-panel">
@@ -381,15 +359,18 @@ renderHeader('Extension Management', 'extension');
                         </td>
                         <td>
                             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                <?php if ($isCoordinator && $pStatus === 'Pending Coordinator Review'): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #b45309;">
-                                        <i class="ri-check-line"></i> Screen
+                                <?php if ($isCoordinator && in_array($pStatus, ['Pending Coordinator Review', 'Pending', 'Under Review'], true)): ?>
+                                    <button class="primary-btn mini-btn" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #15803d;" title="Endorse project to Extension Director">
+                                        <i class="ri-check-double-line"></i> Endorse
                                     </button>
-                                <?php elseif ($isDirector && $pStatus === 'Pending Director Review'): ?>
+                                    <button class="ghost-btn mini-btn" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" style="color: #c2410c; border-color: #fed7aa;" title="Return to faculty for revision">
+                                        <i class="ri-arrow-go-back-line"></i> Revision
+                                    </button>
+                                <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
                                     <button class="primary-btn mini-btn" type="button" data-open-modal="dir-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8;">
                                         <i class="ri-award-line"></i> Evaluate
                                     </button>
-                                <?php elseif ($isExecutive && $pStatus === 'Pending Executive Approval'): ?>
+                                <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
                                     <button class="primary-btn mini-btn" type="button" data-open-modal="exec-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce;">
                                         <i class="ri-shield-check-line"></i> Approve
                                     </button>

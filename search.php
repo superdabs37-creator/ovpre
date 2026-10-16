@@ -28,7 +28,7 @@ if ($query !== '') {
         $scopeParams = [];
         if ($role === ROLE_FACULTY_EXTENSIONIST) { $scope = ' AND e.submitted_by = ?'; $scopeParams[] = (int) $user['id']; }
         elseif ($role === ROLE_EXTENSION_COORDINATOR) { $scope = !empty($user['department_id']) ? ' AND owner.department_id = ?' : ' AND e.submitted_by = ?'; $scopeParams[] = !empty($user['department_id']) ? (int) $user['department_id'] : (int) $user['id']; }
-        $stmt = db()->prepare('SELECT e.id, e.project_title AS label, COALESCE(e.status, e.progress_status) AS status, e.created_at FROM extension_projects e JOIN users owner ON owner.id = e.submitted_by WHERE (e.project_title LIKE ? OR e.coordinator LIKE ? OR e.community_partner LIKE ? OR e.location LIKE ? OR e.target_beneficiaries LIKE ?)' . $scope . ' ORDER BY e.created_at DESC LIMIT 10');
+        $stmt = db()->prepare('SELECT e.id, e.project_title AS label, COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) AS status, e.created_at FROM extension_projects e JOIN users owner ON owner.id = e.submitted_by WHERE (e.project_title LIKE ? OR e.coordinator LIKE ? OR e.community_partner LIKE ? OR e.location LIKE ? OR e.target_beneficiaries LIKE ?)' . $scope . ' ORDER BY e.created_at DESC LIMIT 10');
         $stmt->execute([$like, $like, $like, $like, $like, ...$scopeParams]);
         foreach ($stmt->fetchAll() as $row) {
             $extensionUrl = ($portalBase !== '' ? $portalBase . 'extension.php' : 'extension.php') . '#project-' . (int) $row['id'];

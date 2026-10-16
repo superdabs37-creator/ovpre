@@ -56,7 +56,9 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
 ?>
 <section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Publish updates for directors, coordinators, faculty extensionists, OVPRE staff, or other authorized users.</span></div></section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><?php echo h($notice['message']); ?></div><?php endif; ?>
-<section class="panel modal-launcher-panel"><div class="panel-heading"><div><h2><?php echo $archived ? 'Archived Announcements' : 'Announcements'; ?></h2><span><?php echo $archived ? 'Archived announcements.' : 'Create and publish an update for your audience.'; ?></span></div><div class="action-row"><?php if (!$archived): ?><button class="primary-btn" type="button" data-open-modal="createAnnouncementModal"><i class="ri-add-line"></i> Create Announcement</button><?php endif; ?></div></div></section>
+<?php if (!$archived): ?>
+<section class="panel modal-launcher-panel"><div class="panel-heading" style="display: flex; justify-content: flex-end;"><div class="action-row" style="margin-left: auto;"><button class="primary-btn" type="button" data-open-modal="createAnnouncementModal"><i class="ri-add-line"></i> Create Announcement</button></div></div></section>
+<?php endif; ?>
 <?php if (!$archived): ?>
 <div class="modal" id="createAnnouncementModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createAnnouncementTitle">
     <div class="modal-backdrop" data-close-modal></div>

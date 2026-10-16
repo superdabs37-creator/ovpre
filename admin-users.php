@@ -127,10 +127,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'invite') {
             $email = trim((string) ($_POST['email'] ?? ''));
             $role = (string) ($_POST['role'] ?? '');
-            $departmentId = (int) ($_POST['department_id'] ?? 0);
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $departmentId <= 0
+            $departmentRaw = trim((string) ($_POST['department_id'] ?? ''));
+            $isNoneDepartment = ($departmentRaw === 'none' || $departmentRaw === '0' || $departmentRaw === 'null');
+            $departmentId = $isNoneDepartment ? null : (int) $departmentRaw;
+
+            if ($departmentRaw === '' || (!$isNoneDepartment && ($departmentId === null || $departmentId <= 0))) {
+                throw new InvalidArgumentException('Please choose a department or None.');
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)
                 || !in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_COORDINATOR, ROLE_EXTENSION_DIRECTOR, ROLE_OVPRE_SECRETARIAT, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER], true)) {
-            throw new InvalidArgumentException('Enter a valid email, department, and invited account type.');
+                throw new InvalidArgumentException('Enter a valid email, department, and invited account type.');
             }
             $emailLocalPart = (string) strstr($email, '@', true);
             $fullname = trim(ucwords(str_replace(['.', '_', '-'], ' ', $emailLocalPart)));
@@ -205,7 +211,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim((string) ($_POST['email'] ?? ''));
             $username = trim((string) ($_POST['username'] ?? ''));
             [$gender, $birthday, $phone] = user_profile_fields($_POST);
-            $departmentId = (int) ($_POST['department_id'] ?? 0);
+            $departmentRaw = trim((string) ($_POST['department_id'] ?? ''));
+            $departmentId = ($departmentRaw === 'none' || $departmentRaw === '0' || $departmentRaw === '') ? null : (int) $departmentRaw;
             $submittedRole = (string) ($_POST['role'] ?? '');
 
             if ($fullname === '' || strlen($fullname) > 160 || !preg_match('/^[A-Za-z0-9_.-]{3,80}$/', $username)) {
@@ -275,16 +282,18 @@ $statusFilter = (string) ($_GET['status'] ?? 'All');
 if (!in_array($statusFilter, $statusOptions, true)) {
     $statusFilter = 'All';
 }
-$departmentFilter = (int) ($_GET['department'] ?? 0);
+$departmentFilter = trim((string) ($_GET['department'] ?? '0'));
 $sql = 'SELECT u.*, d.department_name, creator.fullname AS created_by_name, approver.fullname AS approved_by_name, rejecter.fullname AS rejected_by_name FROM users u LEFT JOIN departments d ON d.id = u.department_id LEFT JOIN users creator ON creator.id = u.created_by LEFT JOIN users approver ON approver.id = u.approved_by LEFT JOIN users rejecter ON rejecter.id = u.rejected_by WHERE u.deleted_at IS NULL';
 $params = [];
 if ($statusFilter !== 'All') {
     $sql .= ' AND u.status = ?';
     $params[] = $statusFilter;
 }
-if ($departmentFilter > 0) {
+if ($departmentFilter === 'none') {
+    $sql .= ' AND u.department_id IS NULL';
+} elseif ((int) $departmentFilter > 0) {
     $sql .= ' AND u.department_id = ?';
-    $params[] = $departmentFilter;
+    $params[] = (int) $departmentFilter;
 }
 $sql .= ' ORDER BY u.created_at DESC';
 $usersStmt = db()->prepare($sql);
@@ -315,13 +324,13 @@ renderHeader('User Management', 'users');
         <h2 id="inviteAccountTitle">Invite an account</h2>
         <p>Users set their own password through the secure invitation email.</p>
         <?php echo csrf_field(); ?><input type="hidden" name="action" value="invite">
-        <div class="form-grid"><label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label><label class="field"><span>Account Type</span><select name="role" required><option value="" selected disabled>Choose account type</option><?php foreach ([ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER] as $inviteRole): ?><option value="<?php echo h($inviteRole); ?>"><?php echo h($inviteRole === ROLE_RESEARCHER ? 'Other Authorized User (Researcher)' : $inviteRole); ?></option><?php endforeach; ?></select></label><label class="field"><span>Department</span><select name="department_id" required><option value="0" selected disabled>Choose department</option><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></div>
+        <div class="form-grid"><label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label><label class="field"><span>Account Type</span><select name="role" required><option value="" selected disabled>Choose account type</option><?php foreach ([ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER] as $inviteRole): ?><option value="<?php echo h($inviteRole); ?>"><?php echo h($inviteRole === ROLE_RESEARCHER ? 'Other Authorized User (Researcher)' : $inviteRole); ?></option><?php endforeach; ?></select></label><label class="field"><span>Department</span><select name="department_id" required><option value="" selected disabled>Choose department</option><option value="none">None</option><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></div>
         <button class="primary-btn" type="submit"><i class="ri-mail-send-line"></i> Send Invitation</button>
     </form>
 </div>
 <section class="tool-panel">
     <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div>
-    <form method="get" class="action-row" style="display:flex;flex-direction:row;align-items:flex-end;gap:12px;flex-wrap:wrap;"><label class="field" style="margin:0;"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field" style="margin:0;"><span>Department</span><select class="filter-select" name="department" onchange="this.form.submit()"><option value="0" <?php echo $departmentFilter === 0 ? 'selected' : ''; ?>>All Departments</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo $departmentFilter === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></form>
+    <form method="get" class="action-row" style="display:flex;flex-direction:row;align-items:flex-end;gap:12px;flex-wrap:wrap;"><label class="field" style="margin:0;"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field" style="margin:0;"><span>Department</span><select class="filter-select" name="department" onchange="this.form.submit()"><option value="0" <?php echo ($departmentFilter === '0' || $departmentFilter === 0) ? 'selected' : ''; ?>>All Departments</option><option value="none" <?php echo $departmentFilter === 'none' ? 'selected' : ''; ?>>None</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $departmentFilter === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></form>
 </section>
 <section class="panel">
     <div class="table-scroll">
