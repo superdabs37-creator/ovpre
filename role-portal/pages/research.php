@@ -12,11 +12,28 @@ $isCoordinator = PORTAL_ROLE === 'Research Coordinator';
 $isDirector = PORTAL_ROLE === 'Research Director';
 $isExecutive = in_array(PORTAL_ROLE, ['Vice President', 'OVPRE Admin'], true) || ($user['role'] ?? '') === ROLE_SUPER_ADMIN;
 
+/**
+ * Categories that make sense for a research proposal submission.
+ * Non-research categories (Memorandum, Administrative Record, etc.) are excluded.
+ */
+function research_form_categories(): array
+{
+    $allowed = ['Research Proposal', 'Research Report', 'Publication'];
+    return array_values(array_filter(
+        categories(),
+        static fn(array $category): bool => in_array($category['category_name'], $allowed, true)
+    ));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'create';
 
     try {
         if ($action === 'create' || $action === 'create_proposal') {
+            $allowedCategoryIds = array_map('intval', array_column(research_form_categories(), 'id'));
+            if (!in_array((int) ($_POST['category_id'] ?? 0), $allowedCategoryIds, true)) {
+                throw new InvalidArgumentException('Please choose a valid research document category.');
+            }
             $documentId = portal_save_document($_POST, $_FILES['supporting_document'] ?? [], $user);
             $title = trim((string) ($_POST['title'] ?? ''));
             $researchers = trim((string) ($_POST['researchers'] ?? ''));
@@ -340,7 +357,7 @@ foreach ($projects as $p) {
                 <label class="field"><span>Target Funding Source</span><input name="funding_source" value="Institutional Research Grant (OVPRE)"></label>
                 <label class="field"><span>Document Category</span>
                     <select name="category_id">
-                        <?php foreach (categories() as $category): ?>
+                        <?php foreach (research_form_categories() as $category): ?>
                             <option value="<?php echo (int) $category['id']; ?>"><?php echo h($category['category_name']); ?></option>
                         <?php endforeach; ?>
                     </select>
