@@ -1,1 +1,8 @@
 /config.local.php
+
+# Editor settings
+/.vscode/
+
+# Database dumps containing real user data (emails, phone numbers, password hashes)
+/ovpre.sql
+/database/supabase_data.sql

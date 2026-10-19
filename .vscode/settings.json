@@ -1,9 +1,0 @@
-{
-  "files.exclude": {
-    "**/*.frm": true,
-    "**/*.ibd": true,
-    "**/sess_*": true
-  },
-  "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.expand": false
-}
