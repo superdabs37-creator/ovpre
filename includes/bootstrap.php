@@ -52,7 +52,7 @@ function announcement_audience_for_role(string $role): ?string {
     return match ($role) {
         ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR => 'Directors',
         ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR => 'Coordinators',
-        ROLE_FACULTY_EXTENSIONIST => 'Faculty Extensionist',
+        ROLE_FACULTY_EXTENSIONIST => 'Faculty Extensionists',
         ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT => 'OVPRE Staff',
         ROLE_RESEARCHER => 'Other Authorized Users',
         default => null,
@@ -60,8 +60,12 @@ function announcement_audience_for_role(string $role): ?string {
 }
 
 function announcement_viewable_audiences(string $role): array {
+    $validEnumValues = [
+        'All', 'Directors', 'Coordinators', 'Faculty Extensionists',
+        'OVPRE Staff', 'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'
+    ];
     if (in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
-        return ['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'];
+        return $validEnumValues;
     }
     $audiences = ['All'];
     $audience = announcement_audience_for_role($role);
@@ -75,7 +79,8 @@ function announcement_viewable_audiences(string $role): array {
         ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT => ['Staff'],
         default => [],
     };
-    return array_values(array_unique(array_merge($audiences, $legacyAudiences)));
+    $combined = array_values(array_unique(array_merge($audiences, $legacyAudiences)));
+    return array_values(array_intersect($validEnumValues, $combined));
 }
 
 function role_dashboard_path(string $role): ?string {
@@ -85,7 +90,6 @@ function role_dashboard_path(string $role): ?string {
         ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR,
         ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR,
         ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER => match ($role) {
-            ROLE_OVPRE_ADMIN => 'ovpre-admin/dashboard.php',
             ROLE_RESEARCH_DIRECTOR => 'research-director/dashboard.php',
             ROLE_EXTENSION_DIRECTOR => 'extension-director/dashboard.php',
             ROLE_RESEARCH_COORDINATOR => 'research-coordinator/dashboard.php',
@@ -249,6 +253,42 @@ function ensure_activity_archived_at_column(): void {
     $column = db()->query("SHOW COLUMNS FROM activities LIKE 'archived_at'")->fetch();
     if (!$column) {
         db()->exec('ALTER TABLE activities ADD COLUMN archived_at DATETIME DEFAULT NULL');
+    }
+    $checked = true;
+}
+
+function ensure_extension_proposal_columns(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $columns = [
+        'academic_year' => 'VARCHAR(50)',
+        'needs_assessment' => 'TEXT',
+        'moa_mou' => 'TEXT',
+        'implementation_details' => 'TEXT',
+        'outputs' => 'TEXT',
+        'outcome' => 'TEXT',
+        'impact_assessment' => 'TEXT',
+        'sustainability' => 'TEXT',
+        'evidence_checklist' => 'TEXT',
+        'accomplishment_report' => 'TEXT'
+    ];
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            foreach ($columns as $col => $type) {
+                db()->exec("ALTER TABLE extension_projects ADD COLUMN IF NOT EXISTS {$col} {$type}");
+            }
+        } else {
+            foreach ($columns as $col => $type) {
+                $exists = db()->query("SHOW COLUMNS FROM extension_projects LIKE '{$col}'")->fetch();
+                if (!$exists) {
+                    db()->exec("ALTER TABLE extension_projects ADD COLUMN {$col} {$type}");
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // Silently continue if permissions or already exists
     }
     $checked = true;
 }

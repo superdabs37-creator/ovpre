@@ -350,6 +350,57 @@ button {
     padding: 8px 0;
 }
 
+.password-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input-wrap input {
+    width: 100%;
+    padding-right: 46px !important;
+}
+
+.password-toggle-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.password-input-wrap .password-toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    z-index: 2;
+    border-radius: 8px;
+}
+
+.input-control .password-toggle-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.password-toggle-btn:hover {
+    color: var(--green-700);
+}
+
+.password-toggle-btn:focus-visible {
+    outline: 2px solid var(--green-700);
+    outline-offset: 2px;
+}
+
 .password-requirements {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4069,3 +4120,78 @@ mark.global-search-hit {
     .report-filter-form,
     .search-results-form { grid-template-columns: 1fr; }
 }
+
+/* EXTENSION PROPOSAL MODAL & MONITORING FLOW */
+.proposal-modal-card {
+    width: min(100%, 880px);
+    max-height: min(92vh, 940px);
+    overflow-y: auto;
+}
+
+.flow-pill {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+}
+
+.flow-pill.flow-active {
+    background: #166534;
+    color: #ffffff;
+    border-color: #166534;
+}
+
+.proposal-section-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.proposal-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #166534;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proposal-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 2px;
+    margin-bottom: 6px;
+    font-weight: normal;
+}
+
+.evidence-checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.evidence-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e293b;
+    cursor: pointer;
+    user-select: none;
+}
+

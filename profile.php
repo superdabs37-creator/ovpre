@@ -156,9 +156,33 @@ renderHeader($passwordOnly ? 'Change Password' : 'Edit Profile', 'profile');
             <?php else: ?>
             <h3>Change Password</h3>
             <div class="form-grid">
-                <label class="field"><span>Current Password</span><input type="password" name="current_password" autocomplete="current-password"></label>
-                <label class="field"><span>New Password</span><input type="password" name="new_password" autocomplete="new-password" minlength="12"></label>
-                <label class="field"><span>Confirm New Password</span><input type="password" name="confirm_password" autocomplete="new-password" minlength="12"></label>
+                <div class="field">
+                    <label for="current_password"><span>Current Password</span></label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="current_password" name="current_password" autocomplete="current-password">
+                        <button type="button" class="password-toggle-btn" aria-label="Show password" data-target="current_password">
+                            <i class="ri-eye-line"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="new_password"><span>New Password</span></label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="new_password" name="new_password" autocomplete="new-password" minlength="12">
+                        <button type="button" class="password-toggle-btn" aria-label="Show password" data-target="new_password">
+                            <i class="ri-eye-line"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="confirm_password"><span>Confirm New Password</span></label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" minlength="12">
+                        <button type="button" class="password-toggle-btn" aria-label="Show password" data-target="confirm_password">
+                            <i class="ri-eye-line"></i>
+                        </button>
+                    </div>
+                </div>
             </div><?php endif; ?>
             <div class="action-row modal-actions">
                 <button class="primary-btn" type="submit"><i class="ri-save-line"></i> <?php echo $passwordOnly ? 'Save Password' : 'Save Profile'; ?></button>
@@ -178,6 +202,22 @@ renderHeader($passwordOnly ? 'Change Password' : 'Edit Profile', 'profile');
         image.alt = 'Selected profile photo preview';
         image.src = URL.createObjectURL(photo);
         profilePhotoPreview.replaceChildren(image);
+    });
+
+    document.querySelectorAll('.password-toggle-btn[data-target]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = btn.dataset.target;
+            const input = document.getElementById(targetId);
+            const icon = btn.querySelector('i');
+            if (input && icon) {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                icon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+                btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                icon.style.color = isPassword ? '#15803d' : '#6f7b73';
+            }
+        });
     });
 </script>
 <?php renderFooter(); ?>

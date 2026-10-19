@@ -284,7 +284,7 @@ renderHeader('Extension Management', 'extension');
 <section class="tool-panel">
     <form method="get" class="action-row">
         <select class="filter-select" name="status" onchange="this.form.submit()">
-            <option value="All">All Statuses</option>
+            <option value="All">All Status</option>
             <?php foreach ([
                 'Pending Coordinator Review' => '1. For Coordinator Screening',
                 'Pending Director Review' => '2. For Director Evaluation',

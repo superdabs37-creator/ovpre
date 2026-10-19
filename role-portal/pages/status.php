@@ -261,9 +261,16 @@ if (in_array(PORTAL_ROLE, ['Extension Director', 'Extension Coordinator', 'Facul
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <button class="ghost-btn action-btn" type="button" data-open-modal="extension-status-feedback-<?php echo (int) $row['id']; ?>">
-                                    <i class="ri-chat-3-line"></i><span>View Feedback</span>
-                                </button>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                                    <button class="ghost-btn action-btn" type="button" data-open-modal="extension-status-feedback-<?php echo (int) $row['id']; ?>">
+                                        <i class="ri-chat-3-line"></i><span>View Feedback</span>
+                                    </button>
+                                    <?php if (PORTAL_ROLE === 'Faculty Extensionist' && ($row['status'] ?? '') === 'Needs Revision'): ?>
+                                        <a class="primary-btn mini-btn" href="extension.php#project-<?php echo (int) $row['id']; ?>" style="background: #c2410c; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; font-size: 0.78rem;" title="Edit proposal details and replace file">
+                                            <i class="ri-edit-box-line"></i><span>Edit & Resubmit</span>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                             <td><?php echo h(date('M d, Y', strtotime($row['created_at']))); ?></td>
                             <td>

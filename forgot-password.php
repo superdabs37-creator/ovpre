@@ -117,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Forgot Password | I-Record</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="login-body">
@@ -134,7 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="code">Email reset code</label>
                 <div class="input-control"><input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></div>
                 <label for="password">New password</label>
-                <div class="input-control"><input id="password" name="password" type="password" minlength="12" autocomplete="new-password" required></div>
+                <div class="input-control">
+                    <input id="password" name="password" type="password" minlength="12" autocomplete="new-password" required>
+                    <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Show password">
+                        <i class="ri-eye-line" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
                 <button class="primary-btn full-btn" type="submit">Reset Password</button>
             </form>
         <?php else: ?>
@@ -149,5 +155,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="portal-link full-btn"><a href="index.php">Back to Sign in</a></p>
     </section>
 </main>
+<script>
+    (() => {
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('togglePasswordIcon');
+
+        if (toggleBtn && passwordInput && toggleIcon) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleIcon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+                toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                toggleIcon.style.color = isPassword ? '#15803d' : '#6f7b73';
+            });
+        }
+    })();
+</script>
 </body>
 </html>

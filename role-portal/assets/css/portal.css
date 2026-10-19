@@ -1719,4 +1719,85 @@ body.modal-open {
     margin-left: auto;
 }
 
+/* ==========================================================================
+   Extension Activity Documentation & Proposal Styling
+   ========================================================================== */
+.proposal-modal-card {
+    max-width: 860px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+}
+
+.proposal-section-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.proposal-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.proposal-hint {
+    display: block;
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.flow-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.flow-pill.flow-active {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.evidence-checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.evidence-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #1e293b;
+    cursor: pointer;
+    margin: 0;
+}
+
+.evidence-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #15803d;
+    cursor: pointer;
+}
+
 

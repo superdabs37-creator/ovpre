@@ -27,5 +27,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Reset Password | I-Record</title><link rel="stylesheet" href="assets/css/style.css"></head><body class="login-body"><main class="login-shell"><section class="login-card"><h1>Reset Password</h1>
-<?php if ($done): ?><p class="notice success">Your password was updated.</p><a class="primary-btn full-btn" href="index.php">Go to Sign in</a><?php else: ?><?php if ($error): ?><p class="notice error"><?php echo h($error); ?></p><?php endif; ?><form class="login-form" method="post" id="resetForm"><?php echo csrf_field(); ?><input type="hidden" name="access_token" id="accessToken"><label for="password">New password</label><div class="input-control"><input id="password" name="password" type="password" minlength="12" autocomplete="new-password" required></div><button class="primary-btn full-btn" type="submit">Update Password</button></form><p id="resetError" class="notice error" hidden>Open the secure reset link from your email.</p><script>const token=new URLSearchParams(location.hash.slice(1)).get('access_token');if(token){document.getElementById('accessToken').value=token;history.replaceState(null,'',location.pathname);}else{document.getElementById('resetError').hidden=false;document.querySelector('#resetForm button').disabled=true;}</script><?php endif; ?></section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reset Password | I-Record</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="login-body">
+<main class="login-shell">
+    <section class="login-card">
+        <h1>Reset Password</h1>
+<?php if ($done): ?>
+        <p class="notice success">Your password was updated.</p>
+        <a class="primary-btn full-btn" href="logout.php">Go to Sign in</a>
+        <p class="portal-link full-btn" style="text-align: center; margin-top: 12px;"><a href="landing.php"><i class="ri-arrow-left-line"></i> Back to Home</a></p>
+<?php else: ?>
+<?php if ($error): ?>
+        <p class="notice error"><?php echo h($error); ?></p>
+<?php endif; ?>
+        <form class="login-form" method="post" id="resetForm">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="access_token" id="accessToken">
+            <label for="password">New password</label>
+            <div class="input-control">
+                <input id="password" name="password" type="password" minlength="12" autocomplete="new-password" required>
+                <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Show password">
+                    <i class="ri-eye-line" id="togglePasswordIcon"></i>
+                </button>
+            </div>
+            <button class="primary-btn full-btn" type="submit">Update Password</button>
+        </form>
+        <p id="resetError" class="notice error" hidden>Open the secure reset link from your email.</p>
+        <script>
+            const token = new URLSearchParams(location.hash.slice(1)).get('access_token');
+            if (token) {
+                document.getElementById('accessToken').value = token;
+                history.replaceState(null, '', location.pathname);
+            } else {
+                document.getElementById('resetError').hidden = false;
+                document.querySelector('#resetForm button').disabled = true;
+            }
+
+            (() => {
+                const toggleBtn = document.getElementById('togglePassword');
+                const passwordInput = document.getElementById('password');
+                const toggleIcon = document.getElementById('togglePasswordIcon');
+
+                if (toggleBtn && passwordInput && toggleIcon) {
+                    toggleBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const isPassword = passwordInput.getAttribute('type') === 'password';
+                        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                        toggleIcon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+                        toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                        toggleIcon.style.color = isPassword ? '#15803d' : '#6f7b73';
+                    });
+                }
+            })();
+        </script>
+<?php endif; ?>
+    </section>
+</main>
+</body>
+</html>

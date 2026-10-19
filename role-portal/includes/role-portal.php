@@ -442,10 +442,10 @@ function portal_header(string $title, string $current): array
                 if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
                     return null;
                 }
-                $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png'];
+                $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'zip', 'rar'];
                 $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
                 if (!in_array($ext, $allowed, true) || ($file['size'] ?? 0) > MAX_UPLOAD_BYTES) {
-                    throw new RuntimeException('Upload must be PDF, DOC, DOCX, XLS, XLSX, JPG, or PNG up to 15 MB.');
+                    throw new RuntimeException('Upload must be PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, or ZIP up to 15 MB.');
                 }
                 $category = (int) ($post['category_id'] ?? 0);
                 $department = (int) ($user['department_id'] ?? 0);

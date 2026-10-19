@@ -3,8 +3,18 @@ require_once __DIR__ . '/includes/bootstrap.php';
 
 $pageTitle = 'Secure Login';
 $error = null;
-if (($_GET['restart'] ?? '') === '1') {
+if (($_GET['restart'] ?? '') === '1' || ($_GET['logout'] ?? '') === '1') {
     unset($_SESSION['login_otp']);
+    if (($_GET['logout'] ?? '') === '1') {
+        if (!empty($_SESSION['supabase_access_token'])) {
+            try { supabase_auth_logout((string) $_SESSION['supabase_access_token']); } catch (Throwable $e) {}
+        }
+        $_SESSION = [];
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+            session_start();
+        }
+    }
 }
 $otpChallenge = $_SESSION['login_otp'] ?? null;
 
