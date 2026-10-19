@@ -20,7 +20,7 @@ const ROLE_PORTALS = [
     'Research Director' => [
         'slug' => 'research-director',
         'title' => 'Research Director Portal',
-        'purpose' => 'Institutional research evaluation, policy enforcement, AIHR, and grant recommendations',
+        'purpose' => 'Institutional research evaluation, policy enforcement, RIUH, and grant recommendations',
         'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
     ],
     'Research Coordinator' => [

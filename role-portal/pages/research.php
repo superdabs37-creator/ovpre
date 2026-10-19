@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Notify Directors
             $directors = db()->query("SELECT id FROM users WHERE role IN ('Research Director', 'Director for Research and Creative Works') AND status = 'Active'")->fetchAll(PDO::FETCH_COLUMN);
             foreach ($directors as $dirId) {
-                notify_user((int) $dirId, 'New proposal awaiting AIHR & director evaluation: ' . ($owner['title'] ?? ''), 'research.php#proposal-' . $projectId);
+                notify_user((int) $dirId, 'New proposal awaiting RIUH & director evaluation: ' . ($owner['title'] ?? ''), 'research.php#proposal-' . $projectId);
             }
 
             flash('success', 'Proposal endorsed to the Research Director!');
@@ -157,10 +157,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } elseif ($action === 'director_endorse') {
             if (!$isDirector && !$isExecutive) {
-                throw new RuntimeException('Only Research Directors can perform AIHR and institutional evaluation.');
+                throw new RuntimeException('Only Research Directors can perform RIUH and institutional evaluation.');
             }
             $projectId = (int) ($_POST['id'] ?? 0);
-            $aihrStatus = trim((string) ($_POST['aihr_status'] ?? 'Passed AIHR'));
+            $aihrStatus = trim((string) ($_POST['aihr_status'] ?? 'Passed RIUH'));
             $aihrScore = ($_POST['aihr_score'] ?? '') !== '' ? (float) $_POST['aihr_score'] : null;
             $grantAmount = ($_POST['grant_amount'] ?? '') !== '' ? (float) $_POST['grant_amount'] : null;
             $remarks = trim((string) ($_POST['remarks'] ?? 'Evaluated under university research guidelines and recommended for executive funding approval.'));
@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             db()->prepare("UPDATE research_projects SET status = 'Pending Executive Approval', director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $aihrStatus, $aihrScore, $grantAmount, $remarks, $projectId]);
 
-            $logDetails = "AIHR Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Recommended Grant: PHP " . number_format((float) ($grantAmount ?? 0), 2) . "\n" . $remarks;
+            $logDetails = "RIUH Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Recommended Grant: PHP " . number_format((float) ($grantAmount ?? 0), 2) . "\n" . $remarks;
             log_review('research', $projectId, (int) $user['id'], 'Stage 3: Endorsed by Research Director', $logDetails);
             log_action((int) $user['id'], 'Research Director endorsed research #' . $projectId . ' with score ' . ($aihrScore ?? 'N/A'));
 
@@ -507,7 +507,7 @@ foreach ($projects as $p) {
                                         </button>
                                     <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
                                         <button class="primary-btn action-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;">
-                                            <i class="ri-medal-line"></i><span>AIHR Evaluation</span>
+                                            <i class="ri-medal-line"></i><span>RIUH Evaluation</span>
                                         </button>
                                     <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
                                         <button class="primary-btn action-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;">
@@ -607,8 +607,8 @@ foreach ($projects as $p) {
 
             <?php if (!empty($project['director_remarks']) || !empty($project['aihr_score'])): ?>
                 <div style="border-left: 3px solid #1d4ed8; padding-left: 10px; margin-bottom: 12px; font-size: 0.85rem;">
-                    <strong style="color: #1d4ed8;">Research Director AIHR Evaluation:</strong>
-                    <div>Rating / Score: <strong><?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100</strong> (<?php echo h($project['aihr_status'] ?? 'AIHR Evaluated'); ?>)</div>
+                    <strong style="color: #1d4ed8;">Research Director RIUH Evaluation:</strong>
+                    <div>Rating / Score: <strong><?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100</strong> (<?php echo h($project['aihr_status'] ?? 'RIUH Evaluated'); ?>)</div>
                     <?php if (!empty($project['grant_amount'])): ?>
                         <div>Recommended Grant: <strong>PHP <?php echo number_format((float) $project['grant_amount'], 2); ?></strong></div>
                     <?php endif; ?>
@@ -719,7 +719,7 @@ foreach ($projects as $p) {
         <div class="modal-backdrop" data-close-modal></div>
         <div class="modal-card" role="dialog" aria-modal="true" style="max-width: 640px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close"><i class="ri-close-line"></i></button>
-            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Research Director AIHR & Policy Review</h2>
+            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Research Director RIUH & Policy Review</h2>
             <p><strong><?php echo h($project['title']); ?></strong></p>
             <div style="background: #eff6ff; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px;">
                 <strong>Coordinator Endorsement:</strong> <?php echo h($project['coordinator_remarks'] ?? 'Endorsed for review'); ?>
@@ -731,15 +731,15 @@ foreach ($projects as $p) {
 
                 <div class="form-grid">
                     <label class="field">
-                        <span>AIHR Evaluation Status:</span>
+                        <span>RIUH Evaluation Status:</span>
                         <select name="aihr_status">
-                            <option value="Passed AIHR">Passed AIHR</option>
+                            <option value="Passed RIUH">Passed RIUH</option>
                             <option value="Passed with Conditions">Passed with Conditions</option>
-                            <option value="Under AIHR Panel Review">Under AIHR Panel Review</option>
+                            <option value="Under RIUH Panel Review">Under RIUH Panel Review</option>
                         </select>
                     </label>
                     <label class="field">
-                        <span>AIHR Score (Rating out of 100):</span>
+                        <span>RIUH Score (Rating out of 100):</span>
                         <input type="number" step="0.01" min="0" max="100" name="aihr_score" placeholder="e.g. 88.50" required>
                     </label>
                 </div>
@@ -787,7 +787,7 @@ foreach ($projects as $p) {
 
             <div style="background: #faf5ff; padding: 12px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px; border: 1px solid #e9d5ff;">
                 <div><strong>1. Coordinator Endorsement:</strong> <?php echo h($project['coordinator_remarks'] ?? 'Screened'); ?></div>
-                <div style="margin-top: 4px;"><strong>2. Director AIHR Evaluation:</strong> Score <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 (<?php echo h($project['aihr_status'] ?? ''); ?>) | Rec. Grant: PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></div>
+                <div style="margin-top: 4px;"><strong>2. Director RIUH Evaluation:</strong> Score <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 (<?php echo h($project['aihr_status'] ?? ''); ?>) | Rec. Grant: PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></div>
                 <div style="margin-top: 4px;"><?php echo h($project['director_remarks'] ?? ''); ?></div>
             </div>
 

@@ -43,7 +43,7 @@ function announcement_audience_roles(string $audience): ?array {
         'Coordinators' => [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR],
         'Faculty Extensionists' => [ROLE_FACULTY_EXTENSIONIST],
         'OVPRE Staff' => [ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT],
-        'Other Authorized Users' => [ROLE_RESEARCHER],
+        'Faculty Researchers', 'Other Authorized Users', 'Researchers' => [ROLE_RESEARCHER],
         default => null,
     };
 }
@@ -54,7 +54,7 @@ function announcement_audience_for_role(string $role): ?string {
         ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR => 'Coordinators',
         ROLE_FACULTY_EXTENSIONIST => 'Faculty Extensionists',
         ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT => 'OVPRE Staff',
-        ROLE_RESEARCHER => 'Other Authorized Users',
+        ROLE_RESEARCHER => 'Faculty Researchers',
         default => null,
     };
 }
@@ -62,7 +62,7 @@ function announcement_audience_for_role(string $role): ?string {
 function announcement_viewable_audiences(string $role): array {
     $validEnumValues = [
         'All', 'Directors', 'Coordinators', 'Faculty Extensionists',
-        'OVPRE Staff', 'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'
+        'OVPRE Staff', 'Faculty Researchers', 'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'
     ];
     if (in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
         return $validEnumValues;
@@ -71,6 +71,10 @@ function announcement_viewable_audiences(string $role): array {
     $audience = announcement_audience_for_role($role);
     if ($audience !== null) {
         $audiences[] = $audience;
+        if ($audience === 'Faculty Researchers') {
+            $audiences[] = 'Other Authorized Users';
+            $audiences[] = 'Researchers';
+        }
     }
     $legacyAudiences = match ($role) {
         ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCHER => ['Researchers'],
@@ -351,8 +355,8 @@ function current_user(): ?array {
 
 function role_permissions(): array {
     return [
-        ROLE_SUPER_ADMIN => ['*'],
-        ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'research', 'extension', 'reports', 'activities', 'announcements', 'users'],
+        ROLE_SUPER_ADMIN => ['dashboard', 'audit', 'settings', 'backup', 'users'],
+        ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements'],
         ROLE_RESEARCH_DIRECTOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
         ROLE_EXTENSION_DIRECTOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
         ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],

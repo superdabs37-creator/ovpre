@@ -54,7 +54,7 @@ $announcementStmt->execute([$announcementStatus]);
 $announcements = $announcementStmt->fetchAll();
 renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announcements');
 ?>
-<section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Publish updates for directors, coordinators, faculty extensionists, OVPRE staff, or other authorized users.</span></div></section>
+<section class="module-header"><div class="module-icon"><i class="ri-megaphone-line"></i></div><div><p>Communication</p><h2>Announcements</h2><span>Publish updates for directors, coordinators, faculty extensionists, OVPRE staff, or faculty researchers.</span></div></section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><?php echo h($notice['message']); ?></div><?php endif; ?>
 <?php if (!$archived): ?>
 <section class="panel modal-launcher-panel"><div class="panel-heading" style="display: flex; justify-content: flex-end;"><div class="action-row" style="margin-left: auto;"><button class="primary-btn" type="button" data-open-modal="createAnnouncementModal"><i class="ri-add-line"></i> Create Announcement</button></div></div></section>
@@ -67,7 +67,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
         <div class="activity-modal-head"><span class="category-badge">Announcement</span><h2 id="createAnnouncementTitle">Create Announcement</h2><p>Choose who can see this announcement.</p></div>
         <form class="announcement-form" method="post">
             <?php echo csrf_field(); ?><input type="hidden" name="action" value="create">
-            <label class="field"><span>Audience</span><select name="audience" required><option value="" selected disabled>Choose audience</option><?php foreach (['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Other Authorized Users'] as $audienceOption): ?><option value="<?php echo h($audienceOption); ?>"><?php echo h($audienceOption); ?></option><?php endforeach; ?></select></label>
+            <label class="field"><span>Audience</span><select name="audience" required><option value="" selected disabled>Choose audience</option><?php foreach (['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Faculty Researchers'] as $audienceOption): ?><option value="<?php echo h($audienceOption); ?>"><?php echo h($audienceOption); ?></option><?php endforeach; ?></select></label>
             <label class="field"><span>Announcement Title</span><input name="title" required></label>
             <label class="field"><span>Announcement Content</span><textarea name="content" rows="6" required></textarea></label>
             <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Publish Announcement</button>
@@ -80,7 +80,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
     <div class="announcement-list">
         <?php foreach ($announcements as $item): ?>
             <article class="list-card">
-                <div><h3><?php echo h($item['title']); ?></h3><p><span class="dept-pill"><?php echo h($item['audience']); ?></span> <?php echo h($item['status']); ?> by <?php echo h($item['fullname']); ?> on <?php echo h(date('M d, Y', strtotime($item['created_at']))); ?></p></div>
+                <div><h3><?php echo h($item['title']); ?></h3><p><span class="dept-pill"><?php echo h($item['audience'] === 'Other Authorized Users' ? 'Faculty Researchers' : $item['audience']); ?></span> <?php echo h($item['status']); ?> by <?php echo h($item['fullname']); ?> on <?php echo h(date('M d, Y', strtotime($item['created_at']))); ?></p></div>
             </article>
         <?php endforeach; ?>
     </div>

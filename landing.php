@@ -13,7 +13,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
 
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/landing.css?v=20261015-fixed-nav-frame">
+    <link rel="stylesheet" href="assets/css/landing.css?v=20261019-bg-animation">
 </head>
 
 <body>
@@ -34,11 +34,6 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
             <a href="#about">About</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
-            <?php if ($currentUser && $dashboardUrl): ?>
-                <a class="login-btn" href="<?php echo h($dashboardUrl); ?>">Go to Dashboard</a>
-            <?php else: ?>
-                <a class="login-btn" href="index.php">Sign in</a>
-            <?php endif; ?>
         </nav>
 
     </div>
@@ -49,6 +44,15 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
      HERO SECTION
 ========================= -->
 <section id="home" class="hero">
+
+    <!-- Ambient Animated Background -->
+    <div class="hero-bg-animation" aria-hidden="true">
+        <div class="bg-mesh-grid"></div>
+        <span class="bg-orb orb-1"></span>
+        <span class="bg-orb orb-2"></span>
+        <span class="bg-orb orb-3"></span>
+        <span class="bg-orb orb-4"></span>
+    </div>
 
     <div class="container hero-content">
 

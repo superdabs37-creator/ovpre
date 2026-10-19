@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/layout.php';
-$actor = require_super_admin();
+$actor = require_login([ROLE_OVPRE_ADMIN, ROLE_SUPER_ADMIN]);
 verify_csrf();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);

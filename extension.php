@@ -444,10 +444,10 @@ renderHeader('Extension Management', 'extension');
                 <p><a href="<?php echo h(record_access_url($project['document_filename'], '', (int) $project['document_id'])); ?>" target="_blank" rel="noopener" class="primary-btn"><i class="ri-download-cloud-line"></i> Download Attached Document</a></p>
             <?php endif; ?>
 
-            <?php if ($isSuperAdmin): ?>
+            <?php if ($isExecutive): ?>
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;">
                 <input type="hidden" name="action" value="review">
-                <h3>Super Admin Status Control</h3>
+                <h3>Executive &amp; OVPRE Admin Status Control</h3>
                 <div class="form-grid">
                     <label class="field"><span>Status Override:</span>
                         <select name="status">

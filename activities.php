@@ -75,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'delete') {
-        if (($user['role'] ?? '') !== 'Super Admin') {
+        if (!in_array(($user['role'] ?? ''), ['Super Admin', 'OVPRE Admin'], true)) {
             http_response_code(403);
-            exit('Only the Super Admin can permanently delete activities.');
+            exit('Only authorized administrators can permanently delete activities.');
         }
         $id = (int) ($_POST['id'] ?? 0);
         $stmt = db()->prepare('SELECT title FROM activities WHERE id = ? LIMIT 1');
@@ -90,7 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             log_action((int) $user['id'], 'Permanently deleted activity #' . $id . ': ' . $activity['title']);
             flash('success', 'Activity permanently deleted.');
         }
-        redirect_to('activities.php' . (($_GET['archived'] ?? '') === '1' ? '?archived=1' : ''));
+        $isArchivedRedirect = (($_GET['archived'] ?? '') === '1') || (($_POST['archived_view'] ?? '') === '1');
+        redirect_to('activities.php' . ($isArchivedRedirect ? '?archived=1' : ''));
     }
 
     if ($action === 'restore') {
@@ -98,7 +99,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         db()->prepare('UPDATE activities SET archived_at = NULL WHERE id = ? AND archived_at IS NOT NULL')->execute([$id]);
         log_action((int) $user['id'], 'Retrieved archived activity #' . $id);
         flash('success', 'Activity retrieved and restored to the calendar.');
-        redirect_to('activities.php');
+        redirect_to('activities.php?archived=1');
+    }
+
+    if ($action === 'bulk') {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $_POST['ids'] ?? []), static fn($id) => $id > 0)));
+        $bulkAction = (string) ($_POST['bulk_action'] ?? '');
+        $isArchivedView = (isset($_GET['archived']) && $_GET['archived'] === '1') || (isset($_POST['archived_view']) && $_POST['archived_view'] === '1');
+
+        if (!$ids) {
+            flash('error', 'No activities selected.');
+            redirect_to('activities.php' . ($isArchivedView ? '?archived=1' : ''));
+        }
+
+        $marks = implode(',', array_fill(0, count($ids), '?'));
+
+        if ($bulkAction === 'archive') {
+            db()->prepare("UPDATE activities SET archived_at = NOW() WHERE archived_at IS NULL AND id IN ($marks)")->execute($ids);
+            foreach ($ids as $activityId) {
+                log_action((int) $user['id'], 'Bulk archived activity #' . $activityId);
+            }
+            flash('success', count($ids) . ' activity record(s) archived.');
+            redirect_to('activities.php');
+        } elseif ($bulkAction === 'restore') {
+            db()->prepare("UPDATE activities SET archived_at = NULL WHERE archived_at IS NOT NULL AND id IN ($marks)")->execute($ids);
+            foreach ($ids as $activityId) {
+                log_action((int) $user['id'], 'Bulk restored activity #' . $activityId);
+            }
+            flash('success', count($ids) . ' activity record(s) restored.');
+            redirect_to('activities.php?archived=1');
+        } elseif ($bulkAction === 'delete') {
+            if (!in_array(($user['role'] ?? ''), ['Super Admin', 'OVPRE Admin'], true)) {
+                http_response_code(403);
+                exit('Only authorized administrators can delete activities.');
+            }
+            db()->prepare("DELETE FROM activities WHERE id IN ($marks)")->execute($ids);
+            foreach ($ids as $activityId) {
+                log_action((int) $user['id'], 'Bulk permanently deleted activity #' . $activityId);
+            }
+            flash('success', count($ids) . ' activity record(s) permanently deleted.');
+            redirect_to('activities.php' . ($isArchivedView ? '?archived=1' : ''));
+        } else {
+            flash('error', 'Invalid bulk action.');
+            redirect_to('activities.php' . ($isArchivedView ? '?archived=1' : ''));
+        }
     }
 
     if ($action === 'review') {
@@ -188,6 +232,8 @@ $notice = flash();
 $archived = ($_GET['archived'] ?? '') === '1';
 $archiveCondition = $archived ? 'IS NOT NULL' : 'IS NULL';
 $activities = db()->query('SELECT a.*, u.fullname AS creator_name FROM activities a LEFT JOIN users u ON u.id = a.created_by WHERE a.archived_at ' . $archiveCondition . ' ORDER BY a.date DESC')->fetchAll();
+$activeCount = (int) db()->query('SELECT COUNT(*) FROM activities WHERE archived_at IS NULL')->fetchColumn();
+$archivedCount = (int) db()->query('SELECT COUNT(*) FROM activities WHERE archived_at IS NOT NULL')->fetchColumn();
 $approvedActivities = array_values(array_filter($activities, static fn(array $activity): bool => $activity['approval_status'] === 'Approved'));
 $upcomingStmt = db()->prepare('SELECT * FROM activities WHERE approval_status = "Approved" AND archived_at IS NULL AND date_to >= CURDATE() ORDER BY date ASC LIMIT 6');
 $upcomingStmt->execute();
@@ -274,47 +320,111 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
 <?php endif; ?>
 
 <section class="panel">
-    <div class="panel-heading"><h2><?php echo $archived ? 'Archived Activities' : 'All Activities'; ?></h2><span><?php echo count($activities); ?> total</span></div>
+    <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h2><?php echo $archived ? 'Archived Activities' : 'All Activities'; ?></h2>
+            <span><?php echo count($activities); ?> total activity<?php echo count($activities) === 1 ? '' : 'ies'; ?></span>
+        </div>
+        <div class="panel-heading-actions" style="display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-left:auto;">
+            <div class="portal-table-tabs">
+                <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="activities.php">
+                    <i class="ri-calendar-event-line"></i>
+                    <span>Scheduled</span>
+                    <span class="tab-count"><?php echo $activeCount; ?></span>
+                </a>
+                <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="activities.php?archived=1">
+                    <i class="ri-archive-line"></i>
+                    <span>Archived</span>
+                    <span class="tab-count"><?php echo $archivedCount; ?></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Selection Toolbar for Activities -->
+    <div class="table-selection-toolbar" data-selection-toolbar="activitiesTable" hidden>
+        <span data-selection-count>0 selected</span>
+        <form id="bulk-activitiesTable" method="post" data-bulk-selection-form>
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="action" value="bulk">
+            <?php if ($archived): ?>
+                <input type="hidden" name="archived_view" value="1">
+                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit>
+                    <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
+                </button>
+            <?php else: ?>
+                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected activities from calendar?');">
+                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                </button>
+            <?php endif; ?>
+            <button class="action-btn btn-delete-natural" type="submit" name="bulk_action" value="delete" data-bulk-submit data-confirm-delete>
+                <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
+            </button>
+        </form>
+    </div>
+
     <div class="table-scroll">
-        <table class="data-table activities-table">
-            <thead><tr><th>Date</th><th>Activity</th><th>Type</th><th>Venue</th><th>Created By</th><th>Status</th><th>Action</th></tr></thead>
+        <table class="data-table activities-table" id="activitiesTable">
+            <thead>
+                <tr>
+                    <th class="table-checkbox-col">
+                        <label class="select-all-control">
+                            <input form="bulk-activitiesTable" type="checkbox" aria-label="Select all activities" data-select-all="activitiesTable">
+                            <span>Select all</span>
+                        </label>
+                    </th>
+                    <th>Date</th>
+                    <th>Activity</th>
+                    <th>Type</th>
+                    <th>Venue</th>
+                    <th>Created By</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
             <tbody>
                 <?php foreach ($activities as $activity): ?>
                     <tr>
+                        <td class="table-checkbox-col">
+                            <input form="bulk-activitiesTable" type="checkbox" name="ids[]" aria-label="Select activity <?php echo (int) $activity['id']; ?>" value="<?php echo (int) $activity['id']; ?>" data-row-select="activitiesTable">
+                        </td>
                         <td><?php echo h(date('M d, Y', strtotime($activity['date'])) . ($activity['date_to'] && $activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '')); ?></td>
-                        <td><?php echo h($activity['title']); ?></td>
+                        <td><strong><?php echo h($activity['title']); ?></strong></td>
                         <td><?php echo h($activity['activity_type']); ?></td>
                         <td><?php echo h($activity['venue']); ?></td>
                         <td><?php echo h($activity['creator_name'] ?? 'System Administrator'); ?></td>
                         <td><div class="activity-status-actions"><span class="status-pill status-<?php echo h(strtolower($activity['approval_status'])); ?>"><?php echo h($activity['approval_status']); ?></span></div></td>
-                        <td><button class="ghost-btn action-btn" type="button" data-open-modal="activity-actions-<?php echo (int) $activity['id']; ?>"><i class="ri-more-2-fill"></i><span>Manage</span></button></td>
+                        <td>
+                            <div class="archive-record-actions">
+                                <?php if ($archived): ?>
+                                    <form method="post" onsubmit="return confirm('Retrieve this activity and put it back on the calendar?');">
+                                        <?php echo csrf_field(); ?>
+                                        <input type="hidden" name="action" value="restore">
+                                        <input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>">
+                                        <button class="ghost-btn action-btn" type="submit" title="Retrieve Activity"><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button>
+                                    </form>
+                                <?php else: ?>
+                                    <button class="ghost-btn action-btn" type="button" data-edit-activity="<?php echo (int) $activity['id']; ?>" title="Edit Activity"><i class="ri-edit-line"></i><span>Edit</span></button>
+                                    <?php if ($activity['approval_status'] === 'Pending' && ($user['role'] ?? '') === 'Super Admin'): ?>
+                                        <form method="post">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="action" value="review">
+                                            <input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>">
+                                            <button class="primary-btn action-btn" type="submit"><i class="ri-check-line"></i><span>Approve</span></button>
+                                        </form>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if (!$activities): ?><tr><td colspan="7">No activities recorded.</td></tr><?php endif; ?>
+                <?php if (!$activities): ?>
+                    <tr><td colspan="8">No <?php echo $archived ? 'archived ' : ''; ?>activities recorded.</td></tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </section>
-
-<?php foreach ($activities as $activity): ?>
-<div class="modal" id="activity-actions-<?php echo (int) $activity['id']; ?>" aria-hidden="true">
-    <div class="modal-backdrop" data-close-modal></div>
-    <article class="modal-card record-manage-modal activity-actions-modal">
-        <button class="modal-close" type="button" data-close-modal aria-label="Close actions"><i class="ri-close-line"></i></button>
-        <h2><?php echo $archived ? 'Archived Activity' : 'Activity Actions'; ?></h2>
-        <p><?php echo h($activity['title']); ?></p>
-        <div class="record-modal-actions">
-            <?php if ($archived): ?>
-                <form method="post" onsubmit="return confirm('Retrieve this activity and put it back on the calendar?');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button></form>
-            <?php else: ?>
-                <button class="ghost-btn action-btn" type="button" data-edit-activity="<?php echo (int) $activity['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
-                <?php if ($activity['approval_status'] === 'Pending' && ($user['role'] ?? '') === 'Super Admin'): ?><form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="review"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="primary-btn action-btn" type="submit"><i class="ri-check-line"></i><span>Approve</span></button></form><?php endif; ?>
-            <?php endif; ?>
-            <?php if (($user['role'] ?? '') === 'Super Admin'): ?><form method="post" onsubmit="return confirm('Permanently delete this activity? This cannot be undone.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $activity['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Delete</span></button></form><?php endif; ?>
-        </div>
-    </article>
-</div>
-<?php endforeach; ?>
 
 <?php if (!$archived): ?><div class="modal" id="activityEditorModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="activityModalTitle">
     <div class="modal-backdrop" data-close-modal></div>
@@ -337,11 +447,24 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
             </div>
             <label class="field"><span>Venue</span><input name="venue" id="activityVenue" required></label>
             <label class="field"><span>Description</span><textarea name="description" id="activityDescription" rows="4"></textarea></label>
-            <div class="action-row modal-actions">
-                <?php if (($user['role'] ?? '') === 'Super Admin'): ?><button class="primary-btn" type="submit" name="action" value="review" id="approveActivityButton"><i class="ri-check-line"></i> Approve</button><button class="danger-btn" type="submit" name="action" value="reject" id="rejectActivityButton" onclick="return confirm('Reject this activity and remove it from the shared calendar?')"><i class="ri-close-line"></i> Reject</button><?php endif; ?>
-                <button class="primary-btn" type="submit" name="action" value="create" id="createActivityButton"><i class="ri-add-circle-line"></i> Add Activity</button>
-                <button class="primary-btn" type="submit" name="action" value="update" id="saveActivityButton"><i class="ri-save-line"></i> Save Changes</button>
-                <button class="ghost-btn" type="button" data-close-modal>Cancel</button>
+            <div class="activity-modal-footer">
+                <div class="activity-modal-destructive">
+                    <button class="btn-archive-activity" type="submit" formnovalidate name="action" value="archive" id="archiveActivityButton" onclick="return confirm('Archive this activity from the calendar?');">
+                        <i class="ri-archive-line"></i><span>Archive Activity</span>
+                    </button>
+                    <button class="btn-delete-activity" type="submit" formnovalidate name="action" value="delete" id="deleteActivityButton" onclick="return confirm('Permanently delete this activity? This cannot be undone.');">
+                        <i class="ri-delete-bin-line"></i><span>Delete Activity</span>
+                    </button>
+                </div>
+                <div class="activity-modal-primary">
+                    <?php if (($user['role'] ?? '') === 'Super Admin'): ?>
+                        <button class="primary-btn" type="submit" name="action" value="review" id="approveActivityButton"><i class="ri-check-line"></i> Approve</button>
+                        <button class="danger-btn" type="submit" name="action" value="reject" id="rejectActivityButton" onclick="return confirm('Reject this activity and remove it from the shared calendar?')"><i class="ri-close-line"></i> Reject</button>
+                    <?php endif; ?>
+                    <button class="ghost-btn" type="button" data-close-modal>Cancel</button>
+                    <button class="primary-btn" type="submit" name="action" value="create" id="createActivityButton"><i class="ri-add-circle-line"></i> Add Activity</button>
+                    <button class="primary-btn" type="submit" name="action" value="update" id="saveActivityButton"><i class="ri-save-line"></i> Save Changes</button>
+                </div>
             </div>
         </form>
     </article>

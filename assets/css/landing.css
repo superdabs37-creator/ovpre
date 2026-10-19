@@ -91,7 +91,7 @@ html {
 
 .navbar {
     gap: 8px;
-    margin: -8px 12px 0 0;
+    margin: 0;
 }
 
 .navbar a {
@@ -120,17 +120,159 @@ html {
     align-items: center;
     padding: 76px 0;
     overflow: hidden;
-    background: radial-gradient(circle at 82% 20%, rgba(250, 204, 21, 0.2), transparent 25%), linear-gradient(135deg, #f1fbf4, #ffffff 55%, #e8f7ed);
+    background: 
+        radial-gradient(circle at 85% 18%, rgba(250, 204, 21, 0.22), transparent 35%), 
+        radial-gradient(circle at 15% 85%, rgba(34, 197, 94, 0.18), transparent 40%),
+        linear-gradient(135deg, #f0fdf4 0%, #ffffff 45%, #ecfdf5 75%, #fefce8 100%);
+    background-size: 160% 160%;
+    animation: heroGradientShift 20s ease-in-out infinite alternate;
 }
 
 .hero::before {
     content: "";
     position: absolute;
-    z-index: -1;
+    z-index: -2;
     inset: -8px;
     background: url("../img/landing-campus.jpg") center 48% / cover no-repeat;
     filter: blur(3px);
-    opacity: 0.2;
+    opacity: 0.18;
+}
+
+/* Floating Ambient Orbs & Mesh Overlay */
+.hero-bg-animation {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bg-mesh-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(21, 128, 61, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(21, 128, 61, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+    opacity: 0.75;
+    animation: meshGridDrift 45s linear infinite;
+}
+
+.bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(55px);
+    opacity: 0.7;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.bg-orb.orb-1 {
+    width: 440px;
+    height: 440px;
+    top: -10%;
+    left: -6%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.35) 0%, rgba(21, 128, 61, 0.12) 55%, transparent 75%);
+    animation: floatOrb1 22s ease-in-out infinite alternate;
+}
+
+.bg-orb.orb-2 {
+    width: 410px;
+    height: 410px;
+    top: 12%;
+    right: -5%;
+    background: radial-gradient(circle, rgba(250, 204, 21, 0.36) 0%, rgba(234, 179, 8, 0.12) 50%, transparent 75%);
+    animation: floatOrb2 26s ease-in-out infinite alternate;
+}
+
+.bg-orb.orb-3 {
+    width: 370px;
+    height: 370px;
+    bottom: -12%;
+    left: 32%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.08) 55%, transparent 75%);
+    animation: floatOrb3 19s ease-in-out infinite alternate;
+}
+
+.bg-orb.orb-4 {
+    width: 290px;
+    height: 290px;
+    top: 48%;
+    left: 8%;
+    background: radial-gradient(circle, rgba(253, 224, 71, 0.32) 0%, rgba(250, 204, 21, 0.08) 55%, transparent 75%);
+    animation: floatOrb4 24s ease-in-out infinite alternate;
+}
+
+/* Keyframe Animations */
+@keyframes heroGradientShift {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+@keyframes meshGridDrift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 44px 44px;
+    }
+}
+
+@keyframes floatOrb1 {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(65px, 40px, 0) scale(1.1);
+    }
+    100% {
+        transform: translate3d(-30px, 75px, 0) scale(0.95);
+    }
+}
+
+@keyframes floatOrb2 {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(-55px, -35px, 0) scale(1.14);
+    }
+    100% {
+        transform: translate3d(-85px, 30px, 0) scale(0.92);
+    }
+}
+
+@keyframes floatOrb3 {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(45px, -50px, 0) scale(1.08);
+    }
+    100% {
+        transform: translate3d(-40px, -20px, 0) scale(0.96);
+    }
+}
+
+@keyframes floatOrb4 {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.92);
+    }
+    50% {
+        transform: translate3d(-30px, 45px, 0) scale(1.16);
+    }
+    100% {
+        transform: translate3d(50px, 25px, 0) scale(1);
+    }
 }
 
 .hero-content {
@@ -521,6 +663,22 @@ html {
     .footer-content {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .bg-orb.orb-1 { width: 280px; height: 280px; filter: blur(40px); }
+    .bg-orb.orb-2 { width: 250px; height: 250px; filter: blur(40px); }
+    .bg-orb.orb-3 { width: 230px; height: 230px; filter: blur(35px); }
+    .bg-orb.orb-4 { width: 180px; height: 180px; filter: blur(30px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero {
+        animation: none !important;
+    }
+    .bg-mesh-grid,
+    .bg-orb {
+        animation: none !important;
+        transform: none !important;
     }
 }
 

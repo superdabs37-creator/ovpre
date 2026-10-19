@@ -188,7 +188,7 @@ $submissionLink = match (PORTAL_ROLE) {
     <article><i class="ri-flask-line"></i><span>Total Research Proposals</span><strong><?php echo (int) ($stats['research_total'] ?? 0); ?></strong></article>
     <article><i class="ri-time-line"></i><span>Pending Director Review</span><strong><?php echo (int) ($stats['pending_research'] ?? 0); ?></strong></article>
     <article><i class="ri-checkbox-circle-line"></i><span>Approved Research</span><strong><?php echo (int) ($stats['approved_research'] ?? 0); ?></strong></article>
-    <article><i class="ri-shield-check-line"></i><span>AIHR Status</span><strong>Active</strong></article>
+    <article><i class="ri-shield-check-line"></i><span>RIUH Status</span><strong>Active</strong></article>
     <?php else: ?>
     <article><i class="ri-community-line"></i><span>Total Extension Proposals</span><strong><?php echo (int) ($stats['extension_total'] ?? 0); ?></strong></article>
     <article><i class="ri-time-line"></i><span>Pending Director Review</span><strong><?php echo (int) ($stats['pending_extension'] ?? 0); ?></strong></article>

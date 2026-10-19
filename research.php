@@ -127,23 +127,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         flash('success', 'Proposal returned to faculty for revision.');
     } elseif ($action === 'director_endorse') {
         $id = (int) $_POST['id'];
-        $aihrStatus = trim($_POST['aihr_status'] ?? 'Passed AIHR');
+        $aihrStatus = trim($_POST['aihr_status'] ?? 'Passed RIUH');
         $aihrScore = ($_POST['aihr_score'] ?? '') !== '' ? (float) $_POST['aihr_score'] : null;
         $grantAmount = ($_POST['grant_amount'] ?? '') !== '' ? (float) $_POST['grant_amount'] : null;
-        $remarks = trim($_POST['remarks'] ?? 'AIHR evaluation completed and grant recommended.');
+        $remarks = trim($_POST['remarks'] ?? 'RIUH evaluation completed and grant recommended.');
 
         db()->prepare('UPDATE research_projects SET status = "Pending Executive Approval", director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
             ->execute([(int) $user['id'], $remarks, $aihrStatus, $aihrScore, $grantAmount, $remarks, $id]);
 
-        $logDetails = "AIHR Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Rec. Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
+        $logDetails = "RIUH Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Rec. Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
         log_review('research', $id, (int) $user['id'], 'Stage 3: Endorsed by Research Director', $logDetails);
         log_action((int) $user['id'], "Research Director endorsed research #{$id}");
 
         $owner = db()->query("SELECT submitted_by, title FROM research_projects WHERE id = {$id}")->fetch();
         if ($owner) {
-            notify_user((int) $owner['submitted_by'], 'Your proposal passed AIHR review and is forwarded to OVPRE Executive for final approval.', 'research.php#proposal-' . $id);
+            notify_user((int) $owner['submitted_by'], 'Your proposal passed RIUH review and is forwarded to OVPRE Executive for final approval.', 'research.php#proposal-' . $id);
         }
-        flash('success', 'AIHR evaluation completed and endorsed to VP / OVPRE Executive.');
+        flash('success', 'RIUH evaluation completed and endorsed to VP / OVPRE Executive.');
     } elseif ($action === 'executive_approve') {
         $id = (int) $_POST['id'];
         $remarks = trim($_POST['remarks'] ?? 'Granted Final Institutional Approval.');
@@ -233,7 +233,7 @@ renderHeader('Research Management', 'research');
     <div>
         <p>Research Repository</p>
         <h2>Research Management</h2>
-        <span>Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (AIHR) &rarr; Executive Final Approval</span>
+        <span>Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (RIUH) &rarr; Executive Final Approval</span>
     </div>
 </section>
 
@@ -280,10 +280,10 @@ renderHeader('Research Management', 'research');
 <section class="tool-panel">
     <form method="get" class="action-row">
         <select class="filter-select" name="status" onchange="this.form.submit()">
-            <option value="All">All Statuses</option>
+            <option value="All">All Status</option>
             <?php foreach ([
                 'Pending Coordinator Review' => '1. For Coordinator Screening',
-                'Pending Director Review' => '2. For Director AIHR Evaluation',
+                'Pending Director Review' => '2. For Director RIUH Evaluation',
                 'Pending Executive Approval' => '3. For Executive Final Approval',
                 'Approved' => 'Approved',
                 'Needs Revision' => 'Needs Revision',
@@ -353,7 +353,7 @@ renderHeader('Research Management', 'research');
                                     </button>
                                 <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
                                     <button class="primary-btn mini-btn" type="button" data-open-modal="dir-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8;">
-                                        <i class="ri-award-line"></i> AIHR
+                                        <i class="ri-award-line"></i> RIUH
                                     </button>
                                 <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
                                     <button class="primary-btn mini-btn" type="button" data-open-modal="exec-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce;">
@@ -408,7 +408,7 @@ renderHeader('Research Management', 'research');
 
             <?php if (!empty($project['director_remarks'])): ?>
                 <div style="border-left: 3px solid #1d4ed8; padding-left: 10px; margin-bottom: 10px; font-size: 0.85rem;">
-                    <strong style="color: #1d4ed8;">Director AIHR Evaluation:</strong>
+                    <strong style="color: #1d4ed8;">Director RIUH Evaluation:</strong>
                     <div>Score: <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 | Grant: PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></div>
                     <div><?php echo nl2br(h($project['director_remarks'])); ?></div>
                     <small style="color: #6b7280;">By: <?php echo h($project['director_name'] ?? 'Director'); ?></small>
@@ -427,10 +427,10 @@ renderHeader('Research Management', 'research');
                 <p><a href="<?php echo h(record_access_url($project['document_filename'], '', (int) $project['document_id'])); ?>" target="_blank" rel="noopener" class="primary-btn"><i class="ri-download-cloud-line"></i> Download Attached Document</a></p>
             <?php endif; ?>
 
-            <?php if ($isSuperAdmin): ?>
+            <?php if ($isExecutive): ?>
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;">
                 <input type="hidden" name="action" value="review">
-                <h3>Super Admin Status Control</h3>
+                <h3>Executive &amp; OVPRE Admin Status Control</h3>
                 <label class="field"><span>Status Override:</span>
                     <select name="status">
                         <?php foreach (['Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined'] as $st): ?>
@@ -489,17 +489,17 @@ renderHeader('Research Management', 'research');
         <form class="modal-card" method="post" style="max-width: 620px;">
             <?php echo csrf_field(); ?>
             <button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button>
-            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Director AIHR & Grant Evaluation</h2>
+            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Director RIUH & Grant Evaluation</h2>
             <input type="hidden" name="id" value="<?php echo $projId; ?>">
             <p><strong><?php echo h($project['title']); ?></strong></p>
             <div class="form-grid">
-                <label class="field"><span>AIHR Status:</span>
+                <label class="field"><span>RIUH Status:</span>
                     <select name="aihr_status">
-                        <option value="Passed AIHR">Passed AIHR</option>
+                        <option value="Passed RIUH">Passed RIUH</option>
                         <option value="Passed with Conditions">Passed with Conditions</option>
                     </select>
                 </label>
-                <label class="field"><span>AIHR Score (1-100):</span>
+                <label class="field"><span>RIUH Score (1-100):</span>
                     <input type="number" step="0.01" min="0" max="100" name="aihr_score" placeholder="85.00" required>
                 </label>
             </div>

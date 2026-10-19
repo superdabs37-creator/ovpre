@@ -117,7 +117,7 @@ $counts = portal_announcement_counts();
                         <td class="table-checkbox-col">
                             <input form="bulk-portalAnnouncementsTable" type="checkbox" name="ids[]" aria-label="Select announcement <?php echo (int) $item['id']; ?>" value="<?php echo (int) $item['id']; ?>" data-row-select="portalAnnouncementsTable">
                         </td>
-                        <td><span class="tag"><?php echo h($item['audience']); ?></span></td>
+                        <td><span class="tag"><?php echo h($item['audience'] === 'Other Authorized Users' ? 'Faculty Researchers' : $item['audience']); ?></span></td>
                         <td><?php echo h($item['title']); ?></td>
                         <td><?php echo h(date('M d, Y', strtotime($item['created_at']))); ?></td>
                         <td><?php echo h($item['fullname']); ?></td>

@@ -1,20 +1,24 @@
 <?php
 require_once __DIR__ . '/includes/layout.php';
-$actor = require_super_admin();
+$actor = require_login([ROLE_OVPRE_ADMIN, ROLE_SUPER_ADMIN]);
 verify_csrf();
 
 $rolePurposes = [
-    ROLE_RESEARCH_DIRECTOR => 'Institutional research evaluation and AIHR (Research Director access)',
+    ROLE_SUPER_ADMIN => 'Technical system administration and security control',
+    ROLE_OVPRE_ADMIN => 'Institutional operations, user management, and academic records',
+    ROLE_RESEARCH_DIRECTOR => 'Institutional research evaluation and RIUH (Research Director access)',
     ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR => 'Research and creative works oversight (Research Director access)',
     ROLE_EXTENSION_DIRECTOR => 'Institutional extension program evaluation and oversight (Extension Director access)',
     ROLE_RESEARCH_COORDINATOR => 'Research monitoring',
     ROLE_EXTENSION_COORDINATOR => 'Extension monitoring',
     ROLE_FACULTY_EXTENSIONIST => 'Extension submissions',
     ROLE_OVPRE_SECRETARIAT => 'OVPRE office operations (OVPRE Admin access)',
-    ROLE_OVPRE_ADMIN => 'Records management and institutional operations',
-    ROLE_RESEARCHER => 'Research submissions',
+    ROLE_RESEARCHER => 'Faculty research submissions and institutional proposals',
 ];
 $availableRolePurposes = $rolePurposes;
+if ($actor['role'] !== ROLE_SUPER_ADMIN) {
+    unset($availableRolePurposes[ROLE_SUPER_ADMIN]);
+}
 
 function user_profile_fields(array $input): array
 {
@@ -135,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new InvalidArgumentException('Please choose a department or None.');
             }
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)
-                || !in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_COORDINATOR, ROLE_EXTENSION_DIRECTOR, ROLE_OVPRE_SECRETARIAT, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER], true)) {
+                || !in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_COORDINATOR, ROLE_EXTENSION_DIRECTOR, ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER], true)) {
                 throw new InvalidArgumentException('Enter a valid email, department, and invited account type.');
             }
             $emailLocalPart = (string) strstr($email, '@', true);
@@ -324,7 +328,7 @@ renderHeader('User Management', 'users');
         <h2 id="inviteAccountTitle">Invite an account</h2>
         <p>Users set their own password through the secure invitation email.</p>
         <?php echo csrf_field(); ?><input type="hidden" name="action" value="invite">
-        <div class="form-grid"><label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label><label class="field"><span>Account Type</span><select name="role" required><option value="" selected disabled>Choose account type</option><?php foreach ([ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER] as $inviteRole): ?><option value="<?php echo h($inviteRole); ?>"><?php echo h($inviteRole === ROLE_RESEARCHER ? 'Other Authorized User (Researcher)' : $inviteRole); ?></option><?php endforeach; ?></select></label><label class="field"><span>Department</span><select name="department_id" required><option value="" selected disabled>Choose department</option><option value="none">None</option><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></div>
+        <div class="form-grid"><label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label><label class="field"><span>Account Type</span><select name="role" required><option value="" selected disabled>Choose account type</option><?php foreach ([ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER] as $inviteRole): ?><option value="<?php echo h($inviteRole); ?>"><?php echo h($inviteRole === ROLE_RESEARCHER ? 'Faculty Researcher' : $inviteRole); ?></option><?php endforeach; ?></select></label><label class="field"><span>Department</span><select name="department_id" required><option value="" selected disabled>Choose department</option><option value="none">None</option><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></div>
         <button class="primary-btn" type="submit"><i class="ri-mail-send-line"></i> Send Invitation</button>
     </form>
 </div>
@@ -334,7 +338,7 @@ renderHeader('User Management', 'users');
 </section>
 <section class="panel">
     <div class="table-scroll">
-        <table class="data-table portal-table" data-filter-options="<?php echo h(json_encode(['Role' => [ROLE_SUPER_ADMIN, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER]])); ?>">
+        <table class="data-table portal-table" data-filter-options="<?php echo h(json_encode(['Role' => [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER]])); ?>">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -403,7 +407,7 @@ renderHeader('User Management', 'users');
                     </select></label>
                 <?php if ($user['role'] === ROLE_SUPER_ADMIN || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account.</small></div>
                 <?php elseif (!array_key_exists($user['role'], $availableRolePurposes)): ?><label class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>This legacy role is no longer available for assignment.</small><input type="hidden" name="role" value="<?php echo h($user['role']); ?>"></label>
-                <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($availableRolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role); ?></option><?php endforeach; ?></select></label><?php endif; ?>
+                <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($availableRolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role === ROLE_RESEARCHER ? 'Faculty Researcher' : $role); ?></option><?php endforeach; ?></select></label><?php endif; ?>
                 <div class="field"><span>Account Status</span><strong><?php echo h($user['status']); ?></strong><small>Use the account action buttons to activate or deactivate.</small></div>
             </div>
             <button class="primary-btn" type="submit"><i class="ri-save-line"></i> Save User</button>

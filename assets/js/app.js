@@ -863,6 +863,8 @@ function openActivityEditor(eventData) {
     document.getElementById('saveActivityButton').style.display = '';
     const approveButton = document.getElementById('approveActivityButton');
     const rejectButton = document.getElementById('rejectActivityButton');
+    const archiveButton = document.getElementById('archiveActivityButton');
+    const deleteButton = document.getElementById('deleteActivityButton');
     if (approveButton) {
         approveButton.style.display = '';
         approveButton.disabled = approvalStatus === 'Approved';
@@ -871,6 +873,8 @@ function openActivityEditor(eventData) {
             : '<i class="ri-check-line"></i> Approve';
     }
     if (rejectButton) rejectButton.style.display = approvalStatus === 'Rejected' ? 'none' : '';
+    if (archiveButton) archiveButton.style.display = '';
+    if (deleteButton) deleteButton.style.display = '';
 
     activityModal.classList.add('open');
     activityModal.setAttribute('aria-hidden', 'false');
@@ -896,8 +900,12 @@ function openActivityCreator(dateStr) {
     document.getElementById('saveActivityButton').style.display = 'none';
     const approveButton = document.getElementById('approveActivityButton');
     const rejectButton = document.getElementById('rejectActivityButton');
+    const archiveButton = document.getElementById('archiveActivityButton');
+    const deleteButton = document.getElementById('deleteActivityButton');
     if (approveButton) approveButton.style.display = 'none';
     if (rejectButton) rejectButton.style.display = 'none';
+    if (archiveButton) archiveButton.style.display = 'none';
+    if (deleteButton) deleteButton.style.display = 'none';
 
     activityModal.classList.add('open');
     activityModal.setAttribute('aria-hidden', 'false');

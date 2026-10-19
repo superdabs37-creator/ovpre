@@ -239,7 +239,7 @@ $notice = flash();
             <?php if ($otpChallenge): ?>
                 <form class="login-form" method="post" autocomplete="off">
                     <?php echo csrf_field(); ?><input type="hidden" name="auth_action" value="verify_otp">
-                    <p class="otp-expiry" id="otpExpiry" data-expires-at="<?php echo (int) ($otpChallenge['expires_at'] ?? 0); ?>">
+                    <p class="otp-expiry" id="otpExpiry" data-expires-at="<?php echo (int) ($otpChallenge['expires_at'] ?? 0); ?>" data-remaining-seconds="<?php echo max(0, (int) ($otpChallenge['expires_at'] ?? 0) - time()); ?>">
                         We sent a code to <?php echo h(preg_replace('/(?<=.).(?=[^@]*?@)/', '*', (string) $otpChallenge['email'])); ?>.
                         <span>Expires in <time id="otpCountdown">05:00</time>.</span>
                     </p>
@@ -279,26 +279,31 @@ $notice = flash();
                 const countdown = document.getElementById('otpCountdown');
                 const codeInput = document.getElementById('otp');
                 const verifyButton = document.getElementById('verifyOtpButton');
+                const remainingSecs = Number(message?.dataset.remainingSeconds ?? 0);
                 const expiresAt = Number(message?.dataset.expiresAt || 0) * 1000;
+                const endTime = remainingSecs > 0 ? (Date.now() + (remainingSecs * 1000)) : expiresAt;
 
                 const updateCountdown = () => {
-                    const secondsLeft = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+                    const secondsLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
                     if (secondsLeft === 0) {
                         message.textContent = 'Your code has expired. Sign in again to get a new one.';
                         message.classList.add('is-expired');
-                        codeInput.disabled = true;
-                        verifyButton.disabled = true;
+                        if (codeInput) codeInput.disabled = true;
+                        if (verifyButton) verifyButton.disabled = true;
                         return;
                     }
 
                     const minutes = Math.floor(secondsLeft / 60);
                     const seconds = secondsLeft % 60;
-                    countdown.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    if (countdown) {
+                        countdown.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    }
                     window.setTimeout(updateCountdown, 1000);
                 };
 
                 updateCountdown();
             })();
+        </script>
     <?php endif; ?>
     <script>
         (() => {

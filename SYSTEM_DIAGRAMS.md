@@ -135,7 +135,7 @@ flowchart TD
 
 ## 3. Directors Flowchart (Research Director & Extension Director)
 
-This flowchart details the institutional evaluation, AIHR scoring, grant budget recommendations, and project oversight performed by Directors in `research.php`, `extension.php`, and `analytics.php`.
+This flowchart details the institutional evaluation, RIUH scoring, grant budget recommendations, and project oversight performed by Directors in `research.php`, `extension.php`, and `analytics.php`.
 
 ```mermaid
 flowchart TD
@@ -146,14 +146,14 @@ flowchart TD
     %% Research Track
     SelectDirTrack -->|Research Track| ResearchDirectorQueue["Open Research Pipeline (research.php)"]
     ResearchDirectorQueue --> ReviewResProposal["Screen Proposals in 'Pending Director Review'"]
-    ReviewResProposal --> ResEvaluation{"AIHR Evaluation and Review"}
+    ReviewResProposal --> ResEvaluation{"RIUH Evaluation and Review"}
     
     ResEvaluation -->|Needs Revisions| ResReturn["Action: director_return (Set Status: Needs Revision)"]
     ResReturn --> ResReturnNote["Add Specific Review Remarks and Required Corrections"]
     ResReturnNote --> NotifyResearcher["Notify Researcher via In-App Notification"]
 
     ResEvaluation -->|Qualifies for Institutional Funding| ResEndorse["Action: director_endorse"]
-    ResEndorse --> ResScore["Input AIHR Evaluation Score and Recommended Grant Amount"]
+    ResEndorse --> ResScore["Input RIUH Evaluation Score and Recommended Grant Amount"]
     ResScore --> ResToExec["Set Status: Pending Executive Approval"]
     ResToExec --> NotifyVP1["Route Proposal to Vice President / Super Admin"]
 
@@ -302,14 +302,14 @@ flowchart TD
     Stage2 --> NoticeDir["Notify Research Director"]
 
     %% Stage 2: Director Evaluation
-    NoticeDir --> DirectorEval{"Research Director Evaluation and AIHR"}
+    NoticeDir --> DirectorEval{"Research Director Evaluation and RIUH"}
     
     DirectorEval -->|Needs Revision| DirRevise["Status: Needs Revision"]
-    DirRevise --> NoticeRes2["Notify Researcher with AIHR Remarks"]
+    DirRevise --> NoticeRes2["Notify Researcher with RIUH Remarks"]
     NoticeRes2 --> ResubmitRes
 
-    DirectorEval -->|Endorsed| SetAIHR["Record AIHR Score and Recommended Grant Amount"]
-    SetAIHR --> Stage3["Status: Pending Executive Approval"]
+    DirectorEval -->|Endorsed| SetRIUH["Record RIUH Score and Recommended Grant Amount"]
+    SetRIUH --> Stage3["Status: Pending Executive Approval"]
     Stage3 --> NoticeExec["Notify VP / Super Admin"]
 
     %% Stage 3: Executive Approval
