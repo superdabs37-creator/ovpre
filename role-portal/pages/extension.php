@@ -295,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$user = portal_header('Extension Management & Workflow', 'extension');
+$user = portal_header('Extension Management', 'extension');
 $projects = portal_extension_projects();
 ?>
 
@@ -306,8 +306,8 @@ $projects = portal_extension_projects();
 <section class="panel proposal-launcher" style="margin-bottom: 20px;">
     <div class="panel-heading">
         <div>
-            <h2><i class="ri-add-box-line"></i> Documentation per Extension Activity / Proposal</h2>
-            <span>Dalubhasaan ng Lungsod ng San Pablo &bull; Office of the Director for Extension (Stage 1: Coordinator Screening)</span>
+            <h2><i class="ri-add-box-line"></i> Documentation of Extension Activity</h2>
+            <span>(Stage 1: Coordinator Screening)</span>
         </div>
         <button class="primary-btn" type="button" data-open-modal="extensionProposalModal"><i class="ri-add-line"></i> New Extension Activity / Proposal</button>
     </div>

@@ -245,9 +245,41 @@ if ($archived) {
 }
 ensure_activity_archived_at_column();
 $archivedCondition = $archived ? 'IS NOT NULL' : 'IS NULL';
-$researchSubmissions = db()->query("SELECT r.*, u.fullname, au.fullname AS assignee FROM research_projects r JOIN users u ON u.id = r.submitted_by LEFT JOIN users au ON au.id = r.assigned_to WHERE r.archived_at {$archivedCondition} ORDER BY r.created_at DESC")->fetchAll();
-$extensionSubmissions = db()->query("SELECT e.*, u.fullname, au.fullname AS assignee FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN users au ON au.id = e.assigned_to WHERE e.archived_at {$archivedCondition} ORDER BY e.created_at DESC")->fetchAll();
-$activitySubmissions = db()->query("SELECT a.*, u.fullname FROM activities a LEFT JOIN users u ON u.id = a.created_by WHERE a.archived_at {$archivedCondition} ORDER BY a.date DESC, a.created_at DESC")->fetchAll();
+$researchSubmissions = db()->query("
+    SELECT r.*, u.fullname, au.fullname AS assignee,
+           COALESCE(d.department_name, doc_d.department_name, 'General / OVPRE') AS department_name
+    FROM research_projects r
+    JOIN users u ON u.id = r.submitted_by
+    LEFT JOIN users au ON au.id = r.assigned_to
+    LEFT JOIN departments d ON d.id = u.department_id
+    LEFT JOIN documents doc ON doc.id = r.document_id
+    LEFT JOIN departments doc_d ON doc_d.id = doc.department_id
+    WHERE r.archived_at {$archivedCondition}
+    ORDER BY r.created_at DESC
+")->fetchAll();
+
+$extensionSubmissions = db()->query("
+    SELECT e.*, u.fullname, au.fullname AS assignee,
+           COALESCE(d.department_name, doc_d.department_name, 'General / OVPRE') AS department_name
+    FROM extension_projects e
+    JOIN users u ON u.id = e.submitted_by
+    LEFT JOIN users au ON au.id = e.assigned_to
+    LEFT JOIN departments d ON d.id = u.department_id
+    LEFT JOIN documents doc ON doc.id = e.document_id
+    LEFT JOIN departments doc_d ON doc_d.id = doc.department_id
+    WHERE e.archived_at {$archivedCondition}
+    ORDER BY e.created_at DESC
+")->fetchAll();
+
+$activitySubmissions = db()->query("
+    SELECT a.*, u.fullname,
+           COALESCE(d.department_name, 'General / OVPRE') AS department_name
+    FROM activities a
+    LEFT JOIN users u ON u.id = a.created_by
+    LEFT JOIN departments d ON d.id = u.department_id
+    WHERE a.archived_at {$archivedCondition}
+    ORDER BY a.date DESC, a.created_at DESC
+")->fetchAll();
 $assignableUsers = assignable_users();
 $notice = flash();
 $categoryAnalytics = db()->query('SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND d.archived_at IS NULL GROUP BY c.id ORDER BY c.category_name')->fetchAll();
@@ -287,21 +319,22 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('researchSubmissionTable', 'research', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="researchSubmissionTable">
-            <thead><tr><th><label class="select-all-control"><input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable"><span>Select all</span></label></th><th>Research Title</th><th>Researchers</th><th>Submitted By</th><th>Assigned To</th><th>Status</th><th>Date</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable"><span>Select all</span></label></th><th>Research Title</th><th>College / Dept</th><th>Researchers</th><th>Submitted By</th><th>Assigned To</th><th>Status</th><th>Date</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($researchSubmissions as $research): ?>
                     <tr data-table-row data-status="<?php echo h($research['status']); ?>">
-                        <td><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission <?php echo (int) $research['id']; ?>" value="<?php echo (int) $research['id']; ?>" data-row-select="researchSubmissionTable"></td>
-                        <td><?php echo h($research['title']); ?><br><small><?php echo h($research['funding_source'] ?: 'No funding source'); ?></small></td>
-                        <td><?php echo h($research['researchers']); ?></td>
-                        <td><?php echo h($research['fullname']); ?></td>
-                        <td><?php echo h($research['assignee'] ?? 'Unassigned'); ?></td>
-                        <td><span class="status-pill status-<?php echo h(statusClass($research['status'])); ?>"><?php echo h($research['status'] === 'Declined' ? 'Rejected' : $research['status']); ?></span></td>
-                        <td><?php echo h(date('M d, Y', strtotime($research['created_at']))); ?></td>
+                        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission <?php echo (int) $research['id']; ?>" value="<?php echo (int) $research['id']; ?>" data-row-select="researchSubmissionTable"></td>
+                        <td data-sort-value="<?php echo h($research['title']); ?>"><?php echo h($research['title']); ?><br><small><?php echo h($research['funding_source'] ?: 'No funding source'); ?></small></td>
+                        <td data-sort-value="<?php echo h($research['department_name']); ?>"><span class="dept-pill"><?php echo h($research['department_name']); ?></span></td>
+                        <td data-sort-value="<?php echo h($research['researchers']); ?>"><?php echo h($research['researchers']); ?></td>
+                        <td data-sort-value="<?php echo h($research['fullname']); ?>"><?php echo h($research['fullname']); ?></td>
+                        <td data-sort-value="<?php echo h($research['assignee'] ?? 'Unassigned'); ?>"><?php echo h($research['assignee'] ?? 'Unassigned'); ?></td>
+                        <td data-sort-value="<?php echo h($research['status']); ?>"><span class="status-pill status-<?php echo h(statusClass($research['status'])); ?>"><?php echo h($research['status'] === 'Declined' ? 'Rejected' : $research['status']); ?></span></td>
+                        <td data-sort-value="<?php echo h($research['created_at']); ?>"><?php echo h(date('M d, Y', strtotime($research['created_at']))); ?></td>
                         <td><a class="ghost-btn action-btn" href="research.php?status=<?php echo urlencode($research['status']); ?><?php echo $archived ? '&archived=1' : ''; ?>"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if (!$researchSubmissions): ?><tr><td colspan="8">No <?php echo $archived ? 'archived ' : ''; ?>research submissions found.</td></tr><?php endif; ?>
+                <?php if (!$researchSubmissions): ?><tr data-pagination-empty><td colspan="9">No <?php echo $archived ? 'archived ' : ''; ?>research submissions found.</td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -312,21 +345,22 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('extensionSubmissionTable', 'extension', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="extensionSubmissionTable">
-            <thead><tr><th><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>College / Dept</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($extensionSubmissions as $extension): ?>
                     <tr data-table-row data-status="<?php echo h($extension['progress_status']); ?>">
-                        <td><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission <?php echo (int) $extension['id']; ?>" value="<?php echo (int) $extension['id']; ?>" data-row-select="extensionSubmissionTable"></td>
-                        <td><?php echo h($extension['project_title']); ?><br><small><?php echo h(date('M d, Y', strtotime($extension['start_date'])) . ' - ' . date('M d, Y', strtotime($extension['end_date']))); ?></small></td>
-                        <td><?php echo h($extension['coordinator']); ?></td>
-                        <td><?php echo h($extension['community_partner']); ?></td>
-                        <td><?php echo h(number_format((float) $extension['budget'], 2)); ?></td>
-                        <td><?php echo h($extension['assignee'] ?? 'Unassigned'); ?></td>
-                        <td><span class="status-pill status-<?php echo h(statusClass($extension['progress_status'])); ?>"><?php echo h($extension['progress_status']); ?></span></td>
+                        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission <?php echo (int) $extension['id']; ?>" value="<?php echo (int) $extension['id']; ?>" data-row-select="extensionSubmissionTable"></td>
+                        <td data-sort-value="<?php echo h($extension['project_title']); ?>"><?php echo h($extension['project_title']); ?><br><small><?php echo h(date('M d, Y', strtotime($extension['start_date'])) . ' - ' . date('M d, Y', strtotime($extension['end_date']))); ?></small></td>
+                        <td data-sort-value="<?php echo h($extension['department_name']); ?>"><span class="dept-pill"><?php echo h($extension['department_name']); ?></span></td>
+                        <td data-sort-value="<?php echo h($extension['coordinator']); ?>"><?php echo h($extension['coordinator']); ?></td>
+                        <td data-sort-value="<?php echo h($extension['community_partner']); ?>"><?php echo h($extension['community_partner']); ?></td>
+                        <td data-sort-value="<?php echo (float) $extension['budget']; ?>"><?php echo h(number_format((float) $extension['budget'], 2)); ?></td>
+                        <td data-sort-value="<?php echo h($extension['assignee'] ?? 'Unassigned'); ?>"><?php echo h($extension['assignee'] ?? 'Unassigned'); ?></td>
+                        <td data-sort-value="<?php echo h($extension['progress_status']); ?>"><span class="status-pill status-<?php echo h(statusClass($extension['progress_status'])); ?>"><?php echo h($extension['progress_status']); ?></span></td>
                         <td><a class="ghost-btn action-btn" href="extension.php?status=<?php echo urlencode($extension['progress_status']); ?>"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if (!$extensionSubmissions): ?><tr><td colspan="8">No <?php echo $archived ? 'archived ' : ''; ?>extension project submissions found.</td></tr><?php endif; ?>
+                <?php if (!$extensionSubmissions): ?><tr data-pagination-empty><td colspan="9">No <?php echo $archived ? 'archived ' : ''; ?>extension project submissions found.</td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -337,20 +371,21 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('activitySubmissionTable', 'activity', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="activitySubmissionTable">
-            <thead><tr><th><label class="select-all-control"><input form="bulk-activitySubmissionTable" type="checkbox" aria-label="Select all activities" data-select-all="activitySubmissionTable"><span>Select all</span></label></th><th>Activity</th><th>Type</th><th>Venue</th><th>Date</th><th>Submitted By</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-activitySubmissionTable" type="checkbox" aria-label="Select all activities" data-select-all="activitySubmissionTable"><span>Select all</span></label></th><th>Activity</th><th>College / Dept</th><th>Type</th><th>Venue</th><th>Date</th><th>Submitted By</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($activitySubmissions as $activity): ?>
                     <tr data-table-row>
-                        <td><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity <?php echo (int) $activity['id']; ?>" value="<?php echo (int) $activity['id']; ?>" data-row-select="activitySubmissionTable"></td>
-                        <td><?php echo h($activity['title']); ?><br><small><?php echo h($activity['description'] ?: 'No description'); ?></small></td>
-                        <td><span class="dept-pill"><?php echo h($activity['activity_type']); ?></span></td>
-                        <td><?php echo h($activity['venue']); ?></td>
-                        <td><?php echo h(date('M d, Y', strtotime($activity['date']))); ?></td>
-                        <td><?php echo h($activity['fullname'] ?? 'System'); ?></td>
+                        <td class="table-checkbox-col"><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity <?php echo (int) $activity['id']; ?>" value="<?php echo (int) $activity['id']; ?>" data-row-select="activitySubmissionTable"></td>
+                        <td data-sort-value="<?php echo h($activity['title']); ?>"><?php echo h($activity['title']); ?><br><small><?php echo h($activity['description'] ?: 'No description'); ?></small></td>
+                        <td data-sort-value="<?php echo h($activity['department_name']); ?>"><span class="dept-pill"><?php echo h($activity['department_name']); ?></span></td>
+                        <td data-sort-value="<?php echo h($activity['activity_type']); ?>"><span class="dept-pill"><?php echo h($activity['activity_type']); ?></span></td>
+                        <td data-sort-value="<?php echo h($activity['venue']); ?>"><?php echo h($activity['venue']); ?></td>
+                        <td data-sort-value="<?php echo h($activity['date']); ?>"><?php echo h(date('M d, Y', strtotime($activity['date']))); ?></td>
+                        <td data-sort-value="<?php echo h($activity['fullname'] ?? 'System'); ?>"><?php echo h($activity['fullname'] ?? 'System'); ?></td>
                         <td><a class="ghost-btn action-btn" href="activities.php<?php echo $archived ? '?archived=1' : ''; ?>"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if (!$activitySubmissions): ?><tr><td colspan="7">No <?php echo $archived ? 'archived ' : ''; ?>activity submissions found.</td></tr><?php endif; ?>
+                <?php if (!$activitySubmissions): ?><tr data-pagination-empty><td colspan="8">No <?php echo $archived ? 'archived ' : ''; ?>activity submissions found.</td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>

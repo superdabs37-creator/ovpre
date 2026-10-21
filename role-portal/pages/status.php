@@ -14,46 +14,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isArchivedView = !empty($_POST['archived_view']);
 
     if ($action === 'archive') {
-        db()->prepare('UPDATE research_projects SET archived_at = NOW() WHERE id = ?')->execute([$id]);
-        log_review('research', $id, (int) $user['id'], 'Proposal Archived', 'Archived from status view.');
-        log_action((int) $user['id'], 'Archived research proposal #' . $id);
-        flash('success', 'Research submission archived.');
+        if (recovery_set_archived([$id], true, 'Status page')) {
+            flash('success', 'Submission archived.');
+        } else {
+            flash('error', 'That submission could not be archived. It may already be archived or is outside your access.');
+        }
         redirect_to('status.php');
     } elseif ($action === 'restore') {
-        db()->prepare('UPDATE research_projects SET archived_at = NULL WHERE id = ?')->execute([$id]);
-        log_review('research', $id, (int) $user['id'], 'Proposal Restored', 'Restored from status view.');
-        log_action((int) $user['id'], 'Restored research proposal #' . $id);
-        flash('success', 'Research submission restored.');
+        if (recovery_set_archived([$id], false, 'Status page')) {
+            flash('success', 'Submission restored.');
+        } else {
+            flash('error', 'That submission could not be restored. It may already be active or is outside your access.');
+        }
         redirect_to('status.php?archived=1');
     } elseif ($action === 'bulk_archive') {
         $ids = array_map('intval', $_POST['ids'] ?? []);
         $bulkAction = (string) ($_POST['bulk_action'] ?? 'archive');
         if ($ids) {
-            $marks = implode(',', array_fill(0, count($ids), '?'));
-            if ($bulkAction === 'restore') {
-                db()->prepare("UPDATE research_projects SET archived_at = NULL WHERE id IN ($marks)")->execute($ids);
-                foreach ($ids as $projId) {
-                    log_review('research', $projId, (int) $user['id'], 'Bulk Restored', 'Restored from archive via bulk action.');
-                    log_action((int) $user['id'], 'Bulk restored research proposal #' . $projId);
-                }
-                flash('success', count($ids) . ' submission(s) restored.');
-                redirect_to('status.php?archived=1');
+            $isRestore = $bulkAction === 'restore';
+            $changed = recovery_set_archived($ids, !$isRestore, 'Status page bulk action');
+            if ($changed) {
+                flash('success', count($changed) . ' submission(s) ' . ($isRestore ? 'restored.' : 'archived.'));
             } else {
-                db()->prepare("UPDATE research_projects SET archived_at = NOW() WHERE id IN ($marks)")->execute($ids);
-                foreach ($ids as $projId) {
-                    log_review('research', $projId, (int) $user['id'], 'Bulk Archived', 'Archived via bulk action.');
-                    log_action((int) $user['id'], 'Bulk archived research proposal #' . $projId);
-                }
-                flash('success', count($ids) . ' submission(s) archived.');
-                redirect_to('status.php');
+                flash('error', 'None of the selected submissions could be ' . ($isRestore ? 'restored' : 'archived') . '.');
             }
+            redirect_to('status.php' . ($isRestore ? '?archived=1' : ''));
         } else {
             flash('error', 'No submissions selected.');
             redirect_to('status.php' . ($isArchivedView ? '?archived=1' : ''));
         }
     }
 }
-
 $notice = flash();
 $viewArchived = ($_GET['archived'] ?? '') === '1';
 $user = portal_header($statusTitle, 'status');
@@ -221,11 +212,21 @@ if (in_array(PORTAL_ROLE, ['Research Director', 'Research Coordinator', 'Researc
 }
 
 if (in_array(PORTAL_ROLE, ['Extension Director', 'Extension Coordinator', 'Faculty Extensionist'], true)) {
-    $extensions = portal_extension_projects();
+    $extensions = portal_extension_projects($viewArchived);
+    $extensionActiveCount = count(recovery_scoped_records([], false));
+    $extensionArchivedCount = count(recovery_scoped_records([], true));
     ?>
     <section class="panel">
         <div class="panel-heading">
             <h2>Extension Submission Status</h2>
+            <div class="portal-table-tabs">
+                <a class="portal-table-tab <?php echo !$viewArchived ? 'active' : ''; ?>" href="status.php">
+                    <i class="ri-folder-open-line"></i><span>Active</span><span class="tab-count"><?php echo $extensionActiveCount; ?></span>
+                </a>
+                <a class="portal-table-tab <?php echo $viewArchived ? 'active' : ''; ?>" href="status.php?archived=1">
+                    <i class="ri-archive-line"></i><span>Archived</span><span class="tab-count"><?php echo $extensionArchivedCount; ?></span>
+                </a>
+            </div>
             <label class="table-search">
                 <span class="sr-only">Search extension submissions</span>
                 <i class="ri-search-line"></i>
@@ -234,7 +235,7 @@ if (in_array(PORTAL_ROLE, ['Extension Director', 'Extension Coordinator', 'Facul
         </div>
         <div class="table-scroll">
             <table class="data-table" id="extensionStatusTable" data-paginate="10">
-                <thead><tr><th>Submission</th><th>Submitted By</th><th>Status</th><th>File</th><th>Review Feedback</th><th>Date</th><th>Timeline</th></tr></thead>
+                <thead><tr><th>Submission</th><th>Submitted By</th><th>Status</th><th>File</th><th>Review Feedback</th><th>Date</th><th>Timeline</th><th>Action</th></tr></thead>
                 <tbody>
                     <?php foreach ($extensions as $row): ?>
                         <?php
@@ -287,10 +288,22 @@ if (in_array(PORTAL_ROLE, ['Extension Director', 'Extension Coordinator', 'Facul
                                     </div>
                                 </details>
                             </td>
+                            <td>
+                                <form method="post" style="margin:0;"<?php if (!$viewArchived): ?> onsubmit="return confirm('Archive this extension submission?');"<?php endif; ?>>
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="action" value="<?php echo $viewArchived ? 'restore' : 'archive'; ?>">
+                                    <input type="hidden" name="id" value="<?php echo (int) $row['id']; ?>">
+                                    <?php if ($viewArchived): ?>
+                                        <button class="ghost-btn mini-btn" type="submit"><i class="ri-arrow-go-back-line"></i> Restore</button>
+                                    <?php else: ?>
+                                        <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
+                                    <?php endif; ?>
+                                </form>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if (!$extensions): ?>
-                        <tr data-pagination-empty><td colspan="7">No extension submissions yet.</td></tr>
+                        <tr data-pagination-empty><td colspan="8"><?php echo $viewArchived ? 'No archived extension submissions.' : 'No extension submissions yet.'; ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

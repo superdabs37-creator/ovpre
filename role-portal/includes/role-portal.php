@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../includes/bootstrap.php';
+require_once __DIR__ . '/role-recovery.php';
 
 const ROLE_PORTALS = [
     'OVPRE Admin' => [
@@ -21,37 +22,37 @@ const ROLE_PORTALS = [
         'slug' => 'research-director',
         'title' => 'Research Director Portal',
         'purpose' => 'Institutional research evaluation, policy enforcement, RIUH, and grant recommendations',
-        'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status', 'recovery'],
     ],
     'Research Coordinator' => [
         'slug' => 'research-coordinator',
         'title' => 'Research Coordinator Portal',
         'purpose' => 'College-level research liaison, initial screening, and local monitoring',
-        'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'research', 'calendar', 'reports', 'announcements', 'notifications', 'status', 'recovery'],
     ],
     'Extension Director' => [
         'slug' => 'extension-director',
         'title' => 'Extension Director Portal',
         'purpose' => 'Institutional extension oversight, community policy guidelines, project evaluation, and resource allocation',
-        'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications', 'status', 'recovery'],
     ],
     'Extension Coordinator' => [
         'slug' => 'extension-coordinator',
         'title' => 'Extension Coordinator Portal',
         'purpose' => 'College-level extension liaison, community project screening, and local monitoring',
-        'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications', 'status'],
+        'nav' => ['dashboard', 'extension', 'calendar', 'reports', 'announcements', 'notifications', 'status', 'recovery'],
     ],
     'Faculty Extensionist' => [
         'slug' => 'faculty-extensionist',
         'title' => 'Faculty Extensionist Portal',
         'purpose' => 'Submit extension proposals, community milestones, liquidation, and impact outputs',
-        'nav' => ['dashboard', 'extension', 'notifications', 'status'],
+        'nav' => ['dashboard', 'extension', 'notifications', 'status', 'recovery'],
     ],
     'Researcher' => [
         'slug' => 'researcher',
         'title' => 'Researcher Portal',
         'purpose' => 'Submit proposals, report milestones, liquidation, and dissemination outputs',
-        'nav' => ['dashboard', 'research', 'notifications', 'status'],
+        'nav' => ['dashboard', 'research', 'notifications', 'status', 'recovery'],
     ],
 ];
 
@@ -107,6 +108,7 @@ function portal_nav_items(): array
         'announcements' => ['Announcements', 'announcements.php', 'ri-megaphone-line'],
         'notifications' => ['Notifications', 'notifications.php', 'ri-notification-3-line'],
         'status' => ['Submission Status', 'status.php', 'ri-route-line'],
+        'recovery' => ['Backup and Recovery', 'recovery.php', 'ri-database-2-line'],
     ];
     if (PORTAL_ROLE === 'Extension Coordinator' || PORTAL_ROLE === 'Faculty Extensionist') {
         $items['status'][0] = 'Extension Submission Status';
@@ -122,6 +124,7 @@ function portal_header(string $title, string $current): array
     $user = portal_require_user();
     ensure_activity_archived_at_column();
     ensure_research_archived_at_column();
+    ensure_extension_archived_at_column();
     $config = portal_config();
     $name = $user['fullname'] ?? PORTAL_ROLE;
     $savedProfilePhoto = (string) ($user['profile_photo'] ?? '');
@@ -208,10 +211,10 @@ function portal_header(string $title, string $current): array
                 $userId = (int) (current_user()['id'] ?? 0);
                 $departmentId = (int) (current_user()['department_id'] ?? 0);
                 if (in_array(PORTAL_ROLE, ['Researcher', 'Faculty Extensionist'], true)) {
-                    $stmt = db()->prepare('SELECT COUNT(*) FROM research_projects WHERE submitted_by = ?');
+                    $stmt = db()->prepare('SELECT COUNT(*) FROM research_projects WHERE submitted_by = ? AND archived_at IS NULL');
                     $stmt->execute([$userId]);
                     $researchTotal = (int) $stmt->fetchColumn();
-                    $stmt = db()->prepare('SELECT COUNT(*) FROM extension_projects WHERE submitted_by = ?');
+                    $stmt = db()->prepare('SELECT COUNT(*) FROM extension_projects WHERE submitted_by = ? AND archived_at IS NULL');
                     $stmt->execute([$userId]);
                     $extensionTotal = (int) $stmt->fetchColumn();
                     return ['research_total' => $researchTotal, 'extension_total' => $extensionTotal, 'pending_research' => 0, 'approved_research' => 0, 'pending_documents' => 0, 'approved_documents' => 0];
@@ -228,22 +231,22 @@ function portal_header(string $title, string $current): array
                     return ['research_total' => (int) $researchStats['total'], 'extension_total' => (int) $extensionStats['total'], 'pending_research' => (int) $researchStats['pending'], 'approved_research' => (int) $researchStats['approved'], 'pending_extension' => (int) $extensionStats['pending'], 'approved_extension' => (int) $extensionStats['approved'], 'pending_documents' => 0, 'approved_documents' => 0];
                 }
                 if (PORTAL_ROLE === 'Research Director') {
-                    $total = (int) db()->query('SELECT COUNT(*) FROM research_projects')->fetchColumn();
-                    $pendingDirector = (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE status = "Pending Director Review"')->fetchColumn();
-                    $approved = (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE status = "Approved"')->fetchColumn();
+                    $total = (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE archived_at IS NULL')->fetchColumn();
+                    $pendingDirector = (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE archived_at IS NULL AND status = "Pending Director Review"')->fetchColumn();
+                    $approved = (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE archived_at IS NULL AND status = "Approved"')->fetchColumn();
                     return ['research_total' => $total, 'extension_total' => 0, 'pending_research' => $pendingDirector, 'approved_research' => $approved, 'pending_documents' => 0, 'approved_documents' => 0];
                 }
                 if (PORTAL_ROLE === 'Extension Director') {
-                    $total = (int) db()->query('SELECT COUNT(*) FROM extension_projects')->fetchColumn();
-                    $pendingDirector = (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE status = "Pending Director Review"')->fetchColumn();
-                    $approved = (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE status = "Approved"')->fetchColumn();
+                    $total = (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE archived_at IS NULL')->fetchColumn();
+                    $pendingDirector = (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE archived_at IS NULL AND status = "Pending Director Review"')->fetchColumn();
+                    $approved = (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE archived_at IS NULL AND status = "Approved"')->fetchColumn();
                     return ['research_total' => 0, 'extension_total' => $total, 'pending_research' => 0, 'approved_research' => 0, 'pending_documents' => 0, 'approved_documents' => 0, 'pending_extension' => $pendingDirector, 'approved_extension' => $approved];
                 }
                 return [
                     'research_total' => (int) db()->query('SELECT COUNT(*) FROM research_projects')->fetchColumn(),
-                    'extension_total' => (int) db()->query('SELECT COUNT(*) FROM extension_projects')->fetchColumn(),
+                    'extension_total' => (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE archived_at IS NULL')->fetchColumn(),
                     'pending_research' => (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE status IN ("Pending", "Pending Coordinator Review", "Pending Director Review", "Pending Executive Approval", "Under Review")')->fetchColumn(),
-                    'approved_research' => (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE status = "Approved"')->fetchColumn(),
+                    'approved_research' => (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE archived_at IS NULL AND status = "Approved"')->fetchColumn(),
                     'pending_documents' => (int) db()->query('SELECT COUNT(*) FROM documents WHERE status IN ("Pending","Under Review") AND archived_at IS NULL')->fetchColumn(),
                     'approved_documents' => (int) db()->query('SELECT COUNT(*) FROM documents WHERE status = "Approved" AND archived_at IS NULL')->fetchColumn(),
                 ];
@@ -338,8 +341,9 @@ function portal_header(string $title, string $current): array
             }
 
 
-            function portal_extension_projects(): array
+            function portal_extension_projects(bool $archived = false): array
             {
+                $archivedCondition = $archived ? 'e.archived_at IS NOT NULL' : 'e.archived_at IS NULL';
                 try {
                     $sql = 'SELECT e.*, u.fullname, dep.department_name, d.filename AS attachment_filename, d.original_filename AS attachment_original_filename,
                                    coord.fullname AS coordinator_name, dir.fullname AS director_name, exec.fullname AS executive_name
@@ -351,12 +355,13 @@ function portal_header(string $title, string $current): array
                             LEFT JOIN users dir ON dir.id = e.director_id
                             LEFT JOIN users exec ON exec.id = e.executive_id';
                     $params = [];
+                    $sql .= ' WHERE ' . $archivedCondition;
                     if (PORTAL_ROLE === 'Faculty Extensionist') {
-                        $sql .= ' WHERE e.submitted_by = ?';
+                        $sql .= ' AND e.submitted_by = ?';
                         $params[] = (int) current_user()['id'];
                     } elseif (PORTAL_ROLE === 'Extension Coordinator') {
                         $departmentId = (int) (current_user()['department_id'] ?? 0);
-                        $sql .= $departmentId > 0 ? ' WHERE u.department_id = ?' : ' WHERE e.submitted_by = ?';
+                        $sql .= $departmentId > 0 ? ' AND u.department_id = ?' : ' AND e.submitted_by = ?';
                         $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
                     }
                     $sql .= ' ORDER BY e.created_at DESC';
@@ -364,12 +369,12 @@ function portal_header(string $title, string $current): array
                     $stmt->execute($params);
                     return $stmt->fetchAll();
                 } catch (PDOException $error) {
-                    $sql = 'SELECT e.*, u.fullname, dep.department_name, NULL AS attachment_filename, NULL AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id';
+                    $sql = 'SELECT e.*, u.fullname, dep.department_name, NULL AS attachment_filename, NULL AS attachment_original_filename FROM extension_projects e JOIN users u ON u.id = e.submitted_by LEFT JOIN departments dep ON dep.id = u.department_id WHERE ' . $archivedCondition;
                     $params = [];
-                    if (PORTAL_ROLE === 'Faculty Extensionist') { $sql .= ' WHERE e.submitted_by = ?'; $params[] = (int) current_user()['id']; }
+                    if (PORTAL_ROLE === 'Faculty Extensionist') { $sql .= ' AND e.submitted_by = ?'; $params[] = (int) current_user()['id']; }
                     elseif (PORTAL_ROLE === 'Extension Coordinator') {
                         $departmentId = (int) (current_user()['department_id'] ?? 0);
-                        $sql .= $departmentId > 0 ? ' WHERE u.department_id = ?' : ' WHERE e.submitted_by = ?';
+                        $sql .= $departmentId > 0 ? ' AND u.department_id = ?' : ' AND e.submitted_by = ?';
                         $params[] = $departmentId > 0 ? $departmentId : (int) current_user()['id'];
                     }
                     $sql .= ' ORDER BY e.created_at DESC';
@@ -468,9 +473,9 @@ function portal_header(string $title, string $current): array
             function portal_analytics_data(): array
             {
                 return [
-                    'research' => db()->query('SELECT status AS label, COUNT(*) AS total FROM research_projects GROUP BY status')->fetchAll(),
+                    'research' => db()->query('SELECT status AS label, COUNT(*) AS total FROM research_projects WHERE archived_at IS NULL GROUP BY status')->fetchAll(),
                     'documents' => db()->query('SELECT status AS label, COUNT(*) AS total FROM documents WHERE archived_at IS NULL GROUP BY status')->fetchAll(),
-                    'extension' => db()->query('SELECT COALESCE(status, CAST(progress_status AS VARCHAR)) AS label, COUNT(*) AS total FROM extension_projects GROUP BY COALESCE(status, CAST(progress_status AS VARCHAR))')->fetchAll(),
+                    'extension' => db()->query('SELECT COALESCE(status, CAST(progress_status AS VARCHAR)) AS label, COUNT(*) AS total FROM extension_projects WHERE archived_at IS NULL GROUP BY COALESCE(status, CAST(progress_status AS VARCHAR))')->fetchAll(),
                 ];
             }
 

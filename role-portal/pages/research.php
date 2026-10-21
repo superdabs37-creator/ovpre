@@ -259,47 +259,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect_to('research.php');
         } elseif ($action === 'archive_proposal') {
             $projectId = (int) ($_POST['id'] ?? 0);
-            db()->prepare('UPDATE research_projects SET archived_at = NOW() WHERE id = ?')->execute([$projectId]);
-            log_review('research', $projectId, (int) $user['id'], 'Proposal Archived', 'Research proposal archived.');
-            log_action((int) $user['id'], 'Archived research proposal #' . $projectId);
-            flash('success', 'Research proposal archived.');
+            if (recovery_set_archived([$projectId], true, 'Research page')) {
+                flash('success', 'Research proposal archived.');
+            } else {
+                flash('error', 'That proposal could not be archived. It may already be archived or is outside your access.');
+            }
             redirect_to('research.php' . (!empty($_POST['archived_view']) ? '?archived=1' : ''));
         } elseif ($action === 'restore_proposal') {
             $projectId = (int) ($_POST['id'] ?? 0);
-            db()->prepare('UPDATE research_projects SET archived_at = NULL WHERE id = ?')->execute([$projectId]);
-            log_review('research', $projectId, (int) $user['id'], 'Proposal Restored', 'Research proposal restored from archive.');
-            log_action((int) $user['id'], 'Restored research proposal #' . $projectId);
-            flash('success', 'Research proposal restored.');
+            if (recovery_set_archived([$projectId], false, 'Research page')) {
+                flash('success', 'Research proposal restored.');
+            } else {
+                flash('error', 'That proposal could not be restored. It may already be active or is outside your access.');
+            }
             redirect_to('research.php?archived=1');
         } elseif ($action === 'bulk_archive') {
             $ids = array_map('intval', $_POST['ids'] ?? []);
             $bulkAction = (string) ($_POST['bulk_action'] ?? 'archive');
             $isArchivedView = !empty($_POST['archived_view']);
             if (!empty($ids)) {
-                $marks = implode(',', array_fill(0, count($ids), '?'));
-                if ($bulkAction === 'restore') {
-                    db()->prepare("UPDATE research_projects SET archived_at = NULL WHERE id IN ($marks)")->execute($ids);
-                    foreach ($ids as $projId) {
-                        log_review('research', $projId, (int) $user['id'], 'Bulk Restored', 'Restored from archive via bulk action.');
-                        log_action((int) $user['id'], 'Bulk restored research proposal #' . $projId);
-                    }
-                    flash('success', count($ids) . ' research proposal(s) restored.');
-                    redirect_to('research.php?archived=1');
+                $isRestore = $bulkAction === 'restore';
+                $changed = recovery_set_archived($ids, !$isRestore, 'Research page bulk action');
+                if ($changed) {
+                    flash('success', count($changed) . ' research proposal(s) ' . ($isRestore ? 'restored.' : 'archived.'));
                 } else {
-                    db()->prepare("UPDATE research_projects SET archived_at = NOW() WHERE id IN ($marks)")->execute($ids);
-                    foreach ($ids as $projId) {
-                        log_review('research', $projId, (int) $user['id'], 'Bulk Archived', 'Archived via bulk action.');
-                        log_action((int) $user['id'], 'Bulk archived research proposal #' . $projId);
-                    }
-                    flash('success', count($ids) . ' research proposal(s) archived.');
-                    redirect_to('research.php');
+                    flash('error', 'None of the selected proposals could be ' . ($isRestore ? 'restored' : 'archived') . '.');
                 }
+                redirect_to('research.php' . ($isRestore ? '?archived=1' : ''));
             } else {
                 flash('error', 'No research proposals were selected.');
                 redirect_to('research.php' . ($isArchivedView ? '?archived=1' : ''));
             }
-        }
-    } catch (Throwable $error) {
+        }    } catch (Throwable $error) {
         $notice = ['type' => 'error', 'message' => $error->getMessage()];
     }
 }

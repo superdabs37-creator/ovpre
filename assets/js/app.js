@@ -668,7 +668,7 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
     });
 
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {
-        if (!header.textContent.trim() || /^(manage|review|actions?)$/i.test(header.textContent.trim())) return;
+        if (!header.textContent.trim() || /^(manage|review|actions?|select\s*all)$/i.test(header.textContent.trim()) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
         header.classList.add('data-table-sortable');
         header.tabIndex = 0;
         header.setAttribute('aria-sort', 'none');
@@ -702,6 +702,7 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
                 return direction === 'asc' ? comparison : -comparison;
             });
             rows.forEach((row) => body.append(row));
+            emptyRows.forEach((row) => body.append(row));
             state.page = 1;
             refreshAdminTablePagination();
         };

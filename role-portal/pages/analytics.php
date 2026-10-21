@@ -6,13 +6,13 @@ $isResearchCoordinator = PORTAL_ROLE === 'Research Coordinator';
 if ($isExtensionCoordinator) {
     $scopeSql = !empty($user['department_id']) ? ' AND submitter.department_id = ?' : ' AND submitter.id = ?';
     $scopeId = !empty($user['department_id']) ? (int) $user['department_id'] : (int) $user['id'];
-    $dataStmt = db()->prepare('SELECT e.progress_status AS label, COUNT(*) AS total FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE 1=1' . $scopeSql . ' GROUP BY e.progress_status');
+    $dataStmt = db()->prepare('SELECT e.progress_status AS label, COUNT(*) AS total FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE e.archived_at IS NULL' . $scopeSql . ' GROUP BY e.progress_status');
     $dataStmt->execute([$scopeId]);
     $data = ['extension' => $dataStmt->fetchAll()];
 } elseif ($isResearchCoordinator) {
     $scopeSql = !empty($user['department_id']) ? ' AND submitter.department_id = ?' : ' AND submitter.id = ?';
     $scopeId = !empty($user['department_id']) ? (int) $user['department_id'] : (int) $user['id'];
-    $dataStmt = db()->prepare('SELECT r.status AS label, COUNT(*) AS total FROM research_projects r JOIN users submitter ON submitter.id = r.submitted_by WHERE 1=1' . $scopeSql . ' GROUP BY r.status');
+    $dataStmt = db()->prepare('SELECT r.status AS label, COUNT(*) AS total FROM research_projects r JOIN users submitter ON submitter.id = r.submitted_by WHERE r.archived_at IS NULL' . $scopeSql . ' GROUP BY r.status');
     $dataStmt->execute([$scopeId]);
     $data = ['research' => $dataStmt->fetchAll()];
 } else {

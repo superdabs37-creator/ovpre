@@ -1585,6 +1585,8 @@ button {
 #archivedRecordsTable td:first-child,
 #activitiesTable th:first-child,
 #activitiesTable td:first-child,
+#announcementsTable th:first-child,
+#announcementsTable td:first-child,
 .table-checkbox-col {
     width: 60px;
     text-align: center;
@@ -2111,6 +2113,13 @@ button {
 .data-table th.data-table-sortable {
     cursor: pointer;
     white-space: nowrap;
+    user-select: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.data-table th.data-table-sortable:hover {
+    background-color: #f1f5f9;
+    color: var(--green-700);
 }
 
 .data-table th.data-table-sortable::after {

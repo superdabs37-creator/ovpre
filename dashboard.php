@@ -32,7 +32,7 @@ if ($isSuperAdmin):
             <i class="ri-shield-keyhole-line" style="color: #1e3a8a;"></i> Technical &amp; Security Control Console
         </h2>
         <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
-            System Administration, IT Governance, Database Integrity, and Security Telemetry.
+            System Administration, IT Governance, Database Integrity, and Security.
         </p>
     </div>
     <div class="welcome-actions" style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-left:auto;">
