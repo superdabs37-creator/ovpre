@@ -28,7 +28,7 @@ renderHeader('Upload Record', 'documents');
             <label class="field"><span>Document Title</span><input name="title" required></label>
             <label class="field"><span>Author</span><input name="author" value="<?php echo h($user['fullname']); ?>" required></label>
             <label class="field"><span>Category</span><select name="category_id" required><?php foreach (categories() as $category): ?><option value="<?php echo (int) $category['id']; ?>"><?php echo h($category['category_name']); ?></option><?php endforeach; ?></select></label>
-            <label class="field"><span>Department</span><select name="department_id" required><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
+            <label class="field"><span>College</span><select name="department_id" required><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
             <label class="field"><span>Submission Date</span><input type="date" name="submission_date" value="<?php echo date('Y-m-d'); ?>" required></label>
             <label class="field"><span>Upload File</span><input type="file" name="document" accept=".pdf,.docx,.xlsx,.pptx" required></label>
         </div>

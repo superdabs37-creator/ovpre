@@ -24,10 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ->execute([$title, $content, $audience, $user['id']]);
         $announcementId = (int) db()->lastInsertId();
         if ($audienceRoles === []) {
-            $recipients = db()->query('SELECT id FROM users WHERE status = "Active" AND deleted_at IS NULL');
+            $recipients = db()->query("SELECT id FROM users WHERE status = 'Active' AND deleted_at IS NULL");
         } else {
             $rolePlaceholders = implode(', ', array_fill(0, count($audienceRoles), '?'));
-            $recipientStmt = db()->prepare('SELECT id FROM users WHERE status = "Active" AND deleted_at IS NULL AND role IN (' . $rolePlaceholders . ')');
+            $recipientStmt = db()->prepare("SELECT id FROM users WHERE status = 'Active' AND deleted_at IS NULL AND role IN (" . $rolePlaceholders . ")");
             $recipientStmt->execute($audienceRoles);
             $recipients = $recipientStmt;
         }

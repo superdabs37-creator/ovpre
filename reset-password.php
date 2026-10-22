@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $authUser = supabase_auth_user($token);
-            $stmt = db()->prepare('SELECT id FROM users WHERE auth_user_id = ? AND email = ? AND status = "Active" AND deleted_at IS NULL LIMIT 1');
+            $stmt = db()->prepare("SELECT id FROM users WHERE auth_user_id = ? AND email = ? AND status = 'Active' AND deleted_at IS NULL LIMIT 1");
             $stmt->execute([(string) ($authUser['id'] ?? ''), (string) ($authUser['email'] ?? '')]);
             $userId = (int) ($stmt->fetchColumn() ?: 0);
             if ($userId <= 0) {

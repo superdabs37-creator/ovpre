@@ -324,7 +324,7 @@ document.querySelectorAll('[data-paginate], .role-content table.data-table').for
         });
 
         container.querySelectorAll('thead th').forEach((header, columnIndex) => {
-            if (!/status|category|department|role/i.test(header.textContent)) return;
+            if (!/status|category|department|college|role/i.test(header.textContent)) return;
             const values = [...new Set(items.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
             if (values.length < 2 || values.length > 12) return;
             if (!toolbar?.classList.contains('portal-table-toolbar')) return;
@@ -508,7 +508,7 @@ function renderReportChart(id, type, rows, label) {
                 },
                 tooltip: {
                     callbacks: {
-                        title: function(items) {
+                        title: function (items) {
                             if (!items.length) return '';
                             const idx = items[0].dataIndex;
                             const row = rows[idx];
@@ -526,7 +526,7 @@ function renderReportChart(id, type, rows, label) {
                             font: { size: 11, weight: '600' },
                             maxRotation: 45,
                             minRotation: 0,
-                            callback: function(val) {
+                            callback: function (val) {
                                 const lbl = this.getLabelForValue(val) || '';
                                 return lbl.length > 25 ? lbl.substring(0, 22) + '...' : lbl;
                             }
@@ -545,7 +545,7 @@ function renderReportChart(id, type, rows, label) {
 
 function initReportCharts() {
     if (!window.reportCharts || !window.Chart) return;
-    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Department Output');
+    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Colleges Output');
     renderReportChart('reportMonthlyChart', 'bar', window.reportCharts.monthly || [], 'Submissions');
     renderReportChart('reportResearchChart', 'doughnut', window.reportCharts.research || window.reportCharts.extension || [], 'Status');
     renderReportChart('reportExtensionChart', 'doughnut', window.reportCharts.extension || [], 'Status');

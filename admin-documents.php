@@ -319,7 +319,7 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('researchSubmissionTable', 'research', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="researchSubmissionTable">
-            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable"><span>Select all</span></label></th><th>Research Title</th><th>College / Dept</th><th>Researchers</th><th>Submitted By</th><th>Assigned To</th><th>Status</th><th>Date</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable"><span>Select all</span></label></th><th>Research Title</th><th>College</th><th>Researchers</th><th>Submitted By</th><th>Assigned To</th><th>Status</th><th>Date</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($researchSubmissions as $research): ?>
                     <tr data-table-row data-status="<?php echo h($research['status']); ?>">
@@ -345,7 +345,7 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('extensionSubmissionTable', 'extension', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="extensionSubmissionTable">
-            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>College / Dept</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>College</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($extensionSubmissions as $extension): ?>
                     <tr data-table-row data-status="<?php echo h($extension['progress_status']); ?>">
@@ -371,7 +371,7 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('activitySubmissionTable', 'activity', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="activitySubmissionTable">
-            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-activitySubmissionTable" type="checkbox" aria-label="Select all activities" data-select-all="activitySubmissionTable"><span>Select all</span></label></th><th>Activity</th><th>College / Dept</th><th>Type</th><th>Venue</th><th>Date</th><th>Submitted By</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-activitySubmissionTable" type="checkbox" aria-label="Select all activities" data-select-all="activitySubmissionTable"><span>Select all</span></label></th><th>Activity</th><th>College</th><th>Type</th><th>Venue</th><th>Date</th><th>Submitted By</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($activitySubmissions as $activity): ?>
                     <tr data-table-row>
@@ -404,7 +404,7 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('recordsTable', 'document', $archived ? ['unarchive' => 'Unarchive Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="recordsTable">
-            <thead><tr><th><label class="select-all-control"><input form="bulk-recordsTable" type="checkbox" aria-label="Select all records" data-select-all="recordsTable"><span>Select all</span></label></th><th>Document</th><th>Author</th><th>Department</th><th>Date</th><th>Status</th><th>Assigned</th><th>Uploaded By</th><th>Manage</th></tr></thead>
+            <thead><tr><th><label class="select-all-control"><input form="bulk-recordsTable" type="checkbox" aria-label="Select all records" data-select-all="recordsTable"><span>Select all</span></label></th><th>Document</th><th>Author</th><th>College</th><th>Date</th><th>Status</th><th>Assigned</th><th>Uploaded By</th><th>Manage</th></tr></thead>
             <tbody>
             <?php foreach ($documents as $doc): ?>
                 <tr data-table-row data-status="<?php echo h($doc['status']); ?>" data-category="<?php echo h($doc['category_name']); ?>">

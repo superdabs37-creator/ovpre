@@ -14,12 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim((string) ($_POST['email'] ?? ''));
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             try {
-                $stmt = db()->prepare('SELECT id, username, email, role FROM users WHERE LOWER(email) = LOWER(?) AND status = "Active" AND deleted_at IS NULL LIMIT 1');
+                $stmt = db()->prepare("SELECT id, username, email, role FROM users WHERE LOWER(email) = LOWER(?) AND status = 'Active' AND deleted_at IS NULL LIMIT 1");
                 $stmt->execute([$email]);
                 $user = $stmt->fetch();
 
                 if ($user && $user['role'] === ROLE_SUPER_ADMIN) {
-                    $limitStmt = db()->prepare('SELECT COUNT(*) FROM login_history WHERE user_id = ? AND status = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)');
+                    $limitStmt = db()->prepare("SELECT COUNT(*) FROM login_history WHERE user_id = ? AND status = ? AND created_at >= (NOW() - INTERVAL '15 MINUTE')");
                     $limitStmt->execute([(int) $user['id'], 'Local password reset code sent']);
                     if ((int) $limitStmt->fetchColumn() < 3) {
                         $code = (string) random_int(100000, 999999);
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['local_password_reset']['attempts'] = (int) $challenge['attempts'] + 1;
             if (preg_match('/^\d{6}$/', $code) && password_verify($code, (string) $challenge['code_hash'])) {
                 try {
-                    $stmt = db()->prepare('SELECT id, username FROM users WHERE id = ? AND LOWER(email) = LOWER(?) AND role = ? AND status = "Active" AND deleted_at IS NULL LIMIT 1');
+                    $stmt = db()->prepare("SELECT id, username FROM users WHERE id = ? AND LOWER(email) = LOWER(?) AND role = ? AND status = 'Active' AND deleted_at IS NULL LIMIT 1");
                     $stmt->execute([(int) $challenge['user_id'], (string) $challenge['email'], ROLE_SUPER_ADMIN]);
                     $user = $stmt->fetch();
                     if (!$user) {

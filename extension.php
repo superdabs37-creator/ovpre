@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             log_action((int) $user['id'], 'Submitted extension project: ' . $title);
 
             // Notify college coordinator
-            $coordStmt = db()->prepare('SELECT id FROM users WHERE department_id = ? AND role = "Extension Coordinator" AND status = "Active"');
+            $coordStmt = db()->prepare("SELECT id FROM users WHERE department_id = ? AND role = 'Extension Coordinator' AND status = 'Active'");
             $coordStmt->execute([(int) ($user['department_id'] ?? 0)]);
             foreach ($coordStmt->fetchAll(PDO::FETCH_COLUMN) as $coordId) {
                 notify_user((int) $coordId, 'New extension proposal submitted for college screening: ' . $title, 'extension.php#project-' . $id);
@@ -298,7 +298,7 @@ renderHeader('Extension Management', 'extension');
         </select>
         <?php if (!$isCoordinator): ?>
             <select class="filter-select" name="department" onchange="this.form.submit()">
-                <option value="0">All Departments / Colleges</option>
+                <option value="0">All Colleges</option>
                 <?php foreach (departments() as $department): ?>
                     <option value="<?php echo (int) $department['id']; ?>" <?php echo $departmentFilter === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option>
                 <?php endforeach; ?>
@@ -315,7 +315,7 @@ renderHeader('Extension Management', 'extension');
                 <tr>
                     <th>Project</th>
                     <th>Partner / Location</th>
-                    <th>College / Dept</th>
+                    <th>College</th>
                     <th>Budget</th>
                     <th>Stage</th>
                     <th>Status</th>

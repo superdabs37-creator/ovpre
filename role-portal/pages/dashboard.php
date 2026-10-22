@@ -161,7 +161,7 @@ $submissionLink = match (PORTAL_ROLE) {
 <section class="analytics-grid">
     <article class="panel chart-panel wide department-output-panel">
         <div class="panel-heading">
-            <h2>Department Output</h2>
+            <h2>Colleges Output</h2>
             <span><?php echo $isResearchDirector ? 'Research proposal distribution' : 'Extension project distribution'; ?></span>
         </div>
         <canvas id="reportDepartmentChart"></canvas>
@@ -213,7 +213,7 @@ $submissionLink = match (PORTAL_ROLE) {
                     <th>Type</th>
                     <th>Proposal</th>
                     <th>Proponent</th>
-                    <th>Department</th>
+                    <th>College</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>

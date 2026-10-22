@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             supabase_auth_set_password($token, $password);
             $authUser = supabase_auth_user($token);
-            $stmt = db()->prepare('UPDATE users SET status = "Pending Approval", updated_at = NOW() WHERE auth_user_id = ? AND LOWER(email) = LOWER(?) AND status = "Pending Invitation"');
+            $stmt = db()->prepare("UPDATE users SET status = 'Pending Approval', updated_at = NOW() WHERE auth_user_id = ? AND LOWER(email) = LOWER(?) AND status = 'Pending Invitation'");
             $stmt->execute([(string) ($authUser['id'] ?? ''), (string) ($authUser['email'] ?? '')]);
-            $profileStmt = db()->prepare('SELECT id FROM users WHERE auth_user_id = ? AND LOWER(email) = LOWER(?) AND status IN ("Pending Approval", "Active", "Inactive") AND deleted_at IS NULL LIMIT 1');
+            $profileStmt = db()->prepare("SELECT id FROM users WHERE auth_user_id = ? AND LOWER(email) = LOWER(?) AND status IN ('Pending Approval', 'Active', 'Inactive') AND deleted_at IS NULL LIMIT 1");
             $profileStmt->execute([(string) ($authUser['id'] ?? ''), (string) ($authUser['email'] ?? '')]);
             if (!$profileStmt->fetchColumn()) {
                 throw new RuntimeException('No matching invited I-Record profile was found. Ask the administrator to verify the invitation.');

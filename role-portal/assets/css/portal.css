@@ -1978,4 +1978,112 @@ body.modal-open {
     cursor: pointer;
 }
 
+/* DLSP Institutional Submission & Routing Guide */
+.dlsp-routing-guide-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+.dlsp-routing-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.dlsp-routing-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #14532d;
+    margin: 0;
+}
+.dlsp-routing-badge {
+    background: #166534;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.dlsp-steps-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+}
+.dlsp-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid #dcfce7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.dlsp-step-number {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #15803d;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+.dlsp-step-content {
+    flex: 1;
+    font-size: 0.8rem;
+    color: #334155;
+    line-height: 1.45;
+}
+.dlsp-step-name {
+    font-weight: 700;
+    color: #0f231c;
+    margin-bottom: 3px;
+    display: block;
+    font-size: 0.86rem;
+}
+.dlsp-step-sub {
+    color: #64748b;
+    font-size: 0.76rem;
+    margin-top: 3px;
+    line-height: 1.4;
+}
+.dlsp-compliance-tag {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+.dlsp-guide-toggle-btn {
+    background: none;
+    border: none;
+    color: #15803d;
+    font-weight: 600;
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+.dlsp-guide-toggle-btn:hover {
+    background: #dcfce7;
+}
+
+
 

@@ -11,7 +11,7 @@ $entity = (string) recovery_entity();
 $entityLabel = $entity === 'extension' ? 'Extension' : 'Research';
 $scopeDescription = match (PORTAL_ROLE) {
     'Researcher', 'Faculty Extensionist' => 'your own submissions',
-    'Research Coordinator', 'Extension Coordinator' => 'submissions from your department',
+    'Research Coordinator', 'Extension Coordinator' => 'submissions from your college',
     default => 'all ' . strtolower($entityLabel) . ' submissions',
 };
 

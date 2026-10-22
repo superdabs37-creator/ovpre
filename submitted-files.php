@@ -34,7 +34,7 @@ renderHeader('Submitted Files', 'documents');
 ?>
 <section class="module-header">
     <div class="module-icon"><i class="ri-folder-open-line"></i></div>
-    <div><p>Shared file list</p><h2>Submitted Files</h2><span>Browse files available to your account and department.</span></div>
+    <div><p>Shared file list</p><h2>Submitted Files</h2><span>Browse files available to your account and college.</span></div>
 </section>
 <section class="panel">
     <div class="panel-heading">

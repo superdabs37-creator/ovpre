@@ -22,7 +22,6 @@ function renderHeader($pageTitle, $currentPage)
         $unreadNotificationStmt->execute([(int) $user['id']]);
         $unreadNotificationCount = (int) $unreadNotificationStmt->fetchColumn();
     }
-    $pendingAccountCount = ($isSuperAdmin || $isOVPREAdmin) ? (int) db()->query('SELECT COUNT(*) FROM users WHERE status = "Pending Approval" AND deleted_at IS NULL')->fetchColumn() : 0;
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -49,24 +48,28 @@ function renderHeader($pageTitle, $currentPage)
                 </a>
                 <nav class="sidebar-nav">
                     <?php if ($isSuperAdmin): ?>
-                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Technical Console</span></a>
-                        <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php"><i class="ri-shield-user-line"></i><span>User Security</span></a>
-                        <a class="<?php echo activePage('pending-users', $currentPage); ?>" href="admin-pending-users.php"><i class="ri-user-follow-line"></i><span>Pending Accounts<?php if ($pendingAccountCount): ?> (<?php echo $pendingAccountCount; ?>)<?php endif; ?></span></a>
-                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
-                        <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php"><i class="ri-settings-3-line"></i><span>Settings</span></a>
-                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php"><i class="ri-database-2-line"></i><span>Backup and Recovery</span></a>
-                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Academic Records</span></a>
+                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
+                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
+                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
+                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
+                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                        <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php"><i class="ri-settings-3-line"></i><span>Settings</span></a>
                     <?php elseif ($isOVPREAdmin): ?>
                         <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                         <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
                         <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php"><i class="ri-team-line"></i><span>Users</span></a>
-                        <a class="<?php echo activePage('pending-users', $currentPage); ?>" href="admin-pending-users.php"><i class="ri-user-follow-line"></i><span>Pending Accounts<?php if ($pendingAccountCount): ?> (<?php echo $pendingAccountCount; ?>)<?php endif; ?></span></a>
                         <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                         <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
                         <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
                         <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
+                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
                     <?php else: ?>
                         <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                         <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
@@ -80,7 +83,7 @@ function renderHeader($pageTitle, $currentPage)
                 <div class="sidebar-footer">
                     <?php if ($isSuperAdmin): ?>
                         <i class="ri-shield-keyhole-line"></i>
-                        <span>Technical &amp; Security Control</span>
+                        <span>Executive Administration</span>
                     <?php else: ?>
                         <i class="ri-shield-check-line"></i>
                         <span>Institutional Operations</span>
@@ -116,11 +119,10 @@ function renderHeader($pageTitle, $currentPage)
                             <div class="profile-dropdown-identity">
                                 <span class="profile-dropdown-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><i class="ri-user-3-fill"></i><?php endif; ?></span>
                                 <strong><?php echo h($name); ?></strong>
-                                <small style="color: #202729;"><?php echo $isSuperAdmin ? 'Technical &amp; Security Control' : h($user['role'] ?? 'Account'); ?></small>
+                                <small style="color: #202729;"><?php echo $isSuperAdmin ? 'System Administrator' : h($user['role'] ?? 'Account'); ?></small>
                             </div>
                             <a href="profile.php"><i class="ri-user-settings-line"></i> Edit Profile</a>
-                            <a href="profile.php?section=password"><i class="ri-lock-password-line"></i> Change Password</a>
-                            <?php if ($isSuperAdmin): ?><a href="admin-settings.php"><i class="ri-settings-3-line"></i> System Settings</a><?php endif; ?>
+                            <?php if ($isSuperAdmin || $isOVPREAdmin): ?><a href="admin-settings.php"><i class="ri-settings-3-line"></i> System Settings</a><?php endif; ?>
                             <a href="logout.php"><i class="ri-logout-circle-line"></i> Logout</a>
                         </div>
                     </div>

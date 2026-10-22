@@ -128,79 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
 
     try {
-        if ($action === 'invite') {
-            $email = trim((string) ($_POST['email'] ?? ''));
-            $role = (string) ($_POST['role'] ?? '');
-            $departmentRaw = trim((string) ($_POST['department_id'] ?? ''));
-            $isNoneDepartment = ($departmentRaw === 'none' || $departmentRaw === '0' || $departmentRaw === 'null');
-            $departmentId = $isNoneDepartment ? null : (int) $departmentRaw;
-
-            if ($departmentRaw === '' || (!$isNoneDepartment && ($departmentId === null || $departmentId <= 0))) {
-                throw new InvalidArgumentException('Please choose a department or None.');
-            }
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)
-                || !in_array($role, [ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_COORDINATOR, ROLE_EXTENSION_DIRECTOR, ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER], true)) {
-                throw new InvalidArgumentException('Enter a valid email, department, and invited account type.');
-            }
-            $emailLocalPart = (string) strstr($email, '@', true);
-            $fullname = trim(ucwords(str_replace(['.', '_', '-'], ' ', $emailLocalPart)));
-            if ($fullname === '') {
-                $fullname = 'Invited User';
-            }
-            $usernameBase = preg_replace('/[^A-Za-z0-9_.-]/', '', $emailLocalPart) ?? '';
-            if (strlen($usernameBase) < 3) {
-                $usernameBase = 'user_' . substr(hash('sha256', strtolower($email)), 0, 8);
-            }
-            $usernameBase = substr($usernameBase, 0, 80);
-            $emailDuplicate = db()->prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1');
-            $emailDuplicate->execute([$email]);
-            if ($emailDuplicate->fetchColumn()) {
-                throw new InvalidArgumentException('That email already has a profile. Send its Auth invitation from the user list.');
-            }
-            $usernameCheck = db()->prepare('SELECT id FROM users WHERE username = ? LIMIT 1');
-            for ($suffix = 1; ; $suffix++) {
-                $suffixText = $suffix === 1 ? '' : '_' . $suffix;
-                $username = substr($usernameBase, 0, 80 - strlen($suffixText)) . $suffixText;
-                $usernameCheck->execute([$username]);
-                if (!$usernameCheck->fetchColumn()) {
-                    break;
-                }
-            }
-            require_supabase_invitation_config();
-            require_invitation_schema($role);
-            $orphanStmt = db()->prepare('SELECT a.id, a.email_confirmed_at, a.raw_user_meta_data::text AS metadata_json FROM auth.users a LEFT JOIN public.users linked ON linked.auth_user_id = a.id WHERE LOWER(a.email) = LOWER(?) AND linked.id IS NULL LIMIT 1');
-            $orphanStmt->execute([$email]);
-            $orphanAuth = $orphanStmt->fetch();
-            $linkedExistingInvite = false;
-            if ($orphanAuth) {
-                $metadata = json_decode((string) ($orphanAuth['metadata_json'] ?? ''), true);
-                if (!is_array($metadata)
-                    || strcasecmp((string) ($metadata['username'] ?? ''), $username) !== 0
-                    || (string) ($metadata['role'] ?? '') !== $role) {
-                    throw new InvalidArgumentException('An unlinked Supabase Auth account already uses this email, but its invitation details do not match. Check Authentication -> Users before continuing.');
-                }
-                $authId = (string) $orphanAuth['id'];
-                $newStatus = !empty($orphanAuth['email_confirmed_at']) ? 'Pending Approval' : 'Pending Invitation';
-                $linkedExistingInvite = true;
-            } else {
-                $invited = supabase_auth_invite($email, ['full_name' => $fullname, 'username' => $username, 'role' => $role, 'department_id' => $departmentId]);
-                $authId = (string) ($invited['id'] ?? '');
-                if ($authId === '') {
-                    throw new RuntimeException('Supabase did not return an invited user ID.');
-                }
-                $newStatus = 'Pending Invitation';
-            }
-            db()->prepare('INSERT INTO users (fullname, email, username, auth_user_id, role, status, department_id, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())')
-                ->execute([$fullname, $email, $username, $authId, $role, $newStatus, $departmentId, (int) $actor['id']]);
-            log_action((int) $actor['id'], ($linkedExistingInvite ? 'Linked prior Supabase invitation: ' : 'Invited ' . $role . ': ') . $username);
-            if ($linkedExistingInvite && $newStatus === 'Pending Approval') {
-                flash('success', 'The existing Supabase account is now linked. The profile is Pending Approval; approve it from Pending Accounts. No duplicate invitation was sent.');
-            } elseif ($linkedExistingInvite) {
-                flash('success', 'The existing Supabase invitation is now linked to this profile. The user can continue from the original invitation email; do not send a duplicate invite.');
-            } else {
-                flash('success', 'Invitation sent to ' . $email . '.');
-            }
-        } elseif ($action === 'edit') {
+        if ($action === 'edit') {
             if (!$id || $id <= 0) {
                 throw new InvalidArgumentException('Choose a valid user account.');
             }
@@ -281,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_to('admin-users.php');
 }
 
-$statusOptions = ['All', 'Pending Invitation', 'Pending Approval', 'Active', 'Inactive'];
+$statusOptions = ['All', 'Active', 'Inactive'];
 $statusFilter = (string) ($_GET['status'] ?? 'All');
 if (!in_array($statusFilter, $statusOptions, true)) {
     $statusFilter = 'All';
@@ -311,30 +239,13 @@ renderHeader('User Management', 'users');
     <div class="module-icon"><i class="ri-team-line"></i></div>
     <div>
         <p>Access Control</p>
-        <h2>User Management</h2><span>Manage roles and access. Registration approval is handled in Pending Account Requests.</span>
+        <h2>User Management</h2><span>Manage roles, permissions, and account status across colleges.</span>
     </div>
 </section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-information-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
-<section class="panel modal-launcher-panel invite-account-launcher">
-    <div class="panel-heading">
-        <div><h2>Invite an account</h2><span>Users set their own password through the secure invitation email.</span></div>
-        <button class="primary-btn" type="button" data-open-modal="inviteAccountModal"><i class="ri-user-add-line"></i> Invite an account</button>
-    </div>
-</section>
-<div class="modal" id="inviteAccountModal" aria-hidden="true">
-    <div class="modal-backdrop" data-close-modal></div>
-    <form class="modal-card editor-panel invite-account-modal" method="post" role="dialog" aria-modal="true" aria-labelledby="inviteAccountTitle">
-        <button class="modal-close" type="button" data-close-modal aria-label="Close invitation form"><i class="ri-close-line"></i></button>
-        <h2 id="inviteAccountTitle">Invite an account</h2>
-        <p>Users set their own password through the secure invitation email.</p>
-        <?php echo csrf_field(); ?><input type="hidden" name="action" value="invite">
-        <div class="form-grid"><label class="field"><span>Email</span><input name="email" type="email" maxlength="190" required></label><label class="field"><span>Account Type</span><select name="role" required><option value="" selected disabled>Choose account type</option><?php foreach ([ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER] as $inviteRole): ?><option value="<?php echo h($inviteRole); ?>"><?php echo h($inviteRole === ROLE_RESEARCHER ? 'Faculty Researcher' : $inviteRole); ?></option><?php endforeach; ?></select></label><label class="field"><span>Department</span><select name="department_id" required><option value="" selected disabled>Choose department</option><option value="none">None</option><?php foreach (departments() as $department): ?><option value="<?php echo (int) $department['id']; ?>"><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></div>
-        <button class="primary-btn" type="submit"><i class="ri-mail-send-line"></i> Send Invitation</button>
-    </form>
-</div>
 <section class="tool-panel">
     <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div>
-    <form method="get" class="action-row" style="display:flex;flex-direction:row;align-items:flex-end;gap:12px;flex-wrap:wrap;"><label class="field" style="margin:0;"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field" style="margin:0;"><span>Department</span><select class="filter-select" name="department" onchange="this.form.submit()"><option value="0" <?php echo ($departmentFilter === '0' || $departmentFilter === 0) ? 'selected' : ''; ?>>All Departments</option><option value="none" <?php echo $departmentFilter === 'none' ? 'selected' : ''; ?>>None</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $departmentFilter === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></form>
+    <form method="get" class="action-row" style="display:flex;flex-direction:row;align-items:flex-end;gap:12px;flex-wrap:wrap;"><label class="field" style="margin:0;"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field" style="margin:0;"><span>College</span><select class="filter-select" name="department" onchange="this.form.submit()"><option value="0" <?php echo ($departmentFilter === '0' || $departmentFilter === 0) ? 'selected' : ''; ?>>All Colleges</option><option value="none" <?php echo $departmentFilter === 'none' ? 'selected' : ''; ?>>None</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $departmentFilter === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></form>
 </section>
 <section class="panel">
     <div class="table-scroll">
@@ -402,7 +313,7 @@ renderHeader('User Management', 'users');
                 <label class="field"><span>Birthday</span><input name="birthday" type="date" max="<?php echo h(date('Y-m-d')); ?>" value="<?php echo h($user['birthday'] ?? ''); ?>"></label>
                 <label class="field"><span>Phone</span><input name="phone" type="tel" maxlength="30" value="<?php echo h($user['phone'] ?? ''); ?>"></label>
                 <label class="field"><span>Username</span><input name="username" maxlength="80" value="<?php echo h($user['username']); ?>" required></label>
-                <label class="field"><span>Department</span><select name="department_id">
+                <label class="field"><span>College</span><select name="department_id">
                         <option value="0">Unassigned</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (int) ($user['department_id'] ?? 0) === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?>
                     </select></label>
                 <?php if ($user['role'] === ROLE_SUPER_ADMIN || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account.</small></div>

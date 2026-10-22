@@ -356,7 +356,7 @@ function current_user(): ?array {
 function role_permissions(): array {
     return [
         ROLE_SUPER_ADMIN => ['dashboard', 'audit', 'settings', 'backup', 'users'],
-        ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements'],
+        ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements', 'audit', 'settings', 'backup'],
         ROLE_RESEARCH_DIRECTOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
         ROLE_EXTENSION_DIRECTOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
         ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
@@ -396,7 +396,7 @@ function require_role(array $roles): array {
 }
 
 function require_super_admin(): array {
-    return require_login([ROLE_SUPER_ADMIN]);
+    return require_login([ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN]);
 }
 
 function log_action(?int $userId, string $action): void {
@@ -460,12 +460,13 @@ function review_timeline(string $entityType, int $entityId): array {
 }
 
 function log_login_event(?int $userId, string $username, string $status): void {
+    $userId = ($userId !== null && $userId > 0) ? $userId : null;
     $stmt = db()->prepare('INSERT INTO login_history (user_id, username, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, NOW())');
     $stmt->execute([$userId, $username, $status, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255)]);
 }
 
 function assignable_users(): array {
-    return db()->query('SELECT id, fullname, role FROM users WHERE status = "Active" AND deleted_at IS NULL ORDER BY fullname')->fetchAll();
+    return db()->query("SELECT id, fullname, role FROM users WHERE status = 'Active' AND deleted_at IS NULL ORDER BY fullname")->fetchAll();
 }
 
 function statusClass($status): string {

@@ -1025,8 +1025,9 @@ button {
     font-weight: 800;
 }
 
-.panel-heading span,
-.panel-heading a {
+.panel-heading > span,
+.panel-heading > div > span,
+.panel-heading a:not(.primary-btn):not(.ghost-btn):not(.action-btn):not([class*="btn"]) {
     color: var(--muted);
     font-size: 0.9rem;
     font-weight: 700;
@@ -4091,16 +4092,27 @@ button {
 
 /* Premium System Action Buttons */
 .content-area .primary-btn:not(.action-btn),
+.content-area .primary-btn:not(.action-btn):visited,
 .content-area .post-btn,
+.content-area .post-btn:visited,
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn),
+.content-area .ghost-btn:not(.action-btn):not(.mini-btn):visited,
 .content-area .portal-link,
+.content-area .portal-link:visited,
 .login-form .primary-btn,
+.login-form .primary-btn:visited,
 .modal-card .primary-btn:not(.action-btn),
+.modal-card .primary-btn:not(.action-btn):visited,
 .modal-card .ghost-btn:not(.action-btn),
+.modal-card .ghost-btn:not(.action-btn):visited,
 .tool-panel .primary-btn,
+.tool-panel .primary-btn:visited,
 .tool-panel .ghost-btn,
+.tool-panel .ghost-btn:visited,
 .report-actions .primary-btn,
-.report-actions .ghost-btn {
+.report-actions .primary-btn:visited,
+.report-actions .ghost-btn,
+.report-actions .ghost-btn:visited {
     position: relative;
     isolation: isolate;
     min-height: 55px;
@@ -4110,7 +4122,7 @@ button {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -4121,6 +4133,21 @@ button {
     box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
     transform: translateY(0) scale(1);
     transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.content-area .primary-btn:not(.action-btn) span,
+.content-area .post-btn span,
+.content-area .ghost-btn:not(.action-btn):not(.mini-btn) span,
+.content-area .portal-link span,
+.login-form .primary-btn span,
+.modal-card .primary-btn:not(.action-btn) span,
+.modal-card .ghost-btn:not(.action-btn) span,
+.tool-panel .primary-btn span,
+.tool-panel .ghost-btn span,
+.report-actions .primary-btn span,
+.report-actions .ghost-btn span {
+    color: #FFFFFF !important;
+    font-weight: 700;
 }
 
 .content-area .primary-btn:not(.action-btn)::before,

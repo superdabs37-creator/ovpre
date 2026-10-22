@@ -274,12 +274,211 @@ function renderReportChart(id, type, rows, label) {
     });
 }
 
+function renderMonthlySubmissionsChart() {
+    const canvas = document.getElementById('reportMonthlyChart');
+    if (!canvas || !window.Chart || !window.reportCharts) return;
+
+    const monthlyOverall = window.reportCharts.monthly || [];
+    const monthlyByCollege = window.reportCharts.monthlyByCollege || [];
+    const collegesList = window.reportCharts.collegesList || [];
+    const filterSelect = document.getElementById('monthlyCollegeFilter');
+    const subtitle = document.getElementById('monthlySubmissionsSubtitle');
+
+    if (!monthlyByCollege.length) {
+        renderReportChart('reportMonthlyChart', 'bar', monthlyOverall, 'Submissions');
+        return;
+    }
+
+    // Determine unique chronological month labels
+    const rawMonths = [];
+    monthlyByCollege.forEach((row) => {
+        if (row.month_label && !rawMonths.includes(row.month_label)) {
+            rawMonths.push(row.month_label);
+        }
+    });
+    monthlyOverall.forEach((row) => {
+        if (row.label && !rawMonths.includes(row.label)) {
+            rawMonths.push(row.label);
+        }
+    });
+    const months = rawMonths.length ? rawMonths : ['No Data'];
+
+    // Distinct palette for DLSP colleges
+    const collegeColorMap = {
+        'College of Computer Studies and Technology': '#15803d',
+        'College of Engineering': '#2563eb',
+        'College of Nursing and Allied Health Sciences': '#0d9488',
+        'College of Arts and Sciences': '#7c3aed',
+        'College of Business Administration': '#d97706',
+        'College of Human Kinetics': '#e11d48',
+        'College of Teacher Education': '#ea580c',
+        'College of Tourism and Hospitality Management': '#0284c7',
+        'College of Accountancy': '#4f46e5',
+        'Other / Unassigned': '#64748b'
+    };
+    const distinctColors = ['#15803d', '#2563eb', '#0d9488', '#7c3aed', '#d97706', '#e11d48', '#ea580c', '#0284c7', '#4f46e5', '#64748b'];
+
+    // Identify active colleges with submissions + ensure all known colleges are selectable
+    const activeColleges = [...new Set(monthlyByCollege.map((r) => r.department_name).filter(Boolean))];
+    const knownColleges = collegesList.map((c) => c.department_name).filter(Boolean);
+    const displayColleges = activeColleges.length ? activeColleges : (knownColleges.length ? knownColleges : ['Colleges']);
+
+    function getDatasets(mode) {
+        if (mode === 'total') {
+            const data = months.map((month) => {
+                const item = monthlyOverall.find((r) => r.label === month);
+                if (item) return Number(item.total);
+                return monthlyByCollege
+                    .filter((r) => r.month_label === month)
+                    .reduce((sum, r) => sum + Number(r.total), 0);
+            });
+            return [{
+                label: 'Overall Submissions',
+                data,
+                backgroundColor: '#15803d',
+                borderColor: '#15803d',
+                borderRadius: 6,
+                borderSkipped: false
+            }];
+        }
+
+        if (mode !== 'all') {
+            const college = mode;
+            const color = collegeColorMap[college] || '#15803d';
+            const data = months.map((month) => {
+                const found = monthlyByCollege.find((r) => r.month_label === month && r.department_name === college);
+                return found ? Number(found.total) : 0;
+            });
+            return [{
+                label: college,
+                data,
+                backgroundColor: color,
+                borderColor: color,
+                borderRadius: 6,
+                borderSkipped: false
+            }];
+        }
+
+        return displayColleges.map((college, idx) => {
+            const color = collegeColorMap[college] || distinctColors[idx % distinctColors.length];
+            const data = months.map((month) => {
+                const found = monthlyByCollege.find((r) => r.month_label === month && r.department_name === college);
+                return found ? Number(found.total) : 0;
+            });
+            return {
+                label: college,
+                data,
+                backgroundColor: color,
+                borderColor: color,
+                borderRadius: 4,
+                borderSkipped: false,
+                stack: 'monthly-college-stack'
+            };
+        });
+    }
+
+    const initialMode = filterSelect ? filterSelect.value : 'all';
+    const isStacked = initialMode === 'all';
+
+    if (window._monthlySubmissionsChartInstance) {
+        try { window._monthlySubmissionsChartInstance.destroy(); } catch (e) {}
+    }
+
+    const chartInstance = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: getDatasets(initialMode)
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: isStacked ? 'index' : 'nearest',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    display: isStacked,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 8,
+                        boxHeight: 8,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded',
+                        padding: 8,
+                        font: { size: 10, weight: 600 },
+                        color: '#475569'
+                    }
+                },
+                tooltip: {
+                    mode: isStacked ? 'index' : 'nearest',
+                    intersect: false,
+                    backgroundColor: '#0f3d24',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: {
+                        footer: (items) => {
+                            if (!isStacked) return '';
+                            let sum = 0;
+                            items.forEach((item) => { sum += item.parsed.y; });
+                            return 'Month Total: ' + sum + ' submission' + (sum === 1 ? '' : 's');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: isStacked,
+                    grid: { display: false },
+                    ticks: { color: '#6f7b73', font: { weight: 600 } }
+                },
+                y: {
+                    stacked: isStacked,
+                    beginAtZero: true,
+                    grid: { color: '#e6ede8' },
+                    ticks: { color: '#6f7b73', precision: 0, font: { weight: 600 } }
+                }
+            }
+        }
+    });
+
+    window._monthlySubmissionsChartInstance = chartInstance;
+
+    if (filterSelect) {
+        filterSelect.addEventListener('change', () => {
+            const mode = filterSelect.value;
+            const stacked = mode === 'all';
+
+            if (subtitle) {
+                if (mode === 'all') {
+                    subtitle.textContent = 'Breakdown per college';
+                } else if (mode === 'total') {
+                    subtitle.textContent = 'Overall combined total';
+                } else {
+                    subtitle.textContent = 'Filtered to ' + mode;
+                }
+            }
+
+            chartInstance.data.datasets = getDatasets(mode);
+            chartInstance.options.scales.x.stacked = stacked;
+            chartInstance.options.scales.y.stacked = stacked;
+            chartInstance.options.interaction.mode = stacked ? 'index' : 'nearest';
+            chartInstance.options.plugins.legend.display = stacked;
+            chartInstance.options.plugins.tooltip.mode = stacked ? 'index' : 'nearest';
+            chartInstance.update();
+        });
+    }
+}
+
 if (window.reportCharts) {
     renderReportChart('reportCategoryChart', 'bar', window.reportCharts.categories || [], 'Documents');
-    renderReportChart('reportMonthlyChart', 'bar', window.reportCharts.monthly || [], 'Submissions');
+    renderMonthlySubmissionsChart();
     renderReportChart('reportResearchChart', 'doughnut', window.reportCharts.research || [], 'Research');
     renderReportChart('reportExtensionChart', 'line', window.reportCharts.extension || [], 'Extension');
-    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Department Output');
+    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Colleges Output');
 }
 
 document.querySelectorAll('[data-file-search]').forEach((input) => {
@@ -635,7 +834,7 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
     });
 
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {
-        if (!/status|category|department|role/i.test(header.textContent)) return;
+        if (!/status|category|department|college|role/i.test(header.textContent)) return;
         let presetOptions = null;
         try { presetOptions = JSON.parse(table.dataset.filterOptions || '{}')[header.textContent.trim()] || null; } catch (e) { presetOptions = null; }
         const values = presetOptions

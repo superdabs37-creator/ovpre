@@ -439,7 +439,7 @@ renderHeader('Reports Management', 'reports');
             <label class="field compact-field"><span>Date From</span><input type="date" name="from" value="<?php echo h($from); ?>"></label>
             <label class="field compact-field"><span>Date To</span><input type="date" name="to" value="<?php echo h($to); ?>"></label>
             <label class="field compact-field"><span>Year</span><select name="year"><option value="All">All Years</option><?php foreach ($yearOptions as $year): ?><option value="<?php echo (int) $year; ?>" <?php echo (string) $selectedYear === (string) $year ? 'selected' : ''; ?>><?php echo (int) $year; ?></option><?php endforeach; ?></select></label>
-            <label class="field compact-field"><span>Department</span><select name="department"><option value="All">All Departments</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $selectedDepartment === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
+            <label class="field compact-field"><span>College</span><select name="department"><option value="All">All Colleges</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $selectedDepartment === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label>
             <label class="field compact-field"><span>Status</span><select name="status"><option value="All">All Status</option><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $selectedStatus === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label>
             <button class="primary-btn" type="submit"><i class="ri-filter-3-line"></i> Apply Filters</button>
         </form>
@@ -508,19 +508,19 @@ renderHeader('Reports Management', 'reports');
             <div class="panel-heading"><h2>Statistical Data</h2><span>Charts and analytics for the selected filters</span></div>
             <div class="report-metrics">
                 <div class="report-metric"><span>Filtered Documents</span><strong><?php echo number_format($totalDocuments); ?></strong></div>
-                <div class="report-metric"><span>Departments Covered</span><strong><?php echo number_format(count(array_filter($departmentCounts, fn($row) => (int) $row['total'] > 0))); ?></strong></div>
+                <div class="report-metric"><span>Colleges Covered</span><strong><?php echo number_format(count(array_filter($departmentCounts, fn($row) => (int) $row['total'] > 0))); ?></strong></div>
                 <div class="report-metric"><span>Categories Covered</span><strong><?php echo number_format(count(array_filter($categoryCounts, fn($row) => (int) $row['total'] > 0))); ?></strong></div>
                 <div class="report-metric"><span>Report Rows</span><strong><?php echo number_format(count($documents)); ?></strong></div>
             </div>
             <div class="report-chart-grid">
                 <div class="report-chart-box">
                     <div class="report-chart-head">
-                        <div class="report-chart-title"><h4>Department Output</h4><span>Documents grouped by department</span></div>
+                        <div class="report-chart-title"><h4>Colleges Output</h4><span>Documents grouped by college</span></div>
                         <div class="report-chart-badge"><i class="ri-bar-chart-grouped-line"></i> Bar</div>
                     </div>
                     <div class="report-chart-frame" data-chart-frame>
                         <canvas id="adminReportsBarChart"></canvas>
-                        <div class="report-chart-empty">No department data for the selected filters.</div>
+                        <div class="report-chart-empty">No college data for the selected filters.</div>
                     </div>
                 </div>
                 <div class="report-chart-box">
@@ -551,8 +551,8 @@ renderHeader('Reports Management', 'reports');
     <section class="panel report-table-panel">
         <div class="panel-heading"><h2>Report Records</h2><span><?php echo h(date('M d, Y', strtotime($from))); ?> to <?php echo h(date('M d, Y', strtotime($to))); ?></span></div>
         <div class="table-scroll">
-            <table class="data-table portal-table" id="reportDocumentsTable" data-filter-options="<?php echo h(json_encode(['Department' => array_column($departments, 'department_name')])); ?>">
-                <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Department</th><th>Date</th><th>Status</th></tr></thead>
+            <table class="data-table portal-table" id="reportDocumentsTable" data-filter-options="<?php echo h(json_encode(['College' => array_column($departments, 'department_name')])); ?>">
+                <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>College</th><th>Date</th><th>Status</th></tr></thead>
                 <tbody>
                     <?php foreach ($documents as $document): ?>
                         <tr>

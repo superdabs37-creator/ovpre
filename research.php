@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             log_action((int) $user['id'], 'Submitted research proposal: ' . $title);
 
             // Notify college coordinators
-            $coordStmt = db()->prepare('SELECT id FROM users WHERE department_id = ? AND role = "Research Coordinator" AND status = "Active"');
+            $coordStmt = db()->prepare("SELECT id FROM users WHERE department_id = ? AND role = 'Research Coordinator' AND status = 'Active'");
             $coordStmt->execute([(int) ($user['department_id'] ?? 0)]);
             foreach ($coordStmt->fetchAll(PDO::FETCH_COLUMN) as $coordId) {
                 notify_user((int) $coordId, 'New research proposal submitted for college screening: ' . $title, 'research.php#proposal-' . $id);
@@ -294,7 +294,7 @@ renderHeader('Research Management', 'research');
         </select>
         <?php if (!$isCoordinator): ?>
             <select class="filter-select" name="department" onchange="this.form.submit()">
-                <option value="0">All Departments / Colleges</option>
+                <option value="0">All Colleges</option>
                 <?php foreach (departments() as $department): ?>
                     <option value="<?php echo (int) $department['id']; ?>" <?php echo $departmentFilter === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option>
                 <?php endforeach; ?>
@@ -311,7 +311,7 @@ renderHeader('Research Management', 'research');
                 <tr>
                     <th>Title</th>
                     <th>Researchers</th>
-                    <th>College / Dept</th>
+                    <th>College</th>
                     <th>Stage</th>
                     <th>Status</th>
                     <th>File</th>

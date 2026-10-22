@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('Only Research Coordinators can endorse at college level.');
             }
             $projectId = (int) ($_POST['id'] ?? 0);
-            $remarks = trim((string) ($_POST['remarks'] ?? 'Passed college-level screening and aligned with department research agenda.'));
+            $remarks = trim((string) ($_POST['remarks'] ?? 'Passed college-level screening and aligned with college research agenda.'));
 
             db()->prepare('UPDATE research_projects SET status = "Pending Director Review", coordinator_id = ?, coordinator_remarks = ?, coordinator_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
                 ->execute([(int) $user['id'], $remarks, $remarks, $projectId]);
@@ -324,7 +324,10 @@ foreach ($projects as $p) {
             <h2><i class="ri-file-add-line"></i> Submit New Research Proposal</h2>
             <span>Initiate your research. This will be routed to your College Research Coordinator for initial screening.</span>
         </div>
-        <button class="primary-btn" type="button" data-open-modal="researchProposalModal"><i class="ri-add-line"></i> New Proposal</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="ghost-btn" type="button" data-open-modal="dlspRoutingGuideModal"><i class="ri-book-open-line"></i> DLSP Submission Guide</button>
+            <button class="primary-btn" type="button" data-open-modal="researchProposalModal"><i class="ri-add-line"></i> New Proposal</button>
+        </div>
     </div>
 </section>
 
@@ -339,6 +342,60 @@ foreach ($projects as $p) {
                 <small style="color: #6b7280;">Stage 1: Proponent Submission (Routed to Research Coordinator for Screening)</small>
             </div>
         </div>
+
+        <!-- DLSP INSTITUTIONAL SUBMISSION & ROUTING PROTOCOL (5 STEPS) -->
+        <div class="dlsp-routing-guide-box" style="margin: 12px 0 16px;">
+            <div class="dlsp-routing-header">
+                <div class="dlsp-routing-title">
+                    <i class="ri-shield-check-line" style="color: #15803d; font-size: 1.1rem;"></i>
+                    <span>DLSP Paper Submission &amp; Institutional Routing Protocol</span>
+                </div>
+                <span class="dlsp-routing-badge">Institutional Workflow</span>
+            </div>
+            <div class="dlsp-steps-list">
+                <div class="dlsp-step-item">
+                    <div class="dlsp-step-number">1</div>
+                    <div class="dlsp-step-content">
+                        <span class="dlsp-step-name">Preparation and Formatting of the Paper</span>
+                        <div><span class="dlsp-compliance-tag">Format Compliance</span> Strictly follow DLSP institutional format guidelines (standard chapter layout, abstract, APA references, proper documentation).</div>
+                        <div class="dlsp-step-sub"><strong>Required Inclusions:</strong> Title Page, Abstract, and draft Approval Sheet designated for the Office of the Vice President for Research / Research and Extension.</div>
+                    </div>
+                </div>
+                <div class="dlsp-step-item">
+                    <div class="dlsp-step-number">2</div>
+                    <div class="dlsp-step-content">
+                        <span class="dlsp-step-name">College Review and Endorsement</span>
+                        <div><span class="dlsp-compliance-tag">College Clearance</span> Initial submission to your immediate supervisor, college dean, or coordinator.</div>
+                        <div class="dlsp-step-sub">Secure initial recommendations and routing slip signatures confirming alignment with teaching load, faculty agenda, and institutional goals.</div>
+                    </div>
+                </div>
+                <div class="dlsp-step-item">
+                    <div class="dlsp-step-number">3</div>
+                    <div class="dlsp-step-content">
+                        <span class="dlsp-step-name">Submission to the Research and Extension Office</span>
+                        <div><span class="dlsp-compliance-tag">Office Evaluation</span> Transmitted to Research Development / Community Extension units under the OVPRE umbrella.</div>
+                        <div class="dlsp-step-sub">Checked for completeness, plagiarism similarity indices (if required), institutional research agenda alignment, and methodological soundness.</div>
+                    </div>
+                </div>
+                <div class="dlsp-step-item">
+                    <div class="dlsp-step-number">4</div>
+                    <div class="dlsp-step-content">
+                        <span class="dlsp-step-name">Forwarding to OVPRE / Administration</span>
+                        <div><span class="dlsp-compliance-tag">Director Transmittal</span> Formally endorsed by the Director to the Office of the Vice President overseeing Research and Extension.</div>
+                        <div class="dlsp-step-sub">Tracked via institutional routing slip logging dates, review remarks, and receiving administrative signatures.</div>
+                    </div>
+                </div>
+                <div class="dlsp-step-item">
+                    <div class="dlsp-step-number">5</div>
+                    <div class="dlsp-step-content">
+                        <span class="dlsp-step-name">Evaluation, Panel Review, or Final Approval</span>
+                        <div><span class="dlsp-compliance-tag">Final Approval</span> Evaluated by OVPRE / institutional review committee for funding approval, presentation clearance, or publication.</div>
+                        <div class="dlsp-step-sub">If revisions are needed, feedback is cascaded back to proponent to incorporate corrections before final administrative sign-off.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <form class="portal-form" method="post" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="create_proposal">
@@ -355,7 +412,11 @@ foreach ($projects as $p) {
                 </label>
             </div>
             <label class="field"><span>Proposal Abstract</span><textarea name="abstract" rows="5" placeholder="State the research objectives, methodology, and expected outputs..." required></textarea></label>
-            <label class="field"><span>Proposal Document (PDF, DOCX, ZIP up to 15 MB)</span><input type="file" name="supporting_document" accept=".pdf,.doc,.docx,.zip" required></label>
+            <label class="field">
+                <span>Proposal Document (PDF, DOCX, ZIP up to 15 MB) <span style="color:#dc2626;">*</span></span>
+                <span class="proposal-hint">Include Title Page, Abstract, draft Approval Sheet for OVPRE, and complete research manuscript.</span>
+                <input type="file" name="supporting_document" accept=".pdf,.doc,.docx,.zip" required>
+            </label>
             <input type="hidden" name="document_title" value="Research Proposal Document">
             <input type="hidden" name="document_description" value="Supporting document for research proposal.">
             <div class="proposal-modal-actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
@@ -363,6 +424,76 @@ foreach ($projects as $p) {
                 <button class="ghost-btn" type="button" data-close-modal>Cancel</button>
             </div>
         </form>
+    </section>
+</div>
+
+<!-- MODAL: DLSP INSTITUTIONAL SUBMISSION & ROUTING PROTOCOL (STANDALONE GUIDE) -->
+<div class="modal" id="dlspRoutingGuideModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-card proposal-modal-card" role="dialog" aria-modal="true" aria-labelledby="dlspResearchGuideModalTitle" style="max-width: 780px;">
+        <button class="modal-close" type="button" data-close-modal aria-label="Close guide"><i class="ri-close-line"></i></button>
+        <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
+            <div style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: #166534; text-transform: uppercase;">
+                Dalubhasaan ng Lungsod ng San Pablo &bull; Academic Protocols
+            </div>
+            <h2 id="dlspResearchGuideModalTitle" style="font-size: 1.35rem; color: #0f231c; margin: 4px 0 2px;">
+                Paper Submission &amp; Institutional Routing Protocol
+            </h2>
+            <p style="margin: 0; color: #64748b; font-size: 0.85rem;">
+                Standard step-by-step academic routing guide for faculty researchers and extensionists submitting proposals, completed studies, or research manuscripts to the Office of the Vice President for Research and Extension (OVPRE).
+            </p>
+        </div>
+
+        <div class="dlsp-steps-list" style="margin-top: 0;">
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">1</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 1: Preparation and Formatting of the Paper</span>
+                    <p style="margin: 4px 0 6px;"><strong>Compliance with Institutional Standards:</strong> Ensure your paper or proposal strictly follows the institutional format guidelines provided by DLSP (such as the standard layout for chapters, abstracts, references using APA format, and proper documentation).</p>
+                    <p style="margin: 0;"><strong>Required Inclusions:</strong> Make sure your document includes preliminary pages such as the Title Page, Abstract, and a draft Approval Sheet designated for the Office of the Vice President for Research / Research and Extension.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">2</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 2: College Review and Endorsement</span>
+                    <p style="margin: 4px 0 6px;"><strong>Initial Submission to College Dean / Coordinator:</strong> Before a paper goes to the VP’s office, it requires clearance or endorsement from your immediate supervisor, college dean, or coordinator.</p>
+                    <p style="margin: 0;"><strong>Signatures &amp; Endorsement:</strong> Secure initial recommendations or signatures on routing slips confirming that the research or extension work aligns with your college's load, faculty agenda, or institutional goals.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">3</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 3: Submission to the Research and Extension Office</span>
+                    <p style="margin: 4px 0 6px;"><strong>Routing to Research Development / Community Extension:</strong> Submit the hard copy and/or digital copy of your manuscript/proposal to the Research Development or Community Extension units under the Research &amp; Extension umbrella.</p>
+                    <p style="margin: 0;"><strong>Initial Evaluation:</strong> The office checks the paper for completeness, plagiarism similarity indices (if required), alignment with the institution’s research agenda, and methodological soundness.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">4</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 4: Forwarding to the Office of the Vice President for Research and Extension (OVPRE) / Administration</span>
+                    <p style="margin: 4px 0 6px;"><strong>Endorsement by the Director:</strong> Once vetted by the research coordinator/units, the paper is formally endorsed and transmitted to the Director or the Office of the Vice President overseeing Research and Extension.</p>
+                    <p style="margin: 0;"><strong>Tracking via Transmittal/Routing Slip:</strong> Institutional documents are accompanied by a routing or tracking slip where dates, remarks, and signatures of receiving administrative officers are logged.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">5</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 5: Evaluation, Panel Review, or Final Approval</span>
+                    <p style="margin: 4px 0 6px;"><strong>Review Process:</strong> The OVPRE or a designated institutional review committee evaluates the paper for funding approval, presentation clearance, publication, or implementation (in the case of extension programs).</p>
+                    <p style="margin: 0;"><strong>Feedback and Revisions:</strong> If revisions are required, feedback is cascaded back to the faculty researcher/extensionist to incorporate corrections before final administrative sign-off.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top: 16px;">
+            <button class="primary-btn" type="button" data-close-modal><i class="ri-check-line"></i> Understood &amp; Close</button>
+        </div>
     </section>
 </div>
 <?php endif; ?>
@@ -383,7 +514,7 @@ foreach ($projects as $p) {
             <small style="color: #6b7280;">
                 <?php
                 if ($viewArchived) echo 'Archived proposals and records. You can select and restore records anytime.';
-                elseif ($isCoordinator) echo 'Proposals and reports from your College/Department.';
+                elseif ($isCoordinator) echo 'Proposals and reports from your College.';
                 elseif ($isExecutive) echo 'Proposals ready for Final Executive Approval by the OVPRE.';
                 else echo 'Track proposal status from College Coordinator screening to Final Executive Approval.';
                 ?>
@@ -442,7 +573,7 @@ foreach ($projects as $p) {
                     </th>
                     <th>Research Title</th>
                     <th>Proponent</th>
-                    <th>College / Dept</th>
+                    <th>College</th>
                     <th>Workflow Stage</th>
                     <th>Status</th>
                     <th>Document</th>

@@ -34,6 +34,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
             <a href="#about">About</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
+            <a href="register.php" style="color:#15803d; font-weight:700;">Register</a>
         </nav>
 
     </div>

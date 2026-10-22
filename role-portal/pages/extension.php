@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             log_action((int) $user['id'], 'Submitted extension project: ' . $title);
 
             // Notify college extension coordinators
-            $coordStmt = db()->prepare('SELECT id FROM users WHERE department_id = ? AND role = "Extension Coordinator" AND status = "Active"');
+            $coordStmt = db()->prepare("SELECT id FROM users WHERE department_id = ? AND role = 'Extension Coordinator' AND status = 'Active'");
             $coordStmt->execute([(int) ($user['department_id'] ?? 0)]);
             foreach ($coordStmt->fetchAll(PDO::FETCH_COLUMN) as $coordId) {
                 notify_user((int) $coordId, 'New extension proposal submitted for your college screening: ' . $title, 'extension.php#project-' . $projectId);
@@ -111,14 +111,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            db()->prepare('UPDATE extension_projects SET project_title = ?, community_partner = ?, location = ?, target_beneficiaries = ?, budget = ?, start_date = ?, end_date = ?, document_id = ?, academic_year = ?, needs_assessment = ?, moa_mou = ?, implementation_details = ?, outputs = ?, outcome = ?, impact_assessment = ?, sustainability = ?, evidence_checklist = ?, accomplishment_report = ?, status = "Pending Coordinator Review", status_remarks = ? WHERE id = ?')
+            db()->prepare("UPDATE extension_projects SET project_title = ?, community_partner = ?, location = ?, target_beneficiaries = ?, budget = ?, start_date = ?, end_date = ?, document_id = ?, academic_year = ?, needs_assessment = ?, moa_mou = ?, implementation_details = ?, outputs = ?, outcome = ?, impact_assessment = ?, sustainability = ?, evidence_checklist = ?, accomplishment_report = ?, status = 'Pending Coordinator Review', status_remarks = ? WHERE id = ?")
                 ->execute([$title, $partner, $location, $beneficiaries, $budget, $startDate, $endDate, $documentId, $academicYear, $needsAssessment, $moaMou, $implementationDetails, $outputs, $outcome, $impactAssessment, $sustainability, $evidenceChecklist, $accomplishmentReport, 'Resubmitted with revisions: ' . $revisionNotes, $projectId]);
 
             log_review('extension', $projectId, (int) $user['id'], 'Proposal Resubmitted', $revisionNotes);
             log_action((int) $user['id'], 'Resubmitted extension proposal #' . $projectId);
 
             // Notify college extension coordinator
-            $coordStmt = db()->prepare('SELECT id FROM users WHERE department_id = ? AND role = "Extension Coordinator" AND status = "Active"');
+            $coordStmt = db()->prepare("SELECT id FROM users WHERE department_id = ? AND role = 'Extension Coordinator' AND status = 'Active'");
             $coordStmt->execute([(int) ($user['department_id'] ?? 0)]);
             foreach ($coordStmt->fetchAll(PDO::FETCH_COLUMN) as $coordId) {
                 notify_user((int) $coordId, 'Extension project proposal was revised and resubmitted by proponent: ' . $title, 'extension.php#project-' . $projectId);
@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 notify_user((int) $owner['submitted_by'], 'Your extension project "' . $owner['project_title'] . '" was endorsed by your Coordinator to the Extension Director.', 'extension.php#project-' . $projectId);
             }
             // Notify Directors
-            $directors = db()->query('SELECT id FROM users WHERE role = "Extension Director" AND status = "Active"')->fetchAll(PDO::FETCH_COLUMN);
+            $directors = db()->query("SELECT id FROM users WHERE role = 'Extension Director' AND status = 'Active'")->fetchAll(PDO::FETCH_COLUMN);
             foreach ($directors as $dirId) {
                 notify_user((int) $dirId, 'New extension proposal awaiting director evaluation: ' . ($owner['project_title'] ?? ''), 'extension.php#project-' . $projectId);
             }
@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $projectId = (int) ($_POST['id'] ?? 0);
             $remarks = trim((string) ($_POST['remarks'] ?? 'Returned for revision by coordinator.'));
 
-            db()->prepare('UPDATE extension_projects SET status = "Needs Revision", coordinator_id = ?, coordinator_remarks = ?, coordinator_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
+            db()->prepare("UPDATE extension_projects SET status = 'Needs Revision', coordinator_id = ?, coordinator_remarks = ?, coordinator_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $remarks, $projectId]);
 
             log_review('extension', $projectId, (int) $user['id'], 'Returned for Revision by Extension Coordinator', $remarks);
@@ -214,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $approvedBudget = ($_POST['approved_budget'] ?? '') !== '' ? (float) $_POST['approved_budget'] : null;
             $remarks = trim((string) ($_POST['remarks'] ?? 'Extension proposal evaluated and recommended for executive approval.'));
 
-            db()->prepare('UPDATE extension_projects SET status = "Pending Executive Approval", director_id = ?, director_remarks = ?, evaluation_rating = ?, approved_budget = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
+            db()->prepare("UPDATE extension_projects SET status = 'Pending Executive Approval', director_id = ?, director_remarks = ?, evaluation_rating = ?, approved_budget = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $rating, $approvedBudget, $remarks, $projectId]);
 
             $logDetails = "Evaluation Rating: " . ($rating ?? 'N/A') . "/100 | Recommended Budget: PHP " . number_format((float) $approvedBudget, 2) . "\n" . $remarks;
@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 notify_user((int) $owner['submitted_by'], 'Your extension project was evaluated by the Extension Director and endorsed to OVPRE Executive for final approval.', 'extension.php#project-' . $projectId);
             }
             // Notify System Admin / VP
-            $admins = db()->query('SELECT id FROM users WHERE role IN ("Super Admin", "OVPRE Admin", "Vice President") AND status = "Active"')->fetchAll(PDO::FETCH_COLUMN);
+            $admins = db()->query("SELECT id FROM users WHERE role IN ('Super Admin', 'OVPRE Admin', 'Vice President') AND status = 'Active'")->fetchAll(PDO::FETCH_COLUMN);
             foreach ($admins as $adminId) {
                 notify_user((int) $adminId, 'Extension project awaiting Final Executive Approval: ' . ($owner['project_title'] ?? ''), 'extension.php#project-' . $projectId);
             }
@@ -307,9 +307,12 @@ $projects = portal_extension_projects();
     <div class="panel-heading">
         <div>
             <h2><i class="ri-add-box-line"></i> Documentation of Extension Activity</h2>
-            <span>(Stage 1: Coordinator Screening)</span>
+            <span>(Stage 1: Proponent Submission &amp; Coordinator Screening)</span>
         </div>
-        <button class="primary-btn" type="button" data-open-modal="extensionProposalModal"><i class="ri-add-line"></i> New Extension Activity / Proposal</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="ghost-btn" type="button" data-open-modal="dlspRoutingGuideModal"><i class="ri-book-open-line"></i> DLSP Submission Guide</button>
+            <button class="primary-btn" type="button" data-open-modal="extensionProposalModal"><i class="ri-add-line"></i> New Extension Activity / Proposal</button>
+        </div>
     </div>
 </section>
 
@@ -319,7 +322,7 @@ $projects = portal_extension_projects();
     <section class="modal-card proposal-modal-card" role="dialog" aria-modal="true" aria-labelledby="extensionProposalModalTitle">
         <button class="modal-close" type="button" data-close-modal aria-label="Close proposal form"><i class="ri-close-line"></i></button>
 
-        <!-- INSTITUTIONAL HEADER (IMAGE 1 & 2) -->
+        <!-- INSTITUTIONAL HEADER -->
         <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 14px; margin-bottom: 16px;">
             <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                 <div>
@@ -339,8 +342,61 @@ $projects = portal_extension_projects();
                 </div>
             </div>
 
-            <!-- RECOMMENDED EXTENSION MONITORING FLOW (IMAGE 3) -->
-            <div style="margin-top: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
+            <!-- DLSP INSTITUTIONAL SUBMISSION & ROUTING PROTOCOL (5 STEPS) -->
+            <div class="dlsp-routing-guide-box" style="margin-top: 14px;">
+                <div class="dlsp-routing-header">
+                    <div class="dlsp-routing-title">
+                        <i class="ri-shield-check-line" style="color: #15803d; font-size: 1.1rem;"></i>
+                        <span>DLSP Paper Submission &amp; Institutional Routing Protocol</span>
+                    </div>
+                    <span class="dlsp-routing-badge">Institutional Workflow</span>
+                </div>
+                <div class="dlsp-steps-list">
+                    <div class="dlsp-step-item">
+                        <div class="dlsp-step-number">1</div>
+                        <div class="dlsp-step-content">
+                            <span class="dlsp-step-name">Preparation and Formatting of the Paper</span>
+                            <div><span class="dlsp-compliance-tag">Format Compliance</span> Ensure your paper strictly adheres to DLSP institutional layout guidelines (standard chapters, abstract, APA references, and proper documentation).</div>
+                            <div class="dlsp-step-sub"><strong>Required Inclusions:</strong> Title Page, Abstract, and draft Approval Sheet designated for the Office of the Vice President for Research and Extension (OVPRE).</div>
+                        </div>
+                    </div>
+                    <div class="dlsp-step-item">
+                        <div class="dlsp-step-number">2</div>
+                        <div class="dlsp-step-content">
+                            <span class="dlsp-step-name">College Review and Endorsement</span>
+                            <div><span class="dlsp-compliance-tag">College Clearance</span> Initial submission to your immediate supervisor, college dean, or coordinator.</div>
+                            <div class="dlsp-step-sub">Secure initial recommendations and routing slip signatures confirming the extension project aligns with faculty teaching load and college agenda.</div>
+                        </div>
+                    </div>
+                    <div class="dlsp-step-item">
+                        <div class="dlsp-step-number">3</div>
+                        <div class="dlsp-step-content">
+                            <span class="dlsp-step-name">Submission to the Research and Extension Office</span>
+                            <div><span class="dlsp-compliance-tag">Office Evaluation</span> Transmitted to Community Extension / Research Development units under the OVPRE umbrella.</div>
+                            <div class="dlsp-step-sub">Checked for completeness, plagiarism/similarity indices (if required), institutional agenda alignment, and methodological soundness.</div>
+                        </div>
+                    </div>
+                    <div class="dlsp-step-item">
+                        <div class="dlsp-step-number">4</div>
+                        <div class="dlsp-step-content">
+                            <span class="dlsp-step-name">Forwarding to OVPRE / Administration</span>
+                            <div><span class="dlsp-compliance-tag">Director Transmittal</span> Formally endorsed by the Director to the Office of the Vice President overseeing Research and Extension.</div>
+                            <div class="dlsp-step-sub">Tracked via institutional routing slip logging dates, review remarks, and receiving administrative signatures.</div>
+                        </div>
+                    </div>
+                    <div class="dlsp-step-item">
+                        <div class="dlsp-step-number">5</div>
+                        <div class="dlsp-step-content">
+                            <span class="dlsp-step-name">Evaluation, Panel Review, or Final Approval</span>
+                            <div><span class="dlsp-compliance-tag">Final Approval</span> Evaluated by OVPRE / institutional committee for implementation clearance, presentation, or funding approval.</div>
+                            <div class="dlsp-step-sub">If revisions are needed, feedback is cascaded back to proponent to incorporate corrections before final administrative sign-off.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECOMMENDED EXTENSION MONITORING FLOW -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
                 <div style="font-size: 0.7rem; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.04em;">
                     <i class="ri-flow-chart"></i> Recommended Extension Monitoring Flow:
                 </div>
@@ -517,6 +573,14 @@ $projects = portal_extension_projects();
 
                 <div class="evidence-checklist-grid">
                     <label class="evidence-checkbox-label">
+                        <input type="checkbox" name="evidence_checklist[]" value="Draft Approval Sheet (OVPRE)" checked>
+                        <span>Draft Approval Sheet (OVPRE)</span>
+                    </label>
+                    <label class="evidence-checkbox-label">
+                        <input type="checkbox" name="evidence_checklist[]" value="Routing / Transmittal Slip" checked>
+                        <span>Routing / Transmittal Slip</span>
+                    </label>
+                    <label class="evidence-checkbox-label">
                         <input type="checkbox" name="evidence_checklist[]" value="Needs Assessment" checked>
                         <span>Needs Assessment</span>
                     </label>
@@ -537,6 +601,10 @@ $projects = portal_extension_projects();
                         <span>Photos / Videos</span>
                     </label>
                     <label class="evidence-checkbox-label">
+                        <input type="checkbox" name="evidence_checklist[]" value="Plagiarism / Similarity Index">
+                        <span>Plagiarism / Similarity Index</span>
+                    </label>
+                    <label class="evidence-checkbox-label">
                         <input type="checkbox" name="evidence_checklist[]" value="Impact Assessment">
                         <span>Impact Assessment</span>
                     </label>
@@ -548,7 +616,7 @@ $projects = portal_extension_projects();
 
                 <label class="field">
                     <span>Upload Proposal Document / Documentation Package (PDF, DOCX, ZIP up to 15 MB) <span style="color:#dc2626;">*</span></span>
-                    <span class="proposal-hint">Upload your proposal document, signed MOA, training design, attendance sheets, or compilation package.</span>
+                    <span class="proposal-hint">Include preliminary pages (Title Page, Abstract, draft Approval Sheet for OVPRE) along with supporting documents.</span>
                     <input type="file" name="required_document" accept=".pdf,.doc,.docx,.zip,.rar" required>
                 </label>
             </div>
@@ -559,6 +627,76 @@ $projects = portal_extension_projects();
                 <button class="ghost-btn" type="button" data-close-modal>Cancel</button>
             </div>
         </form>
+    </section>
+</div>
+
+<!-- MODAL: DLSP INSTITUTIONAL SUBMISSION & ROUTING PROTOCOL (STANDALONE GUIDE) -->
+<div class="modal" id="dlspRoutingGuideModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-card proposal-modal-card" role="dialog" aria-modal="true" aria-labelledby="dlspGuideModalTitle" style="max-width: 780px;">
+        <button class="modal-close" type="button" data-close-modal aria-label="Close guide"><i class="ri-close-line"></i></button>
+        <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
+            <div style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: #166534; text-transform: uppercase;">
+                Dalubhasaan ng Lungsod ng San Pablo &bull; Academic Protocols
+            </div>
+            <h2 id="dlspGuideModalTitle" style="font-size: 1.35rem; color: #0f231c; margin: 4px 0 2px;">
+                Paper Submission &amp; Institutional Routing Protocol
+            </h2>
+            <p style="margin: 0; color: #64748b; font-size: 0.85rem;">
+                Standard step-by-step academic routing guide for faculty researchers and extensionists submitting proposals, completed studies, or community extension projects to the Office of the Vice President for Research and Extension (OVPRE).
+            </p>
+        </div>
+
+        <div class="dlsp-steps-list" style="margin-top: 0;">
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">1</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 1: Preparation and Formatting of the Paper</span>
+                    <p style="margin: 4px 0 6px;"><strong>Compliance with Institutional Standards:</strong> Ensure your paper or proposal strictly follows the institutional format guidelines provided by DLSP (such as the standard layout for chapters, abstracts, references using APA format, and proper documentation).</p>
+                    <p style="margin: 0;"><strong>Required Inclusions:</strong> Make sure your document includes preliminary pages such as the Title Page, Abstract, and a draft Approval Sheet designated for the Office of the Vice President for Research / Research and Extension.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">2</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 2: College Review and Endorsement</span>
+                    <p style="margin: 4px 0 6px;"><strong>Initial Submission to College Dean / Coordinator:</strong> Before a paper goes to the VP’s office, it requires clearance or endorsement from your immediate supervisor, college dean, or coordinator.</p>
+                    <p style="margin: 0;"><strong>Signatures &amp; Endorsement:</strong> Secure initial recommendations or signatures on routing slips confirming that the research or extension work aligns with your college's load, faculty agenda, or institutional goals.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">3</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 3: Submission to the Research and Extension Office</span>
+                    <p style="margin: 4px 0 6px;"><strong>Routing to Research Development / Community Extension:</strong> Submit the hard copy and/or digital copy of your manuscript/proposal to the Research Development or Community Extension units under the Research &amp; Extension umbrella.</p>
+                    <p style="margin: 0;"><strong>Initial Evaluation:</strong> The office checks the paper for completeness, plagiarism similarity indices (if required), alignment with the institution’s research agenda, and methodological soundness.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">4</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 4: Forwarding to the Office of the Vice President for Research and Extension (OVPRE) / Administration</span>
+                    <p style="margin: 4px 0 6px;"><strong>Endorsement by the Director:</strong> Once vetted by the research coordinator/units, the paper is formally endorsed and transmitted to the Director or the Office of the Vice President overseeing Research and Extension.</p>
+                    <p style="margin: 0;"><strong>Tracking via Transmittal/Routing Slip:</strong> Institutional documents are accompanied by a routing or tracking slip where dates, remarks, and signatures of receiving administrative officers are logged.</p>
+                </div>
+            </div>
+
+            <div class="dlsp-step-item">
+                <div class="dlsp-step-number">5</div>
+                <div class="dlsp-step-content">
+                    <span class="dlsp-step-name">Step 5: Evaluation, Panel Review, or Final Approval</span>
+                    <p style="margin: 4px 0 6px;"><strong>Review Process:</strong> The OVPRE or a designated institutional review committee evaluates the paper for funding approval, presentation clearance, publication, or implementation (in the case of extension programs).</p>
+                    <p style="margin: 0;"><strong>Feedback and Revisions:</strong> If revisions are required, feedback is cascaded back to the faculty researcher/extensionist to incorporate corrections before final administrative sign-off.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top: 16px;">
+            <button class="primary-btn" type="button" data-close-modal><i class="ri-check-line"></i> Understood &amp; Close</button>
+        </div>
     </section>
 </div>
 <?php endif; ?>
@@ -577,7 +715,7 @@ $projects = portal_extension_projects();
             </h2>
             <small style="color: #6b7280;">
                 <?php
-                if ($isCoordinator) echo 'Proposals and outreach projects from your College/Department.';
+                if ($isCoordinator) echo 'Proposals and outreach projects from your College.';
                 elseif ($isDirector) echo 'Proposals endorsed by College Coordinators for institutional review and budget allocation.';
                 elseif ($isExecutive) echo 'Projects ready for Final Executive Approval by the OVPRE.';
                 else echo 'Track proposal status from College Coordinator screening to Final Executive Approval.';
@@ -597,7 +735,7 @@ $projects = portal_extension_projects();
                 <tr>
                     <th>Project Title</th>
                     <th>Partner / Location</th>
-                    <th>College / Dept</th>
+                    <th>College</th>
                     <th>Budget</th>
                     <th>Workflow Stage</th>
                     <th>Status</th>
