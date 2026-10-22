@@ -280,33 +280,6 @@ renderHeader('Extension Management', 'extension');
 </div>
 <?php endif; ?>
 
-<!-- FILTER TOOLBAR -->
-<section class="tool-panel">
-    <form method="get" class="action-row">
-        <select class="filter-select" name="status" onchange="this.form.submit()">
-            <option value="All">All Status</option>
-            <?php foreach ([
-                'Pending Coordinator Review' => '1. For Coordinator Screening',
-                'Pending Director Review' => '2. For Director Evaluation',
-                'Pending Executive Approval' => '3. For Executive Final Approval',
-                'Approved' => 'Approved',
-                'Needs Revision' => 'Needs Revision',
-                'Declined' => 'Declined',
-            ] as $stKey => $stLabel): ?>
-                <option value="<?php echo h($stKey); ?>" <?php echo $statusFilter === $stKey ? 'selected' : ''; ?>><?php echo h($stLabel); ?></option>
-            <?php endforeach; ?>
-        </select>
-        <?php if (!$isCoordinator): ?>
-            <select class="filter-select" name="department" onchange="this.form.submit()">
-                <option value="0">All Colleges</option>
-                <?php foreach (departments() as $department): ?>
-                    <option value="<?php echo (int) $department['id']; ?>" <?php echo $departmentFilter === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option>
-                <?php endforeach; ?>
-            </select>
-        <?php endif; ?>
-    </form>
-</section>
-
 <!-- PROJECTS TABLE -->
 <section class="panel">
     <div class="table-scroll">
@@ -340,7 +313,7 @@ renderHeader('Extension Management', 'extension');
                                 <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> <?php echo h($project['location']); ?></small>
                             <?php endif; ?>
                         </td>
-                        <td><span class="dept-pill"><?php echo h($project['department_name'] ?? 'College'); ?></span></td>
+                        <td data-sort-value="<?php echo h($project['department_name'] ?? ''); ?>"><span class="dept-pill"><?php echo h($project['department_name'] ?? 'College'); ?></span></td>
                         <td><strong>PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></strong></td>
                         <td><span style="font-weight:600; color:#166534;"><?php echo h($project['workflow_stage'] ?? 'Proposal'); ?></span></td>
                         <td>

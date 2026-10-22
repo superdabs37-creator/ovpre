@@ -2065,6 +2065,11 @@ button {
     gap: 8px;
 }
 
+.data-table-filter {
+    font-weight: 700;
+    color: var(--muted);
+}
+
 .data-table-length select {
     min-height: 36px;
     padding: 0 28px 0 10px;
@@ -2076,12 +2081,13 @@ button {
 
 .data-table-filter select {
     min-height: 36px;
-    max-width: 190px;
+    max-width: min(100%, 290px);
     padding: 0 26px 0 10px;
     color: var(--ink);
     background: var(--white);
     border: 1px solid var(--line);
     border-radius: 9px;
+    font-weight: 600;
 }
 
 .data-table-export {

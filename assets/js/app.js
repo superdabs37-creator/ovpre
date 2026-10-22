@@ -863,7 +863,11 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
             refreshAdminTablePagination();
         });
         label.append(select);
-        toolbar.append(label);
+        if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(label, exportButton);
+        } else {
+            toolbar.append(label);
+        }
     });
 
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {

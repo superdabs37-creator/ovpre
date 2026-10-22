@@ -276,33 +276,6 @@ renderHeader('Research Management', 'research');
 </div>
 <?php endif; ?>
 
-<!-- FILTER TOOLBAR -->
-<section class="tool-panel">
-    <form method="get" class="action-row">
-        <select class="filter-select" name="status" onchange="this.form.submit()">
-            <option value="All">All Status</option>
-            <?php foreach ([
-                'Pending Coordinator Review' => '1. For Coordinator Screening',
-                'Pending Director Review' => '2. For Director RIUH Evaluation',
-                'Pending Executive Approval' => '3. For Executive Final Approval',
-                'Approved' => 'Approved',
-                'Needs Revision' => 'Needs Revision',
-                'Declined' => 'Declined',
-            ] as $stKey => $stLabel): ?>
-                <option value="<?php echo h($stKey); ?>" <?php echo $statusFilter === $stKey ? 'selected' : ''; ?>><?php echo h($stLabel); ?></option>
-            <?php endforeach; ?>
-        </select>
-        <?php if (!$isCoordinator): ?>
-            <select class="filter-select" name="department" onchange="this.form.submit()">
-                <option value="0">All Colleges</option>
-                <?php foreach (departments() as $department): ?>
-                    <option value="<?php echo (int) $department['id']; ?>" <?php echo $departmentFilter === (int) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option>
-                <?php endforeach; ?>
-            </select>
-        <?php endif; ?>
-    </form>
-</section>
-
 <!-- PROJECTS TABLE -->
 <section class="panel">
     <div class="table-scroll">
