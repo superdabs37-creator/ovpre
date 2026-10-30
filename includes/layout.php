@@ -31,7 +31,7 @@ function renderHeader($pageTitle, $currentPage)
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($pageTitle); ?> | <?php echo APP_NAME; ?></title>
         <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
-        <link rel="stylesheet" href="assets/css/style.css?v=20261019-record-segmented-tabs">
+        <link rel="stylesheet" href="assets/css/style.css?v=20261030-searchable-select">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -119,8 +119,11 @@ function renderHeader($pageTitle, $currentPage)
                             <div class="profile-dropdown-identity">
                                 <span class="profile-dropdown-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><i class="ri-user-3-fill"></i><?php endif; ?></span>
                                 <strong><?php echo h($name); ?></strong>
-                                <small style="color: #202729;"><?php echo $isSuperAdmin ? 'System Administrator' : h($user['role'] ?? 'Account'); ?></small>
+                                <small style="color: #202729;"><?php echo ($userRole === ROLE_SUPER_ADMIN) ? 'System Administrator' : h($user['role'] ?? 'Account'); ?></small>
                             </div>
+                            <?php $dedicatedPortalPath = role_dashboard_path($userRole); if ($dedicatedPortalPath && $dedicatedPortalPath !== 'dashboard.php'): ?>
+                                <a href="<?php echo h($dedicatedPortalPath); ?>" style="color: #15803d; font-weight: 600;"><i class="ri-dashboard-line"></i> Open <?php echo h($user['role'] ?? 'Role'); ?> Portal</a>
+                            <?php endif; ?>
                             <a href="profile.php"><i class="ri-user-settings-line"></i> Edit Profile</a>
                             <?php if ($isSuperAdmin || $isOVPREAdmin): ?><a href="admin-settings.php"><i class="ri-settings-3-line"></i> System Settings</a><?php endif; ?>
                             <a href="logout.php"><i class="ri-logout-circle-line"></i> Logout</a>
@@ -138,7 +141,7 @@ function renderHeader($pageTitle, $currentPage)
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="assets/js/app.js?v=20261015-activity-manage-actions"></script>
+        <script src="assets/js/app.js?v=20261030-searchable-select"></script>
     </body>
 
     </html>

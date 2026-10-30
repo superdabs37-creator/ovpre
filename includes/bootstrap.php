@@ -94,8 +94,8 @@ function role_dashboard_path(string $role): ?string {
         ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR,
         ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR,
         ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER => match ($role) {
-            ROLE_RESEARCH_DIRECTOR => 'research-director/dashboard.php',
-            ROLE_EXTENSION_DIRECTOR => 'extension-director/dashboard.php',
+            ROLE_RESEARCH_DIRECTOR => 'dashboard.php',
+            ROLE_EXTENSION_DIRECTOR => 'dashboard.php',
             ROLE_RESEARCH_COORDINATOR => 'research-coordinator/dashboard.php',
             ROLE_EXTENSION_COORDINATOR => 'extension-coordinator/dashboard.php',
             ROLE_FACULTY_EXTENSIONIST => 'faculty-extensionist/dashboard.php',
@@ -107,32 +107,132 @@ function role_dashboard_path(string $role): ?string {
 }
 
 class SupabasePDO extends PDO {
+    private ?string $lastTable = null;
+
     public static function normalizeSql(string $sql): string {
-        $sql = preg_replace('/DATE_SUB\(NOW\(\),\s*INTERVAL\s*(\d+)\s*MINUTE\)/i', "(NOW() - INTERVAL '$1 MINUTE')", $sql);
-        $sql = preg_replace('/DATE_ADD\(NOW\(\),\s*INTERVAL\s*(\d+)\s*MINUTE\)/i', "(NOW() + INTERVAL '$1 MINUTE')", $sql);
-        $sql = preg_replace('/DATE_SUB\(CURDATE\(\),\s*INTERVAL\s*(\d+)\s*MONTH\)/i', "(CURRENT_DATE - INTERVAL '$1 MONTH')", $sql);
-        $sql = preg_replace('/CURDATE\(\)/i', 'CURRENT_DATE', $sql);
-        $sql = preg_replace('/DATE_FORMAT\(([^,]+),\s*\'%b\'\)/i', "TO_CHAR($1, 'Mon')", $sql);
+        // Strip MySQL backticks
+        $sql = str_replace('`', '', $sql);
 
-        $sql = preg_replace('/SUM\(([^)]+?)\s*=\s*("[^"]+"|\'[^\']+\')\)/i', 'COUNT(CASE WHEN $1 = $2 THEN 1 END)', $sql);
-        $sql = preg_replace('/SUM\(([^)]+?)\s+IN\s*\(([^)]+?)\)\)/i', 'COUNT(CASE WHEN $1 IN ($2) THEN 1 END)', $sql);
+        // MySQL schema introspection & session settings
+        $sql = preg_replace('/^\s*SHOW\s+TABLES\s*;?\s*$/i', "SELECT tablename FROM pg_tables WHERE schemaname = 'public'", $sql);
+        $sql = preg_replace_callback('/^\s*SHOW\s+COLUMNS\s+FROM\s+([a-zA-Z0-9_]+)\s*;?\s*$/i', function($m) {
+            return "SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '{$m[1]}' ORDER BY ordinal_position";
+        }, $sql);
+        $sql = preg_replace('/^\s*SET\s+FOREIGN_KEY_CHECKS\s*=\s*0\s*;?\s*$/i', "SET session_replication_role = 'replica'", $sql);
+        $sql = preg_replace('/^\s*SET\s+FOREIGN_KEY_CHECKS\s*=\s*1\s*;?\s*$/i', "SET session_replication_role = 'origin'", $sql);
+        $sql = preg_replace_callback('/ON\s+DUPLICATE\s+KEY\s+UPDATE\s+(.+)$/i', function($m) {
+            $pgUpdates = preg_replace('/VALUES\(\s*([a-zA-Z0-9_]+)\s*\)/i', 'EXCLUDED.$1', $m[1]);
+            return "ON CONFLICT (id) DO UPDATE SET $pgUpdates";
+        }, $sql);
 
-        $sql = preg_replace('/"([^"]+)"/', "'$1'", $sql);
-        $sql = preg_replace('/COALESCE\(\s*([^,]+?\.status|status)\s*,\s*([^,]+?\.progress_status|progress_status)\s*\)/i', 'COALESCE($1, CAST($2 AS VARCHAR))', $sql);
+        // Convert double-quoted string literals outside single quotes to single-quoted literals
+        $sql = preg_replace('/"([^"\r\n]+)"/', "'$1'", $sql);
+
+        // DATE_SUB & DATE_ADD
+        $sql = preg_replace('/DATE_SUB\(\s*(.+?)\s*,\s*INTERVAL\s*(\d+)\s*([a-zA-Z]+)\s*\)/i', "($1 - INTERVAL '$2 $3')", $sql);
+        $sql = preg_replace('/DATE_ADD\(\s*(.+?)\s*,\s*INTERVAL\s*(\d+)\s*([a-zA-Z]+)\s*\)/i', "($1 + INTERVAL '$2 $3')", $sql);
+        $sql = preg_replace('/\bINTERVAL\s+(\d+)\s+([a-zA-Z]+)\b/i', "INTERVAL '$1 $2'", $sql);
+
+        // CURDATE() -> CURRENT_DATE
+        $sql = preg_replace('/\bCURDATE\(\)/i', 'CURRENT_DATE', $sql);
+
+        // DATE_FORMAT -> TO_CHAR
+        $sql = preg_replace_callback('/DATE_FORMAT\(\s*([^,]+?)\s*,\s*[\'"]([^\'"]+)[\'"]\s*\)/i', function($m) {
+            $field = trim($m[1]);
+            $fmt = $m[2];
+            $map = [
+                '%Y' => 'YYYY',
+                '%y' => 'YY',
+                '%m' => 'MM',
+                '%c' => 'FMMM',
+                '%d' => 'DD',
+                '%e' => 'FMDD',
+                '%b' => 'Mon',
+                '%M' => 'Month',
+                '%H' => 'HH24',
+                '%h' => 'HH12',
+                '%i' => 'MI',
+                '%s' => 'SS',
+                '%p' => 'AM',
+            ];
+            $pgFmt = strtr($fmt, $map);
+            return "TO_CHAR($field, '$pgFmt')";
+        }, $sql);
+
+        // YEAR(), MONTH(), DAY()
+        $sql = preg_replace('/\bYEAR\(\s*([^)]+?)\s*\)/i', "EXTRACT(YEAR FROM $1)", $sql);
+        $sql = preg_replace('/\bMONTH\(\s*([^)]+?)\s*\)/i', "EXTRACT(MONTH FROM $1)", $sql);
+        $sql = preg_replace('/\bDAY\(\s*([^)]+?)\s*\)/i', "EXTRACT(DAY FROM $1)", $sql);
+
+        // IFNULL() -> COALESCE()
+        $sql = preg_replace('/\bIFNULL\(/i', 'COALESCE(', $sql);
+
+        // Boolean aggregation in SUM()
+        $sql = preg_replace("#SUM\\(([^)]+?)\\s*=\\s*(\"[^\"]+\"|'[^']+'|\\d+)\\)#i", 'COUNT(CASE WHEN $1 = $2 THEN 1 END)', $sql);
+        $sql = preg_replace("#SUM\\(([^)]+?)\\s+(NOT\\s+)?IN\\s*\\(([^)]+?)\\)\\)#i", 'COUNT(CASE WHEN $1 $2IN ($3) THEN 1 END)', $sql);
+        $sql = preg_replace("#SUM\\(([^)]+?\\s*(?:!=|<>)\\s*(\"[^\"]+\"|'[^']+'|\\d+))\\)#i", 'COUNT(CASE WHEN $1 THEN 1 END)', $sql);
+
+        // Enum COALESCE type compatibility
+        $sql = preg_replace('/COALESCE\(\s*([^,]+?\.status|status)\s*,\s*([^,]+?\.progress_status|progress_status)\s*\)/i', 'COALESCE(CAST($1 AS VARCHAR), CAST($2 AS VARCHAR))', $sql);
 
         return $sql;
     }
 
-    public function prepare(string $query, array $options = []): PDOStatement {
-        return parent::prepare(self::normalizeSql($query), $options);
+    public function prepare(string $query, array $options = []): PDOStatement|false {
+        $normalized = self::normalizeSql($query);
+        $this->detectInsertTable($normalized);
+        return parent::prepare($normalized, $options);
     }
 
-    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement {
-        return parent::query(self::normalizeSql($query), $fetchMode, ...$fetchModeArgs);
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false {
+        $normalized = self::normalizeSql($query);
+        $this->detectInsertTable($normalized);
+        if ($fetchMode === null) {
+            return parent::query($normalized);
+        }
+        return parent::query($normalized, $fetchMode, ...$fetchModeArgs);
     }
 
     public function exec(string $statement): int|false {
-        return parent::exec(self::normalizeSql($statement));
+        $normalized = self::normalizeSql($statement);
+        $this->detectInsertTable($normalized);
+        return parent::exec($normalized);
+    }
+
+    private function detectInsertTable(string $sql): void {
+        if (preg_match('/^\s*INSERT\s+INTO\s+([a-zA-Z0-9_]+)/i', $sql, $m)) {
+            $this->lastTable = strtolower($m[1]);
+        }
+    }
+
+    public function lastInsertId(?string $name = null): string|false {
+        try {
+            $id = parent::lastInsertId($name);
+            if ($id !== false && $id !== '' && $id !== '0') {
+                return $id;
+            }
+        } catch (Throwable) {
+        }
+
+        if ($name === null && $this->lastTable !== null) {
+            try {
+                $id = parent::lastInsertId($this->lastTable . '_id_seq');
+                if ($id !== false && $id !== '' && $id !== '0') {
+                    return $id;
+                }
+            } catch (Throwable) {
+            }
+        }
+
+        try {
+            $val = $this->query('SELECT LASTVAL()')->fetchColumn();
+            if ($val !== false && $val !== null) {
+                return (string) $val;
+            }
+        } catch (Throwable) {
+        }
+
+        return false;
     }
 }
 
@@ -357,10 +457,10 @@ function role_permissions(): array {
     return [
         ROLE_SUPER_ADMIN => ['dashboard', 'audit', 'settings', 'backup', 'users'],
         ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements', 'audit', 'settings', 'backup'],
-        ROLE_RESEARCH_DIRECTOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
-        ROLE_EXTENSION_DIRECTOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
-        ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'reports', 'announcements', 'activities'],
-        ROLE_EXTENSION_COORDINATOR => ['dashboard', 'extension', 'reports', 'announcements', 'activities'],
+        ROLE_RESEARCH_DIRECTOR => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements', 'audit', 'settings', 'backup', 'status', 'analytics'],
+        ROLE_EXTENSION_DIRECTOR => ['dashboard', 'extension', 'analytics', 'reports', 'announcements', 'activities', 'status'],
+        ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'analytics', 'reports', 'announcements', 'activities', 'status'],
+        ROLE_EXTENSION_COORDINATOR => ['dashboard', 'extension', 'analytics', 'reports', 'announcements', 'activities', 'status'],
         ROLE_FACULTY_EXTENSIONIST => ['dashboard', 'extension', 'status'],
         ROLE_RESEARCHER => ['dashboard', 'research', 'status'],
     ];
@@ -396,7 +496,7 @@ function require_role(array $roles): array {
 }
 
 function require_super_admin(): array {
-    return require_login([ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN]);
+    return require_login([ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN, ROLE_RESEARCH_DIRECTOR]);
 }
 
 function log_action(?int $userId, string $action): void {

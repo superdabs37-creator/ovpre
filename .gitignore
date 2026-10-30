@@ -1,8 +1,15 @@
+# Local environment configuration
 /config.local.php
+.env
 
-# Editor settings
+# Editor & OS artifacts
 /.vscode/
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
 
-# Database dumps containing real user data (emails, phone numbers, password hashes)
+# Database dumps containing sensitive user data
 /ovpre.sql
 /database/supabase_data.sql
+

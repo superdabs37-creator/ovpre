@@ -13,8 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lastName = trim((string) ($_POST['last_name'] ?? ''));
     $birthday = trim((string) ($_POST['birthday'] ?? ''));
     $gender = trim((string) ($_POST['gender'] ?? ''));
-    $departmentIdRaw = trim((string) ($_POST['department_id'] ?? ''));
-    $departmentId = ($departmentIdRaw === '' || $departmentIdRaw === '0') ? null : (int) $departmentIdRaw;
+    // Admin and Directors have no designated college (Institutional / OVPRE-wide)
+    if ($accountType === 'personal') {
+        $departmentId = null;
+    } else {
+        $departmentIdRaw = trim((string) ($_POST['department_id'] ?? ''));
+        $departmentId = ($departmentIdRaw === '' || $departmentIdRaw === '0') ? null : (int) $departmentIdRaw;
+        if ($departmentId === null) {
+            $errors[] = 'Please select your College affiliation.';
+        }
+    }
     
     $email = strtolower(trim((string) ($_POST['email'] ?? '')));
     $username = trim((string) ($_POST['username'] ?? ''));
@@ -62,11 +70,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // Map account type to role
+        $specificRole = trim((string) ($_POST['specific_role'] ?? ''));
+
+        // Map account type and specific role
         $role = match ($accountType) {
-            'personal' => ROLE_RESEARCH_DIRECTOR,
-            'child' => ROLE_RESEARCH_COORDINATOR,
-            'work' => ROLE_RESEARCHER,
+            'personal' => match ($specificRole) {
+                'OVPRE Admin', 'Admin', 'Super Admin' => ROLE_OVPRE_ADMIN,
+                'Extension Director' => ROLE_EXTENSION_DIRECTOR,
+                default => ROLE_RESEARCH_DIRECTOR,
+            },
+            'child' => match ($specificRole) {
+                'Extension Coordinator' => ROLE_EXTENSION_COORDINATOR,
+                default => ROLE_RESEARCH_COORDINATOR,
+            },
+            'work' => match ($specificRole) {
+                'Faculty Extensionist', 'Extensionist' => ROLE_FACULTY_EXTENSIONIST,
+                default => ROLE_RESEARCHER,
+            },
             default => ROLE_RESEARCHER,
         };
 
@@ -498,52 +518,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
         }
 
-        /* Suggestions Pills */
-        .suggestions-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-
-        .suggestions-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #475569;
-            margin: 0 0 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .suggestions-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .suggestion-pill {
-            background: #ffffff;
-            border: 1.5px solid #cbd5e1;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #0f172a;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .suggestion-pill:hover {
-            border-color: var(--reg-green);
-            background: #f0fdf4;
-            color: var(--reg-green);
-        }
-
         /* Password Strength Meter */
         .strength-meter {
             height: 6px;
@@ -728,6 +702,245 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 14px;
             font-weight: 700;
         }
+
+        /* Modal for Admin / Research Director / Extension Director */
+        .role-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            place-items: center;
+            padding: 20px;
+            animation: modalFadeIn 0.2s ease;
+        }
+
+        .role-modal-overlay.open {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .role-modal-card {
+            background: #ffffff;
+            border-radius: 20px;
+            width: min(100%, 560px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+            position: relative;
+            animation: modalSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(18px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .role-modal-header {
+            padding: 22px 26px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .role-modal-header h3 {
+            margin: 0 0 4px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-modal-header p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .role-modal-close {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.15s ease;
+        }
+
+        .role-modal-close:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .role-modal-body {
+            padding: 20px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .role-option-item {
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        .role-option-item:hover {
+            border-color: #86efac;
+            background: #fbfdfc;
+            transform: translateY(-1px);
+        }
+
+        .role-option-item.selected {
+            border-color: var(--reg-green);
+            background: #f0fdf4;
+            box-shadow: 0 4px 14px rgba(21, 128, 61, 0.12);
+        }
+
+        .role-option-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .role-option-item.selected .role-option-icon {
+            background: var(--reg-green);
+            color: #ffffff;
+        }
+
+        .role-option-content {
+            flex: 1;
+        }
+
+        .role-option-content h4 {
+            margin: 0 0 3px;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .role-option-content p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .role-pill {
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .pill-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .pill-research {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .pill-extension {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-option-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .role-option-item.selected .role-option-radio {
+            border-color: var(--reg-green);
+            background: var(--reg-green);
+        }
+
+        .role-option-item.selected .role-option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffffff;
+        }
+
+        .role-modal-footer {
+            padding: 16px 26px 20px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8fafc;
+        }
+
+        /* Badge on Card */
+        .selected-subrole-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .change-subrole-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.76rem;
+            color: #15803d;
+            text-decoration: underline;
+            margin-left: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="register-body">
@@ -788,6 +1001,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form id="registrationForm" method="post" action="register.php">
         <?php echo csrf_field(); ?>
         <input type="hidden" name="account_type" id="accountTypeInput" value="personal">
+        <input type="hidden" name="specific_role" id="specificRoleInput" value="Research Director">
 
         <div class="register-body-content">
 
@@ -797,36 +1011,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="step-pane active" id="pane-step-1">
                 <div class="step-header">
                     <h3><i class="ri-user-settings-line" style="color:var(--reg-green);"></i> Select Account Type</h3>
-                    <p>Choose whether the account is for Admin/Directors,Coordinators, or Researchers/Extentionists.</p>
+                    <p>Choose whether the account is for Admin/Directors, Coordinators, or Researchers/Extensionists.</p>
                 </div>
 
                 <div class="account-type-grid">
-                    <!-- Option 1: Personal use -->
-                    <div class="account-type-card selected" data-type="personal" onclick="selectAccountType('personal', this)">
-                        <div class="account-type-icon"><i class="ri-user-smile-line"></i></div>
-                        <div class="account-type-info">
-                            <h4>Admin/Directors</h4>
-                            <p>For Admin, Directors of OVPRE.</p>
+                    <!-- Option 1: Admin / Directors -->
+                    <div class="account-type-card selected" data-type="personal" onclick="handleCardClick('personal', this)">
+                        <div class="account-type-icon"><i class="ri-shield-star-line"></i></div>
+                        <div class="account-type-info" style="flex: 1;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                <h4 style="margin: 0;">Admin/Directors</h4>
+                                <span class="selected-subrole-badge" id="adminDirectorBadge"><i class="ri-award-line"></i> Research Director</span>
+                            </div>
+                            <p style="margin-top: 4px;">For Admin, Directors of OVPRE. <span class="change-subrole-btn" onclick="event.stopPropagation(); openAdminDirectorModal();"><i class="ri-edit-line"></i> Change</span></p>
                         </div>
                         <div class="account-type-radio"></div>
                     </div>
 
-                    <!-- Option 2: For my child -->
-                    <div class="account-type-card" data-type="child" onclick="selectAccountType('child', this)">
-                        <div class="account-type-icon"><i class="ri-parent-line"></i></div>
-                        <div class="account-type-info">
-                            <h4>Coordinator</h4>
-                            <p>For Research and extension Coordinators of the institution.</p>
+                    <!-- Option 2: Coordinator -->
+                    <div class="account-type-card" data-type="child" onclick="handleCardClick('child', this)">
+                        <div class="account-type-icon"><i class="ri-user-shared-line"></i></div>
+                        <div class="account-type-info" style="flex: 1;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                <h4 style="margin: 0;">Coordinator</h4>
+                                <span class="selected-subrole-badge" id="coordinatorBadge"><i class="ri-flask-line"></i> Research Coordinator</span>
+                            </div>
+                            <p style="margin-top: 4px;">For Research and Extension Coordinators. <span class="change-subrole-btn" onclick="event.stopPropagation(); openCoordinatorModal();"><i class="ri-edit-line"></i> Change</span></p>
                         </div>
                         <div class="account-type-radio"></div>
                     </div>
 
-                    <!-- Option 3: For work or my business -->
-                    <div class="account-type-card" data-type="work" onclick="selectAccountType('work', this)">
+                    <!-- Option 3: Researchers / Extensionist -->
+                    <div class="account-type-card" data-type="work" onclick="handleCardClick('work', this)">
                         <div class="account-type-icon"><i class="ri-briefcase-line"></i></div>
-                        <div class="account-type-info"> 
-                            <h4>Researchers/Extentionist</h4>
-                            <p>For faculty Researchers and Extension practitioners.</p>
+                        <div class="account-type-info" style="flex: 1;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                <h4 style="margin: 0;">Researchers / Extensionist</h4>
+                                <span class="selected-subrole-badge" id="facultyBadge"><i class="ri-flask-line"></i> Faculty Researcher</span>
+                            </div>
+                            <p style="margin-top: 4px;">For faculty Researchers and Extension practitioners. <span class="change-subrole-btn" onclick="event.stopPropagation(); openFacultyModal();"><i class="ri-edit-line"></i> Change</span></p>
                         </div>
                         <div class="account-type-radio"></div>
                     </div>
@@ -870,9 +1093,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="collegeAffiliationGroup" style="display: none;">
                     <label class="form-label" for="department_id">College Affiliation *</label>
-                    <select class="form-select" id="department_id" name="department_id" required>
+                    <select class="form-select" id="department_id" name="department_id">
                         <option value="" disabled selected>Select your College</option>
                         <?php foreach ($departmentsList as $dept): ?>
                             <option value="<?php echo (int) $dept['id']; ?>"><?php echo h($dept['department_name']); ?></option>
@@ -882,21 +1105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- ==============================================
-                 STEP 3: CHOOSE YOUR EMAIL ADDRESS
+                 STEP 3: ENTER YOUR EMAIL ADDRESS
                  ============================================== -->
             <div class="step-pane" id="pane-step-3">
                 <div class="step-header">
-                    <h3><i class="ri-mail-line" style="color:var(--reg-green);"></i> Choose Your Email Address</h3>
-                    <p>Pick a suggested Gmail address, create a custom Gmail address, or use your existing third-party email.</p>
-                </div>
-
-                <!-- Suggestions container -->
-                <div class="suggestions-box">
-                    <div class="suggestions-title"><i class="ri-magic-line"></i> Suggested Addresses (click to use):</div>
-                    <div class="suggestions-pills" id="emailPills">
-                        <span class="suggestion-pill" onclick="setEmailValue(this.textContent)">user.dlsp@dlsp.edu.ph</span>
-                        <span class="suggestion-pill" onclick="setEmailValue(this.textContent)">researcher.dlsp@gmail.com</span>
-                    </div>
+                    <h3><i class="ri-mail-line" style="color:var(--reg-green);"></i> Enter Your Email Address</h3>
+                    <p>Enter your institutional or personal email address to use with your account.</p>
                 </div>
 
                 <div class="form-group">
@@ -1025,9 +1239,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="recap-label">Full Name</span>
                         <span class="recap-val" id="recapFullName">-</span>
                     </div>
-                    <div class="recap-row">
+                    <div class="recap-row" id="recapCollegeRow" style="display: none;">
                         <span class="recap-label">College</span>
-                        <span class="recap-val" id="recapCollege">-</span>
+                        <span class="recap-val" id="recapCollege">None (Institutional / OVPRE)</span>
                     </div>
                     <div class="recap-row">
                         <span class="recap-label">Email &amp; Username</span>
@@ -1070,15 +1284,338 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
+<!-- Modal for Admin / Research Director / Extension Director Selection -->
+<div class="role-modal-overlay" id="adminDirectorModal" role="dialog" aria-modal="true" aria-labelledby="modalRoleTitle">
+    <div class="role-modal-card">
+        <div class="role-modal-header">
+            <div>
+                <h3 id="modalRoleTitle"><i class="ri-government-line" style="color: var(--reg-green);"></i> Select Admin / Director Role</h3>
+                <p>Choose your specific institutional appointment in DLSP OVPRE.</p>
+            </div>
+            <button type="button" class="role-modal-close" onclick="closeAdminDirectorModal()" aria-label="Close modal">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="role-modal-body">
+            <!-- Option 1: Admin -->
+            <div class="role-option-item" data-role="OVPRE Admin" onclick="selectSpecificRole('OVPRE Admin', this)">
+                <div class="role-option-icon"><i class="ri-shield-user-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Admin <span class="role-pill pill-admin">OVPRE Admin</span></h4>
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+
+            <!-- Option 2: Research Director -->
+            <div class="role-option-item selected" data-role="Research Director" onclick="selectSpecificRole('Research Director', this)">
+                <div class="role-option-icon"><i class="ri-flask-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Research Director <span class="role-pill pill-research">Research Division</span></h4>
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+
+            <!-- Option 3: Extension Director -->
+            <div class="role-option-item" data-role="Extension Director" onclick="selectSpecificRole('Extension Director', this)">
+                <div class="role-option-icon"><i class="ri-community-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Extension Director <span class="role-pill pill-extension">Community Services</span></h4>
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+        </div>
+        <div class="role-modal-footer">
+            <button type="button" class="btn-prev" onclick="closeAdminDirectorModal()" style="margin: 0; padding: 9px 18px;">
+                Cancel
+            </button>
+            <button type="button" class="btn-next" onclick="confirmSpecificRole()" style="margin: 0; padding: 9px 22px;">
+                <i class="ri-check-line"></i> Confirm Selection
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Coordinator Role Selection -->
+<div class="role-modal-overlay" id="coordinatorModal" role="dialog" aria-modal="true" aria-labelledby="modalCoordTitle">
+    <div class="role-modal-card">
+        <div class="role-modal-header">
+            <div>
+                <h3 id="modalCoordTitle"><i class="ri-user-shared-line" style="color: var(--reg-green);"></i> Select Coordinator Track</h3>
+                <p>Choose your designated coordinator assignment for your college.</p>
+            </div>
+            <button type="button" class="role-modal-close" onclick="closeCoordinatorModal()" aria-label="Close modal">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="role-modal-body">
+            <!-- Option 1: Research Coordinator -->
+            <div class="role-option-item selected" data-role="Research Coordinator" onclick="selectSpecificRole('Research Coordinator', this)">
+                <div class="role-option-icon"><i class="ri-flask-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Research Coordinator <span class="role-pill pill-research">Research Track</span></h4>
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+
+            <!-- Option 2: Extension Coordinator -->
+            <div class="role-option-item" data-role="Extension Coordinator" onclick="selectSpecificRole('Extension Coordinator', this)">
+                <div class="role-option-icon"><i class="ri-community-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Extension Coordinator <span class="role-pill pill-extension">Extension Track</span></h4>
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+        </div>
+        <div class="role-modal-footer">
+            <button type="button" class="btn-prev" onclick="closeCoordinatorModal()" style="margin: 0; padding: 9px 18px;">
+                Cancel
+            </button>
+            <button type="button" class="btn-next" onclick="confirmCoordinatorRole()" style="margin: 0; padding: 9px 22px;">
+                <i class="ri-check-line"></i> Confirm Selection
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Faculty Researcher / Extensionist Selection -->
+<div class="role-modal-overlay" id="facultyModal" role="dialog" aria-modal="true" aria-labelledby="modalFacultyTitle">
+    <div class="role-modal-card">
+        <div class="role-modal-header">
+            <div>
+                <h3 id="modalFacultyTitle"><i class="ri-briefcase-line" style="color: var(--reg-green);"></i> Select Faculty Track</h3>
+                <p>Choose your primary academic engagement in research or community extension.</p>
+            </div>
+            <button type="button" class="role-modal-close" onclick="closeFacultyModal()" aria-label="Close modal">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="role-modal-body">
+            <!-- Option 1: Faculty Researcher -->
+            <div class="role-option-item selected" data-role="Researcher" onclick="selectSpecificRole('Researcher', this)">
+                <div class="role-option-icon"><i class="ri-flask-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Faculty Researcher <span class="role-pill pill-research">Research Track</span></h4>
+                    
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+
+            <!-- Option 2: Faculty Extensionist -->
+            <div class="role-option-item" data-role="Faculty Extensionist" onclick="selectSpecificRole('Faculty Extensionist', this)">
+                <div class="role-option-icon"><i class="ri-community-line"></i></div>
+                <div class="role-option-content">
+                    <h4>Faculty Extensionist <span class="role-pill pill-extension">Extension Track</span></h4>
+                
+                </div>
+                <div class="role-option-radio"></div>
+            </div>
+        </div>
+        <div class="role-modal-footer">
+            <button type="button" class="btn-prev" onclick="closeFacultyModal()" style="margin: 0; padding: 9px 18px;">
+                Cancel
+            </button>
+            <button type="button" class="btn-next" onclick="confirmFacultyRole()" style="margin: 0; padding: 9px 22px;">
+                <i class="ri-check-line"></i> Confirm Selection
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentStep = 1;
     const totalSteps = 6;
+    let tempSelectedRole = 'Research Director';
+
+    function handleCardClick(type, card) {
+        selectAccountType(type, card);
+        if (type === 'personal') {
+            openAdminDirectorModal();
+        } else if (type === 'child') {
+            openCoordinatorModal();
+        } else if (type === 'work') {
+            openFacultyModal();
+        }
+    }
 
     function selectAccountType(type, card) {
         document.querySelectorAll('.account-type-card').forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
         document.getElementById('accountTypeInput').value = type;
-        document.getElementById('recapAccountType').textContent = card.querySelector('h4').textContent;
+
+        const roleInput = document.getElementById('specificRoleInput');
+        if (type === 'personal') {
+            if (!['OVPRE Admin', 'Research Director', 'Extension Director'].includes(roleInput.value)) {
+                roleInput.value = 'Research Director';
+            }
+        } else if (type === 'child') {
+            if (!['Research Coordinator', 'Extension Coordinator'].includes(roleInput.value)) {
+                roleInput.value = 'Research Coordinator';
+            }
+        } else if (type === 'work') {
+            if (!['Researcher', 'Faculty Extensionist'].includes(roleInput.value)) {
+                roleInput.value = 'Researcher';
+            }
+        }
+
+        updateRecap();
+        syncCollegeVisibility();
+    }
+
+    function selectSpecificRole(role, itemEl) {
+        tempSelectedRole = role;
+        const container = itemEl.closest('.role-modal-body');
+        if (container) {
+            container.querySelectorAll('.role-option-item').forEach(item => item.classList.remove('selected'));
+        }
+        itemEl.classList.add('selected');
+    }
+
+    // 1. Admin / Director Modal
+    function openAdminDirectorModal() {
+        let currentRole = document.getElementById('specificRoleInput')?.value || 'Research Director';
+        if (!['OVPRE Admin', 'Research Director', 'Extension Director'].includes(currentRole)) {
+            currentRole = 'Research Director';
+        }
+        tempSelectedRole = currentRole;
+        
+        document.querySelectorAll('#adminDirectorModal .role-option-item').forEach(item => {
+            item.classList.toggle('selected', item.getAttribute('data-role') === currentRole);
+        });
+
+        const modal = document.getElementById('adminDirectorModal');
+        if (modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeAdminDirectorModal() {
+        const modal = document.getElementById('adminDirectorModal');
+        if (modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function confirmSpecificRole() {
+        const roleInput = document.getElementById('specificRoleInput');
+        if (roleInput) {
+            roleInput.value = tempSelectedRole;
+        }
+        const badge = document.getElementById('adminDirectorBadge');
+        if (badge) {
+            let icon = 'ri-award-line';
+            if (tempSelectedRole === 'OVPRE Admin') icon = 'ri-shield-user-line';
+            else if (tempSelectedRole === 'Extension Director') icon = 'ri-community-line';
+            badge.innerHTML = `<i class="${icon}"></i> ${tempSelectedRole}`;
+        }
+        closeAdminDirectorModal();
+        updateRecap();
+    }
+
+    // 2. Coordinator Modal
+    function openCoordinatorModal() {
+        let currentRole = document.getElementById('specificRoleInput')?.value || 'Research Coordinator';
+        if (!['Research Coordinator', 'Extension Coordinator'].includes(currentRole)) {
+            currentRole = 'Research Coordinator';
+        }
+        tempSelectedRole = currentRole;
+        
+        document.querySelectorAll('#coordinatorModal .role-option-item').forEach(item => {
+            item.classList.toggle('selected', item.getAttribute('data-role') === currentRole);
+        });
+
+        const modal = document.getElementById('coordinatorModal');
+        if (modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeCoordinatorModal() {
+        const modal = document.getElementById('coordinatorModal');
+        if (modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function confirmCoordinatorRole() {
+        const roleInput = document.getElementById('specificRoleInput');
+        if (roleInput) {
+            roleInput.value = tempSelectedRole;
+        }
+        const badge = document.getElementById('coordinatorBadge');
+        if (badge) {
+            let icon = tempSelectedRole === 'Extension Coordinator' ? 'ri-community-line' : 'ri-flask-line';
+            badge.innerHTML = `<i class="${icon}"></i> ${tempSelectedRole}`;
+        }
+        closeCoordinatorModal();
+        updateRecap();
+    }
+
+    // 3. Faculty Researcher / Extensionist Modal
+    function openFacultyModal() {
+        let currentRole = document.getElementById('specificRoleInput')?.value || 'Researcher';
+        if (!['Researcher', 'Faculty Extensionist'].includes(currentRole)) {
+            currentRole = 'Researcher';
+        }
+        tempSelectedRole = currentRole;
+        
+        document.querySelectorAll('#facultyModal .role-option-item').forEach(item => {
+            item.classList.toggle('selected', item.getAttribute('data-role') === currentRole);
+        });
+
+        const modal = document.getElementById('facultyModal');
+        if (modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeFacultyModal() {
+        const modal = document.getElementById('facultyModal');
+        if (modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function confirmFacultyRole() {
+        const roleInput = document.getElementById('specificRoleInput');
+        if (roleInput) {
+            roleInput.value = tempSelectedRole;
+        }
+        const badge = document.getElementById('facultyBadge');
+        if (badge) {
+            let label = tempSelectedRole === 'Faculty Extensionist' ? 'Faculty Extensionist' : 'Faculty Researcher';
+            let icon = tempSelectedRole === 'Faculty Extensionist' ? 'ri-community-line' : 'ri-flask-line';
+            badge.innerHTML = `<i class="${icon}"></i> ${label}`;
+        }
+        closeFacultyModal();
+        updateRecap();
+    }
+
+    function syncCollegeVisibility() {
+        const type = document.getElementById('accountTypeInput')?.value || 'personal';
+        const collegeGroup = document.getElementById('collegeAffiliationGroup');
+        const deptSelect = document.getElementById('department_id');
+        const recapCollegeRow = document.getElementById('recapCollegeRow');
+
+        if (type === 'personal') {
+            if (collegeGroup) collegeGroup.style.display = 'none';
+            if (deptSelect) {
+                deptSelect.removeAttribute('required');
+                deptSelect.value = '';
+            }
+            if (recapCollegeRow) recapCollegeRow.style.display = 'none';
+        } else {
+            if (collegeGroup) collegeGroup.style.display = 'block';
+            if (deptSelect) {
+                deptSelect.setAttribute('required', 'required');
+            }
+            if (recapCollegeRow) recapCollegeRow.style.display = 'flex';
+        }
     }
 
     function jumpToStep(step) {
@@ -1133,6 +1670,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const bday = document.getElementById('birthday').value;
             const gender = document.getElementById('gender').value;
             const dept = document.getElementById('department_id').value;
+            const type = document.getElementById('accountTypeInput')?.value || 'personal';
             if (!fName) {
                 alert('Please enter your first name.');
                 document.getElementById('first_name').focus();
@@ -1148,7 +1686,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 document.getElementById('gender').focus();
                 return false;
             }
-            if (!dept) {
+            if (type !== 'personal' && !dept) {
                 alert('Please select your College affiliation.');
                 document.getElementById('department_id').focus();
                 return false;
@@ -1191,32 +1729,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     function generateSuggestions() {
-        const first = document.getElementById('first_name').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-        const last = document.getElementById('last_name').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-        const pillsContainer = document.getElementById('emailPills');
-        if (!pillsContainer) return;
+        const first = document.getElementById('first_name')?.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+        const last = document.getElementById('last_name')?.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '') || '';
 
-        pillsContainer.innerHTML = '';
-        if (!first) {
-            pillsContainer.innerHTML = '<span class="suggestion-pill" onclick="setEmailValue(this.textContent)">user.dlsp@dlsp.edu.ph</span><span class="suggestion-pill" onclick="setEmailValue(this.textContent)">researcher@gmail.com</span>';
-            return;
-        }
-
-        const s1 = last ? `${first}.${last}@dlsp.edu.ph` : `${first}@dlsp.edu.ph`;
-        const s2 = last ? `${first[0]}${last}@gmail.com` : `${first}.research@gmail.com`;
-        const s3 = last ? `${first}${last}2026@gmail.com` : `${first}2026@dlsp.edu.ph`;
-
-        [s1, s2, s3].forEach(s => {
-            const span = document.createElement('span');
-            span.className = 'suggestion-pill';
-            span.textContent = s;
-            span.onclick = () => setEmailValue(s);
-            pillsContainer.appendChild(span);
-        });
-
-        // Also suggest username
+        // Suggest username if empty and not manually edited
         const uInput = document.getElementById('username');
-        if (uInput && !uInput.value) {
+        if (uInput && !uInput.dataset.manuallyEdited && !uInput.value && first) {
             uInput.value = last ? `${first}_${last}` : first;
         }
     }
@@ -1313,19 +1831,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     function updateRecap() {
+        const type = document.getElementById('accountTypeInput')?.value || 'personal';
+        const specificRole = document.getElementById('specificRoleInput')?.value || 'Research Director';
         const fName = document.getElementById('first_name').value.trim();
         const lName = document.getElementById('last_name').value.trim();
         const deptSelect = document.getElementById('department_id');
-        const deptText = deptSelect.options[deptSelect.selectedIndex]?.text || '-';
+        let deptText = 'None (Institutional / OVPRE)';
+        if (type !== 'personal') {
+            deptText = deptSelect.options[deptSelect.selectedIndex]?.text || '-';
+        }
         const email = document.getElementById('email').value.trim();
         const username = document.getElementById('username').value.trim();
         const phone = document.getElementById('phone').value.trim();
 
+        let accountTypeLabel = 'Admin/Directors (' + specificRole + ')';
+        if (type === 'child') {
+            accountTypeLabel = 'Coordinator (' + specificRole + ')';
+        } else if (type === 'work') {
+            const displayRole = specificRole === 'Faculty Extensionist' ? 'Faculty Extensionist' : 'Faculty Researcher';
+            accountTypeLabel = 'Faculty (' + displayRole + ')';
+        }
+
+        document.getElementById('recapAccountType').textContent = accountTypeLabel;
         document.getElementById('recapFullName').textContent = `${fName} ${lName}`.trim() || '-';
         document.getElementById('recapCollege').textContent = deptText;
         document.getElementById('recapEmailUser').textContent = `${email} (${username})`;
         document.getElementById('recapPhone').textContent = phone || 'Verified';
     }
+
+    // Modal background click & escape key handlers
+    document.getElementById('adminDirectorModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'adminDirectorModal') closeAdminDirectorModal();
+    });
+    document.getElementById('coordinatorModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'coordinatorModal') closeCoordinatorModal();
+    });
+    document.getElementById('facultyModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'facultyModal') closeFacultyModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAdminDirectorModal();
+            closeCoordinatorModal();
+            closeFacultyModal();
+        }
+    });
+
+    // Initialize college affiliation visibility based on default selected role
+    syncCollegeVisibility();
 </script>
 
 </body>

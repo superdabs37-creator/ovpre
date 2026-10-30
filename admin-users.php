@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/layout.php';
-$actor = require_login([ROLE_OVPRE_ADMIN, ROLE_SUPER_ADMIN]);
+$actor = require_login([ROLE_OVPRE_ADMIN, ROLE_SUPER_ADMIN, ROLE_RESEARCH_DIRECTOR]);
 verify_csrf();
 
 $rolePurposes = [

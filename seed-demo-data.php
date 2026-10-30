@@ -150,14 +150,15 @@ try {
         if ($existingId) {
             $userDeptMap[$deptId] = (int) $existingId;
         } else {
+            $assignedDept = $deptId <= 9 ? $deptId : 4; // CAS (Research Division)
             $insertStmt = $pdo->prepare("INSERT INTO users (fullname, email, username, password, role, department_id, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'Active', NOW())");
-            $insertStmt->execute([$u['fullname'], $u['email'], $u['username'], $defaultPasswordHash, $u['role'], $deptId]);
+            $insertStmt->execute([$u['fullname'], $u['email'], $u['username'], $defaultPasswordHash, $u['role'], $assignedDept]);
             $userDeptMap[$deptId] = (int) $pdo->lastInsertId();
             $results['users_created']++;
         }
     }
 
-    $adminId = 1; // Default System Admin
+    $adminId = 2; // Default System Admin
 
     // 4. Sample Documents & Files Creation
     $uploadRecordsDir = __DIR__ . '/uploads/records';

@@ -253,7 +253,97 @@ $submissionLink = match (PORTAL_ROLE) {
 </script>
 <?php endif; ?>
 <section class="two-col">
-    <article class="panel"><div class="panel-heading"><h2><?php echo $isResearchCoordinator || $isResearcher ? 'Research Activities' : ($isExtensionCoordinator || $isFacultyExtensionist ? 'Extension Activities' : 'Recent Activities'); ?></h2><?php if (portal_can('calendar')): ?><a href="calendar.php">Calendar</a><?php endif; ?></div><div class="list"><?php foreach ($activities as $activity): ?><div class="list-row"><i class="ri-calendar-event-line"></i><div><strong><?php echo h($activity['title']); ?></strong><span><?php echo h(date('M d, Y', strtotime($activity['date'])) . ' | ' . $activity['venue']); ?></span></div></div><?php endforeach; ?></div></article>
-    <article class="panel"><div class="panel-heading"><h2><?php echo $isResearchCoordinator ? 'Research Announcements' : ($isExtensionCoordinator ? 'Extension Announcements' : 'Announcements'); ?></h2><a href="announcements.php">View all</a></div><div class="list"><?php foreach ($announcements as $item): ?><div class="list-row"><i class="ri-megaphone-line"></i><div><strong><?php echo h($item['title']); ?></strong><span><?php echo h(date('M d, Y', strtotime($item['created_at']))); ?></span></div></div><?php endforeach; ?></div></article>
+    <article class="panel">
+        <div class="panel-heading">
+            <h2><?php echo $isResearchCoordinator || $isResearcher ? 'Research Activities' : ($isExtensionCoordinator || $isFacultyExtensionist ? 'Extension Activities' : 'Recent Activities'); ?></h2>
+            <?php if (portal_can('calendar')): ?><a href="calendar.php">Calendar</a><?php endif; ?>
+        </div>
+        <div class="list">
+            <?php if (empty($activities)): ?>
+                <div class="muted" style="padding: 12px; font-size: 0.88rem;">No activities scheduled at this time.</div>
+            <?php else: ?>
+                <?php foreach ($activities as $activity): ?>
+                    <div class="list-row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
+                            <i class="ri-calendar-event-line" style="flex-shrink: 0;"></i>
+                            <div style="min-width: 0;">
+                                <strong style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo h($activity['title']); ?></strong>
+                                <span style="font-size: 0.84rem;"><?php echo h(date('M d, Y', strtotime($activity['date'])) . ' | ' . $activity['venue']); ?></span>
+                            </div>
+                        </div>
+                        <button class="portal-view-btn" type="button" data-open-modal="activity-detail-<?php echo (int) $activity['id']; ?>" title="View Activity Details">
+                            <i class="ri-eye-line"></i> View
+                        </button>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </article>
+    <article class="panel">
+        <div class="panel-heading">
+            <h2><?php echo $isResearchCoordinator ? 'Research Announcements' : ($isExtensionCoordinator ? 'Extension Announcements' : 'Announcements'); ?></h2>
+            <?php if (portal_can('announcements')): ?><a href="announcements.php">View all</a><?php endif; ?>
+        </div>
+        <div class="list">
+            <?php if (empty($announcements)): ?>
+                <div class="muted" style="padding: 12px; font-size: 0.88rem;">No announcements posted at this time.</div>
+            <?php else: ?>
+                <?php foreach ($announcements as $item): ?>
+                    <div class="list-row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
+                            <i class="ri-megaphone-line" style="flex-shrink: 0;"></i>
+                            <div style="min-width: 0;">
+                                <strong style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo h($item['title']); ?></strong>
+                                <span style="font-size: 0.84rem;"><?php echo h(date('M d, Y', strtotime($item['created_at']))); ?></span>
+                            </div>
+                        </div>
+                        <button class="portal-view-btn" type="button" data-open-modal="announcement-detail-<?php echo (int) $item['id']; ?>" title="View Announcement Details">
+                            <i class="ri-eye-line"></i> View
+                        </button>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </article>
 </section>
+<?php foreach ($activities as $activity): ?>
+    <div class="modal" id="activity-detail-<?php echo (int) $activity['id']; ?>" aria-hidden="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="activity-title-<?php echo (int) $activity['id']; ?>" style="max-width: 540px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close activity details"><i class="ri-close-line"></i></button>
+            <span class="tag"><?php echo h($activity['activity_type'] ?? 'Activity'); ?></span>
+            <h2 id="activity-title-<?php echo (int) $activity['id']; ?>" style="margin-top: 8px;"><?php echo h($activity['title']); ?></h2>
+            <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #475569;">
+                <div><strong style="color: #1e293b;"><i class="ri-calendar-line"></i> Date:</strong> <?php echo h(date('F d, Y', strtotime($activity['date']))); ?><?php if (!empty($activity['date_to']) && $activity['date_to'] !== $activity['date']): ?> &mdash; <?php echo h(date('F d, Y', strtotime($activity['date_to']))); ?><?php endif; ?></div>
+                <?php if (!empty($activity['venue'])): ?>
+                    <div><strong style="color: #1e293b;"><i class="ri-map-pin-line"></i> Venue:</strong> <?php echo h($activity['venue']); ?></div>
+                <?php endif; ?>
+            </div>
+            <?php if (!empty($activity['description'])): ?>
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 8px;">
+                    <strong style="display: block; margin-bottom: 6px; font-size: 0.88rem; color: #1e293b;">Description:</strong>
+                    <p style="margin: 0; line-height: 1.6; color: #334155; font-size: 0.92rem;"><?php echo nl2br(h($activity['description'])); ?></p>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+<?php endforeach; ?>
+
+<?php foreach ($announcements as $item): ?>
+    <div class="modal" id="announcement-detail-<?php echo (int) $item['id']; ?>" aria-hidden="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="announcement-title-<?php echo (int) $item['id']; ?>" style="max-width: 540px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close announcement details"><i class="ri-close-line"></i></button>
+            <span class="tag"><?php echo h(!empty($item['audience']) ? ($item['audience'] === 'Other Authorized Users' ? 'Faculty Researchers' : $item['audience']) : 'Announcement'); ?></span>
+            <h2 id="announcement-title-<?php echo (int) $item['id']; ?>" style="margin-top: 8px;"><?php echo h($item['title']); ?></h2>
+            <div style="margin: 14px 0 16px 0; color: #334155; line-height: 1.6; font-size: 0.94rem;">
+                <?php echo nl2br(h($item['content'] ?? '')); ?>
+            </div>
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 0.82rem; color: #64748b;">
+                <i class="ri-time-line"></i> Posted <?php echo h(date('F d, Y', strtotime($item['created_at']))); ?><?php if (!empty($item['fullname'])): ?> by <strong><?php echo h($item['fullname']); ?></strong><?php endif; ?>
+            </div>
+        </section>
+    </div>
+<?php endforeach; ?>
+
 <?php portal_footer(); ?>
