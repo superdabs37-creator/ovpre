@@ -296,10 +296,11 @@ renderHeader('Reports Management', 'reports');
     }
 
     .report-chart-box {
-        display: grid;
-        grid-template-rows: auto 1fr;
-        gap: 14px;
-        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 440px;
         padding: 18px;
         background: var(--white);
         border: 1px solid var(--line);
@@ -312,6 +313,7 @@ renderHeader('Reports Management', 'reports');
         align-items: flex-start;
         justify-content: space-between;
         gap: 12px;
+        min-height: 44px;
     }
 
     .report-chart-title {
@@ -349,11 +351,26 @@ renderHeader('Reports Management', 'reports');
 
     .report-chart-frame {
         position: relative;
-        min-height: 240px;
+        min-height: 230px;
+        height: 230px;
+        max-height: 230px;
         padding: 8px;
         background: linear-gradient(180deg, #ffffff, var(--surface));
         border: 1px solid rgba(15, 61, 36, 0.08);
         border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .report-chart-legend {
+        min-height: 125px;
+        height: 125px;
+        padding: 6px 4px 0;
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .report-chart-frame canvas {
@@ -522,6 +539,7 @@ renderHeader('Reports Management', 'reports');
                         <canvas id="adminReportsBarChart"></canvas>
                         <div class="report-chart-empty">No college data for the selected filters.</div>
                     </div>
+                    <div id="adminReportsBarLegend" class="report-chart-legend"></div>
                 </div>
                 <div class="report-chart-box">
                     <div class="report-chart-head">
@@ -532,6 +550,7 @@ renderHeader('Reports Management', 'reports');
                         <canvas id="adminReportsPieChart"></canvas>
                         <div class="report-chart-empty">No category data for the selected filters.</div>
                     </div>
+                    <div id="adminReportsPieLegend" class="report-chart-legend"></div>
                 </div>
                 <div class="report-chart-box">
                     <div class="report-chart-head">
@@ -542,6 +561,7 @@ renderHeader('Reports Management', 'reports');
                         <canvas id="adminReportsLineChart"></canvas>
                         <div class="report-chart-empty">No monthly activity for the selected filters.</div>
                     </div>
+                    <div id="adminReportsLineLegend" class="report-chart-legend"></div>
                 </div>
             </div>
             <div class="report-actions" style="margin-top:16px;"><button class="ghost-btn" type="button" data-export-table="reportDocumentsTable"><i class="ri-download-cloud-line"></i> Export Data</button></div>
@@ -627,79 +647,232 @@ document.addEventListener('DOMContentLoaded', () => {
     const markEmpty = (canvas) => {
         canvas?.closest('[data-chart-frame]')?.classList.add('is-empty');
     };
+    let barChartInstance = null;
+    let pieChartInstance = null;
+    let lineChartInstance = null;
+
     const drawChart = (id, config) => {
         const canvas = document.getElementById(id);
         if (!canvas || !hasValues(config.rows)) {
             markEmpty(canvas);
             return;
         }
-        new Chart(canvas, config.chart(filteredRows(config.rows)));
+        const instance = new Chart(canvas, config.chart(filteredRows(config.rows)));
+        if (id === 'adminReportsBarChart') barChartInstance = instance;
+        if (id === 'adminReportsPieChart') pieChartInstance = instance;
+        if (id === 'adminReportsLineChart') lineChartInstance = instance;
     };
 
+    const collegeColors = [
+        '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', 
+        '#f43f5e', '#06b6d4', '#f97316', '#14b8a6', 
+        '#ec4899', '#6366f1', '#84cc16', '#a855f7'
+    ];
+
+    // 1. Colleges Output (Bar Chart)
     drawChart('adminReportsBarChart', {
         rows: window.adminReportsDashboard.departments || [],
-        chart: (rows) => ({
-            type: 'bar',
-            data: {
-                labels: rows.map((row) => row.department_name),
-                datasets: [{
-                    label: 'Documents',
-                    data: rows.map((row) => Number(row.total)),
-                    backgroundColor: rows.map((_, index) => colors[index % colors.length]),
-                    borderRadius: 8,
-                    borderSkipped: false,
-                    maxBarThickness: 44
-                }]
-            },
-            options: chartOptions
-        })
+        chart: (rows) => {
+            const chartConfig = {
+                type: 'bar',
+                data: {
+                    labels: rows.map((row) => row.department_name),
+                    datasets: [{
+                        label: 'Documents',
+                        data: rows.map((row) => Number(row.total)),
+                        backgroundColor: rows.map((_, index) => collegeColors[index % collegeColors.length]),
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        maxBarThickness: 36
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: (items) => items[0]?.label || '',
+                                label: (item) => ` ${item.parsed.y} ${item.parsed.y === 1 ? 'Document' : 'Documents'}`
+                            }
+                        }
+                    },
+                    scales: {
+                        ...chartOptions.scales,
+                        x: {
+                            ...chartOptions.scales.x,
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            };
+
+            // Build aligned 5-row CSS grid: exactly 5 sa kaliwa, 4 sa kanan, rows perfectly leveled
+            const legendContainer = document.getElementById('adminReportsBarLegend');
+            if (legendContainer) {
+                legendContainer.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5, 22px);grid-auto-flow:column;gap:2px 10px;width:100%;align-content:center;';
+                legendContainer.replaceChildren();
+
+                rows.forEach((row, index) => {
+                    const color = collegeColors[index % collegeColors.length];
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;transition:opacity 0.15s;min-width:0;height:22px;';
+                    item.title = `${row.department_name} (${row.total} documents)`;
+
+                    const dot = document.createElement('span');
+                    dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;`;
+
+                    const label = document.createElement('span');
+                    label.style.cssText = 'color:#334155;font-weight:600;font-size:0.71rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;';
+                    label.textContent = row.department_name;
+
+                    item.append(dot, label);
+
+                    item.addEventListener('click', () => {
+                        if (barChartInstance && barChartInstance.toggleDataVisibility) {
+                            barChartInstance.toggleDataVisibility(index);
+                            barChartInstance.update();
+                            const visible = barChartInstance.getDataVisibility(index);
+                            item.style.opacity = visible ? '1' : '0.35';
+                            label.style.textDecoration = visible ? 'none' : 'line-through';
+                        }
+                    });
+
+                    legendContainer.appendChild(item);
+                });
+            }
+
+            return chartConfig;
+        }
     });
 
+    // 2. Category Share (Doughnut Chart)
     drawChart('adminReportsPieChart', {
         rows: window.adminReportsDashboard.categories || [],
-        chart: (rows) => ({
-            type: 'doughnut',
-            data: {
-                labels: rows.map((row) => row.category_name),
-                datasets: [{
-                    data: rows.map((row) => Number(row.total)),
-                    backgroundColor: rows.map((_, index) => colors[index % colors.length]),
-                    borderColor: '#ffffff',
-                    borderWidth: 4,
-                    hoverOffset: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '64%',
-                plugins: chartOptions.plugins
+        chart: (rows) => {
+            const chartConfig = {
+                type: 'doughnut',
+                data: {
+                    labels: rows.map((row) => row.category_name),
+                    datasets: [{
+                        data: rows.map((row) => Number(row.total)),
+                        backgroundColor: rows.map((_, index) => colors[index % colors.length]),
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '64%',
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: { display: false }
+                    }
+                }
+            };
+
+            const pieLegendContainer = document.getElementById('adminReportsPieLegend');
+            if (pieLegendContainer) {
+                pieLegendContainer.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2, 24px);grid-auto-flow:column;gap:6px 10px;width:100%;align-content:center;';
+                pieLegendContainer.replaceChildren();
+
+                rows.forEach((row, index) => {
+                    const color = colors[index % colors.length];
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;transition:opacity 0.15s;min-width:0;height:24px;';
+                    item.title = `${row.category_name} (${row.total})`;
+
+                    const dot = document.createElement('span');
+                    dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;`;
+
+                    const label = document.createElement('span');
+                    label.style.cssText = 'color:#334155;font-weight:600;font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;';
+                    label.textContent = row.category_name;
+
+                    item.append(dot, label);
+
+                    item.addEventListener('click', () => {
+                        if (pieChartInstance && pieChartInstance.toggleDataVisibility) {
+                            pieChartInstance.toggleDataVisibility(index);
+                            pieChartInstance.update();
+                            const visible = pieChartInstance.getDataVisibility(index);
+                            item.style.opacity = visible ? '1' : '0.35';
+                            label.style.textDecoration = visible ? 'none' : 'line-through';
+                        }
+                    });
+
+                    pieLegendContainer.appendChild(item);
+                });
             }
-        })
+
+            return chartConfig;
+        }
     });
 
+    // 3. Monthly Trend (Line Chart)
     drawChart('adminReportsLineChart', {
         rows: window.adminReportsDashboard.monthly || [],
-        chart: (rows) => ({
-            type: 'line',
-            data: {
-                labels: rows.map((row) => row.label),
-                datasets: [{
-                    label: 'Records',
-                    data: rows.map((row) => Number(row.total)),
-                    borderColor: '#15803d',
-                    backgroundColor: 'rgba(21, 128, 61, 0.14)',
-                    fill: true,
-                    tension: 0.38,
-                    pointBackgroundColor: '#facc15',
-                    pointBorderColor: '#0f3d24',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: chartOptions
-        })
+        chart: (rows) => {
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: rows.map((row) => row.label),
+                    datasets: [{
+                        label: 'Records',
+                        data: rows.map((row) => Number(row.total)),
+                        borderColor: '#15803d',
+                        backgroundColor: 'rgba(21, 128, 61, 0.14)',
+                        fill: true,
+                        tension: 0.38,
+                        pointBackgroundColor: '#facc15',
+                        pointBorderColor: '#0f3d24',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: { display: false }
+                    }
+                }
+            };
+
+            const lineLegendContainer = document.getElementById('adminReportsLineLegend');
+            if (lineLegendContainer) {
+                lineLegendContainer.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;height:100%;';
+                lineLegendContainer.replaceChildren();
+
+                const item = document.createElement('div');
+                item.style.cssText = 'display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:5px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;transition:opacity 0.15s;';
+                item.innerHTML = '<span style="width:10px;height:10px;border-radius:50%;background:#facc15;border:2px solid #0f3d24;display:inline-block;"></span><span style="color:#334155;font-weight:700;font-size:0.75rem;">Records</span>';
+                
+                item.addEventListener('click', () => {
+                    if (lineChartInstance) {
+                        const meta = lineChartInstance.getDatasetMeta(0);
+                        meta.hidden = meta.hidden === null ? !lineChartInstance.data.datasets[0].hidden : null;
+                        lineChartInstance.update();
+                        item.style.opacity = meta.hidden ? '0.35' : '1';
+                        item.querySelector('span:last-child').style.textDecoration = meta.hidden ? 'line-through' : 'none';
+                    }
+                });
+
+                lineLegendContainer.appendChild(item);
+            }
+
+            return chartConfig;
+        }
     });
 });
 </script>

@@ -1,6 +1,12 @@
 # Set landing.php as default directory index page
 DirectoryIndex landing.php index.php
 
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^research-director(?:/.*)?$ dashboard.php [R=302,L]
+    RewriteRule ^extension-director(?:/.*)?$ dashboard.php [R=302,L]
+</IfModule>
+
 <FilesMatch "^(config\.local\.php|.*\.(sql|ini|log))$">
     Require all denied
 </FilesMatch>

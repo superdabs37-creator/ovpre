@@ -243,13 +243,29 @@ renderHeader('User Management', 'users');
     </div>
 </section>
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><i class="ri-information-line"></i><?php echo h($notice['message']); ?></div><?php endif; ?>
-<section class="tool-panel">
-    <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search users"></div>
-    <form method="get" class="action-row" style="display:flex;flex-direction:row;align-items:flex-end;gap:12px;flex-wrap:wrap;"><label class="field" style="margin:0;"><span>Account Status</span><select class="filter-select" name="status" onchange="this.form.submit()"><?php foreach ($statusOptions as $status): ?><option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><label class="field" style="margin:0;"><span>College</span><select class="filter-select" name="department" onchange="this.form.submit()"><option value="0" <?php echo ($departmentFilter === '0' || $departmentFilter === 0) ? 'selected' : ''; ?>>All Colleges</option><option value="none" <?php echo $departmentFilter === 'none' ? 'selected' : ''; ?>>None</option><?php foreach ($departments as $department): ?><option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $departmentFilter === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option><?php endforeach; ?></select></label></form>
-</section>
 <section class="panel">
+    <form method="get" class="data-table-form-filters" id="usersFilterForm">
+        <label class="data-table-filter">
+            <span>Account Status:</span>
+            <select name="status" onchange="this.form.submit()">
+                <?php foreach ($statusOptions as $status): ?>
+                    <option value="<?php echo h($status); ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <label class="data-table-filter">
+            <span>College:</span>
+            <select name="department" onchange="this.form.submit()">
+                <option value="0" <?php echo ($departmentFilter === '0' || $departmentFilter === 0) ? 'selected' : ''; ?>>All Colleges</option>
+                <option value="none" <?php echo $departmentFilter === 'none' ? 'selected' : ''; ?>>None</option>
+                <?php foreach ($departments as $department): ?>
+                    <option value="<?php echo (int) $department['id']; ?>" <?php echo (string) $departmentFilter === (string) $department['id'] ? 'selected' : ''; ?>><?php echo h($department['department_name']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+    </form>
     <div class="table-scroll">
-        <table class="data-table portal-table" data-filter-options="<?php echo h(json_encode(['Role' => [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER]])); ?>">
+        <table class="data-table portal-table" id="usersTable" data-extra-filters="#usersFilterForm" data-filter-options="<?php echo h(json_encode(['Role' => [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN, ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR, ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_OVPRE_SECRETARIAT, ROLE_RESEARCHER]])); ?>">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -319,7 +335,6 @@ renderHeader('User Management', 'users');
                 <?php if ($user['role'] === ROLE_SUPER_ADMIN || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account.</small></div>
                 <?php elseif (!array_key_exists($user['role'], $availableRolePurposes)): ?><label class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>This legacy role is no longer available for assignment.</small><input type="hidden" name="role" value="<?php echo h($user['role']); ?>"></label>
                 <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($availableRolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role === ROLE_RESEARCHER ? 'Faculty Researcher' : $role); ?></option><?php endforeach; ?></select></label><?php endif; ?>
-                <div class="field"><span>Account Status</span><strong><?php echo h($user['status']); ?></strong><small>Use the account action buttons to activate or deactivate.</small></div>
             </div>
             <button class="primary-btn" type="submit"><i class="ri-save-line"></i> Save User</button>
         </form>

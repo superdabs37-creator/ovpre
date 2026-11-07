@@ -146,3 +146,4 @@ ovpre/
 - **Role Isolation**: Automatic route guarding prevents unauthorized access to privileged portals.
 - **Audit Trails**: Security actions (logins, role alterations, data modifications) are recorded with timestamps and client IP addresses in `system-activity.php`.
 - **Encrypted Credentials**: Password storage powered by Bcrypt hashes.
+

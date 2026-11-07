@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         db()->prepare('UPDATE activities SET approval_status = "Approved" WHERE id = ? AND archived_at IS NULL AND approval_status IN ("Pending", "Rejected")')->execute([$id]);
         if (!empty($request['created_by'])) {
-            notify_user((int) $request['created_by'], 'Your activity schedule was approved and added to the calendar: ' . $request['title']);
+            notify_user((int) $request['created_by'], 'Your activity schedule was approved and added to the calendar: ' . $request['title'], 'activities.php#activity-' . $id);
         }
         log_action((int) $user['id'], 'Approved calendar schedule request #' . $id);
         flash('success', 'Activity approved and added to the shared calendar.');
@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect_to('activities.php');
         }
         if (!empty($activity['created_by'])) {
-            notify_user((int) $activity['created_by'], 'Your activity schedule was rejected: ' . $activity['title']);
+            notify_user((int) $activity['created_by'], 'Your activity schedule was rejected: ' . $activity['title'], 'activities.php');
         }
         log_action((int) $user['id'], 'Rejected calendar activity #' . $id);
         flash('success', 'Activity rejected and removed from the shared calendar.');
@@ -428,42 +428,80 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
 
 <?php if (!$archived): ?><div class="modal" id="activityEditorModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="activityModalTitle">
     <div class="modal-backdrop" data-close-modal></div>
-    <article class="modal-card activity-modal-card">
+    <article class="modal-card activity-modal-card" style="width: min(100%, 720px); max-height: 90vh; overflow-y: auto;">
         <button class="modal-close" type="button" data-close-modal aria-label="Close activity editor"><i class="ri-close-line"></i></button>
-        <div class="activity-modal-head">
-            <span class="category-badge" id="activityModalMode">Activity</span>
-            <h2 id="activityModalTitle">Edit Activity</h2>
+        <div class="activity-modal-head" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="category-badge" id="activityModalMode">Activity</span>
+                <h2 id="activityModalTitle" style="margin: 0; font-size: 1.3rem; font-weight: 800; color: #0f172a;">Edit Activity</h2>
+            </div>
+            <span id="activityStatusBadge" style="display: none; align-items: center; gap: 5px; padding: 4px 10px; font-size: 0.78rem; font-weight: 700; border-radius: 999px;"></span>
         </div>
-        <form class="calendar-form" method="post" id="activityEditorForm">
+        <form class="calendar-form" method="post" id="activityEditorForm" style="display: flex; flex-direction: column; gap: 14px;">
             <?php echo csrf_field(); ?>
             <input type="hidden" id="activityAction" value="update">
             <input type="hidden" name="id" id="activityId">
             <input type="hidden" name="approval_status" value="Approved">
-            <label class="field"><span>Title</span><input name="title" id="activityTitle" required></label>
-            <div class="form-grid">
-                <label class="field"><span>Type</span><select name="activity_type" id="activityType"><?php foreach ($activityTypes as $type): ?><option><?php echo h($type); ?></option><?php endforeach; ?></select></label>
-                <label class="field"><span>Date From</span><input type="date" name="date_from" id="activityDateFrom" required></label>
-                <label class="field"><span>Date To</span><input type="date" name="date_to" id="activityDateTo" required></label>
+            <label class="field" style="margin: 0;">
+                <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Activity Title</span>
+                <input name="title" id="activityTitle" placeholder="e.g. Annual Faculty Research Colloquium" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+            </label>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px;">
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Type</span>
+                    <select name="activity_type" id="activityType" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem; background: #ffffff;">
+                        <?php foreach ($activityTypes as $type): ?>
+                            <option><?php echo h($type); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Date From</span>
+                    <input type="date" name="date_from" id="activityDateFrom" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                </label>
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Date To</span>
+                    <input type="date" name="date_to" id="activityDateTo" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                </label>
             </div>
-            <label class="field"><span>Venue</span><input name="venue" id="activityVenue" required></label>
-            <label class="field"><span>Description</span><textarea name="description" id="activityDescription" rows="4"></textarea></label>
-            <div class="activity-modal-footer">
-                <div class="activity-modal-destructive">
-                    <button class="btn-archive-activity" type="submit" formnovalidate name="action" value="archive" id="archiveActivityButton" onclick="return confirm('Archive this activity from the calendar?');">
-                        <i class="ri-archive-line"></i><span>Archive Activity</span>
+            <label class="field" style="margin: 0;">
+                <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Venue / Location</span>
+                <input name="venue" id="activityVenue" placeholder="e.g. University Gymnasium / Audio-Visual Room" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+            </label>
+            <label class="field" style="margin: 0;">
+                <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Activity Details &amp; Objectives</span>
+                <textarea name="description" id="activityDescription" rows="4" placeholder="Provide background details, objectives, schedule, or instructions for this activity..." style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px 12px; font-size: 0.88rem; line-height: 1.5; resize: vertical;"></textarea>
+            </label>
+            
+            <div class="activity-modal-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; padding-top: 16px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+                <div class="activity-modal-destructive" style="display: flex; align-items: center; gap: 8px;">
+                    <button type="submit" formnovalidate name="action" value="archive" id="archiveActivityButton" onclick="return confirm('Archive this activity from the calendar?');" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                        <i class="ri-archive-line"></i><span>Archive</span>
                     </button>
-                    <button class="btn-delete-activity" type="submit" formnovalidate name="action" value="delete" id="deleteActivityButton" onclick="return confirm('Permanently delete this activity? This cannot be undone.');">
-                        <i class="ri-delete-bin-line"></i><span>Delete Activity</span>
+                    <?php if (($user['role'] ?? '') === 'Super Admin'): ?>
+                        <button type="submit" formnovalidate name="action" value="reject" id="rejectActivityButton" onclick="return confirm('Reject this activity and remove it from the shared calendar?')" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                            <i class="ri-close-line"></i><span>Reject</span>
+                        </button>
+                    <?php endif; ?>
+                    <button type="submit" formnovalidate name="action" value="delete" id="deleteActivityButton" onclick="return confirm('Permanently delete this activity? This cannot be undone.');" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                        <i class="ri-delete-bin-line"></i><span>Delete</span>
                     </button>
                 </div>
-                <div class="activity-modal-primary">
+                <div class="activity-modal-primary" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                    <button type="button" data-close-modal style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 600; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                        Cancel
+                    </button>
                     <?php if (($user['role'] ?? '') === 'Super Admin'): ?>
-                        <button class="primary-btn" type="submit" name="action" value="review" id="approveActivityButton"><i class="ri-check-line"></i> Approve</button>
-                        <button class="danger-btn" type="submit" name="action" value="reject" id="rejectActivityButton" onclick="return confirm('Reject this activity and remove it from the shared calendar?')"><i class="ri-close-line"></i> Reject</button>
+                        <button type="submit" name="action" value="review" id="approveActivityButton" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 600; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                            <i class="ri-check-line"></i> Approve
+                        </button>
                     <?php endif; ?>
-                    <button class="ghost-btn" type="button" data-close-modal>Cancel</button>
-                    <button class="primary-btn" type="submit" name="action" value="create" id="createActivityButton"><i class="ri-add-circle-line"></i> Add Activity</button>
-                    <button class="primary-btn" type="submit" name="action" value="update" id="saveActivityButton"><i class="ri-save-line"></i> Save Changes</button>
+                    <button type="submit" name="action" value="create" id="createActivityButton" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <i class="ri-add-circle-line"></i> Add Activity
+                    </button>
+                    <button type="submit" name="action" value="update" id="saveActivityButton" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <i class="ri-save-line"></i> Save Changes
+                    </button>
                 </div>
             </div>
         </form>

@@ -18,16 +18,9 @@ renderHeader('System Activity', 'audit');
     </div>
 </section>
 
-<section class="tool-panel">
-    <div class="search-control">
-        <i class="ri-search-line"></i>
-        <input data-table-search type="search" placeholder="Search system activity">
-    </div>
-</section>
-
 <section class="panel">
     <div class="table-scroll">
-        <table class="data-table portal-table">
+        <table class="data-table portal-table" id="systemActivityTable">
             <thead>
                 <tr>
                     <th>User</th>

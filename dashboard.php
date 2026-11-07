@@ -307,205 +307,6 @@ foreach ($programsByCollege as $collegeName => $programNames) {
 $collegeMatrix = $submissionsBreakdown;
 
 // =========================================================
-// PLSP OFFICIAL MAJORS CATALOG & BY-MAJOR ANALYTICS ENGINE
-// =========================================================
-$majorsCatalog = [
-    'College of Teacher Education' => [
-        'BSED - Major in English' => ['short' => 'English (BSED)', 'kw' => ['english', 'literature', 'grammar', 'reading']],
-        'BSED - Major in Filipino' => ['short' => 'Filipino (BSED)', 'kw' => ['filipino', 'mother-tongue', 'multilingual', 'wika', 'tagalog']],
-        'BSED - Major in Mathematics' => ['short' => 'Math (BSED)', 'kw' => ['mathematics', 'math', 'algebra', 'calculus', 'statistics', 'numeracy']],
-        'BSED - Major in Social Studies' => ['short' => 'Social Studies (BSED)', 'kw' => ['social studies', 'kasaysayan', 'history', 'civics', 'culture']],
-    ],
-    'College of Business Administration' => [
-        'BSBA - Major in Marketing Management' => ['short' => 'Marketing (BSBA)', 'kw' => ['marketing', 'e-commerce', 'consumer', 'branding', 'sales']],
-        'BSBA - Major in Financial Management' => ['short' => 'Financial (BSBA)', 'kw' => ['finance', 'financial', 'investment', 'capital', 'banking']],
-        'BSBA - Major in Human Resource Development' => ['short' => 'HR Dev (BSBA)', 'kw' => ['human resource', 'hr', 'personnel', 'employee', 'workforce']],
-        'Bachelor of Science in Entrepreneurship' => ['short' => 'Entrepreneurship', 'kw' => ['entrepreneur', 'entrepreneurship', 'micro-enterprise', 'startup', 'msme', 'supply chain']],
-        'Bachelor of Science in Office Administration' => ['short' => 'Office Admin', 'kw' => ['office', 'administration', 'clerical', 'records management']],
-    ],
-    'College of Computer Studies and Technology' => [
-        'BSIT - Major in Web and Game Development' => ['short' => 'Web & Game (BSIT)', 'kw' => ['web', 'game', 'gaming', 'interactive media', 'frontend']],
-        'BSIT - Major in Software Development' => ['short' => 'Software Dev (BSIT)', 'kw' => ['software', 'application', 'crop disease', 'ai', 'detection', 'machine learning']],
-        'BSIT - Major in Network Technology' => ['short' => 'Network Tech (BSIT)', 'kw' => ['network', 'iot', 'ciphers', 'cryptographic', 'microgrid', 'routing', 'cisco']],
-        'BSIS - Major in Business Analytics' => ['short' => 'Business Analytics', 'kw' => ['business analytics', 'analytics', 'data science', 'data mining', 'dashboard']],
-        'BSIS - Major in System and Network Security' => ['short' => 'Security (BSIS)', 'kw' => ['security', 'cybersecurity', 'firewall', 'penetration', 'encryption']],
-        'BSIS - Major in Project Management' => ['short' => 'Project Mgmt (BSIS)', 'kw' => ['project management', 'agile', 'scrum', 'system implementation', 'it project']],
-    ],
-    'College of Arts and Sciences' => [
-        'Bachelor of Science in Psychology' => ['short' => 'Psychology', 'kw' => ['psychology', 'behavior', 'mental health', 'counseling', 'psychological']],
-        'Bachelor of Arts in Communication' => ['short' => 'Communication', 'kw' => ['communication', 'media', 'journalism', 'legends', 'oral literature', 'broadcasting']],
-        'Bachelor of Science in Economics' => ['short' => 'Economics', 'kw' => ['economic', 'economy', 'macroeconomics', 'inflation', 'poverty']],
-        'Bachelor of Public Administration' => ['short' => 'Public Admin', 'kw' => ['public administration', 'governance', 'policy', 'barangay', 'local government']],
-        'Bachelor of Arts in Political Science' => ['short' => 'Political Science', 'kw' => ['political', 'politics', 'election', 'international relations', 'legislation']],
-    ],
-    'College of Accountancy' => [
-        'Bachelor of Science in Accountancy' => ['short' => 'Accountancy (BSA)', 'kw' => ['audit', 'internal audit', 'taxation', 'cpa', 'accounting standards']],
-        'Bachelor of Science in Accounting Information System' => ['short' => 'Accounting Info (AIS)', 'kw' => ['accounting information', 'ais', 'accounting software', 'automated accounting']],
-        'Bachelor of Science in Management Accounting' => ['short' => 'Management Acct (BSMA)', 'kw' => ['management accounting', 'cost accounting', 'budgeting', 'financial planning']],
-    ],
-    'College of Engineering' => [
-        'Bachelor of Science in Computer Engineering' => ['short' => 'Computer Engineering', 'kw' => ['computer engineering', 'hardware', 'solar', 'rainwater', 'bio-composite', 'thermal', 'bricks']],
-    ],
-    'College of Nursing and Allied Health Sciences' => [
-        'Bachelor of Science in Nursing' => ['short' => 'Nursing (BSN)', 'kw' => ['nursing', 'health', 'immunization', 'patient', 'hospital', 'clinical', 'medical']],
-    ],
-    'College of Human Kinetics' => [
-        'Bachelor of Physical Education' => ['short' => 'Physical Education', 'kw' => ['physical education', 'athlete', 'sports', 'conditioning', 'fitness', 'exercise']],
-    ],
-    'College of Tourism and Hospitality Management' => [
-        'Bachelor of Science in Hospitality Management' => ['short' => 'Hospitality Mgmt', 'kw' => ['hospitality', 'culinary', 'hotel', 'restaurant', 'food and beverage']],
-        'Bachelor of Science in Tourism Management' => ['short' => 'Tourism Mgmt', 'kw' => ['tourism', 'destination', 'agri-tourism', 'travel', 'heritage mapping', 'tourist']],
-    ],
-];
-
-$departmentMajorAnalytics = [];
-try {
-    $rpMajorItems = db()->query("
-        SELECT r.title, d.department_name 
-        FROM research_projects r
-        JOIN users u ON u.id = r.submitted_by
-        LEFT JOIN departments d ON d.id = u.department_id
-        WHERE u.deleted_at IS NULL
-    ")->fetchAll(PDO::FETCH_ASSOC);
-
-    $pubMajorItems = db()->query("
-        SELECT doc.title, d.department_name
-        FROM documents doc
-        JOIN categories c ON c.id = doc.category_id
-        LEFT JOIN users u ON u.id = doc.uploaded_by
-        LEFT JOIN departments d ON d.id = COALESCE(doc.department_id, u.department_id)
-        WHERE c.category_name IN ('Publication', 'Research Report') AND doc.archived_at IS NULL
-    ")->fetchAll(PDO::FETCH_ASSOC);
-
-    $epMajorItems = db()->query("
-        SELECT e.project_title AS title, d.department_name
-        FROM extension_projects e
-        JOIN users u ON u.id = e.submitted_by
-        LEFT JOIN departments d ON d.id = u.department_id
-        WHERE u.deleted_at IS NULL
-    ")->fetchAll(PDO::FETCH_ASSOC);
-
-    $accMajorItems = db()->query("
-        SELECT ar.title, d.department_name
-        FROM accomplishment_reports ar
-        JOIN users u ON u.id = ar.submitted_by
-        LEFT JOIN departments d ON d.id = u.department_id
-        WHERE u.deleted_at IS NULL
-        UNION ALL
-        SELECT doc.title, d.department_name
-        FROM documents doc
-        JOIN categories c ON c.id = doc.category_id
-        LEFT JOIN users u ON u.id = doc.uploaded_by
-        LEFT JOIN departments d ON d.id = COALESCE(doc.department_id, u.department_id)
-        WHERE c.category_name = 'Accomplishment Report' AND doc.archived_at IS NULL
-    ")->fetchAll(PDO::FETCH_ASSOC);
-
-    $matchMajorFn = function($title, $majorsList) {
-        $titleLower = strtolower($title);
-        $bestMajor = null;
-        $bestScore = 0;
-        foreach ($majorsList as $majorName => $cfg) {
-            $keywords = $cfg['kw'] ?? [];
-            $score = 0;
-            foreach ($keywords as $kw) {
-                if (stripos($titleLower, $kw) !== false) {
-                    $score += strlen($kw);
-                }
-            }
-            if ($score > $bestScore) {
-                $bestScore = $score;
-                $bestMajor = $majorName;
-            }
-        }
-        return $bestMajor;
-    };
-
-    foreach ($majorsCatalog as $deptName => $majors) {
-        $departmentMajorAnalytics[$deptName] = [
-            'department_name' => $deptName,
-            'total_majors' => count($majors),
-            'majors' => [],
-        ];
-        foreach ($majors as $mName => $mCfg) {
-            $departmentMajorAnalytics[$deptName]['majors'][$mName] = [
-                'major_name' => $mName,
-                'short_label' => $mCfg['short'] ?? $mName,
-                'res_proposals' => 0,
-                'res_publications' => 0,
-                'ext_proposals' => 0,
-                'ext_accomplishments' => 0,
-                'total_submissions' => 0,
-            ];
-        }
-    }
-
-    $assignMajorStream = function($items, $metricKey) use (&$departmentMajorAnalytics, $majorsCatalog, $matchMajorFn) {
-        foreach ($items as $item) {
-            $deptName = (string) ($item['department_name'] ?? '');
-            if (!isset($departmentMajorAnalytics[$deptName])) continue;
-            $matched = $matchMajorFn($item['title'] ?? '', $majorsCatalog[$deptName]);
-            if ($matched && isset($departmentMajorAnalytics[$deptName]['majors'][$matched])) {
-                $departmentMajorAnalytics[$deptName]['majors'][$matched][$metricKey]++;
-                $departmentMajorAnalytics[$deptName]['majors'][$matched]['total_submissions']++;
-            }
-        }
-    };
-
-    $assignMajorStream($rpMajorItems, 'res_proposals');
-    $assignMajorStream($pubMajorItems, 'res_publications');
-    $assignMajorStream($epMajorItems, 'ext_proposals');
-    $assignMajorStream($accMajorItems, 'ext_accomplishments');
-
-    // Reconcile with verified department submission breakdown
-    $metrics = ['res_proposals', 'res_publications', 'ext_proposals', 'ext_accomplishments'];
-    foreach ($departmentMajorAnalytics as $deptName => &$deptData) {
-        $officialDept = $departmentRowsByName[$deptName] ?? null;
-        if (!$officialDept) continue;
-        $majorNames = array_keys($deptData['majors']);
-        $majorCount = count($majorNames);
-
-        foreach ($metrics as $metricKey) {
-            $targetTotal = (int) ($officialDept[$metricKey] ?? 0);
-            $currentSum = 0;
-            foreach ($deptData['majors'] as $mStats) {
-                $currentSum += $mStats[$metricKey];
-            }
-            $diff = $targetTotal - $currentSum;
-            if ($diff > 0 && $majorCount > 0) {
-                $idx = 0;
-                while ($diff > 0) {
-                    $mKey = $majorNames[$idx % $majorCount];
-                    $deptData['majors'][$mKey][$metricKey]++;
-                    $deptData['majors'][$mKey]['total_submissions']++;
-                    $diff--;
-                    $idx++;
-                }
-            }
-        }
-        $deptData['majors'] = array_values($deptData['majors']);
-    }
-    unset($deptData);
-} catch (Throwable $e) {
-    $departmentMajorAnalytics = [];
-    foreach ($majorsCatalog as $deptName => $majors) {
-        $departmentMajorAnalytics[$deptName] = [
-            'department_name' => $deptName,
-            'total_majors' => count($majors),
-            'majors' => array_map(function($mName) {
-                return [
-                    'major_name' => $mName,
-                    'res_proposals' => 0,
-                    'res_publications' => 0,
-                    'ext_proposals' => 0,
-                    'ext_accomplishments' => 0,
-                    'total_submissions' => 0,
-                ];
-            }, array_keys($majors)),
-        ];
-    }
-}
-
-// =========================================================
 // SUBMISSION COMPLETION STATUS ENGINE (TAPOS NA VS. HINDI PA TAPOS)
 // =========================================================
 $allDeptsList = db()->query("SELECT id, department_name FROM departments ORDER BY department_name ASC")->fetchAll(PDO::FETCH_ASSOC);
@@ -621,6 +422,7 @@ foreach ($completedProjectRows as $completedProjectRow) {
         ];
     }
     $completedColleges[$departmentId]['projects'][] = [
+        'id' => (int) $completedProjectRow['project_id'],
         'type' => (string) $completedProjectRow['project_type'],
         'title' => (string) $completedProjectRow['project_title'],
     ];
@@ -649,18 +451,20 @@ try {
     if ($resStmt) {
         foreach ($resStmt->fetchAll() as $row) { $pendingExecutiveProposals[] = $row; }
     }
-    $extStmt = db()->query("
-        SELECT e.id, e.project_title AS title, e.status, e.workflow_stage, e.approved_budget AS grant_amount, e.created_at, 
-               u.fullname, dep.department_name, dir.fullname AS director_name, 'Extension' AS proposal_type 
-        FROM extension_projects e 
-        JOIN users u ON u.id = e.submitted_by 
-        LEFT JOIN departments dep ON dep.id = u.department_id 
-        LEFT JOIN users dir ON dir.id = e.director_id 
-        WHERE e.status = 'Pending Executive Approval' 
-        ORDER BY e.created_at DESC LIMIT 6
-    ");
-    if ($extStmt) {
-        foreach ($extStmt->fetchAll() as $row) { $pendingExecutiveProposals[] = $row; }
+    if ($role !== ROLE_RESEARCH_DIRECTOR) {
+        $extStmt = db()->query("
+            SELECT e.id, e.project_title AS title, e.status, e.workflow_stage, e.approved_budget AS grant_amount, e.created_at, 
+                   u.fullname, dep.department_name, dir.fullname AS director_name, 'Extension' AS proposal_type 
+            FROM extension_projects e 
+            JOIN users u ON u.id = e.submitted_by 
+            LEFT JOIN departments dep ON dep.id = u.department_id 
+            LEFT JOIN users dir ON dir.id = e.director_id 
+            WHERE e.status = 'Pending Executive Approval' 
+            ORDER BY e.created_at DESC LIMIT 6
+        ");
+        if ($extStmt) {
+            foreach ($extStmt->fetchAll() as $row) { $pendingExecutiveProposals[] = $row; }
+        }
     }
 } catch (Throwable $e) {}
 
@@ -674,16 +478,21 @@ $personSubmissionRows = db()->query("
         submission_rows.project_id,
         submission_rows.project_title,
         submission_rows.project_status,
-        submission_rows.submitted_at
+        submission_rows.submitted_at,
+        submission_rows.description,
+        submission_rows.extra_info,
+        submission_rows.document_id,
+        d.filename AS document_filename
     FROM (
-        SELECT submitted_by, 'Research' AS project_type, id AS project_id, title AS project_title, status AS project_status, created_at AS submitted_at
+        SELECT submitted_by, 'Research' AS project_type, id AS project_id, title AS project_title, status AS project_status, created_at AS submitted_at, abstract AS description, researchers AS extra_info, document_id
         FROM research_projects
         UNION ALL
-        SELECT submitted_by, 'Extension' AS project_type, id AS project_id, project_title, status AS project_status, created_at AS submitted_at
+        SELECT submitted_by, 'Extension' AS project_type, id AS project_id, project_title, status AS project_status, created_at AS submitted_at, community_partner AS description, coordinator AS extra_info, document_id
         FROM extension_projects
     ) submission_rows
     JOIN users u ON u.id = submission_rows.submitted_by
     LEFT JOIN departments dep ON dep.id = u.department_id
+    LEFT JOIN documents d ON d.id = submission_rows.document_id
     ORDER BY u.fullname ASC, submission_rows.submitted_at DESC, submission_rows.project_id DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 $submissionPerformance = [];
@@ -709,11 +518,20 @@ foreach ($personSubmissionRows as $personSubmissionRow) {
     if ((string) $personSubmissionRow['project_status'] === 'Approved') {
         $submissionPerformance[$submitterId]['approved_count']++;
     }
+
+    $docFile = (string) ($personSubmissionRow['document_filename'] ?? '');
+    $docId = !empty($personSubmissionRow['document_id']) ? (int) $personSubmissionRow['document_id'] : null;
+    $docUrl = ($docFile !== '' && $docId !== null) ? record_access_url($docFile, '', $docId) : '';
+
     $submissionPerformance[$submitterId]['submissions'][] = [
+        'id' => (int) $personSubmissionRow['project_id'],
         'type' => $projectType,
         'title' => (string) $personSubmissionRow['project_title'],
         'status' => (string) ($personSubmissionRow['project_status'] ?? 'Unknown'),
         'submitted_at' => (string) $personSubmissionRow['submitted_at'],
+        'description' => (string) ($personSubmissionRow['description'] ?? ''),
+        'extra_info' => (string) ($personSubmissionRow['extra_info'] ?? ''),
+        'document_url' => $docUrl,
     ];
 }
 $submissionPerformance = array_values($submissionPerformance);
@@ -736,28 +554,6 @@ renderHeader('Dashboard', 'dashboard');
         <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
             Real-time visual intelligence: submission trends, college output comparisons, and pipeline status distributions.
         </p>
-    </div>
-    <div class="welcome-actions" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-left:auto;">
-        <a class="primary-btn" href="research.php" style="background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);">
-            <i class="ri-flask-line" aria-hidden="true"></i>
-            <span>Research<br>Pipeline</span>
-        </a>
-        <a class="primary-btn" href="extension.php" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
-            <i class="ri-community-line" aria-hidden="true"></i>
-            <span>Extension<br>Pipeline</span>
-        </a>
-        <a class="primary-btn" href="admin-reports.php" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);">
-            <i class="ri-file-chart-line" aria-hidden="true"></i>
-            <span>Reports &amp;<br>Analytics</span>
-        </a>
-        <a class="primary-btn" href="announcements.php" style="background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);">
-            <i class="ri-megaphone-line" aria-hidden="true"></i>
-            <span>Announcements</span>
-        </a>
-        <a class="ghost-btn" href="admin-users.php">
-            <i class="ri-shield-user-line" aria-hidden="true"></i>
-            <span>Users</span>
-        </a>
     </div>
 </section>
 
@@ -896,77 +692,7 @@ renderHeader('Dashboard', 'dashboard');
     </script>
 </article>
 
-<!-- =========================================================
-     DEDICATED PANEL: BY MAJOR ANALYTICS (BAR CHART BY DEPARTMENT)
-========================================================= -->
-<article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 22px 24px;">
-    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 16px;">
-        <div>
-            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 999px; color: #0284c7; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-                <i class="ri-book-open-line"></i> Program &amp; Major Intelligence
-            </div>
-            <h2 id="deptMajorChartHeading" style="color: #166534; font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
-                <i class="ri-bar-chart-grouped-line" style="color: #15803d; font-size: 1.4rem;"></i> Department Major Analytics
-            </h2>
-            <span id="deptMajorChartSubtitle" style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 5px;">
-                Select a department to view bar chart analytics for its majors.
-            </span>
-        </div>
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 7px;">
-                <label for="majorDeptSelect" style="font-size: 0.82rem; font-weight: 700; color: #475569;">Department:</label>
-                <select id="majorDeptSelect" class="filter-select compact-select" style="font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
-                    <?php foreach (array_keys($departmentMajorAnalytics) as $mDeptName): ?>
-                        <option value="<?php echo h($mDeptName); ?>"><?php echo h($mDeptName); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div style="display: flex; align-items: center; gap: 7px;">
-                <label for="majorStreamFilter" style="font-size: 0.82rem; font-weight: 700; color: #475569;">Stream:</label>
-                <select id="majorStreamFilter" class="filter-select compact-select" style="font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
-                    <option value="all">All 4 Streams (Grouped)</option>
-                    <option value="total_submissions">Total Submissions</option>
-                    <option value="res_proposals">Research Proposals</option>
-                    <option value="res_publications">Publications &amp; Reports</option>
-                    <option value="ext_proposals">Extension Proposals</option>
-                    <option value="ext_accomplishments">Accomplishment Reports</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
-    <!-- Quick Stat Chips -->
-    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-        <span style="font-size: 0.8rem; color: #475569; font-weight: 600;">
-            <i class="ri-building-line" style="color: #15803d;"></i> <strong id="majorStatDept">College of Teacher Education</strong>
-        </span>
-        <span style="color: #cbd5e1;">&bull;</span>
-        <span style="font-size: 0.8rem; color: #475569; font-weight: 600;">
-            <i class="ri-git-commit-line" style="color: #0284c7;"></i> <span id="majorStatCount">11 Majors</span>
-        </span>
-        <span style="color: #cbd5e1;">&bull;</span>
-        <span style="font-size: 0.8rem; color: #475569; font-weight: 600;">
-            <i class="ri-file-chart-line" style="color: #7c3aed;"></i> <span id="majorStatSubmissions">3 Submissions</span>
-        </span>
-    </div>
-
-    <div id="departmentMajorsChartWrapper" style="position: relative; width: 100%; height: 330px; padding: 12px 14px 6px 6px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
-        <canvas id="departmentMajorsBarChart" role="img" aria-label="Vertical bar chart showing submissions by major for the selected department"></canvas>
-    </div>
-
-    <!-- Quick Major Summary Cards Grid -->
-    <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <span style="font-size: 0.82rem; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px;">
-                <i class="ri-layout-grid-line" style="color: #15803d;"></i> Majors &amp; Specializations Breakdown
-            </span>
-            <span style="font-size: 0.76rem; color: #64748b;">Detailed submission counts per major</span>
-        </div>
-        <div id="majorsCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px;">
-            <!-- Generated dynamically by JavaScript -->
-        </div>
-    </div>
-</article>
 
 <article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 20px 22px;">
     <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
@@ -1012,12 +738,6 @@ renderHeader('Dashboard', 'dashboard');
             <div style="position: relative; height: 270px; width: 100%; max-width: 520px; margin: 0 auto;">
                 <canvas id="submissionStatusDonutChart" aria-label="Donut chart of pending, under review, for revision, and approved submissions"></canvas>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px 14px; margin-top: 8px; background: #f8fafc; border-radius: 8px; font-size: 0.78rem; font-weight: 700; color: #475569;">
-                <span>Pending: <strong style="color: #f59e0b;"><?php echo $submissionStatusCounts['Pending']; ?></strong></span>
-                <span>Under Review: <strong style="color: #0284c7;"><?php echo $submissionStatusCounts['Under Review']; ?></strong></span>
-                <span>For Revision: <strong style="color: #ea580c;"><?php echo $submissionStatusCounts['For Revision']; ?></strong></span>
-                <span>Approved: <strong style="color: #15803d;"><?php echo $submissionStatusCounts['Approved']; ?></strong></span>
-            </div>
         </article>
 
         <!-- Card 2: Colleges with actually completed projects -->
@@ -1048,9 +768,21 @@ renderHeader('Dashboard', 'dashboard');
                                 <h3 style="margin: 0; color: #166534; font-size: 0.86rem; font-weight: 800;"><?php echo h($completedCollege['department_name']); ?></h3>
                                 <span style="white-space: nowrap; color: #166534; font-size: 0.72rem; font-weight: 700;"><?php echo count($completedCollege['projects']); ?> completed</span>
                             </div>
-                            <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 0.78rem; line-height: 1.5;">
+                            <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 0.78rem; line-height: 1.6;">
                                 <?php foreach ($completedCollege['projects'] as $completedProject): ?>
-                                    <li><span style="color: #64748b; font-weight: 700;"><?php echo h($completedProject['type']); ?>:</span> <?php echo h($completedProject['title']); ?></li>
+                                    <?php
+                                        $isResearch = ($completedProject['type'] ?? '') === 'Research';
+                                        $targetUrl = $isResearch
+                                            ? 'research.php#proposal-' . (int) ($completedProject['id'] ?? 0)
+                                            : 'extension.php#project-' . (int) ($completedProject['id'] ?? 0);
+                                    ?>
+                                    <li style="margin-bottom: 4px;">
+                                        <span style="color: <?php echo $isResearch ? '#15803d' : '#7c3aed'; ?>; font-weight: 700;"><?php echo h($completedProject['type']); ?>:</span>
+                                        <a href="<?php echo h($targetUrl); ?>" style="color: #1e293b; text-decoration: none; font-weight: 500; transition: color 0.15s;" onmouseover="this.style.color='#15803d';this.style.textDecoration='underline';" onmouseout="this.style.color='#1e293b';this.style.textDecoration='none';" title="View completed work">
+                                            <?php echo h($completedProject['title']); ?>
+                                            <i class="ri-external-link-line" style="font-size: 0.72rem; color: #94a3b8; vertical-align: middle; margin-left: 2px;"></i>
+                                        </a>
+                                    </li>
                                 <?php endforeach; ?>
                             </ul>
                         </section>
@@ -1074,18 +806,6 @@ renderHeader('Dashboard', 'dashboard');
             </div>
             <div style="position: relative; height: 260px; width: 100%;">
                 <canvas id="completionByWingBarChart"></canvas>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-                <div style="padding: 8px 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                    <small style="color: #64748b; font-weight: 700; font-size: 0.68rem; display: block;">Research Wing</small>
-                    <strong style="font-size: 0.85rem; color: #15803d;"><?php echo $researchTotalCompleted; ?> Completed</strong> / 
-                    <strong style="font-size: 0.85rem; color: #ea580c;"><?php echo $researchTotalOngoing; ?> In Progress</strong>
-                </div>
-                <div style="padding: 8px 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                    <small style="color: #64748b; font-weight: 700; font-size: 0.68rem; display: block;">Extension Wing</small>
-                    <strong style="font-size: 0.85rem; color: #15803d;"><?php echo $extensionTotalCompleted; ?> Completed</strong> / 
-                    <strong style="font-size: 0.85rem; color: #ea580c;"><?php echo $extensionTotalOngoing; ?> In Progress</strong>
-                </div>
             </div>
         </article>
 
@@ -1135,18 +855,58 @@ renderHeader('Dashboard', 'dashboard');
     </div>
 </section>
 
-<dialog id="personSubmissionsDialog" aria-labelledby="personSubmissionsTitle" style="width: min(900px, calc(100% - 32px)); max-width: 900px; max-height: 85vh; padding: 0; border: 0; border-radius: 14px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);">
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-        <h3 id="personSubmissionsTitle" style="margin: 0; color: #0f172a; font-size: 1.05rem; font-weight: 800;">All Submissions</h3>
-        <button type="button" id="closePersonSubmissionsDialog" aria-label="Close submissions" style="width: 34px; height: 34px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #334155; font-size: 1.2rem; cursor: pointer;">&times;</button>
+<dialog id="personSubmissionsDialog" aria-labelledby="personSubmissionsTitle" style="width: min(940px, calc(100% - 32px)); max-width: 940px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3); overflow: hidden; background: #ffffff;">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+        <h3 id="personSubmissionsTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">All Submissions</h3>
+        <button type="button" id="closePersonSubmissionsDialog" aria-label="Close submissions" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" onmouseover="this.style.background='#f1f5f9';this.style.color='#0f172a';" onmouseout="this.style.background='#ffffff';this.style.color='#64748b';">&times;</button>
     </div>
-    <div class="table-scroll" style="max-height: calc(85vh - 68px); padding: 16px 20px;">
-        <table class="data-table portal-table">
-            <thead><tr><th>Type</th><th>Submission Title</th><th>Status</th><th>Submitted</th></tr></thead>
-            <tbody id="personSubmissionsTableBody"></tbody>
-        </table>
+    <div class="person-dialog-body" style="padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 72px); overflow-y: auto;">
+        <div class="table-scroll" style="border: 1px solid #e2e8f0; border-radius: 10px; overflow-x: auto; padding: 0 !important; margin: 0;">
+            <table class="data-table portal-table" style="margin: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; width: 105px;">Type</th>
+                        <th style="text-align: left;">Submission Title</th>
+                        <th style="text-align: center; width: 125px;">Status</th>
+                        <th style="text-align: center; width: 115px; white-space: nowrap;">Submitted</th>
+                        <th style="text-align: center; width: 95px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="personSubmissionsTableBody"></tbody>
+            </table>
+        </div>
     </div>
 </dialog>
+
+<!-- QUICK PREVIEW MODAL FOR SUBMISSIONS -->
+<dialog id="submissionQuickPreviewDialog" aria-labelledby="quickPreviewTitle" style="width: min(680px, calc(100% - 32px)); max-width: 680px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="quickPreviewTypeBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 9px; border-radius: 6px;"></span>
+            <span id="quickPreviewStatusBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px;"></span>
+        </div>
+        <button type="button" id="closeQuickPreviewDialog" aria-label="Close preview" style="width: 30px; height: 30px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" onmouseover="this.style.background='#f1f5f9';this.style.color='#0f172a';" onmouseout="this.style.background='#ffffff';this.style.color='#64748b';">&times;</button>
+    </div>
+    <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 72px); overflow-y: auto;">
+        <div>
+            <h3 id="quickPreviewTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.18rem; font-weight: 800; line-height: 1.4;"></h3>
+            <p id="quickPreviewMeta" style="margin: 0; color: #64748b; font-size: 0.84rem; line-height: 1.5;"></p>
+        </div>
+        <div id="quickPreviewDescBox" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
+            <strong id="quickPreviewDescLabel" style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Abstract / Details</strong>
+            <p id="quickPreviewDesc" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+            <a id="quickPreviewDownloadBtn" href="#" target="_blank" rel="noopener" class="ghost-btn" style="display: none; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none;">
+                <i class="ri-download-cloud-line"></i> <span>Download Attached File</span>
+            </a>
+            <a id="quickPreviewFullPageBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; text-decoration: none;">
+                <i class="ri-external-link-line"></i> <span>Open Full Proposal</span>
+            </a>
+        </div>
+    </div>
+</dialog>
+
 <script>
 (() => {
     const submissionsByPerson = <?php echo json_encode($submissionPerformance, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
@@ -1154,7 +914,74 @@ renderHeader('Dashboard', 'dashboard');
     const dialogTitle = document.getElementById('personSubmissionsTitle');
     const tableBody = document.getElementById('personSubmissionsTableBody');
     const closeButton = document.getElementById('closePersonSubmissionsDialog');
+
+    const previewDialog = document.getElementById('submissionQuickPreviewDialog');
+    const closePreviewBtn = document.getElementById('closeQuickPreviewDialog');
     if (!dialog || !dialogTitle || !tableBody || !closeButton) return;
+
+    function openQuickPreview(submission, person) {
+        if (!previewDialog) return;
+        const isResearch = submission.type === 'Research';
+        const targetUrl = isResearch ? `research.php#proposal-${submission.id}` : `extension.php#project-${submission.id}`;
+
+        const typeBadge = document.getElementById('quickPreviewTypeBadge');
+        typeBadge.textContent = submission.type;
+        typeBadge.style.background = isResearch ? '#f0fdf4' : '#f3e8ff';
+        typeBadge.style.color = isResearch ? '#15803d' : '#7c3aed';
+
+        const statusEl = document.getElementById('quickPreviewStatusBadge');
+        const status = submission.status || 'Pending';
+        let statusBg = '#f0fdf4', statusColor = '#15803d', statusBorder = '#bbf7d0';
+        if (status === 'Completed') {
+            statusBg = '#eff6ff'; statusColor = '#1d4ed8'; statusBorder = '#bfdbfe';
+        } else if (status === 'Pending' || status === 'Under Review') {
+            statusBg = '#fffbeb'; statusColor = '#b45309'; statusBorder = '#fde68a';
+        } else if (status === 'For Revision') {
+            statusBg = '#fff7ed'; statusColor = '#ea580c'; statusBorder = '#fed7aa';
+        } else if (status === 'Rejected' || status === 'Declined') {
+            statusBg = '#fef2f2'; statusColor = '#dc2626'; statusBorder = '#fecaca';
+        }
+        statusEl.textContent = status;
+        statusEl.style.background = statusBg;
+        statusEl.style.color = statusColor;
+        statusEl.style.border = `1px solid ${statusBorder}`;
+
+        document.getElementById('quickPreviewTitle').textContent = submission.title;
+
+        let metaText = `Submitter: ${person.submitter_name}`;
+        if (person.department_name) metaText += ` (${person.department_name})`;
+        if (submission.extra_info) {
+            metaText += ` | ${isResearch ? 'Researchers' : 'Coordinator'}: ${submission.extra_info}`;
+        }
+        if (submission.submitted_at) {
+            metaText += ` | Submitted: ${submission.submitted_at.slice(0, 10)}`;
+        }
+        document.getElementById('quickPreviewMeta').textContent = metaText;
+
+        document.getElementById('quickPreviewDescLabel').textContent = isResearch ? 'Abstract / Proposal Overview' : 'Community Partner & Description';
+        document.getElementById('quickPreviewDesc').textContent = submission.description ? submission.description : 'No additional description provided.';
+
+        const downloadBtn = document.getElementById('quickPreviewDownloadBtn');
+        if (submission.document_url) {
+            downloadBtn.href = submission.document_url;
+            downloadBtn.style.display = 'inline-flex';
+        } else {
+            downloadBtn.style.display = 'none';
+        }
+
+        const fullPageBtn = document.getElementById('quickPreviewFullPageBtn');
+        fullPageBtn.href = targetUrl;
+        fullPageBtn.querySelector('span').textContent = isResearch ? 'Open in Research Pipeline' : 'Open in Extension Pipeline';
+
+        previewDialog.showModal();
+    }
+
+    if (closePreviewBtn && previewDialog) {
+        closePreviewBtn.addEventListener('click', () => previewDialog.close());
+        previewDialog.addEventListener('click', event => {
+            if (event.target === previewDialog) previewDialog.close();
+        });
+    }
 
     document.querySelectorAll('[data-person-submissions]').forEach(button => {
         button.addEventListener('click', () => {
@@ -1162,15 +989,113 @@ renderHeader('Dashboard', 'dashboard');
             if (!person) return;
             dialogTitle.textContent = `All Submissions - ${person.submitter_name}`;
             tableBody.replaceChildren();
-            person.submissions.forEach(submission => {
-                const row = document.createElement('tr');
-                [submission.type, submission.title, submission.status || 'Unknown', (submission.submitted_at || '').slice(0, 10)].forEach(value => {
-                    const cell = document.createElement('td');
-                    cell.textContent = value;
-                    row.appendChild(cell);
+
+            if (!person.submissions || !person.submissions.length) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.setAttribute('data-pagination-empty', 'true');
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = 5;
+                emptyCell.style.textAlign = 'center';
+                emptyCell.style.color = '#64748b';
+                emptyCell.style.padding = '24px';
+                emptyCell.textContent = 'No submissions recorded for this person.';
+                emptyRow.appendChild(emptyCell);
+                tableBody.appendChild(emptyRow);
+            } else {
+                person.submissions.forEach(submission => {
+                    const row = document.createElement('tr');
+                    const isResearch = submission.type === 'Research';
+                    const targetUrl = isResearch ? `research.php#proposal-${submission.id}` : `extension.php#project-${submission.id}`;
+
+                    // 1. Type
+                    const typeCell = document.createElement('td');
+                    typeCell.style.textAlign = 'left';
+                    typeCell.style.verticalAlign = 'middle';
+                    typeCell.innerHTML = `<span class="badge" style="background: ${isResearch ? '#f0fdf4' : '#f3e8ff'}; color: ${isResearch ? '#15803d' : '#7c3aed'}; font-weight: 700; font-size: 0.78rem; padding: 3px 9px; border-radius: 6px; display: inline-block;">${submission.type}</span>`;
+                    typeCell.dataset.sortValue = submission.type;
+
+                    // 2. Submission Title (Clickable link with hover effects)
+                    const titleCell = document.createElement('td');
+                    titleCell.style.textAlign = 'left';
+                    titleCell.style.verticalAlign = 'middle';
+
+                    const titleLink = document.createElement('a');
+                    titleLink.href = targetUrl;
+                    titleLink.target = '_blank';
+                    titleLink.rel = 'noopener';
+                    titleLink.title = 'Click to open in full pipeline';
+                    titleLink.style.cssText = 'font-weight: 600; color: #1e293b; text-decoration: none; line-height: 1.45; display: inline-flex; align-items: center; gap: 5px; transition: color 0.15s;';
+                    titleLink.onmouseover = () => { titleLink.style.color = '#15803d'; titleLink.style.textDecoration = 'underline'; };
+                    titleLink.onmouseout = () => { titleLink.style.color = '#1e293b'; titleLink.style.textDecoration = 'none'; };
+
+                    const titleSpan = document.createElement('span');
+                    titleSpan.textContent = submission.title;
+                    const linkIcon = document.createElement('i');
+                    linkIcon.className = 'ri-external-link-line';
+                    linkIcon.style.cssText = 'font-size: 0.78rem; color: #94a3b8; flex-shrink: 0;';
+                    titleLink.append(titleSpan, linkIcon);
+                    titleCell.appendChild(titleLink);
+                    titleCell.dataset.sortValue = submission.title;
+
+                    // 3. Status
+                    const statusCell = document.createElement('td');
+                    statusCell.style.textAlign = 'center';
+                    statusCell.style.verticalAlign = 'middle';
+                    const status = submission.status || 'Pending';
+                    let statusBg = '#f0fdf4', statusColor = '#15803d', statusBorder = '#bbf7d0';
+                    if (status === 'Completed') {
+                        statusBg = '#eff6ff'; statusColor = '#1d4ed8'; statusBorder = '#bfdbfe';
+                    } else if (status === 'Pending' || status === 'Under Review') {
+                        statusBg = '#fffbeb'; statusColor = '#b45309'; statusBorder = '#fde68a';
+                    } else if (status === 'For Revision') {
+                        statusBg = '#fff7ed'; statusColor = '#ea580c'; statusBorder = '#fed7aa';
+                    } else if (status === 'Rejected' || status === 'Declined') {
+                        statusBg = '#fef2f2'; statusColor = '#dc2626'; statusBorder = '#fecaca';
+                    }
+                    statusCell.innerHTML = `<span class="badge" style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusBorder}; font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; display: inline-block;">${status}</span>`;
+                    statusCell.dataset.sortValue = status;
+
+                    // 4. Submitted Date
+                    const dateCell = document.createElement('td');
+                    dateCell.style.textAlign = 'center';
+                    dateCell.style.verticalAlign = 'middle';
+                    dateCell.style.whiteSpace = 'nowrap';
+                    dateCell.style.color = '#64748b';
+                    dateCell.style.fontWeight = '600';
+                    dateCell.style.fontVariantNumeric = 'tabular-nums';
+                    const dateStr = (submission.submitted_at || '').slice(0, 10);
+                    dateCell.textContent = dateStr || '—';
+                    dateCell.dataset.sortValue = dateStr;
+
+                    // 5. Action Cell (View button)
+                    const actionCell = document.createElement('td');
+                    actionCell.style.textAlign = 'center';
+                    actionCell.style.verticalAlign = 'middle';
+                    actionCell.style.whiteSpace = 'nowrap';
+
+                    const viewBtn = document.createElement('button');
+                    viewBtn.type = 'button';
+                    viewBtn.className = 'ghost-btn mini-btn';
+                    viewBtn.title = 'View submission details';
+                    viewBtn.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; font-size: 0.76rem; font-weight: 700; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; cursor: pointer; transition: all 0.15s;';
+                    viewBtn.innerHTML = '<i class="ri-eye-line"></i> View';
+                    viewBtn.onmouseover = () => { viewBtn.style.background = '#15803d'; viewBtn.style.color = '#ffffff'; };
+                    viewBtn.onmouseout = () => { viewBtn.style.background = '#f0fdf4'; viewBtn.style.color = '#15803d'; };
+                    viewBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openQuickPreview(submission, person);
+                    });
+
+                    actionCell.appendChild(viewBtn);
+
+                    row.append(typeCell, titleCell, statusCell, dateCell, actionCell);
+                    tableBody.appendChild(row);
                 });
-                tableBody.appendChild(row);
-            });
+            }
+
+            if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(dialog.querySelector('table.data-table'));
+            }
             dialog.showModal();
         });
     });
@@ -1190,9 +1115,6 @@ renderHeader('Dashboard', 'dashboard');
             <h2><i class="ri-table-line"></i> Tactical Colleges Submissions Matrix</h2>
             <small style="color: #64748b;">Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.</small>
         </div>
-        <a href="admin-reports.php" class="ghost-btn" style="color: #ffffff !important; text-decoration: none; font-weight: 700;">
-            <i class="ri-file-chart-line" style="color: #ffffff !important; font-size: 1.15rem;"></i><span style="color: #ffffff !important; font-weight: 700;">Export Reports &amp; Analytics &rarr;</span>
-        </a>
     </div>
     <div class="table-scroll">
         <table class="data-table portal-table">
@@ -1483,10 +1405,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 projectList.style.cssText = 'margin:0;padding-left:18px;color:#334155;font-size:.78rem;line-height:1.5;';
                 projects.forEach(project => {
                     const item = document.createElement('li');
+                    item.style.cssText = 'margin-bottom:4px;';
+                    const isResearch = project.type === 'Research';
                     const typeLabel = document.createElement('span');
                     typeLabel.textContent = `${project.type}: `;
-                    typeLabel.style.cssText = 'color:#64748b;font-weight:700;';
-                    item.append(typeLabel, document.createTextNode(project.title));
+                    typeLabel.style.cssText = `color:${isResearch ? '#15803d' : '#7c3aed'};font-weight:700;`;
+
+                    const link = document.createElement('a');
+                    link.href = isResearch ? `research.php#proposal-${project.id}` : `extension.php#project-${project.id}`;
+                    link.title = 'View completed work';
+                    link.style.cssText = 'color:#1e293b;text-decoration:none;font-weight:500;transition:color 0.15s;';
+                    link.onmouseover = () => { link.style.color = '#15803d'; link.style.textDecoration = 'underline'; };
+                    link.onmouseout = () => { link.style.color = '#1e293b'; link.style.textDecoration = 'none'; };
+
+                    const titleText = document.createTextNode(project.title + ' ');
+                    const icon = document.createElement('i');
+                    icon.className = 'ri-external-link-line';
+                    icon.style.cssText = 'font-size:0.72rem;color:#94a3b8;vertical-align:middle;margin-left:2px;';
+
+                    link.append(titleText, icon);
+                    item.append(typeLabel, link);
                     projectList.appendChild(item);
                 });
                 card.append(heading, projectList);
@@ -1762,274 +1700,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2B. Dedicated Department Major Analytics Bar Chart (Interactive Filter by Department)
-    const majorCanvas = document.getElementById('departmentMajorsBarChart');
-    const majorDeptSelect = document.getElementById('majorDeptSelect');
-    const majorStreamFilter = document.getElementById('majorStreamFilter');
-    const majorStatDept = document.getElementById('majorStatDept');
-    const majorStatCount = document.getElementById('majorStatCount');
-    const majorStatSubmissions = document.getElementById('majorStatSubmissions');
-    const majorChartWrapper = document.getElementById('departmentMajorsChartWrapper');
-    const deptMajorChartHeading = document.getElementById('deptMajorChartHeading');
 
-    if (majorCanvas && majorDeptSelect) {
-        const majorAnalyticsData = <?php echo json_encode($departmentMajorAnalytics, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
-
-        const streamDatasets = {
-            res_proposals: {
-                label: 'Research Proposals',
-                backgroundColor: '#15803d',
-                borderColor: '#166534',
-                borderWidth: 1,
-                borderRadius: 5,
-                borderSkipped: false,
-                maxBarThickness: 20
-            },
-            res_publications: {
-                label: 'Publications & Reports',
-                backgroundColor: '#7c3aed',
-                borderColor: '#6d28d9',
-                borderWidth: 1,
-                borderRadius: 5,
-                borderSkipped: false,
-                maxBarThickness: 20
-            },
-            ext_proposals: {
-                label: 'Extension Proposals',
-                backgroundColor: '#0284c7',
-                borderColor: '#0369a1',
-                borderWidth: 1,
-                borderRadius: 5,
-                borderSkipped: false,
-                maxBarThickness: 20
-            },
-            ext_accomplishments: {
-                label: 'Accomplishment Reports',
-                backgroundColor: '#ea580c',
-                borderColor: '#c2410c',
-                borderWidth: 1,
-                borderRadius: 5,
-                borderSkipped: false,
-                maxBarThickness: 20
-            },
-            total_submissions: {
-                label: 'Total Submissions',
-                backgroundColor: '#059669',
-                borderColor: '#047857',
-                borderWidth: 1,
-                borderRadius: 5,
-                borderSkipped: false,
-                maxBarThickness: 22
-            }
-        };
-
-        const getSelectedDeptData = () => {
-            const deptName = majorDeptSelect.value;
-            return majorAnalyticsData[deptName] || null;
-        };
-
-        const buildMajorDatasets = (majorsList, stream) => {
-            if (stream === 'all') {
-                return ['res_proposals', 'res_publications', 'ext_proposals', 'ext_accomplishments'].map(k => ({
-                    ...streamDatasets[k],
-                    data: majorsList.map(m => Number(m[k] || 0))
-                }));
-            }
-            const cfg = streamDatasets[stream] || streamDatasets.total_submissions;
-            return [{
-                ...cfg,
-                data: majorsList.map(m => Number(m[stream] || 0))
-            }];
-        };
-
-        let currentDept = getSelectedDeptData();
-        let currentMajors = currentDept ? (currentDept.majors || []) : [];
-
-        const cardsGrid = document.getElementById('majorsCardsGrid');
-
-        const renderMajorCards = (majorsList) => {
-            if (!cardsGrid) return;
-            cardsGrid.innerHTML = '';
-            if (!majorsList || majorsList.length === 0) {
-                cardsGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #64748b; font-size: 0.85rem; padding: 12px;">No majors listed for this department.</p>';
-                return;
-            }
-            majorsList.forEach(m => {
-                const total = Number(m.total_submissions || 0);
-                const hasSubs = total > 0;
-                const card = document.createElement('div');
-                card.style.cssText = `
-                    padding: 12px 14px;
-                    border-radius: 10px;
-                    border: 1px solid ${hasSubs ? '#86efac' : '#e2e8f0'};
-                    background: ${hasSubs ? '#f0fdf4' : '#ffffff'};
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    gap: 8px;
-                    transition: transform 0.15s ease, box-shadow 0.15s ease;
-                `;
-                card.onmouseenter = () => { card.style.transform = 'translateY(-2px)'; card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.06)'; };
-                card.onmouseleave = () => { card.style.transform = 'none'; card.style.boxShadow = 'none'; };
-
-                const topRow = document.createElement('div');
-                topRow.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;';
-
-                const titleBlock = document.createElement('div');
-                const shortTag = document.createElement('span');
-                shortTag.style.cssText = `font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; display: inline-block; background: ${hasSubs ? '#dcfce7' : '#f1f5f9'}; color: ${hasSubs ? '#166534' : '#64748b'};`;
-                shortTag.textContent = m.short_label || 'Major';
-
-                const mainTitle = document.createElement('div');
-                mainTitle.style.cssText = `font-size: 0.82rem; font-weight: 700; color: ${hasSubs ? '#0f172a' : '#334155'}; line-height: 1.35;`;
-                mainTitle.textContent = m.major_name;
-
-                titleBlock.append(shortTag, mainTitle);
-
-                const badge = document.createElement('span');
-                badge.style.cssText = `font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; white-space: nowrap; ${hasSubs ? 'background: #15803d; color: #ffffff;' : 'background: #f1f5f9; color: #94a3b8;'}`;
-                badge.textContent = `${total} ${total === 1 ? 'Sub' : 'Subs'}`;
-
-                topRow.append(titleBlock, badge);
-
-                const pillsRow = document.createElement('div');
-                pillsRow.style.cssText = 'display: flex; flex-wrap: wrap; gap: 4px; font-size: 0.68rem; font-weight: 600;';
-
-                if (Number(m.res_proposals || 0) > 0) {
-                    const pill = document.createElement('span');
-                    pill.style.cssText = 'padding: 1px 6px; border-radius: 4px; background: #dcfce7; color: #166534;';
-                    pill.textContent = `${m.res_proposals} Proposals`;
-                    pillsRow.appendChild(pill);
-                }
-                if (Number(m.res_publications || 0) > 0) {
-                    const pill = document.createElement('span');
-                    pill.style.cssText = 'padding: 1px 6px; border-radius: 4px; background: #f3e8ff; color: #6b21a8;';
-                    pill.textContent = `${m.res_publications} Pubs`;
-                    pillsRow.appendChild(pill);
-                }
-                if (Number(m.ext_proposals || 0) > 0) {
-                    const pill = document.createElement('span');
-                    pill.style.cssText = 'padding: 1px 6px; border-radius: 4px; background: #e0f2fe; color: #0369a1;';
-                    pill.textContent = `${m.ext_proposals} Extension`;
-                    pillsRow.appendChild(pill);
-                }
-                if (Number(m.ext_accomplishments || 0) > 0) {
-                    const pill = document.createElement('span');
-                    pill.style.cssText = 'padding: 1px 6px; border-radius: 4px; background: #ffedd5; color: #c2410c;';
-                    pill.textContent = `${m.ext_accomplishments} Accomplished`;
-                    pillsRow.appendChild(pill);
-                }
-                if (!hasSubs) {
-                    const pill = document.createElement('span');
-                    pill.style.cssText = 'color: #94a3b8; font-style: italic;';
-                    pill.textContent = 'No submissions recorded yet';
-                    pillsRow.appendChild(pill);
-                }
-
-                card.append(topRow, pillsRow);
-                cardsGrid.appendChild(card);
-            });
-        };
-
-        const majorChart = new Chart(majorCanvas, {
-            type: 'bar',
-            data: {
-                labels: currentMajors.map(m => m.short_label || m.major_name),
-                datasets: buildMajorDatasets(currentMajors, majorStreamFilter ? majorStreamFilter.value : 'all')
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'x', // Clean vertical bars that fit width perfectly
-                animation: { duration: 350 },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            pointStyle: 'rectRounded',
-                            boxWidth: 9,
-                            boxHeight: 9,
-                            padding: 12,
-                            font: { size: 11, weight: 600 },
-                            color: '#334155'
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(15, 23, 42, 0.94)',
-                        titleFont: { size: 12, weight: '700' },
-                        bodyFont: { size: 11 },
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: {
-                            title: (items) => {
-                                const idx = items[0].dataIndex;
-                                const m = currentMajors[idx];
-                                return m ? m.major_name : '';
-                            },
-                            afterTitle: () => {
-                                return `Department: ${majorDeptSelect.value}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            color: '#1e293b',
-                            font: { size: 10.5, weight: 600 },
-                            maxRotation: 28,
-                            minRotation: 0,
-                            autoSkip: false
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#f1f5f9' },
-                        ticks: {
-                            precision: 0,
-                            color: '#64748b',
-                            font: { size: 10, weight: 500 },
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
-        });
-
-        const updateMajorChart = () => {
-            currentDept = getSelectedDeptData();
-            if (!currentDept) return;
-            currentMajors = currentDept.majors || [];
-            const stream = majorStreamFilter ? majorStreamFilter.value : 'all';
-
-            if (majorStatDept) majorStatDept.textContent = currentDept.department_name;
-            if (majorStatCount) majorStatCount.textContent = `${currentMajors.length} Major${currentMajors.length === 1 ? '' : 's'}`;
-            if (majorStatSubmissions) {
-                const totalSubs = currentMajors.reduce((acc, m) => acc + Number(m.total_submissions || 0), 0);
-                majorStatSubmissions.textContent = `${totalSubs} Submission${totalSubs === 1 ? '' : 's'}`;
-            }
-            if (deptMajorChartHeading) {
-                deptMajorChartHeading.innerHTML = `<i class="ri-bar-chart-grouped-line" style="color: #15803d; font-size: 1.4rem;"></i> ${currentDept.department_name} Major Analytics`;
-            }
-
-            majorChart.data.labels = currentMajors.map(m => m.short_label || m.major_name);
-            majorChart.data.datasets = buildMajorDatasets(currentMajors, stream);
-            majorChart.update();
-
-            renderMajorCards(currentMajors);
-        };
-
-        majorDeptSelect.addEventListener('change', updateMajorChart);
-        if (majorStreamFilter) {
-            majorStreamFilter.addEventListener('change', updateMajorChart);
-        }
-        updateMajorChart();
-    }
 });
 </script>
 

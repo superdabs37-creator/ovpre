@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Director Oversight Pipeline Flowchart</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 30px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .header p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+  }
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: background-color 0.15s ease;
+  }
+  button:hover { background-color: #1d4ed8; }
+  .canvas-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
+    max-width: 95vw;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Director Oversight & Review Flowchart</h1>
+  <p>Vector reproduction for research / capstone paper documentation</p>
+</div>
+
+<div class="toolbar">
+  <button onclick="downloadSVG()">Download as Vector SVG</button>
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<div class="canvas-card" id="diagram-container">
+  <div class="mermaid" id="mermaid-code">
+flowchart TD
+    Start(["Director Logs In"])
+    Portal["Access Director Analytics & Review Portal"]
+    SelectPipeline{"Select Oversight Pipeline"}
+
+    Start --> Portal
+    Portal --> SelectPipeline
+
+    %% Branch 1: Research Pipeline
+    SelectPipeline -->|"Research Pipeline"| ResQueue["Open Research Proposal Review Queue"]
+    ResQueue --> ResSelect["Select Proposal in Pending Director Review<br/>(Previously endorsed by College Coordinator)"]
+    ResSelect --> RIUHEval{"RIUH Institutional Evaluation"}
+
+    RIUHEval -->|"Requires Adjustments"| ResReturn["Return for Revision"]
+    ResReturn --> ResFeedback["Provide Detailed Technical Feedback & Revision Guidelines"]
+    ResFeedback --> ResNeedsRev["Needs Revision<br/>(Dispatched to Researcher)"]
+
+    RIUHEval -->|"Passed & Recommended"| ResEndorse["Endorse Proposal"]
+    ResEndorse --> ResInputScore["Input RIUH Evaluation Score & Recommended Grant Budget"]
+    ResInputScore --> ResExecApproval["Pending Executive Approval<br/>(Forwarded to Vice President / Super Admin)"]
+
+    %% Branch 2: Extension Pipeline
+    SelectPipeline -->|"Extension Pipeline"| ExtQueue["Open Extension Project Review Queue"]
+    ExtQueue --> ExtSelect["Select Project in Pending Director Review"]
+    ExtEval{"Community Impact & Budget Screening"}
+
+    ExtEval -->|"Requires Adjustments"| ExtReturn["Return for Revision"]
+    ExtReturn --> ExtRemarks["Provide Community Alignment & Partner Vetting Remarks"]
+    ExtRemarks --> ExtNeedsRev["Needs Revision<br/>(Dispatched to Extensionist)"]
+
+    ExtEval -->|"Endorse Project"| ExtEndorse["Endorse Extension Project"]
+    ExtEndorse --> ExtExecApproval["Pending Executive Approval<br/>(Forwarded to Vice President / Super Admin)"]
+
+    %% Branch 3: Monitor Active Projects
+    SelectPipeline -->|"Monitor Active Projects"| MonInspect["Inspect Active Implementation Projects"]
+    MonInspect --> MonAudit["Audit Milestone Reports, Liquidations, and Community Feedback"]
+    MonAudit --> MonSignoff["Grant Final Institutional Sign-off for Repository Archiving"]
+    MonSignoff --> MonEnd(["Project Formally Concluded & Factored into Analytics"])
+
+    %% Styling
+    classDef terminal fill:#f8fafc,stroke:#1e293b,stroke-width:2px,color:#0f172a,font-weight:600;
+    classDef process fill:#ffffff,stroke:#334155,stroke-width:1.5px,color:#0f172a;
+    classDef decision fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e3a8a,font-weight:600;
+    classDef approved fill:#f0fdf4,stroke:#16a34a,stroke-width:1.5px,color:#14532d;
+    classDef revision fill:#fff1f2,stroke:#e11d48,stroke-width:1.5px,color:#9f1239;
+
+    class Start,MonEnd terminal;
+    class Portal,ResQueue,ResSelect,ExtQueue,ExtSelect,MonInspect,MonAudit,MonSignoff process;
+    class SelectPipeline,RIUHEval,ExtEval decision;
+    class ResEndorse,ResInputScore,ResExecApproval,ExtEndorse,ExtExecApproval approved;
+    class ResReturn,ResFeedback,ResNeedsRev,ExtReturn,ExtRemarks,ExtNeedsRev revision;
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Segoe UI, Arial, sans-serif',
+      fontSize: '13px',
+      lineColor: '#475569'
+    }
+  });
+
+  function downloadSVG() {
+    const svgEl = document.querySelector("#diagram-container svg");
+    if (!svgEl) return;
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "director_oversight_flowchart.svg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>

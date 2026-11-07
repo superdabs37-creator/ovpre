@@ -10,7 +10,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?></title>
-    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
 
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/landing.css?v=20261019-bg-animation">
@@ -295,7 +295,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
                     <strong>Email</strong>
 
                     <p>
-                        OVP Research and Extension Office
+                        ovpre.dlsp@gmail.com
                     </p>
                 </div>
 

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/bootstrap.php';
 $user = require_login();
+session_write_close();
 $documentId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?: 0;
 $versionId = filter_input(INPUT_GET, 'version', FILTER_VALIDATE_INT) ?: 0;
 if ($documentId <= 0) {

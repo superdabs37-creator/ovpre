@@ -122,3 +122,17 @@ function supabase_auth_logout(string $accessToken): void
         error_log('Supabase logout failed: ' . $error->getMessage());
     }
 }
+
+function supabase_auth_admin_set_password(string $authUserId, string $password): bool
+{
+    if (SUPABASE_URL === '' || SUPABASE_SECRET_KEY === '') {
+        return false;
+    }
+    try {
+        supabase_request('PUT', '/auth/v1/admin/users/' . rawurlencode($authUserId), ['password' => $password], null, true);
+        return true;
+    } catch (Throwable $error) {
+        error_log('Failed to update Supabase auth password: ' . $error->getMessage());
+        return false;
+    }
+}

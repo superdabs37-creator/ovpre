@@ -29,8 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string) ($_POST['password'] ?? '');
     $confirmPassword = (string) ($_POST['confirm_password'] ?? '');
     $phone = trim((string) ($_POST['phone'] ?? ''));
-    $recoveryEmail = strtolower(trim((string) ($_POST['recovery_email'] ?? '')));
-    $recoveryPhone = trim((string) ($_POST['recovery_phone'] ?? ''));
 
     // Validation
     if ($firstName === '') {
@@ -50,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (strlen($password) < 8) {
         $errors[] = 'Password must be at least 8 characters long.';
+    } elseif (get_system_setting('strong_passwords', '1') === '1' && (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password))) {
+        $errors[] = 'Password must contain both letters and numbers for system security.';
     }
     if ($password !== $confirmPassword) {
         $errors[] = 'Password confirmation does not match.';
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Account | <?php echo APP_NAME; ?></title>
-    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -981,7 +981,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="step-node" data-step="6" onclick="jumpToStep(6)">
             <div class="step-circle">6</div>
-            <span class="step-name">Recovery &amp; Complete</span>
+            <span class="step-name">Review &amp; Complete</span>
         </div>
     </nav>
 
@@ -1206,23 +1206,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- ==============================================
-                 STEP 6: ADD RECOVERY INFO & COMPLETE
+                 STEP 6: REVIEW & COMPLETE
                  ============================================== -->
             <div class="step-pane" id="pane-step-6">
                 <div class="step-header">
-                    <h3><i class="ri-shield-keyhole-line" style="color:var(--reg-green);"></i> Add Recovery Info</h3>
-                    <p>Provide a recovery email address or phone number to help protect and restore your account.</p>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="recovery_email">Recovery Email <span class="optional">(optional)</span></label>
-                        <input type="email" class="form-input" id="recovery_email" name="recovery_email" placeholder="e.g. backup@gmail.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="recovery_phone">Recovery Phone <span class="optional">(optional)</span></label>
-                        <input type="tel" class="form-input" id="recovery_phone" name="recovery_phone" placeholder="e.g. +63 9XX XXX XXXX">
-                    </div>
+                    <h3><i class="ri-checkbox-circle-line" style="color:var(--reg-green);"></i> Review &amp; Complete</h3>
+                    <p>Review your account summary below before completing your registration.</p>
                 </div>
 
                 <!-- Account Recap -->

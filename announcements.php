@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $recipients = $recipientStmt;
         }
         foreach ($recipients as $recipient) {
-            notify_user((int) $recipient['id'], 'New announcement: ' . $title);
+            notify_user((int) $recipient['id'], 'New announcement: ' . $title, 'announcements.php#announcement-' . $announcementId);
         }
         log_action((int) $user['id'], "Published announcement #{$announcementId}");
         flash('success', 'Announcement published and notifications sent to the selected audience.');

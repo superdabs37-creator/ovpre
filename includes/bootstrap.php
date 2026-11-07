@@ -362,6 +362,9 @@ function ensure_activity_archived_at_column(): void {
 }
 
 function ensure_extension_proposal_columns(): void {
+    if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+        return;
+    }
     static $checked = false;
     if ($checked) {
         return;
@@ -395,6 +398,111 @@ function ensure_extension_proposal_columns(): void {
         // Silently continue if permissions or already exists
     }
     $checked = true;
+}
+
+function ensure_system_settings_table(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            db()->exec("CREATE TABLE IF NOT EXISTS system_settings (
+                setting_key VARCHAR(100) PRIMARY KEY,
+                setting_value TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )");
+        } else {
+            db()->exec("CREATE TABLE IF NOT EXISTS system_settings (
+                setting_key VARCHAR(100) PRIMARY KEY,
+                setting_value TEXT,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        }
+
+        // Check if seeded
+        $cnt = (int) db()->query("SELECT COUNT(*) FROM system_settings")->fetchColumn();
+        if ($cnt === 0) {
+            $defaults = [
+                'strong_passwords' => '1',
+                'session_timeout_enabled' => '1',
+                'session_timeout_minutes' => '30',
+                'max_file_size_mb' => '25',
+                'allowed_file_types' => 'PDF, DOCX, XLSX, PPTX',
+                'require_admin_remarks' => '1',
+                'notify_on_approval' => '1',
+            ];
+            $stmt = db()->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES (?, ?)");
+            foreach ($defaults as $k => $v) {
+                $stmt->execute([$k, $v]);
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('ensure_system_settings_table error: ' . $e->getMessage());
+    }
+    $checked = true;
+}
+
+function &get_system_settings_cache(): array {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        try {
+            $rows = db()->query("SELECT setting_key, setting_value FROM system_settings")->fetchAll();
+            foreach ($rows as $row) {
+                $cache[$row['setting_key']] = (string) $row['setting_value'];
+            }
+        } catch (Throwable $e) {
+            ensure_system_settings_table();
+            try {
+                $rows = db()->query("SELECT setting_key, setting_value FROM system_settings")->fetchAll();
+                foreach ($rows as $row) {
+                    $cache[$row['setting_key']] = (string) $row['setting_value'];
+                }
+            } catch (Throwable) {
+                // retain fallback
+            }
+        }
+    }
+    return $cache;
+}
+
+function get_system_setting(string $key, mixed $default = null): mixed {
+    $cache = get_system_settings_cache();
+    return array_key_exists($key, $cache) ? $cache[$key] : $default;
+}
+
+function set_system_setting(string $key, mixed $value): bool {
+    ensure_system_settings_table();
+    $valStr = (string) $value;
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            $stmt = db()->prepare("INSERT INTO system_settings (setting_key, setting_value, updated_at) VALUES (?, ?, NOW()) ON CONFLICT (setting_key) DO UPDATE SET setting_value = EXCLUDED.setting_value, updated_at = NOW()");
+        } else {
+            $stmt = db()->prepare("INSERT INTO system_settings (setting_key, setting_value, updated_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()");
+        }
+        $res = $stmt->execute([$key, $valStr]);
+        $cache = &get_system_settings_cache();
+        $cache[$key] = $valStr;
+        return (bool) $res;
+    } catch (Throwable $e) {
+        error_log('set_system_setting error: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function app_max_upload_bytes(): int {
+    $mb = (int) get_system_setting('max_file_size_mb', 25);
+    if ($mb <= 0) {
+        $mb = 25;
+    }
+    return $mb * 1024 * 1024;
+}
+
+function app_allowed_extensions(): array {
+    $raw = (string) get_system_setting('allowed_file_types', 'PDF, DOCX, XLSX, PPTX');
+    $parts = array_filter(array_map('trim', explode(',', strtolower($raw))));
+    return $parts ?: ['pdf', 'docx', 'xlsx', 'pptx'];
 }
 
 function h($value): string {
@@ -441,7 +549,10 @@ function current_user(): ?array {
     if (empty($_SESSION['user_id'])) {
         return null;
     }
-    if (!empty($_SESSION['last_activity']) && time() - (int) $_SESSION['last_activity'] > SESSION_TIMEOUT_SECONDS) {
+    $timeoutEnabled = get_system_setting('session_timeout_enabled', '1') === '1';
+    $timeoutMinutes = (int) get_system_setting('session_timeout_minutes', 30);
+    $timeoutSeconds = ($timeoutMinutes > 0 ? $timeoutMinutes : 30) * 60;
+    if ($timeoutEnabled && !empty($_SESSION['last_activity']) && time() - (int) $_SESSION['last_activity'] > $timeoutSeconds) {
         session_unset();
         session_destroy();
         return null;
@@ -457,7 +568,7 @@ function role_permissions(): array {
     return [
         ROLE_SUPER_ADMIN => ['dashboard', 'audit', 'settings', 'backup', 'users'],
         ROLE_OVPRE_ADMIN => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements', 'audit', 'settings', 'backup'],
-        ROLE_RESEARCH_DIRECTOR => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'extension', 'reports', 'activities', 'announcements', 'audit', 'settings', 'backup', 'status', 'analytics'],
+        ROLE_RESEARCH_DIRECTOR => ['dashboard', 'documents', 'users', 'pending-users', 'research', 'reports', 'activities', 'announcements', 'audit', 'settings', 'backup', 'status', 'analytics'],
         ROLE_EXTENSION_DIRECTOR => ['dashboard', 'extension', 'analytics', 'reports', 'announcements', 'activities', 'status'],
         ROLE_RESEARCH_COORDINATOR => ['dashboard', 'research', 'analytics', 'reports', 'announcements', 'activities', 'status'],
         ROLE_EXTENSION_COORDINATOR => ['dashboard', 'extension', 'analytics', 'reports', 'announcements', 'activities', 'status'],
@@ -612,22 +723,33 @@ function document_list(bool $archived = false, string $status = 'All'): array {
 }
 
 function save_uploaded_document(array $post, array $file, int $userId): void {
-    $allowed = [
+    $mimeMap = [
         'pdf' => 'application/pdf',
         'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'doc' => 'application/msword',
+        'xls' => 'application/vnd.ms-excel',
+        'ppt' => 'application/vnd.ms-powerpoint',
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'zip' => 'application/zip',
     ];
+    $allowedExts = app_allowed_extensions();
+    $maxBytes = app_max_upload_bytes();
+    $maxMb = round($maxBytes / (1024 * 1024));
+
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
         throw new RuntimeException('Please choose a valid file.');
     }
-    if (($file['size'] ?? 0) > MAX_UPLOAD_BYTES) {
-        throw new RuntimeException('File exceeds the 15 MB limit.');
+    if (($file['size'] ?? 0) > $maxBytes) {
+        throw new RuntimeException("File exceeds the {$maxMb} MB limit.");
     }
 
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!isset($allowed[$ext])) {
-        throw new RuntimeException('Only PDF, DOCX, XLSX, and PPTX files are accepted.');
+    if (!in_array($ext, $allowedExts, true)) {
+        throw new RuntimeException('Only ' . strtoupper(implode(', ', $allowedExts)) . ' files are accepted.');
     }
 
     $finfo = new finfo(FILEINFO_MIME_TYPE);

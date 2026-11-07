@@ -162,20 +162,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'decline') {
         $id = (int) $_POST['id'];
         $remarks = trim($_POST['remarks'] ?? 'Proposal declined.');
+        if (get_system_setting('require_admin_remarks', '1') === '1' && $remarks === '') {
+            flash('error', 'Remarks are required when declining a research proposal.');
+            redirect_to('research.php');
+        }
         db()->prepare('UPDATE research_projects SET status = "Declined", status_remarks = ? WHERE id = ?')->execute([$remarks, $id]);
         log_review('research', $id, (int) $user['id'], 'Declined', $remarks);
+
+        $owner = db()->query("SELECT submitted_by, title FROM research_projects WHERE id = {$id}")->fetch();
+        if ($owner && !empty($owner['submitted_by'])) {
+            notify_user((int) $owner['submitted_by'], 'Your research proposal "' . ($owner['title'] ?? 'Proposal') . '" was declined. Remarks: ' . $remarks, 'research.php#proposal-' . $id);
+        }
         flash('success', 'Proposal has been declined.');
     } elseif ($action === 'review') {
         // Super Admin manual review/assignment
         $id = (int) $_POST['id'];
-        $status = in_array($_POST['status'] ?? 'Pending Coordinator Review', [
+        $orig = db()->query("SELECT submitted_by, title, assigned_to, status FROM research_projects WHERE id = {$id}")->fetch();
+        $status = isset($_POST['status']) && in_array($_POST['status'], [
             'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined',
             'Pending', 'Under Review'
-        ], true) ? $_POST['status'] : 'Pending Coordinator Review';
+        ], true) ? $_POST['status'] : ($orig['status'] ?? 'Pending Coordinator Review');
         $assignedTo = ($_POST['assigned_to'] ?? '') === '' ? null : (int) $_POST['assigned_to'];
         $remarks = trim($_POST['remarks'] ?? '');
+
+        if (get_system_setting('require_admin_remarks', '1') === '1' && in_array($status, ['Declined', 'Needs Revision'], true) && $remarks === '') {
+            flash('error', 'Remarks are required when setting status to ' . $status . '.');
+            redirect_to('research.php');
+        }
+
         db()->prepare('UPDATE research_projects SET status = ?, assigned_to = ?, status_remarks = ? WHERE id = ?')->execute([$status, $assignedTo, $remarks, $id]);
         log_review('research', $id, (int) $user['id'], 'Status: ' . $status, $remarks);
+
+        if ($orig) {
+            $pTitle = $orig['title'] ?? 'Research Proposal';
+            if (!empty($orig['submitted_by']) && get_system_setting('notify_on_approval', '1') === '1') {
+                notify_user((int) $orig['submitted_by'], "Research proposal '{$pTitle}' status updated to {$status}." . ($remarks ? " Remarks: {$remarks}" : ''), 'research.php#proposal-' . $id);
+            }
+            if ($assignedTo && $assignedTo !== (int) ($orig['assigned_to'] ?? 0) && $assignedTo !== (int) $user['id']) {
+                notify_user($assignedTo, "You have been assigned to review research proposal: '{$pTitle}'", 'research.php#proposal-' . $id);
+            }
+        }
         flash('success', 'Research record updated.');
     }
     redirect_to('research.php');
@@ -318,19 +344,19 @@ renderHeader('Research Management', 'research');
                         <td>
                             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                 <?php if ($isCoordinator && in_array($pStatus, ['Pending Coordinator Review', 'Pending', 'Under Review'], true)): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="coord-modal-<?php echo (int) $project['id']; ?>" style="background: #15803d;" title="Endorse proposal to Research Director">
-                                        <i class="ri-check-double-line"></i> Endorse
+                                    <button class="primary-btn action-btn" type="button" data-open-modal="coord-modal-<?php echo (int) $project['id']; ?>" style="background: #15803d; color: #fff;" title="Endorse proposal to Research Director">
+                                        <i class="ri-check-double-line"></i><span>Endorse</span>
                                     </button>
-                                    <button class="ghost-btn mini-btn" type="button" data-open-modal="coord-modal-<?php echo (int) $project['id']; ?>" style="color: #c2410c; border-color: #fed7aa;" title="Return to faculty for revision">
-                                        <i class="ri-arrow-go-back-line"></i> Revision
+                                    <button class="ghost-btn action-btn" type="button" data-open-modal="coord-modal-<?php echo (int) $project['id']; ?>" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;" title="Return to faculty for revision">
+                                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                                     </button>
                                 <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="dir-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8;">
-                                        <i class="ri-award-line"></i> RIUH
+                                    <button class="primary-btn action-btn" type="button" data-open-modal="dir-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;" title="Director RIUH & Policy Evaluation">
+                                        <i class="ri-award-line"></i><span>RIUH</span>
                                     </button>
                                 <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
-                                    <button class="primary-btn mini-btn" type="button" data-open-modal="exec-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce;">
-                                        <i class="ri-shield-check-line"></i> Approve
+                                    <button class="primary-btn action-btn" type="button" data-open-modal="exec-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
+                                        <i class="ri-shield-check-line"></i><span>Approve</span>
                                     </button>
                                 <?php endif; ?>
 
@@ -400,24 +426,12 @@ renderHeader('Research Management', 'research');
                 <p><a href="<?php echo h(record_access_url($project['document_filename'], '', (int) $project['document_id'])); ?>" target="_blank" rel="noopener" class="primary-btn"><i class="ri-download-cloud-line"></i> Download Attached Document</a></p>
             <?php endif; ?>
 
-            <?php if ($isExecutive): ?>
-                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;">
-                <input type="hidden" name="action" value="review">
-                <h3>Executive &amp; OVPRE Admin Status Control</h3>
-                <label class="field"><span>Status Override:</span>
-                    <select name="status">
-                        <?php foreach (['Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined'] as $st): ?>
-                            <option value="<?php echo h($st); ?>" <?php echo $project['status'] === $st ? 'selected' : ''; ?>><?php echo h($st); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                <label class="field"><span>Remarks:</span>
-                    <textarea name="remarks" rows="2"><?php echo h($project['status_remarks'] ?? ''); ?></textarea>
-                </label>
-                <button class="primary-btn"><i class="ri-save-line"></i> Update Record</button>
-            <?php endif; ?>
 
-            <div class="timeline-list" style="margin-top: 16px;">
+
+            <h3 style="margin-top: 18px; margin-bottom: 8px; font-size: 0.95rem; color: #15803d; display: flex; align-items: center; gap: 6px;">
+                <i class="ri-history-line"></i> Audit Trail &amp; Workflow History
+            </h3>
+            <div class="timeline-list" style="margin-top: 4px; max-height: 280px; overflow-y: auto; padding-right: 6px; scrollbar-width: thin;">
                 <?php foreach (review_timeline('research', $projId) as $log): ?>
                     <div>
                         <strong><?php echo h($log['action']); ?></strong>

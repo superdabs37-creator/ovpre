@@ -139,7 +139,7 @@ function portal_header(string $title, string $current): array
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($title); ?> | <?php echo h($config['title']); ?></title>
-        <link rel="icon" type="image/jpeg" href="../assets/img/ovpre-logo.jpg?v=20261012">
+        <link rel="icon" type="image/jpeg" href="../assets/img/ovpre-logo.jpg?v=20261105-logo">
         <link rel="stylesheet" href="../role-portal/assets/css/portal.css?v=20261016-director-analytics">
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -148,7 +148,7 @@ function portal_header(string $title, string $current): array
     <body>
         <div class="role-shell">
             <aside class="role-sidebar" id="roleSidebar">
-                <a class="role-brand" href="dashboard.php"><span><i class="ri-building-4-line"></i></span><strong><?php echo h($config['title']); ?></strong></a>
+                <a class="role-brand" href="dashboard.php"><span><img src="../assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span><strong><?php echo h($config['title']); ?></strong></a>
                 <nav class="role-nav">
                     <?php foreach (portal_nav_items() as $key => [$label, $href, $icon]): ?>
                         <?php if (portal_can($key)): ?><a class="<?php echo portal_active($key, $current); ?>" href="<?php echo h($href); ?>"><i class="<?php echo h($icon); ?>"></i><span><?php echo h($label); ?></span></a><?php endif; ?>

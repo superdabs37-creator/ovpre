@@ -38,10 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($ids) {
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
             if ($bulkAction === 'approve') {
+                $bulkRemarks = trim($_POST['bulk_remarks'] ?? 'Bulk approved.');
+                $docRowsStmt = db()->prepare("SELECT id, title, uploaded_by FROM documents WHERE id IN ($placeholders)");
+                $docRowsStmt->execute($ids);
+                $docRows = $docRowsStmt->fetchAll();
+
                 db()->prepare("UPDATE documents SET status = 'Approved', status_remarks = ?, updated_at = NOW() WHERE id IN ($placeholders)")
-                    ->execute(array_merge([trim($_POST['bulk_remarks'] ?? 'Bulk approved.')], $ids));
+                    ->execute(array_merge([$bulkRemarks], $ids));
                 foreach ($ids as $docId) {
-                    log_review('document', $docId, (int) $user['id'], 'Bulk Approved', trim($_POST['bulk_remarks'] ?? ''));
+                    log_review('document', $docId, (int) $user['id'], 'Bulk Approved', $bulkRemarks);
+                }
+                if (get_system_setting('notify_on_approval', '1') === '1') {
+                    foreach ($docRows as $row) {
+                        if (!empty($row['uploaded_by'])) {
+                            notify_user((int) $row['uploaded_by'], "Your document '" . ($row['title'] ?? 'Record') . "' has been approved.", 'submitted-files.php#document-' . $row['id']);
+                        }
+                    }
                 }
                 flash('success', 'Selected records approved.');
             } elseif ($bulkAction === 'archive') {
@@ -191,11 +203,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status = $_POST['status'] ?? 'Pending';
         if (in_array($status, ['Pending', 'Under Review', 'Approved', 'Declined'], true)) {
             $remarks = trim($_POST['remarks'] ?? '');
+            if (get_system_setting('require_admin_remarks', '1') === '1' && $status === 'Declined' && $remarks === '') {
+                flash('error', 'Remarks are required when declining a document.');
+                redirect_to('admin-documents.php');
+            }
             $assignedTo = ($_POST['assigned_to'] ?? '') === '' ? null : (int) $_POST['assigned_to'];
+
+            $docStmt = db()->prepare('SELECT id, title, uploaded_by, assigned_to FROM documents WHERE id = ?');
+            $docStmt->execute([$id]);
+            $origDoc = $docStmt->fetch();
+
             db()->prepare('UPDATE documents SET status = ?, status_remarks = ?, assigned_to = ?, updated_at = NOW() WHERE id = ?')
                 ->execute([$status, $remarks, $assignedTo, $id]);
             log_review('document', $id, (int) $user['id'], 'Status: ' . $status, $remarks);
             log_action((int) $user['id'], "Set document #{$id} to {$status}");
+
+            if ($origDoc && !empty($origDoc['uploaded_by'])) {
+                $docTitle = $origDoc['title'] ?? 'Document';
+                $uploaderId = (int) $origDoc['uploaded_by'];
+                if (get_system_setting('notify_on_approval', '1') === '1') {
+                    $link = 'submitted-files.php#document-' . $id;
+                    if ($status === 'Approved') {
+                        notify_user($uploaderId, "Your document '{$docTitle}' has been approved.", $link);
+                    } elseif ($status === 'Declined') {
+                        notify_user($uploaderId, "Your document '{$docTitle}' was declined." . ($remarks ? " Remarks: {$remarks}" : ''), $link);
+                    } elseif ($status === 'Under Review') {
+                        notify_user($uploaderId, "Your document '{$docTitle}' is currently under review.", $link);
+                    }
+                }
+            }
+
+            if ($assignedTo && $assignedTo !== (int) ($origDoc['assigned_to'] ?? 0) && $assignedTo !== (int) $user['id']) {
+                $docTitle = $origDoc['title'] ?? 'Document';
+                notify_user($assignedTo, "You have been assigned to review document: '{$docTitle}'", 'submitted-files.php#document-' . $id);
+            }
+
             flash('success', 'Document status updated with remarks.');
         }
     } elseif ($action === 'archive') {
@@ -281,6 +323,7 @@ $activitySubmissions = db()->query("
     ORDER BY a.date DESC, a.created_at DESC
 ")->fetchAll();
 $assignableUsers = assignable_users();
+$isResearchDirector = in_array(role_access_group((string) ($user['role'] ?? '')), [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR], true);
 $notice = flash();
 $categoryAnalytics = db()->query('SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND d.archived_at IS NULL GROUP BY c.id ORDER BY c.category_name')->fetchAll();
 $departmentAnalytics = db()->query('SELECT dep.department_name, COUNT(d.id) total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND d.archived_at IS NULL GROUP BY dep.id ORDER BY dep.department_name')->fetchAll();
@@ -340,6 +383,7 @@ renderHeader('Record Management', 'documents');
     </div>
     </details>
 
+    <?php if (!$isResearchDirector): ?>
     <details class="submission-folder">
         <summary><span><i class="ri-community-line"></i> <?php echo $archived ? 'Archived Extension Project Submissions' : 'Extension Project Submissions'; ?></span><strong><?php echo count($extensionSubmissions); ?></strong></summary>
     <div class="table-scroll">
@@ -365,6 +409,7 @@ renderHeader('Record Management', 'documents');
         </table>
     </div>
     </details>
+    <?php endif; ?>
 
     <details class="submission-folder">
         <summary><span><i class="ri-calendar-event-line"></i> <?php echo $archived ? 'Archived Activity Submissions' : 'Activity Submissions'; ?></span><strong><?php echo count($activitySubmissions); ?></strong></summary>
@@ -461,6 +506,30 @@ renderHeader('Record Management', 'documents');
 </section>
 <?php endif; ?>
 
+<?php
+$docIds = array_filter(array_map(static fn($d) => (int) ($d['id'] ?? 0), $documents));
+$docVersionsMap = [];
+$docTimelineMap = [];
+if (!empty($docIds)) {
+    $placeholders = implode(',', array_fill(0, count($docIds), '?'));
+    try {
+        $vStmt = db()->prepare("SELECT v.*, u.fullname FROM document_versions v LEFT JOIN users u ON u.id = v.modified_by WHERE v.document_id IN ($placeholders) ORDER BY v.created_at DESC");
+        $vStmt->execute($docIds);
+        foreach ($vStmt->fetchAll() as $v) {
+            $docVersionsMap[(int) $v['document_id']][] = $v;
+        }
+    } catch (Throwable $e) {}
+
+    try {
+        $tStmt = db()->prepare("SELECT r.*, u.fullname FROM review_logs r LEFT JOIN users u ON u.id = r.user_id WHERE r.entity_type = 'document' AND r.entity_id IN ($placeholders) ORDER BY r.created_at DESC");
+        $tStmt->execute($docIds);
+        foreach ($tStmt->fetchAll() as $t) {
+            $docTimelineMap[(int) $t['entity_id']][] = $t;
+        }
+    } catch (Throwable $e) {}
+}
+?>
+
 <?php foreach ($documents as $doc): ?>
     <div class="modal" id="manage-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card record-manage-modal"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Manage Record</h2><p><?php echo h($doc['title']); ?></p><div class="record-modal-actions">
         <?php if (record_is_previewable($doc['filename'])): ?><button class="ghost-btn action-btn" type="button" data-open-modal="preview-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-eye-line"></i><span>Preview</span></button><?php endif; ?>
@@ -475,11 +544,11 @@ renderHeader('Record Management', 'documents');
             <button class="danger-btn action-btn" type="button" data-open-modal="delete-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-delete-bin-line"></i><span>Delete</span></button>
         <?php endif; ?>
     </div></article></div>
-    <div class="modal" id="status-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Record</h2><input type="hidden" name="action" value="status"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><label class="field"><span>Status</span><select name="status"><?php foreach (['Pending', 'Under Review', 'Approved', 'Declined'] as $status): ?><option <?php echo $doc['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><div class="field"><span>Assign Reviewer / Coordinator</span><select name="assigned_to" class="searchable-select" data-placeholder="Unassigned" data-search-placeholder="Search reviewer or coordinator..."><option value="">Unassigned</option><?php foreach ($assignableUsers as $assignee): ?><option value="<?php echo (int) $assignee['id']; ?>" <?php echo (int) ($doc['assigned_to'] ?? 0) === (int) $assignee['id'] ? 'selected' : ''; ?>><?php echo h($assignee['fullname'] . ' - ' . $assignee['role']); ?></option><?php endforeach; ?></select></div><label class="field"><span>Approval / Rejection Remarks</span><textarea name="remarks" rows="4"><?php echo h($doc['status_remarks']); ?></textarea></label><button class="primary-btn"><i class="ri-save-line"></i> Save Review</button></form></div>
+    <div class="modal" id="status-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Record</h2><input type="hidden" name="action" value="status"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><label class="field"><span>Status</span><select name="status"><?php foreach (['Pending', 'Under Review', 'Approved', 'Declined'] as $status): ?><option <?php echo $doc['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><div class="field"><span>Assign Reviewer / Coordinator</span><select name="searchable-select" class="searchable-select" data-placeholder="Unassigned" data-search-placeholder="Search reviewer or coordinator..."><option value="">Unassigned</option><?php foreach ($assignableUsers as $assignee): ?><option value="<?php echo (int) $assignee['id']; ?>" <?php echo (int) ($doc['assigned_to'] ?? 0) === (int) $assignee['id'] ? 'selected' : ''; ?>><?php echo h($assignee['fullname'] . ' - ' . $assignee['role']); ?></option><?php endforeach; ?></select></div><label class="field"><span>Approval / Rejection Remarks</span><textarea name="remarks" rows="4"><?php echo h($doc['status_remarks']); ?></textarea></label><button class="primary-btn"><i class="ri-save-line"></i> Save Review</button></form></div>
     <div class="modal" id="restore-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Retrieve Record</h2><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><p>Retrieve this archived record to the active workflow?</p><button class="primary-btn"><i class="ri-arrow-go-back-line"></i> Retrieve Record</button></form></div>
     <div class="modal" id="delete-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Delete Record</h2><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><p>This permanently deletes the record and its stored file.</p><button class="danger-btn"><i class="ri-delete-bin-line"></i> Permanently Delete</button></form></div>
-    <div class="modal" id="timeline-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Timeline</h2><div class="timeline-list"><?php foreach (review_timeline('document', (int) $doc['id']) as $log): ?><div><strong><?php echo h($log['action']); ?></strong><p><?php echo h($log['remarks'] ?: 'No remarks.'); ?></p><small><?php echo h(($log['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($log['created_at']))); ?></small></div><?php endforeach; ?><div><strong>Uploaded</strong><p><?php echo h($doc['description'] ?: 'Record submitted.'); ?></p><small><?php echo h(date('M d, Y h:i A', strtotime($doc['created_at']))); ?></small></div></div></article></div>
-    <div class="modal" id="versions-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Version History</h2><div class="timeline-list"><?php $versions = db()->prepare('SELECT v.*, u.fullname FROM document_versions v LEFT JOIN users u ON u.id = v.modified_by WHERE v.document_id = ? ORDER BY v.created_at DESC'); $versions->execute([(int) $doc['id']]); foreach ($versions->fetchAll() as $version): ?><div><strong><?php echo h($version['version_label']); ?></strong><p><a href="<?php echo h(record_file_url($version['filename'], (int) $version['document_id'], (int) $version['id'])); ?>">Download version</a></p><small><?php echo h(($version['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($version['created_at']))); ?></small></div><?php endforeach; ?></div></article></div>
-    <?php if (record_is_previewable($doc['filename'])): ?><div class="modal" id="preview-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card preview-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2><?php echo h($doc['title']); ?></h2><?php $ext = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION)); if ($ext === 'pdf'): ?><iframe class="document-preview" src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>"></iframe><?php else: ?><img class="document-preview-image" src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" alt="<?php echo h($doc['title']); ?>"><?php endif; ?></article></div><?php endif; ?>
+    <div class="modal" id="timeline-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Timeline</h2><div class="timeline-list"><?php $tLogs = $docTimelineMap[(int) $doc['id']] ?? []; foreach ($tLogs as $log): ?><div><strong><?php echo h($log['action']); ?></strong><p><?php echo h($log['remarks'] ?: 'No remarks.'); ?></p><small><?php echo h(($log['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($log['created_at']))); ?></small></div><?php endforeach; ?><div><strong>Uploaded</strong><p><?php echo h($doc['description'] ?: 'Record submitted.'); ?></p><small><?php echo h(date('M d, Y h:i A', strtotime($doc['created_at']))); ?></small></div></div></article></div>
+    <div class="modal" id="versions-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Version History</h2><div class="timeline-list"><?php $versions = $docVersionsMap[(int) $doc['id']] ?? []; foreach ($versions as $version): ?><div><strong><?php echo h($version['version_label']); ?></strong><p><a href="<?php echo h(record_file_url($version['filename'], (int) $version['document_id'], (int) $version['id'])); ?>">Download version</a></p><small><?php echo h(($version['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($version['created_at']))); ?></small></div><?php endforeach; ?></div></article></div>
+    <?php if (record_is_previewable($doc['filename'])): ?><div class="modal" id="preview-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card preview-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2><?php echo h($doc['title']); ?></h2><?php $ext = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION)); if ($ext === 'pdf'): ?><iframe class="document-preview" data-src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" src="about:blank"></iframe><?php else: ?><img class="document-preview-image" data-src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" alt="<?php echo h($doc['title']); ?>"><?php endif; ?></article></div><?php endif; ?>
 <?php endforeach; ?>
 <?php renderFooter(); ?>

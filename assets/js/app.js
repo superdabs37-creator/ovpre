@@ -591,6 +591,11 @@ document.querySelectorAll('[data-open-modal]').forEach((button) => {
         }
         const modal = document.getElementById(button.dataset.openModal);
         if (!modal) return;
+        modal.querySelectorAll('[data-src]').forEach((el) => {
+            if (el.dataset.src && el.getAttribute('src') !== el.dataset.src) {
+                el.setAttribute('src', el.dataset.src);
+            }
+        });
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -664,8 +669,13 @@ function filterRows() {
         const matchesCategory = activeRecordsCategory === 'All' || !row.dataset.category || row.dataset.category === activeRecordsCategory;
         row.dataset.localFilterMatch = String(matchesText && matchesStatus && matchesCategory);
     });
-    adminTablePages.forEach((state) => {
-        if (tableSearch) state.query = query;
+    adminTablePages.forEach((state, tbl) => {
+        if (tbl.id === 'recordsTable' || !tableSearch) {
+            state.query = query;
+            if (state.searchInput && state.searchInput !== document.activeElement) {
+                state.searchInput.value = tableSearch ? tableSearch.value : '';
+            }
+        }
     });
     resetAdminTablePagination();
     refreshAdminTablePagination();
@@ -675,6 +685,22 @@ if (tableSearch) tableSearch.addEventListener('input', filterRows);
 if (statusFilter) statusFilter.addEventListener('change', filterRows);
 
 const adminTablePages = new Map();
+
+window.reloadAdminTablePagination = function(targetTable) {
+    const table = targetTable || document.querySelector('.content-area table.data-table');
+    if (!table) return;
+    const state = adminTablePages.get(table);
+    if (!state) return;
+    const body = table.tBodies[0];
+    if (!body) return;
+    const children = [...body.rows];
+    const emptyRows = children.filter((row) => row.hasAttribute('data-pagination-empty') || (row.cells.length === 1 && row.cells[0].colSpan > 1));
+    state.rows = children.filter((row) => !emptyRows.includes(row));
+    state.emptyRows = emptyRows;
+    state.rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
+    state.page = 1;
+    refreshAdminTablePagination();
+};
 
 function resetAdminTablePagination() {
     adminTablePages.forEach((state) => { state.page = 1; });
@@ -740,21 +766,48 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
     const toolbar = document.createElement('div');
     toolbar.className = 'data-table-toolbar';
     const columnFilters = {};
-    if (!tableSearch) {
+    const existingDedicatedSearch = table.id ? document.querySelector(`[data-table-search="${table.id}"]`) : null;
+    let tableSearchInput = null;
+    if (!existingDedicatedSearch) {
         toolbar.classList.add('has-table-search');
         const searchLabel = document.createElement('label');
         searchLabel.className = 'data-table-search';
         searchLabel.innerHTML = '<i class="ri-search-line" aria-hidden="true"></i><span class="sr-only">Search this table</span>';
-        const searchInput = document.createElement('input');
-        searchInput.type = 'search';
-        searchInput.placeholder = 'Search this table';
-        searchInput.setAttribute('aria-label', 'Search this table');
-        searchLabel.append(searchInput);
+        tableSearchInput = document.createElement('input');
+        tableSearchInput.type = 'search';
+        const placeholderText = table.id === 'recordsTable' ? 'Search records...' : (table.id === 'usersTable' ? 'Search users...' : (table.id === 'researchSubmissionTable' ? 'Search research...' : (table.id === 'extensionSubmissionTable' ? 'Search extension...' : (table.id === 'activitySubmissionTable' ? 'Search activities...' : (table.id === 'systemActivityTable' ? 'Search system activity...' : 'Search this table')))));
+        tableSearchInput.placeholder = placeholderText;
+        tableSearchInput.setAttribute('aria-label', placeholderText);
+        if (tableSearch && table.id === 'recordsTable' && tableSearch.value) {
+            tableSearchInput.value = tableSearch.value;
+        }
+        searchLabel.append(tableSearchInput);
         toolbar.append(searchLabel);
-        searchInput.addEventListener('input', () => {
-            state.query = searchInput.value;
+        tableSearchInput.addEventListener('input', () => {
+            if (table.id === 'recordsTable' && tableSearch) {
+                tableSearch.value = tableSearchInput.value;
+                filterRows();
+            } else {
+                state.query = tableSearchInput.value;
+                state.page = 1;
+                refreshAdminTablePagination();
+            }
+        });
+        tableSearchInput.addEventListener('search', () => {
+            if (tableSearchInput.value === '') {
+                tableSearchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    } else {
+        existingDedicatedSearch.addEventListener('input', () => {
+            state.query = existingDedicatedSearch.value;
             state.page = 1;
             refreshAdminTablePagination();
+        });
+        existingDedicatedSearch.addEventListener('search', () => {
+            if (existingDedicatedSearch.value === '') {
+                existingDedicatedSearch.dispatchEvent(new Event('input'));
+            }
         });
     }
 
@@ -777,7 +830,8 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
     exportButton.innerHTML = '<i class="ri-download-2-line" aria-hidden="true"></i> Export CSV';
     exportButton.addEventListener('click', () => {
         const query = state.query.trim().toLowerCase();
-        const exportRows = rows.filter((row) => row.dataset.localFilterMatch !== 'false'
+        const currentRows = state ? state.rows : rows;
+        const exportRows = currentRows.filter((row) => row.dataset.localFilterMatch !== 'false'
             && !row.classList.contains('global-search-hidden')
             && Object.entries(state.columnFilters).every(([column, value]) => !value || (row.cells[Number(column)]?.textContent || '').trim() === value)
             && (!query || row.textContent.toLowerCase().includes(query)));
@@ -814,7 +868,8 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
         next: controls.querySelector('[data-table-page-next]'),
         pageButtons: controls.querySelector('[data-table-page-buttons]'),
         columnFilters,
-        query: tableSearch ? tableSearch.value : '',
+        searchInput: tableSearchInput,
+        query: (table.id === 'recordsTable' && tableSearch) ? tableSearch.value : (tableSearchInput ? tableSearchInput.value : (tableSearch ? tableSearch.value : '')),
         pageSize: 10,
         page: 1
     };
@@ -870,6 +925,16 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
         }
     });
 
+    const extraFiltersSelector = table.dataset.extraFilters;
+    const extraFilters = extraFiltersSelector ? document.querySelector(extraFiltersSelector) : null;
+    if (extraFilters) {
+        if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(extraFilters, exportButton);
+        } else {
+            toolbar.append(extraFilters);
+        }
+    }
+
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {
         if (!header.textContent.trim() || /^(manage|review|actions?|select\s*all)$/i.test(header.textContent.trim()) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
         header.classList.add('data-table-sortable');
@@ -884,7 +949,8 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
             });
             header.dataset.sortDirection = direction;
             header.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
-            rows.sort((rowA, rowB) => {
+            const sortTargetRows = state ? state.rows : rows;
+            sortTargetRows.sort((rowA, rowB) => {
                 const cellA = rowA.cells[columnIndex];
                 const cellB = rowB.cells[columnIndex];
                 const valueA = (cellA?.dataset.sortValue || cellA?.innerText || '').trim();
@@ -904,7 +970,8 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
                 }
                 return direction === 'asc' ? comparison : -comparison;
             });
-            rows.forEach((row) => body.append(row));
+            const appendTargetRows = state ? state.rows : rows;
+            appendTargetRows.forEach((row) => body.append(row));
             emptyRows.forEach((row) => body.append(row));
             state.page = 1;
             refreshAdminTablePagination();
@@ -1064,21 +1131,49 @@ function openActivityEditor(eventData) {
     document.getElementById('activityVenue').value = props.venue || '';
     document.getElementById('activityDescription').value = props.description || '';
     document.getElementById('createActivityButton').style.display = 'none';
-    document.getElementById('saveActivityButton').style.display = '';
+    document.getElementById('saveActivityButton').style.display = 'inline-flex';
     const approveButton = document.getElementById('approveActivityButton');
     const rejectButton = document.getElementById('rejectActivityButton');
     const archiveButton = document.getElementById('archiveActivityButton');
     const deleteButton = document.getElementById('deleteActivityButton');
-    if (approveButton) {
-        approveButton.style.display = '';
-        approveButton.disabled = approvalStatus === 'Approved';
-        approveButton.innerHTML = approvalStatus === 'Approved'
-            ? '<i class="ri-check-line"></i> Approved'
-            : '<i class="ri-check-line"></i> Approve';
+    const statusBadge = document.getElementById('activityStatusBadge');
+
+    if (statusBadge) {
+        if (approvalStatus === 'Approved') {
+            statusBadge.style.display = 'inline-flex';
+            statusBadge.style.background = '#f0fdf4';
+            statusBadge.style.color = '#166534';
+            statusBadge.style.border = '1px solid #bbf7d0';
+            statusBadge.innerHTML = '<i class="ri-checkbox-circle-line" style="margin-right:4px;"></i> Approved';
+        } else if (approvalStatus === 'Rejected') {
+            statusBadge.style.display = 'inline-flex';
+            statusBadge.style.background = '#fef2f2';
+            statusBadge.style.color = '#dc2626';
+            statusBadge.style.border = '1px solid #fecaca';
+            statusBadge.innerHTML = '<i class="ri-close-circle-line" style="margin-right:4px;"></i> Rejected';
+        } else {
+            statusBadge.style.display = 'inline-flex';
+            statusBadge.style.background = '#fffbeb';
+            statusBadge.style.color = '#b45309';
+            statusBadge.style.border = '1px solid #fde68a';
+            statusBadge.innerHTML = '<i class="ri-time-line" style="margin-right:4px;"></i> Pending Review';
+        }
     }
-    if (rejectButton) rejectButton.style.display = approvalStatus === 'Rejected' ? 'none' : '';
-    if (archiveButton) archiveButton.style.display = '';
-    if (deleteButton) deleteButton.style.display = '';
+
+    if (approveButton) {
+        if (approvalStatus === 'Approved') {
+            approveButton.style.display = 'none';
+        } else {
+            approveButton.style.display = 'inline-flex';
+            approveButton.disabled = false;
+            approveButton.innerHTML = '<i class="ri-check-line"></i> Approve';
+        }
+    }
+    if (rejectButton) {
+        rejectButton.style.display = (approvalStatus === 'Rejected') ? 'none' : 'inline-flex';
+    }
+    if (archiveButton) archiveButton.style.display = 'inline-flex';
+    if (deleteButton) deleteButton.style.display = 'inline-flex';
 
     activityModal.classList.add('open');
     activityModal.setAttribute('aria-hidden', 'false');
@@ -1100,8 +1195,10 @@ function openActivityCreator(dateStr) {
     document.getElementById('activityDateTo').min = date;
     document.getElementById('activityVenue').value = '';
     document.getElementById('activityDescription').value = '';
-    document.getElementById('createActivityButton').style.display = '';
+    document.getElementById('createActivityButton').style.display = 'inline-flex';
     document.getElementById('saveActivityButton').style.display = 'none';
+    const statusBadge = document.getElementById('activityStatusBadge');
+    if (statusBadge) statusBadge.style.display = 'none';
     const approveButton = document.getElementById('approveActivityButton');
     const rejectButton = document.getElementById('rejectActivityButton');
     const archiveButton = document.getElementById('archiveActivityButton');
@@ -1445,3 +1542,49 @@ if (document.readyState === 'loading') {
 } else {
     initSearchableSelects();
 }
+
+// Auto-open modal or highlight target row based on URL hash (e.g., #proposal-12 or #project-12)
+function handleLocationHashTarget() {
+    if (!window.location.hash) return;
+    const hash = window.location.hash.substring(1);
+    if (!hash) return;
+
+    if (hash.startsWith('proposal-')) {
+        const id = hash.replace('proposal-', '');
+        const modal = document.getElementById('research-' + id);
+        if (modal) {
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        const row = document.getElementById(hash);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.style.transition = 'background-color 0.4s';
+            row.style.backgroundColor = '#dcfce7';
+            setTimeout(() => { row.style.backgroundColor = ''; }, 3000);
+        }
+    } else if (hash.startsWith('project-')) {
+        const id = hash.replace('project-', '');
+        const modal = document.getElementById('ext-detail-' + id) || document.getElementById('project-' + id);
+        if (modal && modal.classList.contains('modal')) {
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        const row = document.getElementById(hash);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.style.transition = 'background-color 0.4s';
+            row.style.backgroundColor = '#e0f2fe';
+            setTimeout(() => { row.style.backgroundColor = ''; }, 3000);
+        }
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', handleLocationHashTarget);
+} else {
+    handleLocationHashTarget();
+}
+window.addEventListener('hashchange', handleLocationHashTarget);

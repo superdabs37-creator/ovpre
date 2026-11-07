@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('No active profile is linked to the recovery request.');
             }
             supabase_auth_set_password($token, $password);
+            $localUpdate = db()->prepare('UPDATE users SET password = ?, login_attempts = 0, locked_until = NULL, updated_at = NOW() WHERE id = ?');
+            $localUpdate->execute([password_hash($password, PASSWORD_DEFAULT), $userId]);
             log_action($userId, 'Password reset completed with Supabase Auth');
             $done = true;
         } catch (Throwable $exception) {

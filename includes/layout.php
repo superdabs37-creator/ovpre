@@ -16,6 +16,10 @@ function renderHeader($pageTitle, $currentPage)
     $userRole = role_access_group((string) ($user['role'] ?? ''));
     $isSuperAdmin = $userRole === ROLE_SUPER_ADMIN;
     $isOVPREAdmin = $userRole === ROLE_OVPRE_ADMIN;
+    $isResearchDirector = in_array($userRole, [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR], true);
+    $isExtensionDirector = $userRole === ROLE_EXTENSION_DIRECTOR;
+    $canSeeResearch = $isSuperAdmin || $isOVPREAdmin || $isResearchDirector || in_array($userRole, [ROLE_RESEARCH_COORDINATOR, ROLE_RESEARCHER], true);
+    $canSeeExtension = $isSuperAdmin || $isOVPREAdmin || $isExtensionDirector || in_array($userRole, [ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST], true);
     $unreadNotificationCount = 0;
     if ($user) {
         $unreadNotificationStmt = db()->prepare('SELECT COUNT(*) FROM notifications WHERE user_id = ? AND status = "Unread"');
@@ -30,8 +34,8 @@ function renderHeader($pageTitle, $currentPage)
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($pageTitle); ?> | <?php echo APP_NAME; ?></title>
-        <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261012">
-        <link rel="stylesheet" href="assets/css/style.css?v=20261030-searchable-select">
+        <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+        <link rel="stylesheet" href="assets/css/style.css?v=20261105-scroll-timeline">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -43,7 +47,7 @@ function renderHeader($pageTitle, $currentPage)
         <div class="app-shell">
             <aside class="sidebar" id="sidebar">
                 <a class="brand" href="dashboard.php">
-                    <span><i class="<?php echo $isSuperAdmin ? 'ri-shield-keyhole-line' : 'ri-graduation-cap-line'; ?>"></i></span>
+                    <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
                     <strong><?php echo APP_NAME; ?></strong>
                 </a>
                 <nav class="sidebar-nav">
@@ -74,8 +78,12 @@ function renderHeader($pageTitle, $currentPage)
                         <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                         <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
                         <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
-                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
+                        <?php if ($canSeeResearch): ?>
+                            <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
+                        <?php endif; ?>
+                        <?php if ($canSeeExtension): ?>
+                            <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
+                        <?php endif; ?>
                         <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
                     <?php endif; ?>
@@ -141,7 +149,7 @@ function renderHeader($pageTitle, $currentPage)
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="assets/js/app.js?v=20261030-searchable-select"></script>
+        <script src="assets/js/app.js?v=20261105-perf"></script>
     </body>
 
     </html>
