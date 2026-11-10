@@ -67,6 +67,7 @@
                             <strong id="dropdownUserName">Super Administrator</strong>
                             <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
                         </div>
+                        <a href="profile.html"><i class="ri-user-line"></i> My Profile</a>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
                         <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
@@ -74,6 +75,9 @@
             </header>
 
             <main class="content-area">
+                <!-- =========================================================
+                     ADMIN ANALYTICAL DASHBOARD HEADER & QUICK DISPATCH
+                ========================================================= -->
                 <section class="welcome-panel" style="margin-bottom: 22px;">
                     <div>
                         <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
@@ -149,10 +153,9 @@
                         <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
                     </div>
                 </section>
-                </section>
 
                 <!-- =========================================================
-                     BENCHMARK: SUBMISSIONS BY ACADEMIC COLLEGE
+                     TOP SPOTLIGHT: SUBMISSIONS BY ACADEMIC DEPARTMENT (HIGHLIGHTED HERO)
                 ========================================================= -->
                 <article class="panel chart-panel featured-spotlight-card" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); background: #ffffff; padding: 22px 24px;">
                     <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px;">
@@ -160,118 +163,842 @@
                             <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 999px; color: #15803d; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
                                 <i class="ri-sparkling-fill"></i> Primary University Benchmark
                             </div>
-                            <h2 style="color: #166534; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
+                            <h2 id="deptChartTitle" style="color: #166534; font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
                                 <i class="ri-building-line" style="color: #15803d; font-size: 1.45rem;"></i> Submission Analytics by College and Program
                             </h2>
-                            <span style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 5px;">Submissions mapped across all 9 collegiate departments</span>
+                            <span id="deptChartSubtitle" style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 5px;">Programs are grouped under their college; college submission totals repeat for each listed program</span>
                         </div>
-                        <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
-                            25 Total Submissions
-                        </span>
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <label for="submissionKindFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">College:</label>
+                                <select id="submissionKindFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                                    <option value="all">All College Departments</option>
+                                    <option value="college-0">College of Teacher Education</option>
+                                    <option value="college-1">College of Business Administration</option>
+                                    <option value="college-2">College of Arts and Sciences</option>
+                                    <option value="college-3">College of Accountancy</option>
+                                    <option value="college-4">College of Computer Studies and Technology</option>
+                                    <option value="college-5">College of Tourism and Hospitality Management</option>
+                                    <option value="college-6">College of Engineering</option>
+                                    <option value="college-7">College of Nursing and Allied Health Sciences</option>
+                                    <option value="college-8">College of Human Kinetics</option>
+                                </select>
+                            </div>
+                            <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
+                                25 Total Submissions
+                            </span>
+                        </div>
                     </div>
-                    <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px;">
-                        <canvas id="collegeSubmissionsChart"></canvas>
+                    <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
+                        <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Horizontal bar chart of submissions by college and program"></canvas>
+                    </div>
+                    <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                        <div>
+                            <h3 id="programsByCollegeHeading" style="margin: 0 0 3px; color: #0f172a; font-size: 1.05rem; font-weight: 800;">Programs by College</h3>
+                            <span style="font-size: 0.78rem; color: #64748b;">Programs are sorted under their college; majors are excluded</span>
+                        </div>
+                        <button type="button" id="openProgramsModal" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 9px; background: #15803d; color: #ffffff; font-weight: 700; cursor: pointer;">
+                            <i class="ri-list-check-3"></i> View Programs
+                        </button>
+                    </section>
+
+                    <dialog id="programsByCollegeModal" aria-labelledby="programsModalTitle" style="width: min(900px, calc(100% - 32px)); max-width: 900px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 18px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                            <div>
+                                <h3 id="programsModalTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Programs by College</h3>
+                                <p style="margin: 4px 0 0; color: #64748b; font-size: 0.82rem;">Each program is listed under its appropriate college. Majors are not included.</p>
+                            </div>
+                            <button type="button" id="closeProgramsModal" aria-label="Close programs list" style="flex: 0 0 auto; width: 34px; height: 34px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #334155; font-size: 1.2rem; cursor: pointer;">&times;</button>
+                        </div>
+                        <div style="max-height: calc(85vh - 82px); overflow-y: auto; padding: 18px 22px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;" id="programsModalContent">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </dialog>
+                </article>
+
+                <!-- =========================================================
+                     MONTHLY SUBMISSION TRENDS
+                ========================================================= -->
+                <article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 20px 22px;">
+                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                        <div>
+                            <h2 style="margin: 0; color: #166534; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                                <i class="ri-line-chart-line" style="font-size: 1.4rem;"></i> Monthly Submission Trends
+                            </h2>
+                            <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.85rem;">Research proposals, extension programs, and accomplishment reports submitted each month</span>
+                        </div>
+                        <span class="badge" style="background: #f0fdf4; color: #166534; padding: 6px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">Last 12 months</span>
+                    </div>
+                    <div style="position: relative; width: 100%; height: 330px;">
+                        <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Line chart showing monthly research proposals, extension programs, and accomplishment reports"></canvas>
                     </div>
                 </article>
 
                 <!-- =========================================================
-                     ROW 2: TRENDS & STATUS BREAKDOWN
+                     ROW 2: SUBMISSION COMPLETION INTELLIGENCE (3 CARDS)
                 ========================================================= -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 24px;">
-                    <!-- Monthly Submission Trends -->
-                    <article class="panel chart-panel" style="margin: 0; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 20px 22px;">
-                        <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
-                            <div>
-                                <h3 style="margin: 0; color: #166534; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                                    <i class="ri-line-chart-line"></i> Monthly Submission Trends
-                                </h3>
-                                <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.82rem;">Research and extension volume over past months</span>
-                            </div>
-                            <span class="badge" style="background: #f0fdf4; color: #166534; padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 700;">Year 2026</span>
-                        </div>
-                        <div style="position: relative; width: 100%; height: 260px;">
-                            <canvas id="monthlyTrendChart"></canvas>
-                        </div>
-                    </article>
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-pie-chart-2-line" style="color: #15803d; font-size: 1.3rem;"></i> Submission Status Distribution
+                        </h3>
+                        <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Distribution of pending, review, revision, and approved research and extension submissions</span>
+                    </div>
 
-                    <!-- Status Distribution Donut -->
-                    <article class="panel chart-panel" style="margin: 0; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 20px 22px;">
-                        <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
-                            <div>
-                                <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                                    <i class="ri-pie-chart-2-line" style="color: #15803d;"></i> Submission Status Breakdown
-                                </h3>
-                                <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.82rem;">Current institutional review states</span>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px;">
+                        <!-- Card 1: Project Status Breakdown -->
+                        <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
+                            <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
+                                <div>
+                                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
+                                        <i class="ri-pie-chart-2-line" style="color: #15803d;"></i> Project Status Breakdown
+                                    </h2>
+                                    <span style="font-size: 0.8rem; color: #64748b;">Submissions by current review status</span>
+                                </div>
+                                <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
+                                    23 Tracked Submissions
+                                </span>
                             </div>
-                            <span class="badge" style="background: #f1f5f9; color: #334155; padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 700;">23 Active</span>
-                        </div>
-                        <div style="position: relative; width: 100%; height: 260px;">
-                            <canvas id="statusDonutChart"></canvas>
-                        </div>
-                    </article>
+                            <div style="position: relative; height: 260px; width: 100%; max-width: 480px; margin: 0 auto;">
+                                <canvas id="submissionStatusDonutChart"></canvas>
+                            </div>
+                        </article>
+
+                        <!-- Card 2: Completed Colleges List -->
+                        <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
+                            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+                                <div>
+                                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
+                                        <i class="ri-checkbox-circle-line" style="color: #15803d;"></i> Completed Colleges
+                                    </h2>
+                                    <span style="font-size: 0.8rem; color: #64748b;">Colleges with projects marked Completed</span>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 7px; color: #475569; font-size: 0.78rem; font-weight: 700;">
+                                    Project Type
+                                    <select id="completedProjectTypeFilter" class="filter-select compact-select" style="padding: 6px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; font-size: 0.78rem;">
+                                        <option value="all">All Projects</option>
+                                        <option value="research">Research</option>
+                                        <option value="extension">Extension</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div id="completedCollegesList" style="display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 260px; overflow-y: auto; padding-right: 4px;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </article>
+
+                        <!-- Card 3: Completion by Stream Bar Chart -->
+                        <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
+                            <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
+                                <div>
+                                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
+                                        <i class="ri-git-branch-line" style="color: #7c3aed;"></i> Completion by Stream
+                                    </h2>
+                                    <span style="font-size: 0.8rem; color: #64748b;">Research vs. Extension completion</span>
+                                </div>
+                                <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
+                                    Research &amp; Extension
+                                </span>
+                            </div>
+                            <div style="position: relative; height: 260px; width: 100%;">
+                                <canvas id="completionByWingBarChart"></canvas>
+                            </div>
+                        </article>
+                    </div>
                 </div>
 
                 <!-- =========================================================
-                     RECENT SUBMISSIONS TABLE
+                     ROW 3: SUBMISSION PERFORMANCE BY PERSON
                 ========================================================= -->
-                <article class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <section class="panel" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <div class="panel-heading" style="margin-bottom: 16px;">
                         <div>
-                            <h3 style="margin: 0; font-size: 1.18rem; font-weight: 800; color: #0f172a;">Recent Project Submissions</h3>
-                            <span style="font-size: 0.84rem; color: #64748b;">Latest proposals submitted for coordinator and director review</span>
+                            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
+                                <i class="ri-team-line" style="color: #15803d;"></i> Submission Performance by Person
+                            </h2>
+                            <small style="color: #64748b; font-size: 0.85rem;">Research and extension submissions grouped by submitter, with approved totals.</small>
                         </div>
-                        <a href="research.html" style="font-size: 0.88rem; font-weight: 700; color: #15803d; text-decoration: none;">View all research &rarr;</a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <div class="table-scroll">
+                        <table class="data-table portal-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
+                                    <th style="padding: 12px 10px;">Submitter</th>
+                                    <th style="padding: 12px 10px;">College</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Research Submissions</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Extension Submissions</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Approved</th>
+                                    <th style="padding: 12px 10px; text-align: center;">All Submissions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="personPerformanceTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- PERSON SUBMISSIONS DIALOG -->
+                <dialog id="personSubmissionsDialog" aria-labelledby="personSubmissionsTitle" style="width: min(940px, calc(100% - 32px)); max-width: 940px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3); overflow: hidden; background: #ffffff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                        <h3 id="personSubmissionsTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">All Submissions</h3>
+                        <button type="button" id="closePersonSubmissionsDialog" aria-label="Close submissions" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+                    </div>
+                    <div class="person-dialog-body" style="padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 72px); overflow-y: auto;">
+                        <div class="table-scroll" style="border: 1px solid #e2e8f0; border-radius: 10px; overflow-x: auto; padding: 0 !important; margin: 0;">
+                            <table class="data-table portal-table" style="margin: 0; width: 100%;">
+                                <thead>
+                                    <tr style="background: #f8fafc; font-size: 0.8rem; color: #64748b;">
+                                        <th style="padding: 10px 12px; text-align: left; width: 105px;">Type</th>
+                                        <th style="padding: 10px 12px; text-align: left;">Submission Title</th>
+                                        <th style="padding: 10px 12px; text-align: center; width: 125px;">Status</th>
+                                        <th style="padding: 10px 12px; text-align: center; width: 115px; white-space: nowrap;">Submitted</th>
+                                        <th style="padding: 10px 12px; text-align: center; width: 100px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="personSubmissionsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </dialog>
+
+                <!-- QUICK PREVIEW MODAL FOR SUBMISSIONS -->
+                <dialog id="submissionQuickPreviewDialog" aria-labelledby="quickPreviewTitle" style="width: min(680px, calc(100% - 32px)); max-width: 680px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span id="quickPreviewTypeBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 9px; border-radius: 6px;"></span>
+                            <span id="quickPreviewStatusBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px;"></span>
+                        </div>
+                        <button type="button" id="closeQuickPreviewDialog" aria-label="Close preview" style="width: 30px; height: 30px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+                    </div>
+                    <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 72px); overflow-y: auto;">
+                        <div>
+                            <h3 id="quickPreviewTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.18rem; font-weight: 800; line-height: 1.4;"></h3>
+                            <p id="quickPreviewMeta" style="margin: 0; color: #64748b; font-size: 0.84rem; line-height: 1.5;"></p>
+                        </div>
+                        <div id="quickPreviewDescBox" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
+                            <strong id="quickPreviewDescLabel" style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Abstract / Details</strong>
+                            <p id="quickPreviewDesc" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></p>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+                            <a id="quickPreviewDownloadBtn" href="#" class="ghost-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none;">
+                                <i class="ri-download-cloud-line"></i> <span>Download Attached File</span>
+                            </a>
+                            <a id="quickPreviewFullPageBtn" href="#" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; text-decoration: none;">
+                                <i class="ri-external-link-line"></i> <span>Open Full Proposal</span>
+                            </a>
+                        </div>
+                    </div>
+                </dialog>
+
+                <!-- =========================================================
+                     ROW 4: TACTICAL COLLEGES SUBMISSIONS MATRIX
+                ========================================================= -->
+                <section class="panel" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <div class="panel-heading" style="margin-bottom: 16px;">
+                        <div>
+                            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
+                                <i class="ri-table-line" style="color: #15803d;"></i> Tactical Colleges Submissions Matrix
+                            </h2>
+                            <small style="color: #64748b; font-size: 0.85rem;">Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.</small>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table portal-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
+                                    <th style="padding: 12px 10px;">College Name</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Faculty</th>
+                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
+                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
+                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
+                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Total Submissions</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Activity Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrixTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- =========================================================
+                     ROW 5: OPERATIONAL ACTION QUEUE (EXECUTIVE APPROVALS)
+                ========================================================= -->
+                <section class="panel" style="margin-bottom: 24px; border-left: 4px solid #15803d; border-radius: 16px; background: #ffffff; padding: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);">
+                    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
+                                <i class="ri-shield-check-line" style="color: #15803d;"></i> Executive Proposal Approval Queue (Stage 4 Final Sign-off)
+                            </h2>
+                            <small style="color: #64748b; font-size: 0.85rem;">Proposals endorsed by College Coordinators and Directors awaiting Final Executive Grant Release &amp; Activation.</small>
+                        </div>
+                        <span class="status-pill status-pending-executive-approval" style="font-weight: 700; background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 999px;">
+                            3 Awaiting Decision
+                        </span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table portal-table" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
                                     <th style="padding: 12px 10px;">Type</th>
-                                    <th style="padding: 12px 10px;">Title</th>
-                                    <th style="padding: 12px 10px;">Proponent / College</th>
+                                    <th style="padding: 12px 10px;">Proposal Title</th>
+                                    <th style="padding: 12px 10px;">Proponent</th>
+                                    <th style="padding: 12px 10px;">College</th>
+                                    <th style="padding: 12px 10px;">Endorsed By</th>
+                                    <th style="padding: 12px 10px;">Grant Amount</th>
                                     <th style="padding: 12px 10px;">Status</th>
-                                    <th style="padding: 12px 10px;">Action</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Action</th>
                                 </tr>
                             </thead>
-                            <tbody style="font-size: 0.88rem;">
+                            <tbody>
                                 <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <span class="status-pill" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.74rem; padding: 4px 8px; border-radius: 6px;">Research</span>
+                                    </td>
                                     <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">AI-Driven Early Crop Disease Detection for Calabarzon Farming</td>
-                                    <td style="padding: 14px 10px; color: #475569;">Dr. Aris Thorne <br><small style="color: #94a3b8;">CCST</small></td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill status-approved" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
-                                    <td style="padding: 14px 10px;"><a href="research.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                    <td style="padding: 14px 10px; color: #334155;">Dr. Aris Thorne</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155;">CCST</span></td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Dr. Research Director</td>
+                                    <td style="padding: 14px 10px; font-weight: 800; color: #15803d;">PHP 250,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">Pending Executive Approval</span></td>
+                                    <td style="padding: 14px 10px; text-align: center;">
+                                        <a class="primary-btn compact-btn" href="research.html" style="padding: 6px 14px; font-size: 0.82rem; background: #15803d; color: #ffffff; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-checkbox-circle-line"></i><span>Sign-off / Review</span>
+                                        </a>
+                                    </td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #ccfbf1; color: #0f766e; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Extension</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <span class="status-pill" style="background: #e0f2fe; color: #0369a1; font-weight: 700; font-size: 0.74rem; padding: 4px 8px; border-radius: 6px;">Extension</span>
+                                    </td>
                                     <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Community Water Filtration System Installation in Barangay San Lucas</td>
-                                    <td style="padding: 14px 10px; color: #475569;">Engr. Katrina Valdez <br><small style="color: #94a3b8;">COE</small></td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
-                                    <td style="padding: 14px 10px;"><a href="extension.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research</span></td>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households</td>
-                                    <td style="padding: 14px 10px; color: #475569;">Prof. Lorna Bautista <br><small style="color: #94a3b8;">CONAHS</small></td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Pending Review</span></td>
-                                    <td style="padding: 14px 10px;"><a href="research.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                    <td style="padding: 14px 10px; color: #334155;">Engr. Katrina Valdez</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155;">COE</span></td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Prof. Extension Director</td>
+                                    <td style="padding: 14px 10px; font-weight: 800; color: #15803d;">PHP 180,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">Pending Executive Approval</span></td>
+                                    <td style="padding: 14px 10px; text-align: center;">
+                                        <a class="primary-btn compact-btn" href="extension.html" style="padding: 6px 14px; font-size: 0.82rem; background: #15803d; color: #ffffff; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-checkbox-circle-line"></i><span>Sign-off / Review</span>
+                                        </a>
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <span class="status-pill" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.74rem; padding: 4px 8px; border-radius: 6px;">Research</span>
+                                    </td>
                                     <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</td>
-                                    <td style="padding: 14px 10px; color: #475569;">Prof. Raymond Cruz <br><small style="color: #94a3b8;">CBA</small></td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
-                                    <td style="padding: 14px 10px;"><a href="research.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                    <td style="padding: 14px 10px; color: #334155;">Prof. Raymond Cruz</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155;">CBA</span></td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Dr. Research Director</td>
+                                    <td style="padding: 14px 10px; font-weight: 800; color: #15803d;">PHP 150,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">Pending Executive Approval</span></td>
+                                    <td style="padding: 14px 10px; text-align: center;">
+                                        <a class="primary-btn compact-btn" href="research.html" style="padding: 6px 14px; font-size: 0.82rem; background: #15803d; color: #ffffff; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-checkbox-circle-line"></i><span>Sign-off / Review</span>
+                                        </a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </article>
+                </section>
             </main>
         </div>
     </div>
 
+    <!-- =========================================================
+         ANALYTICAL ENGINE JAVASCRIPT
+    ========================================================= -->
     <script>
-        // Profile Dropdown & Sidebar Toggle
+        const programsByCollege = {
+            'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
+            'College of Business Administration': ['Bachelor of Science in Business Administration', 'Bachelor of Science in Entrepreneurship', 'Bachelor of Science in Office Administration'],
+            'College of Arts and Sciences': ['Bachelor of Science in Psychology', 'Bachelor of Arts in Communication', 'Bachelor of Science in Economics', 'Bachelor of Public Administration', 'Bachelor of Arts in Political Science'],
+            'College of Accountancy': ['Bachelor of Science in Accountancy', 'Bachelor of Science in Accounting Information System', 'Bachelor of Science in Management Accounting'],
+            'College of Computer Studies and Technology': ['Bachelor of Science in Information Technology', 'Bachelor of Science in Information Systems'],
+            'College of Tourism and Hospitality Management': ['Bachelor of Science in Hospitality Management', 'Bachelor of Science in Tourism Management'],
+            'College of Engineering': ['Bachelor of Science in Computer Engineering'],
+            'College of Nursing and Allied Health Sciences': ['Bachelor of Science in Nursing'],
+            'College of Human Kinetics': ['Bachelor of Physical Education']
+        };
+
+        const submissionsBreakdown = [
+            { department_name: 'College of Teacher Education', total_faculty: 11, res_proposals: 4, res_publications: 2, ext_proposals: 3, ext_accomplishments: 1, total_submissions: 10 },
+            { department_name: 'College of Business Administration', total_faculty: 14, res_proposals: 5, res_publications: 3, ext_proposals: 2, ext_accomplishments: 2, total_submissions: 12 },
+            { department_name: 'College of Arts and Sciences', total_faculty: 10, res_proposals: 3, res_publications: 2, ext_proposals: 2, ext_accomplishments: 1, total_submissions: 8 },
+            { department_name: 'College of Accountancy', total_faculty: 7, res_proposals: 2, res_publications: 1, ext_proposals: 1, ext_accomplishments: 0, total_submissions: 4 },
+            { department_name: 'College of Computer Studies and Technology', total_faculty: 12, res_proposals: 6, res_publications: 4, ext_proposals: 3, ext_accomplishments: 2, total_submissions: 15 },
+            { department_name: 'College of Tourism and Hospitality Management', total_faculty: 6, res_proposals: 2, res_publications: 1, ext_proposals: 1, ext_accomplishments: 1, total_submissions: 5 },
+            { department_name: 'College of Engineering', total_faculty: 9, res_proposals: 4, res_publications: 2, ext_proposals: 2, ext_accomplishments: 1, total_submissions: 9 },
+            { department_name: 'College of Nursing and Allied Health Sciences', total_faculty: 8, res_proposals: 3, res_publications: 1, ext_proposals: 1, ext_accomplishments: 1, total_submissions: 6 },
+            { department_name: 'College of Human Kinetics', total_faculty: 5, res_proposals: 1, res_publications: 0, ext_proposals: 1, ext_accomplishments: 0, total_submissions: 2 }
+        ];
+
+        const completedColleges = [
+            {
+                department_name: 'College of Computer Studies and Technology',
+                projects: [
+                    { id: 1, type: 'Research', title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming' },
+                    { id: 5, type: 'Research', title: 'Smart Campus IoT Energy Consumption Monitor' },
+                    { id: 2, type: 'Extension', title: 'IT Skills Training & Digital Literacy for Barangay San Juan' }
+                ]
+            },
+            {
+                department_name: 'College of Engineering',
+                projects: [
+                    { id: 3, type: 'Extension', title: 'Community Water Filtration System Installation in Barangay San Lucas' },
+                    { id: 6, type: 'Research', title: 'Solar-Powered Low-Cost Post-Harvest Food Dryer' }
+                ]
+            },
+            {
+                department_name: 'College of Nursing and Allied Health Sciences',
+                projects: [
+                    { id: 4, type: 'Research', title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households' }
+                ]
+            },
+            {
+                department_name: 'College of Business Administration',
+                projects: [
+                    { id: 7, type: 'Research', title: 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency' },
+                    { id: 8, type: 'Extension', title: 'Financial Literacy & Bookkeeping Coaching for Market Vendors' }
+                ]
+            }
+        ];
+
+        const submissionPerformance = [
+            {
+                submitter_id: 1,
+                submitter_name: 'Dr. Aris Thorne',
+                department_name: 'College of Computer Studies and Technology',
+                research_count: 4,
+                extension_count: 2,
+                approved_count: 5,
+                submissions: [
+                    { id: 1, type: 'Research', title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming', status: 'Approved', submitted_at: '2026-01-15', description: 'Machine learning model trained on local agrarian crop foliage images to detect leaf blight before visible manifestation.', extra_info: 'Dr. A. Thorne, Engr. K. Valdez', document_url: '#' },
+                    { id: 5, type: 'Research', title: 'Smart Campus IoT Energy Consumption Monitor', status: 'Approved', submitted_at: '2026-02-10', description: 'Real-time telemetry measuring sub-station electrical loads across campus academic wings.', extra_info: 'Dr. A. Thorne', document_url: '#' },
+                    { id: 2, type: 'Extension', title: 'IT Skills Training & Digital Literacy for Barangay San Juan', status: 'Approved', submitted_at: '2026-01-20', description: 'Four-weekend computer literacy bootcamp for senior citizens and out-of-school youth in Barangay San Juan.', extra_info: 'Community Extension Office', document_url: '#' }
+                ]
+            },
+            {
+                submitter_id: 2,
+                submitter_name: 'Engr. Katrina Valdez',
+                department_name: 'College of Engineering',
+                research_count: 3,
+                extension_count: 3,
+                approved_count: 4,
+                submissions: [
+                    { id: 3, type: 'Extension', title: 'Community Water Filtration System Installation in Barangay San Lucas', status: 'Approved', submitted_at: '2026-01-25', description: 'Design and local fabrication of gravity-fed bio-sand water filters for clean drinking water.', extra_info: 'Engr. K. Valdez', document_url: '#' },
+                    { id: 6, type: 'Research', title: 'Solar-Powered Low-Cost Post-Harvest Food Dryer', status: 'Under Review', submitted_at: '2026-02-15', description: 'Convective drying chamber powered by photovoltaic thermal panels for fruit and vegetable preservation.', extra_info: 'Engr. K. Valdez', document_url: '#' }
+                ]
+            },
+            {
+                submitter_id: 3,
+                submitter_name: 'Prof. Lorna Bautista',
+                department_name: 'College of Nursing and Allied Health Sciences',
+                research_count: 3,
+                extension_count: 1,
+                approved_count: 3,
+                submissions: [
+                    { id: 4, type: 'Research', title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households', status: 'Approved', submitted_at: '2026-02-01', description: 'Mixed-method survey investigating rural healthcare hesitation factors and vaccine compliance.', extra_info: 'Prof. L. Bautista', document_url: '#' }
+                ]
+            },
+            {
+                submitter_id: 4,
+                submitter_name: 'Prof. Raymond Cruz',
+                department_name: 'College of Business Administration',
+                research_count: 3,
+                extension_count: 2,
+                approved_count: 4,
+                submissions: [
+                    { id: 7, type: 'Research', title: 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency', status: 'Under Review', submitted_at: '2026-02-18', description: 'Economic viability analysis of small digital payment platforms among sari-sari store operators.', extra_info: 'Prof. R. Cruz', document_url: '#' },
+                    { id: 8, type: 'Extension', title: 'Financial Literacy & Bookkeeping Coaching for Market Vendors', status: 'Approved', submitted_at: '2026-02-22', description: 'Hands-on basic accounting modules tailored for wet-market cooperative members.', extra_info: 'Prof. R. Cruz', document_url: '#' }
+                ]
+            },
+            {
+                submitter_id: 5,
+                submitter_name: 'Dr. Elena Morales',
+                department_name: 'College of Arts and Sciences',
+                research_count: 2,
+                extension_count: 1,
+                approved_count: 2,
+                submissions: [
+                    { id: 9, type: 'Research', title: 'Psychosocial Well-being and Digital Screen Fatigue Among Remote Educators', status: 'For Revision', submitted_at: '2026-02-25', description: 'Qualitative phenomenological analysis of cognitive burden during prolonged virtual instructional delivery.', extra_info: 'Dr. E. Morales', document_url: '#' }
+                ]
+            }
+        ];
+
+        // Populate Programs Modal Content
+        const programsModalContent = document.getElementById('programsModalContent');
+        if (programsModalContent) {
+            Object.entries(programsByCollege).forEach(([collegeName, progs]) => {
+                const sec = document.createElement('section');
+                sec.style.cssText = 'padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;';
+                sec.innerHTML = `
+                    <h4 style="margin: 0 0 8px; color: #166534; font-size: 0.86rem; font-weight: 800;">${collegeName}</h4>
+                    <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 0.8rem; line-height: 1.55;">
+                        ${progs.map(p => `<li>${p}</li>`).join('')}
+                    </ul>
+                `;
+                programsModalContent.appendChild(sec);
+            });
+        }
+
+        // Modal triggers
+        const progModal = document.getElementById('programsByCollegeModal');
+        const openProgBtn = document.getElementById('openProgramsModal');
+        const closeProgBtn = document.getElementById('closeProgramsModal');
+        if (progModal && openProgBtn && closeProgBtn) {
+            openProgBtn.addEventListener('click', () => progModal.showModal());
+            closeProgBtn.addEventListener('click', () => progModal.close());
+            progModal.addEventListener('click', (e) => { if (e.target === progModal) progModal.close(); });
+        }
+
+        // Render Completed Colleges
+        const completedProjectFilter = document.getElementById('completedProjectTypeFilter');
+        const completedCollegesList = document.getElementById('completedCollegesList');
+        function renderCompletedColleges() {
+            if (!completedCollegesList) return;
+            const filterVal = completedProjectFilter ? completedProjectFilter.value : 'all';
+            completedCollegesList.replaceChildren();
+
+            let visibleCount = 0;
+            completedColleges.forEach(col => {
+                const filteredProjects = col.projects.filter(p => filterVal === 'all' || p.type.toLowerCase() === filterVal);
+                if (!filteredProjects.length) return;
+                visibleCount++;
+
+                const card = document.createElement('section');
+                card.style.cssText = 'padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+                        <h4 style="margin: 0; color: #166534; font-size: 0.85rem; font-weight: 800;">${col.department_name}</h4>
+                        <span style="white-space: nowrap; color: #166534; font-size: 0.72rem; font-weight: 700;">${filteredProjects.length} completed</span>
+                    </div>
+                    <ul style="margin: 0; padding-left: 16px; color: #334155; font-size: 0.78rem; line-height: 1.5;">
+                        ${filteredProjects.map(p => `
+                            <li style="margin-bottom: 3px;">
+                                <span style="color: ${p.type === 'Research' ? '#15803d' : '#7c3aed'}; font-weight: 700;">${p.type}:</span>
+                                <a href="${p.type === 'Research' ? 'research.html' : 'extension.html'}" style="color: #1e293b; text-decoration: none; font-weight: 500;">
+                                    ${p.title}
+                                </a>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                completedCollegesList.appendChild(card);
+            });
+
+            if (!visibleCount) {
+                completedCollegesList.innerHTML = '<p style="margin: 12px 0; color: #64748b; text-align: center; font-size: 0.85rem;">No completed projects found.</p>';
+            }
+        }
+        if (completedProjectFilter) {
+            completedProjectFilter.addEventListener('change', renderCompletedColleges);
+            renderCompletedColleges();
+        }
+
+        // Render Person Performance Table
+        const personTableBody = document.getElementById('personPerformanceTableBody');
+        const personDialog = document.getElementById('personSubmissionsDialog');
+        const closePersonDialog = document.getElementById('closePersonSubmissionsDialog');
+        const personDialogTitle = document.getElementById('personSubmissionsTitle');
+        const personSubTableBody = document.getElementById('personSubmissionsTableBody');
+
+        const previewDialog = document.getElementById('submissionQuickPreviewDialog');
+        const closePreviewDialog = document.getElementById('closeQuickPreviewDialog');
+
+        function openQuickPreview(sub, personName, deptName) {
+            if (!previewDialog) return;
+            const isResearch = sub.type === 'Research';
+            document.getElementById('quickPreviewTypeBadge').textContent = sub.type;
+            document.getElementById('quickPreviewTypeBadge').style.background = isResearch ? '#f0fdf4' : '#f3e8ff';
+            document.getElementById('quickPreviewTypeBadge').style.color = isResearch ? '#15803d' : '#7c3aed';
+
+            const statusEl = document.getElementById('quickPreviewStatusBadge');
+            statusEl.textContent = sub.status;
+            statusEl.style.background = sub.status === 'Approved' ? '#f0fdf4' : '#fffbeb';
+            statusEl.style.color = sub.status === 'Approved' ? '#15803d' : '#b45309';
+
+            document.getElementById('quickPreviewTitle').textContent = sub.title;
+            document.getElementById('quickPreviewMeta').textContent = `Submitter: ${personName} (${deptName}) | Submitted: ${sub.submitted_at}`;
+            document.getElementById('quickPreviewDesc').textContent = sub.description || 'No description provided.';
+            document.getElementById('quickPreviewFullPageBtn').href = isResearch ? 'research.html' : 'extension.html';
+
+            previewDialog.showModal();
+        }
+
+        if (closePreviewDialog && previewDialog) {
+            closePreviewDialog.addEventListener('click', () => previewDialog.close());
+            previewDialog.addEventListener('click', (e) => { if (e.target === previewDialog) previewDialog.close(); });
+        }
+
+        if (personTableBody) {
+            submissionPerformance.forEach(person => {
+                const tr = document.createElement('tr');
+                tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
+                tr.innerHTML = `
+                    <td style="padding: 12px 10px;"><strong>${person.submitter_name}</strong></td>
+                    <td style="padding: 12px 10px; color: #475569;">${person.department_name}</td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${person.research_count}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${person.extension_count}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${person.approved_count}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;">
+                        <button type="button" class="ghost-btn" style="padding: 5px 12px; font-size: 0.78rem; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer; color: #15803d; font-weight: 700;">
+                            <i class="ri-eye-line"></i> View all (${person.submissions.length})
+                        </button>
+                    </td>
+                `;
+
+                tr.querySelector('button').addEventListener('click', () => {
+                    personDialogTitle.textContent = `All Submissions - ${person.submitter_name}`;
+                    personSubTableBody.replaceChildren();
+
+                    person.submissions.forEach(sub => {
+                        const subRow = document.createElement('tr');
+                        subRow.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.84rem;';
+                        subRow.innerHTML = `
+                            <td style="padding: 10px 12px;"><span class="badge" style="background: ${sub.type === 'Research' ? '#f0fdf4' : '#f3e8ff'}; color: ${sub.type === 'Research' ? '#15803d' : '#7c3aed'}; font-weight: 700;">${sub.type}</span></td>
+                            <td style="padding: 10px 12px; font-weight: 600; color: #0f172a;">${sub.title}</td>
+                            <td style="padding: 10px 12px; text-align: center;"><span class="status-pill ${sub.status === 'Approved' ? 'status-approved' : 'status-review'}" style="font-size: 0.76rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;">${sub.status}</span></td>
+                            <td style="padding: 10px 12px; text-align: center; color: #64748b;">${sub.submitted_at}</td>
+                            <td style="padding: 10px 12px; text-align: center;">
+                                <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.78rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 6px; cursor: pointer; font-weight: 700;">
+                                    View
+                                </button>
+                            </td>
+                        `;
+                        subRow.querySelector('button').addEventListener('click', () => {
+                            openQuickPreview(sub, person.submitter_name, person.department_name);
+                        });
+                        personSubTableBody.appendChild(subRow);
+                    });
+
+                    personDialog.showModal();
+                });
+
+                personTableBody.appendChild(tr);
+            });
+        }
+
+        if (closePersonDialog && personDialog) {
+            closePersonDialog.addEventListener('click', () => personDialog.close());
+            personDialog.addEventListener('click', (e) => { if (e.target === personDialog) personDialog.close(); });
+        }
+
+        // Render Matrix Table
+        const matrixTableBody = document.getElementById('matrixTableBody');
+        if (matrixTableBody) {
+            submissionsBreakdown.forEach(col => {
+                const row = document.createElement('tr');
+                row.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
+                row.innerHTML = `
+                    <td style="padding: 12px 10px;"><strong>${col.department_name}</strong></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="font-weight: 700;">${col.total_faculty}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${col.res_proposals}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${col.res_publications}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${col.ext_proposals}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;">${col.ext_accomplishments}</span></td>
+                    <td style="padding: 12px 10px; text-align: center;"><strong style="color: #0f172a; font-size: 0.95rem;">${col.total_submissions}</strong></td>
+                    <td style="padding: 12px 10px; text-align: center;">
+                        <span class="status-pill status-approved" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
+                            <i class="ri-check-line"></i> Active Submissions
+                        </span>
+                    </td>
+                `;
+                matrixTableBody.appendChild(row);
+            });
+        }
+
+        // ==========================================
+        // CHART.JS INITIALIZATIONS
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.Chart) return;
+
+            // 1. Differentiated Submissions Chart
+            const diffCanvas = document.getElementById('differentiatedSubmissionsChart');
+            const kindFilter = document.getElementById('submissionKindFilter');
+            let diffChartInstance = null;
+
+            function renderDiffChart(selectedKind) {
+                if (!diffCanvas) return;
+                if (diffChartInstance) diffChartInstance.destroy();
+
+                let labels = [];
+                let resData = [];
+                let pubData = [];
+                let extData = [];
+                let accData = [];
+
+                if (selectedKind === 'all') {
+                    labels = submissionsBreakdown.map(c => c.department_name.replace('College of ', ''));
+                    resData = submissionsBreakdown.map(c => c.res_proposals);
+                    pubData = submissionsBreakdown.map(c => c.res_publications);
+                    extData = submissionsBreakdown.map(c => c.ext_proposals);
+                    accData = submissionsBreakdown.map(c => c.ext_accomplishments);
+                } else {
+                    const idx = parseInt(selectedKind.replace('college-', ''), 10);
+                    const col = submissionsBreakdown[idx] || submissionsBreakdown[0];
+                    const progs = programsByCollege[col.department_name] || ['General Program'];
+                    labels = progs;
+                    // Distribute across programs proportionally
+                    resData = progs.map((_, i) => Math.ceil(col.res_proposals / progs.length));
+                    pubData = progs.map((_, i) => Math.ceil(col.res_publications / progs.length));
+                    extData = progs.map((_, i) => Math.ceil(col.ext_proposals / progs.length));
+                    accData = progs.map((_, i) => Math.ceil(col.ext_accomplishments / progs.length));
+                }
+
+                diffChartInstance = new Chart(diffCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
+                            { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 },
+                            { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
+                            { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10, weight: 600 }, color: '#334155' } },
+                            y: { stacked: true, beginAtZero: true, grid: { color: '#eef2f7' }, ticks: { precision: 0, color: '#64748b' } }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 600 } } }
+                        }
+                    }
+                });
+            }
+
+            if (kindFilter) {
+                kindFilter.addEventListener('change', () => renderDiffChart(kindFilter.value));
+            }
+            renderDiffChart('all');
+
+            // 2. Monthly Submission Trends Line Chart
+            const monthlyCanvas = document.getElementById('monthlySubmissionTrendChart');
+            if (monthlyCanvas) {
+                new Chart(monthlyCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                        datasets: [
+                            {
+                                label: 'Research Proposals',
+                                data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
+                                borderColor: '#15803d',
+                                backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                                tension: 0.35,
+                                fill: false,
+                                borderWidth: 3
+                            },
+                            {
+                                label: 'Extension Programs',
+                                data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
+                                borderColor: '#0284c7',
+                                backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                                tension: 0.35,
+                                fill: false,
+                                borderWidth: 3
+                            },
+                            {
+                                label: 'Accomplishment Reports',
+                                data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
+                                borderColor: '#ea580c',
+                                backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                                tension: 0.35,
+                                fill: false,
+                                borderWidth: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 11, weight: 600 }, color: '#64748b' } },
+                            y: { beginAtZero: true, grid: { color: '#eef2f7' }, ticks: { precision: 0, color: '#64748b' } }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 600 } } }
+                        }
+                    }
+                });
+            }
+
+            // 3. Status Distribution Donut Chart
+            const donutCanvas = document.getElementById('submissionStatusDonutChart');
+            if (donutCanvas) {
+                new Chart(donutCanvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending Review', 'Under Review', 'For Revision', 'Approved'],
+                        datasets: [{
+                            data: [3, 5, 2, 13],
+                            backgroundColor: ['#f59e0b', '#0284c7', '#ea580c', '#15803d'],
+                            borderWidth: 3,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '68%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 9, font: { size: 11, weight: 600 } } }
+                        }
+                    }
+                });
+            }
+
+            // 4. Completion by Wing Bar Chart
+            const wingCanvas = document.getElementById('completionByWingBarChart');
+            if (wingCanvas) {
+                new Chart(wingCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Research Wing', 'Extension Wing'],
+                        datasets: [
+                            {
+                                label: 'Completed',
+                                data: [11, 5],
+                                backgroundColor: '#15803d',
+                                borderRadius: 6
+                            },
+                            {
+                                label: 'In Progress / Ongoing',
+                                data: [5, 2],
+                                backgroundColor: '#ea580c',
+                                borderRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 11, weight: 700 }, color: '#334155' } },
+                            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0, color: '#64748b' } }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10.5, weight: 600 } } }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Toggle Profile Dropdown & Sidebar
         const profileToggle = document.getElementById('profileToggle');
         const profileDropdown = document.getElementById('profileDropdown');
         if (profileToggle && profileDropdown) {
@@ -279,9 +1006,7 @@
                 e.stopPropagation();
                 profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
             });
-            document.addEventListener('click', () => {
-                profileDropdown.style.display = 'none';
-            });
+            document.addEventListener('click', () => { profileDropdown.style.display = 'none'; });
         }
 
         const sidebarToggle = document.getElementById('sidebarToggle');
@@ -291,127 +1016,6 @@
                 appShell.classList.toggle('sidebar-collapsed');
             });
         }
-
-        // Hydrate User from Storage
-        const userJson = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
-        if (userJson) {
-            try {
-                const u = JSON.parse(userJson);
-                if (u.fullname) document.getElementById('userNameDisplay').textContent = u.fullname;
-                if (u.fullname) document.getElementById('dropdownUserName').textContent = u.fullname;
-                if (u.role) document.getElementById('dropdownUserRole').textContent = u.role;
-            } catch(e) {}
-        }
-
-        // Render Charts with Chart.js
-        window.addEventListener('DOMContentLoaded', () => {
-            // 1. College Submissions Horizontal Bar Chart
-            const ctxColleges = document.getElementById('collegeSubmissionsChart');
-            if (ctxColleges) {
-                new Chart(ctxColleges, {
-                    type: 'bar',
-                    data: {
-                        labels: [
-                            'Computer Studies & Tech (CCST)',
-                            'Engineering (COE)',
-                            'Nursing & Allied Health (CONAHS)',
-                            'Arts and Sciences (CAS)',
-                            'Business & Accountancy (CBA)',
-                            'Teacher Education (CTE)',
-                            'Criminal Justice Education (CCJE)',
-                            'Tourism & Hospitality (CTHM)',
-                            'Public Admin & Governance (CPAG)'
-                        ],
-                        datasets: [
-                            {
-                                label: 'Research Proposals',
-                                data: [3, 2, 2, 2, 2, 2, 2, 1, 1],
-                                backgroundColor: '#0284c7',
-                                borderRadius: 6
-                            },
-                            {
-                                label: 'Extension Initiatives',
-                                data: [1, 1, 1, 0, 1, 1, 1, 1, 1],
-                                backgroundColor: '#0d9488',
-                                borderRadius: 6
-                            }
-                        ]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { boxWidth: 14, font: { family: 'Inter', weight: 600 } } }
-                        },
-                        scales: {
-                            x: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
-                            y: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Inter', weight: 600 } } }
-                        }
-                    }
-                });
-            }
-
-            // 2. Monthly Trend Line Chart
-            const ctxTrend = document.getElementById('monthlyTrendChart');
-            if (ctxTrend) {
-                new Chart(ctxTrend, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                        datasets: [
-                            {
-                                label: 'Research',
-                                data: [1, 2, 1, 3, 2, 4, 3, 2, 3, 4, 3, 2],
-                                borderColor: '#0284c7',
-                                backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                                fill: true,
-                                tension: 0.35
-                            },
-                            {
-                                label: 'Extension',
-                                data: [0, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1],
-                                borderColor: '#0d9488',
-                                backgroundColor: 'rgba(13, 148, 136, 0.1)',
-                                fill: true,
-                                tension: 0.35
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
-                        scales: { y: { beginAtZero: true, grid: { color: '#f8fafc' }, ticks: { stepSize: 1 } } }
-                    }
-                });
-            }
-
-            // 3. Status Donut Chart
-            const ctxDonut = document.getElementById('statusDonutChart');
-            if (ctxDonut) {
-                new Chart(ctxDonut, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Approved', 'Under Review', 'Pending Coordinator', 'Needs Revision'],
-                        datasets: [{
-                            data: [12, 6, 4, 2],
-                            backgroundColor: ['#15803d', '#0284c7', '#d97706', '#ef4444'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { family: 'Inter', weight: 600 } } }
-                        },
-                        cutout: '68%'
-                    }
-                });
-            }
-        });
     </script>
     <script src="assets/js/role-system.js"></script>
 </body>

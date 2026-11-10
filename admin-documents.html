@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Records Repository | I-Record</title>
+    <title>Records Management | I-Record</title>
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
     <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,12 +26,12 @@
                 <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
                 <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
                 <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
-                <a href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
                 <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                 <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                 <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
             </nav>
-            <div class="sidebar-footer">
+            <div class="sidebar-footer" title="Executive Administration">
                 <i class="ri-shield-keyhole-line"></i>
                 <span>Executive Administration</span>
             </div>
@@ -39,18 +39,19 @@
 
         <div class="page-wrap">
             <header class="topbar">
-                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="topbar-title">
-                    <h1>Academic Records Repository</h1>
+                    <h1>Records Management</h1>
                 </div>
-                <div class="topbar-search">
+                <div class="topbar-search" role="search">
                     <i class="ri-search-line"></i>
-                    <input type="search" placeholder="Search records...">
+                    <input type="search" id="topbarSearchInput" placeholder="Search this page" aria-label="Search across accessible records">
                 </div>
-                <a class="topbar-icon" href="notifications.html">
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
                     <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
                 </a>
                 <div class="profile-menu">
                     <button class="profile-button" type="button" id="profileToggle">
@@ -60,9 +61,11 @@
                     </button>
                     <div class="profile-dropdown" id="profileDropdown" style="display: none;">
                         <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
                             <strong id="dropdownUserName">Super Administrator</strong>
-                            <small id="dropdownUserRole">System Administrator</small>
+                            <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
                         </div>
+                        <a href="profile.html"><i class="ri-user-line"></i> My Profile</a>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
                         <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
@@ -70,100 +73,483 @@
             </header>
 
             <main class="content-area">
-                <section class="welcome-panel" style="margin-bottom: 22px;">
+                <!-- =========================================================
+                     MODULE HEADER
+                ========================================================= -->
+                <section class="module-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
+                    <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #dbeafe; color: #1d4ed8; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
+                        <i class="ri-file-search-line"></i>
+                    </div>
                     <div>
-                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
-                            <i class="ri-file-search-line" style="color: #15803d;"></i> Centralized Records Repository
-                        </h2>
-                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
-                            Browse official research proposals, publications, terminal accomplishment reports, and university extension agreements.
-                        </p>
+                        <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1d4ed8;">Document Repository</p>
+                        <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Records Management</h2>
+                        <span style="font-size: 0.84rem; color: #64748b;">Access and manage uploaded records, policies, research proposals, extension projects, and institutional files.</span>
                     </div>
                 </section>
 
-                <article class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <div class="table-responsive">
-                        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                <div id="actionToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px;"></div>
+
+                <!-- =========================================================
+                     SUBMISSION FOLDERS (TABBED OVERVIEW)
+                ========================================================= -->
+                <section class="panel submission-folders" style="margin-bottom: 24px; padding: 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
+                    <div class="panel-heading" style="margin-bottom: 16px;">
+                        <h2 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Submission Folders</h2>
+                        <span style="font-size: 0.84rem; color: #64748b;">Direct tracking across primary university submission streams.</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+                        <a href="research.html" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b; transition: all 0.15s;" onmouseover="this.style.borderColor='#15803d';this.style.background='#f0fdf4';" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';">
+                            <span style="width: 42px; height: 42px; border-radius: 10px; background: #dcfce7; color: #15803d; display: inline-grid; place-items: center; font-size: 1.3rem;"><i class="ri-flask-line"></i></span>
+                            <div>
+                                <h4 style="margin: 0 0 2px; font-size: 0.98rem; font-weight: 800;">Research Submissions</h4>
+                                <span style="font-size: 0.8rem; color: #64748b;">6 Active Proposals</span>
+                            </div>
+                        </a>
+                        <a href="extension.html" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b; transition: all 0.15s;" onmouseover="this.style.borderColor='#0d9488';this.style.background='#f0fdfa';" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';">
+                            <span style="width: 42px; height: 42px; border-radius: 10px; background: #ccfbf1; color: #0d9488; display: inline-grid; place-items: center; font-size: 1.3rem;"><i class="ri-community-line"></i></span>
+                            <div>
+                                <h4 style="margin: 0 0 2px; font-size: 0.98rem; font-weight: 800;">Extension Submissions</h4>
+                                <span style="font-size: 0.8rem; color: #64748b;">6 Active Outreach Projects</span>
+                            </div>
+                        </a>
+                        <a href="activities.html" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b; transition: all 0.15s;" onmouseover="this.style.borderColor='#7c3aed';this.style.background='#f5f3ff';" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';">
+                            <span style="width: 42px; height: 42px; border-radius: 10px; background: #ede9fe; color: #7c3aed; display: inline-grid; place-items: center; font-size: 1.3rem;"><i class="ri-calendar-event-line"></i></span>
+                            <div>
+                                <h4 style="margin: 0 0 2px; font-size: 0.98rem; font-weight: 800;">Activity Submissions</h4>
+                                <span style="font-size: 0.8rem; color: #64748b;">Seminars, Workshops, Events</span>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- =========================================================
+                     CATEGORY ANALYTICS FILTER CARDS
+                ========================================================= -->
+                <section class="summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px;">
+                    <div class="summary-card category-card active" data-cat="all" onclick="filterCategory('all', this)" style="padding: 14px 16px; border-radius: 12px; background: #15803d; color: #ffffff; cursor: pointer; border: 1px solid #15803d; transition: all 0.15s;">
+                        <i class="ri-folder-open-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block;"></i>
+                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">All Records</h4>
+                        <span style="font-size: 1.25rem; font-weight: 800;" id="countAll">9</span>
+                    </div>
+                    <div class="summary-card category-card" data-cat="Research" onclick="filterCategory('Research', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
+                        <i class="ri-flask-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #15803d;"></i>
+                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Research</h4>
+                        <span style="font-size: 1.25rem; font-weight: 800;" id="countRes">3</span>
+                    </div>
+                    <div class="summary-card category-card" data-cat="Extension" onclick="filterCategory('Extension', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
+                        <i class="ri-community-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #0d9488;"></i>
+                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Extension</h4>
+                        <span style="font-size: 1.25rem; font-weight: 800;" id="countExt">2</span>
+                    </div>
+                    <div class="summary-card category-card" data-cat="Policies & Guidelines" onclick="filterCategory('Policies & Guidelines', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
+                        <i class="ri-book-read-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #0284c7;"></i>
+                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Policies</h4>
+                        <span style="font-size: 1.25rem; font-weight: 800;" id="countPol">2</span>
+                    </div>
+                    <div class="summary-card category-card" data-cat="Official Forms" onclick="filterCategory('Official Forms', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
+                        <i class="ri-file-text-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #7c3aed;"></i>
+                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Official Forms</h4>
+                        <span style="font-size: 1.25rem; font-weight: 800;" id="countForms">1</span>
+                    </div>
+                    <div class="summary-card category-card" data-cat="Minutes & Reports" onclick="filterCategory('Minutes & Reports', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
+                        <i class="ri-file-list-3-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #ea580c;"></i>
+                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Minutes</h4>
+                        <span style="font-size: 1.25rem; font-weight: 800;" id="countMin">1</span>
+                    </div>
+                </section>
+
+                <!-- =========================================================
+                     MAIN RECORDS DATA TABLE
+                ========================================================= -->
+                <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div class="portal-table-tabs" style="display: flex; gap: 8px;">
+                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchRecordView('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #15803d; color: #ffffff; cursor: pointer;">
+                                <i class="ri-folder-line"></i>
+                                <span>Active Records</span>
+                            </button>
+                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchRecordView('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                                <i class="ri-archive-line"></i>
+                                <span>Archived Records</span>
+                            </button>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button type="button" class="primary-btn" onclick="openUploadModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #15803d; color: #ffffff; font-weight: 700; border: none; cursor: pointer; font-size: 0.85rem;">
+                                <i class="ri-upload-cloud-line"></i> Upload Document
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table" id="recordsTable" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
                                     <th style="padding: 12px 10px;">Document Title</th>
                                     <th style="padding: 12px 10px;">Category</th>
-                                    <th style="padding: 12px 10px;">Author / Proponent</th>
-                                    <th style="padding: 12px 10px;">Date Uploaded</th>
-                                    <th style="padding: 12px 10px;">Format &amp; Action</th>
+                                    <th style="padding: 12px 10px;">File &amp; Size</th>
+                                    <th style="padding: 12px 10px;">Author / College</th>
+                                    <th style="padding: 12px 10px;">Date</th>
+                                    <th style="padding: 12px 10px;">Status</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Manage / Action</th>
                                 </tr>
                             </thead>
-                            <tbody style="font-size: 0.88rem;">
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">AI-Driven Early Crop Disease Detection for Calabarzon Farming - Research Document</td>
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research Proposal</span></td>
-                                    <td style="padding: 14px 10px; color: #475569;">Dr. Aris Thorne (CCST)</td>
-                                    <td style="padding: 14px 10px; color: #64748b;">Nov 10, 2026</td>
-                                    <td style="padding: 14px 10px;">
-                                        <a href="uploads/records/sample-1-ai-driven-crop-disease-detection.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-                                            <i class="ri-file-pdf-line"></i> Download PDF
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Limnological Assessment and Biodiversity Indices of Lake Pandin and Lake Yambo</td>
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Publication</span></td>
-                                    <td style="padding: 14px 10px; color: #475569;">Dr. Gabriel Mendoza (CAS)</td>
-                                    <td style="padding: 14px 10px; color: #64748b;">Nov 09, 2026</td>
-                                    <td style="padding: 14px 10px;">
-                                        <a href="uploads/records/sample-4-limnological-assessment-and-biodiversity.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-                                            <i class="ri-file-pdf-line"></i> Download PDF
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Community Water Filtration System Installation in Barangay San Lucas</td>
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #ccfbf1; color: #0f766e; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Extension Project</span></td>
-                                    <td style="padding: 14px 10px; color: #475569;">Engr. Katrina Valdez (COE)</td>
-                                    <td style="padding: 14px 10px; color: #64748b;">Nov 08, 2026</td>
-                                    <td style="padding: 14px 10px;">
-                                        <a href="uploads/records/sample-2-community-water-filtration-system-instal.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-                                            <i class="ri-file-pdf-line"></i> Download PDF
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Terminal Accomplishment Report: Oplan Kalusugan Barangay Health Mission Phase 1</td>
-                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Accomplishment Report</span></td>
-                                    <td style="padding: 14px 10px; color: #475569;">Prof. Lorna Bautista (CONAHS)</td>
-                                    <td style="padding: 14px 10px; color: #64748b;">Nov 05, 2026</td>
-                                    <td style="padding: 14px 10px;">
-                                        <a href="uploads/records/sample-3-terminal-accomplishment-report-oplan-ka.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-                                            <i class="ri-file-pdf-line"></i> Download PDF
-                                        </a>
-                                    </td>
-                                </tr>
+                            <tbody id="recordsTableBody" style="font-size: 0.88rem;">
+                                <!-- Populated by JS -->
                             </tbody>
                         </table>
                     </div>
-                </article>
+
+                    <!-- Pagination -->
+                    <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
+                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 8 of 8 entries</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button type="button" id="prevPageBtn" onclick="changeRecordPage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
+                            <span id="paginationNumbers" style="display: flex; gap: 4px;"></span>
+                            <button type="button" id="nextPageBtn" onclick="changeRecordPage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
+                        </div>
+                    </div>
+                </section>
             </main>
         </div>
     </div>
+
+    <!-- MODALS -->
+
+    <!-- 1. UPLOAD DOCUMENT MODAL -->
+    <dialog id="uploadModal" style="width: min(600px, calc(100% - 32px)); max-width: 600px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Upload Institutional Document</h3>
+            <button type="button" onclick="closeDialog('uploadModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <form onsubmit="handleUpload(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Document Title</label>
+                <input type="text" id="upTitle" required placeholder="Official title of the document" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Category</label>
+                    <select id="upCategory" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                        <option value="Research">Research</option>
+                        <option value="Extension">Extension</option>
+                        <option value="Activities">Activities</option>
+                        <option value="Policies & Guidelines">Policies &amp; Guidelines</option>
+                        <option value="Official Forms">Official Forms</option>
+                        <option value="Minutes & Reports">Minutes &amp; Reports</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
+                    <select id="upCollege" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                        <option value="CCST">CCST</option>
+                        <option value="COE">COE</option>
+                        <option value="CONAHS">CONAHS</option>
+                        <option value="CBA">CBA</option>
+                        <option value="CAS">CAS</option>
+                        <option value="CTE">CTE</option>
+                        <option value="Administration">Administration</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Select File (.pdf, .docx, .xlsx; up to 15 MB)</label>
+                <input type="file" id="upFile" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #f8fafc;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="button" onclick="closeDialog('uploadModal')" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancel</button>
+                <button type="submit" style="padding: 9px 20px; border-radius: 8px; border: none; background: #15803d; color: #fff; font-weight: 700; cursor: pointer;">Upload Record</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- 2. REVIEW RECORD MODAL -->
+    <dialog id="reviewModal" style="width: min(580px, calc(100% - 32px)); max-width: 580px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Review Record</h3>
+            <button type="button" onclick="closeDialog('reviewModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <form onsubmit="handleSaveReview(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <input type="hidden" id="revDocId">
+            <h4 id="revDocTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Status</label>
+                <select id="revStatus" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                    <option value="Approved">Approved</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Declined">Declined</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Approval / Rejection Remarks</label>
+                <textarea id="revRemarks" rows="3" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="button" onclick="closeDialog('reviewModal')" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancel</button>
+                <button type="submit" style="padding: 9px 20px; border-radius: 8px; border: none; background: #15803d; color: #fff; font-weight: 700; cursor: pointer;">Save Review</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- 3. PREVIEW MODAL -->
+    <dialog id="previewModal" style="width: min(840px, calc(100% - 32px)); max-width: 840px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <h3 id="prevTitle" style="margin: 0; color: #0f172a; font-size: 1.1rem; font-weight: 800;"></h3>
+            <button type="button" onclick="closeDialog('previewModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 24px; text-align: center; background: #f1f5f9; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;">
+            <i class="ri-file-search-line" style="font-size: 4rem; color: #1d4ed8;"></i>
+            <div>
+                <h4 id="prevFilename" style="margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; color: #0f172a;">Document.pdf</h4>
+                <p id="prevMeta" style="margin: 0; color: #64748b; font-size: 0.85rem;"></p>
+            </div>
+            <a href="#" download id="prevDownloadBtn" class="primary-btn" style="padding: 9px 18px; border-radius: 8px; background: #15803d; color: #ffffff; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="ri-download-cloud-line"></i> Download Record File
+            </a>
+        </div>
+    </dialog>
+
     <script>
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        if (sidebarToggle && sidebar) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
+        let currentRecordTab = 'active';
+        let currentCategory = 'all';
+        let recordPage = 1;
+        const recordPageSize = 8;
+
+        function getStoredDocs() {
+            try {
+                const s = localStorage.getItem('ovpre_admin_documents');
+                if (s) return JSON.parse(s);
+            } catch(e) {}
+            localStorage.setItem('ovpre_admin_documents', JSON.stringify([{"id":101,"title":"AI-Driven Early Crop Disease Detection Final Research Paper","category":"Research","filename":"AI_Crop_Disease_Final_Paper.pdf","size":"3.4 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-01-15","status":"Approved","remarks":"Official approved copy archived in university repository.","archived":false},{"id":102,"title":"Community Water Filtration System Terminal Accomplishment Report","category":"Extension","filename":"Water_Filtration_Terminal_Report.pdf","size":"4.8 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-01-30","status":"Approved","remarks":"Final completion certificate transmitted.","archived":false},{"id":103,"title":"University Research Agenda & Guidelines 2024-2028","category":"Policies & Guidelines","filename":"OVPRE_Research_Agenda_2024_2028.pdf","size":"1.8 MB","author":"OVPRE Executive Committee","college":"Administration","date":"2025-11-10","status":"Approved","remarks":"Governing board approved policy document.","archived":false},{"id":104,"title":"Standard Research Grant Proposal Application Form (Form 1A)","category":"Official Forms","filename":"OVPRE_Form_1A_Proposal.docx","size":"540 KB","author":"OVPRE Secretariat","college":"Administration","date":"2026-01-05","status":"Approved","remarks":"Standard downloadable form for proponents.","archived":false},{"id":105,"title":"Minutes of the 14th Academic Research & Extension Council Meeting","category":"Minutes & Reports","filename":"AREC_Minutes_14th_Session.pdf","size":"920 KB","author":"Atty. Legal Secretariat","college":"Administration","date":"2026-02-02","status":"Approved","remarks":"Signed and confirmed minutes.","archived":false},{"id":106,"title":"Oplan Kalusugan Barangay Healthcare Mission Terminal Report","category":"Activities","filename":"Oplan_Kalusugan_Activity_Summary.pdf","size":"2.1 MB","author":"Prof. Lorna Bautista","college":"CONAHS","date":"2026-02-14","status":"Approved","remarks":"Beneficiary reach verified at 420 families.","archived":false},{"id":107,"title":"Solar Rainwater Harvesting Blueprint and Schematics","category":"Research","filename":"Rainwater_Harvesting_Schematic.pdf","size":"6.2 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-02-12","status":"Under Review","remarks":"Technical review underway.","archived":false},{"id":108,"title":"Senior Citizens Digital Inclusion Program Assessment","category":"Extension","filename":"Digital_Literacy_Impact_Study.pdf","size":"1.5 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-02-10","status":"Pending","remarks":"Awaiting coordinator endorsement.","archived":false},{"id":109,"title":"Archived Campus COVID Safety Guidelines 2021","category":"Policies & Guidelines","filename":"Campus_Safety_Protocol_2021.pdf","size":"890 KB","author":"Health Committee","college":"CONAHS","date":"2021-08-10","status":"Approved","remarks":"Archived legacy guidelines.","archived":true}]));
+            return [{"id":101,"title":"AI-Driven Early Crop Disease Detection Final Research Paper","category":"Research","filename":"AI_Crop_Disease_Final_Paper.pdf","size":"3.4 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-01-15","status":"Approved","remarks":"Official approved copy archived in university repository.","archived":false},{"id":102,"title":"Community Water Filtration System Terminal Accomplishment Report","category":"Extension","filename":"Water_Filtration_Terminal_Report.pdf","size":"4.8 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-01-30","status":"Approved","remarks":"Final completion certificate transmitted.","archived":false},{"id":103,"title":"University Research Agenda & Guidelines 2024-2028","category":"Policies & Guidelines","filename":"OVPRE_Research_Agenda_2024_2028.pdf","size":"1.8 MB","author":"OVPRE Executive Committee","college":"Administration","date":"2025-11-10","status":"Approved","remarks":"Governing board approved policy document.","archived":false},{"id":104,"title":"Standard Research Grant Proposal Application Form (Form 1A)","category":"Official Forms","filename":"OVPRE_Form_1A_Proposal.docx","size":"540 KB","author":"OVPRE Secretariat","college":"Administration","date":"2026-01-05","status":"Approved","remarks":"Standard downloadable form for proponents.","archived":false},{"id":105,"title":"Minutes of the 14th Academic Research & Extension Council Meeting","category":"Minutes & Reports","filename":"AREC_Minutes_14th_Session.pdf","size":"920 KB","author":"Atty. Legal Secretariat","college":"Administration","date":"2026-02-02","status":"Approved","remarks":"Signed and confirmed minutes.","archived":false},{"id":106,"title":"Oplan Kalusugan Barangay Healthcare Mission Terminal Report","category":"Activities","filename":"Oplan_Kalusugan_Activity_Summary.pdf","size":"2.1 MB","author":"Prof. Lorna Bautista","college":"CONAHS","date":"2026-02-14","status":"Approved","remarks":"Beneficiary reach verified at 420 families.","archived":false},{"id":107,"title":"Solar Rainwater Harvesting Blueprint and Schematics","category":"Research","filename":"Rainwater_Harvesting_Schematic.pdf","size":"6.2 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-02-12","status":"Under Review","remarks":"Technical review underway.","archived":false},{"id":108,"title":"Senior Citizens Digital Inclusion Program Assessment","category":"Extension","filename":"Digital_Literacy_Impact_Study.pdf","size":"1.5 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-02-10","status":"Pending","remarks":"Awaiting coordinator endorsement.","archived":false},{"id":109,"title":"Archived Campus COVID Safety Guidelines 2021","category":"Policies & Guidelines","filename":"Campus_Safety_Protocol_2021.pdf","size":"890 KB","author":"Health Committee","college":"CONAHS","date":"2021-08-10","status":"Approved","remarks":"Archived legacy guidelines.","archived":true}];
         }
-        const profileToggle = document.getElementById('profileToggle');
-        const profileDropdown = document.getElementById('profileDropdown');
-        if (profileToggle && profileDropdown) {
-            profileToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
-            });
-            document.addEventListener('click', () => {
-                profileDropdown.style.display = 'none';
-            });
+
+        function saveDocs(data) {
+            localStorage.setItem('ovpre_admin_documents', JSON.stringify(data));
         }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('actionToast');
+            t.style.display = 'flex';
+            t.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
+            t.style.border = `1px solid ${type === 'success' ? '#86efac' : '#fecaca'}`;
+            t.style.color = type === 'success' ? '#166534' : '#b91c1c';
+            t.innerHTML = `<i class="${type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line'}"></i> ${msg}`;
+            setTimeout(() => { t.style.display = 'none'; }, 4000);
+        }
+
+        function switchRecordView(tab) {
+            currentRecordTab = tab;
+            recordPage = 1;
+            document.getElementById('tabActiveBtn').style.background = tab === 'active' ? '#15803d' : '#ffffff';
+            document.getElementById('tabActiveBtn').style.color = tab === 'active' ? '#ffffff' : '#475569';
+            document.getElementById('tabArchivedBtn').style.background = tab === 'archived' ? '#15803d' : '#ffffff';
+            document.getElementById('tabArchivedBtn').style.color = tab === 'archived' ? '#ffffff' : '#475569';
+            renderRecords();
+        }
+
+        function filterCategory(cat, el) {
+            currentCategory = cat;
+            recordPage = 1;
+            document.querySelectorAll('.category-card').forEach(c => {
+                c.style.background = '#ffffff';
+                c.style.color = '#1e293b';
+                c.style.borderColor = '#e2e8f0';
+            });
+            el.style.background = '#15803d';
+            el.style.color = '#ffffff';
+            el.style.borderColor = '#15803d';
+            renderRecords();
+        }
+
+        function renderRecords() {
+            const all = getStoredDocs();
+            const activeList = all.filter(d => !d.archived);
+            const archivedList = all.filter(d => d.archived);
+
+            // Update category count numbers
+            document.getElementById('countAll').textContent = activeList.length;
+            document.getElementById('countRes').textContent = activeList.filter(d => d.category === 'Research').length;
+            document.getElementById('countExt').textContent = activeList.filter(d => d.category === 'Extension').length;
+            document.getElementById('countPol').textContent = activeList.filter(d => d.category === 'Policies & Guidelines').length;
+            document.getElementById('countForms').textContent = activeList.filter(d => d.category === 'Official Forms').length;
+            document.getElementById('countMin').textContent = activeList.filter(d => d.category === 'Minutes & Reports').length;
+
+            let filtered = currentRecordTab === 'active' ? activeList : archivedList;
+
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(d => d.category === currentCategory);
+            }
+
+            const searchVal = (document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
+            if (searchVal) {
+                filtered = filtered.filter(d => 
+                    d.title.toLowerCase().includes(searchVal) ||
+                    d.author.toLowerCase().includes(searchVal) ||
+                    d.filename.toLowerCase().includes(searchVal)
+                );
+            }
+
+            const total = filtered.length;
+            const startIdx = (recordPage - 1) * recordPageSize;
+            const pageItems = filtered.slice(startIdx, startIdx + recordPageSize);
+
+            const tbody = document.getElementById('recordsTableBody');
+            tbody.replaceChildren();
+
+            if (!pageItems.length) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="7" style="text-align: center; padding: 32px; color: #64748b;">No records found.</td>`;
+                tbody.appendChild(tr);
+            } else {
+                pageItems.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+
+                    let statusBg = '#dcfce7', statusColor = '#166534';
+                    if (d.status === 'Pending') {
+                        statusBg = '#fef3c7'; statusColor = '#92400e';
+                    } else if (d.status === 'Under Review') {
+                        statusBg = '#e0f2fe'; statusColor = '#0369a1';
+                    } else if (d.status === 'Declined') {
+                        statusBg = '#fef2f2'; statusColor = '#dc2626';
+                    }
+
+                    tr.innerHTML = `
+                        <td style="padding: 12px 10px;">
+                            <strong style="color: #0f172a; line-height: 1.4; display: block;">${d.title}</strong>
+                        </td>
+                        <td style="padding: 12px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.78rem;">${d.category}</span></td>
+                        <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem;">${d.filename} <br><small>(${d.size})</small></td>
+                        <td style="padding: 12px 10px;">${d.author} <br><small style="color: #64748b;">${d.college}</small></td>
+                        <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem; white-space: nowrap;">${d.date}</td>
+                        <td style="padding: 12px 10px;">
+                            <span class="status-pill" style="background: ${statusBg}; color: ${statusColor}; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.76rem;">${d.status}</span>
+                        </td>
+                        <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
+                            <button type="button" class="btn" onclick="openReviewModal(${d.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 6px; cursor: pointer; margin-right: 4px;">Review</button>
+                            <button type="button" class="btn" onclick="openPreviewDocModal(${d.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; border-radius: 6px; cursor: pointer; margin-right: 4px;">Preview</button>
+                            <button type="button" class="btn" onclick="toggleArchiveDoc(${d.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #fff; border: 1px solid #cbd5e1; color: ${d.archived ? '#15803d' : '#b45309'}; border-radius: 6px; cursor: pointer;">${d.archived ? 'Restore' : 'Archive'}</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Pagination
+            const pageCount = Math.max(1, Math.ceil(total / recordPageSize));
+            document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + recordPageSize, total)} of ${total} entries` : 'No records';
+            document.getElementById('prevPageBtn').disabled = recordPage <= 1;
+            document.getElementById('nextPageBtn').disabled = recordPage >= pageCount;
+
+            const pNumContainer = document.getElementById('paginationNumbers');
+            pNumContainer.replaceChildren();
+            for (let i = 1; i <= pageCount; i++) {
+                const b = document.createElement('button');
+                b.textContent = i;
+                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === recordPage ? 'background: #15803d; color: #fff;' : 'background: #fff; color: #1e293b;'}`;
+                b.onclick = () => { recordPage = i; renderRecords(); };
+                pNumContainer.appendChild(b);
+            }
+        }
+
+        function changeRecordPage(delta) {
+            recordPage += delta;
+            renderRecords();
+        }
+
+        function openDialog(id) {
+            const d = document.getElementById(id);
+            if (d) d.showModal();
+        }
+
+        function closeDialog(id) {
+            const d = document.getElementById(id);
+            if (d) d.close();
+        }
+
+        function openUploadModal() {
+            openDialog('uploadModal');
+        }
+
+        function handleUpload(e) {
+            e.preventDefault();
+            const all = getStoredDocs();
+            const newDoc = {
+                id: Date.now(),
+                title: document.getElementById('upTitle').value.trim(),
+                category: document.getElementById('upCategory').value,
+                college: document.getElementById('upCollege').value,
+                filename: document.getElementById('upFile').files[0]?.name || 'Uploaded_Document.pdf',
+                size: '2.4 MB',
+                author: 'System User',
+                date: new Date().toISOString().slice(0, 10),
+                status: 'Under Review',
+                remarks: 'Uploaded by proponent.',
+                archived: false
+            };
+            all.unshift(newDoc);
+            saveDocs(all);
+            closeDialog('uploadModal');
+            showToast('Document uploaded successfully!');
+            renderRecords();
+        }
+
+        function openReviewModal(id) {
+            const all = getStoredDocs();
+            const d = all.find(item => item.id === id);
+            if (!d) return;
+            document.getElementById('revDocId').value = d.id;
+            document.getElementById('revDocTitle').textContent = d.title;
+            document.getElementById('revStatus').value = d.status;
+            document.getElementById('revRemarks').value = d.remarks || '';
+            openDialog('reviewModal');
+        }
+
+        function handleSaveReview(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('revDocId').value, 10);
+            const all = getStoredDocs();
+            const d = all.find(item => item.id === id);
+            if (d) {
+                d.status = document.getElementById('revStatus').value;
+                d.remarks = document.getElementById('revRemarks').value.trim();
+                saveDocs(all);
+                closeDialog('reviewModal');
+                showToast('Review decision saved successfully!');
+                renderRecords();
+            }
+        }
+
+        function openPreviewDocModal(id) {
+            const all = getStoredDocs();
+            const d = all.find(item => item.id === id);
+            if (!d) return;
+            document.getElementById('prevTitle').textContent = d.title;
+            document.getElementById('prevFilename').textContent = d.filename;
+            document.getElementById('prevMeta').textContent = `Category: ${d.category} | Author: ${d.author} (${d.college}) | Size: ${d.size}`;
+            openDialog('previewModal');
+        }
+
+        function toggleArchiveDoc(id) {
+            const all = getStoredDocs();
+            const d = all.find(item => item.id === id);
+            if (!d) return;
+            d.archived = !d.archived;
+            saveDocs(all);
+            showToast(`Record has been ${d.archived ? 'archived' : 'restored'}.`);
+            renderRecords();
+        }
+
+        document.getElementById('topbarSearchInput')?.addEventListener('input', () => {
+            recordPage = 1;
+            renderRecords();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRecords();
+        });
     </script>
     <script src="assets/js/role-system.js"></script>
 </body>

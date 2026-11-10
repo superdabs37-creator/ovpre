@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Notifications | I-Record</title>
+    <title>Notifications | I-Record</title>
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
     <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,12 +26,12 @@
                 <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
                 <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
                 <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
-                <a href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
                 <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                 <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                 <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
             </nav>
-            <div class="sidebar-footer">
+            <div class="sidebar-footer" title="Executive Administration">
                 <i class="ri-shield-keyhole-line"></i>
                 <span>Executive Administration</span>
             </div>
@@ -39,18 +39,19 @@
 
         <div class="page-wrap">
             <header class="topbar">
-                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="topbar-title">
                     <h1>Notifications</h1>
                 </div>
-                <div class="topbar-search">
+                <div class="topbar-search" role="search">
                     <i class="ri-search-line"></i>
-                    <input type="search" placeholder="Search alerts...">
+                    <input type="search" id="topbarSearchInput" placeholder="Search this page" aria-label="Search across accessible records">
                 </div>
-                <a class="topbar-icon" href="notifications.html">
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
                     <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
                 </a>
                 <div class="profile-menu">
                     <button class="profile-button" type="button" id="profileToggle">
@@ -60,9 +61,11 @@
                     </button>
                     <div class="profile-dropdown" id="profileDropdown" style="display: none;">
                         <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
                             <strong id="dropdownUserName">Super Administrator</strong>
-                            <small id="dropdownUserRole">System Administrator</small>
+                            <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
                         </div>
+                        <a href="profile.html"><i class="ri-user-line"></i> My Profile</a>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
                         <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
@@ -70,69 +73,117 @@
             </header>
 
             <main class="content-area">
-                <section class="welcome-panel" style="margin-bottom: 22px;">
-                    <div>
-                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
-                            <i class="ri-notification-3-line" style="color: #15803d;"></i> System Alerts &amp; Workflow Notifications
-                        </h2>
-                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
-                            Track proposal endorsements, director approvals, and document cataloging alerts.
-                        </p>
+                <section class="panel" style="margin-bottom: 22px; padding: 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
+                    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                        <div>
+                            <h2 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">File and Submission Alerts</h2>
+                            <span style="color: #64748b; font-size: 0.88rem;">Updates about uploads, reviews, endorsements, and coordinator submissions.</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto;">
+                            <button type="button" id="markAllBtn" onclick="markAllAsRead()" class="ghost-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 700; background: #ffffff; color: #1e293b; cursor: pointer;">
+                                <i class="ri-check-double-line"></i> Mark All as Read (<span id="unreadCountSpan">2</span>)
+                            </button>
+                            <a class="primary-btn" href="admin-documents.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #15803d; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.85rem;">
+                                <i class="ri-folder-open-line"></i> View All Files
+                            </a>
+                        </div>
                     </div>
                 </section>
 
-                <div class="panel" style="padding: 16px 20px; border-radius: 14px; background: #ffffff; border: 1px solid #dbe7df;">
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #f1f5f9;">
-                            <span style="width: 36px; height: 36px; border-radius: 8px; background: #dcfce7; color: #15803d; display: inline-grid; place-items: center; font-size: 1.2rem;"><i class="ri-checkbox-circle-line"></i></span>
-                            <div style="flex: 1;">
-                                <strong style="color: #0f172a; font-size: 0.92rem; display: block;">Proposal Endorsement Approved</strong>
-                                <p style="margin: 3px 0 0; color: #475569; font-size: 0.85rem;">The research proposal "AI-Driven Early Crop Disease Detection" was formally endorsed by the Research Director.</p>
-                                <small style="color: #94a3b8; font-size: 0.78rem;">2 hours ago</small>
-                            </div>
-                        </li>
-
-                        <li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #f1f5f9;">
-                            <span style="width: 36px; height: 36px; border-radius: 8px; background: #e0f2fe; color: #0284c7; display: inline-grid; place-items: center; font-size: 1.2rem;"><i class="ri-file-text-line"></i></span>
-                            <div style="flex: 1;">
-                                <strong style="color: #0f172a; font-size: 0.92rem; display: block;">New Proposal Submitted</strong>
-                                <p style="margin: 3px 0 0; color: #475569; font-size: 0.85rem;">Prof. Lorna Bautista submitted "Pediatric Immunization Hesitancy Dynamics" for screening.</p>
-                                <small style="color: #94a3b8; font-size: 0.78rem;">Yesterday at 3:45 PM</small>
-                            </div>
-                        </li>
-
-                        <li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 0;">
-                            <span style="width: 36px; height: 36px; border-radius: 8px; background: #fef3c7; color: #92400e; display: inline-grid; place-items: center; font-size: 1.2rem;"><i class="ri-information-line"></i></span>
-                            <div style="flex: 1;">
-                                <strong style="color: #0f172a; font-size: 0.92rem; display: block;">System Security Notice</strong>
-                                <p style="margin: 3px 0 0; color: #475569; font-size: 0.85rem;">University two-factor authentication and session security policies are currently active.</p>
-                                <small style="color: #94a3b8; font-size: 0.78rem;">3 days ago</small>
-                            </div>
-                        </li>
-                    </ul>
+                <div id="toastAlert" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #86efac; color: #166534;">
+                    <i class="ri-checkbox-circle-line"></i> Notifications updated!
                 </div>
+
+                <section class="notification-list" id="notifListContainer" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                    <!-- Populated by JS -->
+                </section>
             </main>
         </div>
     </div>
+
     <script>
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        if (sidebarToggle && sidebar) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
+        function getStoredNotifs() {
+            try {
+                const s = localStorage.getItem('ovpre_notifications');
+                if (s) return JSON.parse(s);
+            } catch(e) {}
+            localStorage.setItem('ovpre_notifications', JSON.stringify([{"id":1,"message":"Your research proposal \"AI-Driven Early Crop Disease Detection\" was approved by Executive VP.","time":"2026-03-10 • 10:15 AM","status":"Unread","link":"research.html"},{"id":2,"message":"New research proposal submitted by Prof. Lorna Bautista awaiting coordinator screening.","time":"2026-03-09 • 02:40 PM","status":"Unread","link":"research.html"},{"id":3,"message":"Extension proposal \"Community Water Filtration System\" endorsed by Extension Director.","time":"2026-03-08 • 11:20 AM","status":"Read","link":"extension.html"},{"id":4,"message":"Quarterly physical accomplishment reporting deadline is approaching on March 31.","time":"2026-03-05 • 09:00 AM","status":"Read","link":"announcements.html"},{"id":5,"message":"New campus activity \"Annual University Research Colloquium 2026\" published.","time":"2026-03-02 • 04:15 PM","status":"Read","link":"activities.html"}]));
+            return [{"id":1,"message":"Your research proposal \"AI-Driven Early Crop Disease Detection\" was approved by Executive VP.","time":"2026-03-10 • 10:15 AM","status":"Unread","link":"research.html"},{"id":2,"message":"New research proposal submitted by Prof. Lorna Bautista awaiting coordinator screening.","time":"2026-03-09 • 02:40 PM","status":"Unread","link":"research.html"},{"id":3,"message":"Extension proposal \"Community Water Filtration System\" endorsed by Extension Director.","time":"2026-03-08 • 11:20 AM","status":"Read","link":"extension.html"},{"id":4,"message":"Quarterly physical accomplishment reporting deadline is approaching on March 31.","time":"2026-03-05 • 09:00 AM","status":"Read","link":"announcements.html"},{"id":5,"message":"New campus activity \"Annual University Research Colloquium 2026\" published.","time":"2026-03-02 • 04:15 PM","status":"Read","link":"activities.html"}];
+        }
+
+        function saveNotifs(data) {
+            localStorage.setItem('ovpre_notifications', JSON.stringify(data));
+        }
+
+        function renderNotifs() {
+            const list = getStoredNotifs();
+            const unreadCount = list.filter(n => n.status === 'Unread').length;
+            document.getElementById('unreadCountSpan').textContent = unreadCount;
+            const container = document.getElementById('notifListContainer');
+            container.replaceChildren();
+
+            if (!list.length) {
+                container.innerHTML = `
+                    <article class="panel" style="text-align: center; padding: 48px 24px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <i class="ri-notification-off-line" style="font-size: 2.5rem; color: #94a3b8; display: block; margin-bottom: 12px;"></i>
+                        <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 700; color: #0f172a;">No notifications yet</h3>
+                        <p style="margin: 0; color: #64748b; font-size: 0.9rem;">You're all caught up! New alerts and updates will appear here.</p>
+                    </article>
+                `;
+                return;
+            }
+
+            list.forEach(n => {
+                const isUnread = n.status === 'Unread';
+                const card = document.createElement('article');
+                card.style.cssText = `display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; border-radius: 14px; background: #ffffff; border: 1px solid ${isUnread ? '#86efac' : '#e2e8f0'}; box-shadow: ${isUnread ? '0 4px 14px rgba(22, 163, 74, 0.08)' : '0 2px 6px rgba(0,0,0,0.02)'}; flex-wrap: wrap;`;
+                card.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 260px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: ${isUnread ? '#dcfce7' : '#f1f5f9'}; color: ${isUnread ? '#15803d' : '#64748b'}; display: inline-grid; place-items: center; font-size: 1.3rem; flex-shrink: 0;">
+                            <i class="${isUnread ? 'ri-notification-3-fill' : 'ri-notification-3-line'}"></i>
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 6px; font-size: 0.92rem; font-weight: ${isUnread ? '700' : '500'}; color: #0f172a; line-height: 1.45;">${n.message}</p>
+                            <div style="display: flex; align-items: center; gap: 12px; font-size: 0.78rem; color: #64748b;">
+                                <span><i class="ri-time-line"></i> ${n.time}</span>
+                                <span class="badge" style="background: ${isUnread ? '#dcfce7' : '#f1f5f9'}; color: ${isUnread ? '#166534' : '#64748b'}; font-weight: 700; font-size: 0.72rem; padding: 2px 8px; border-radius: 999px;">
+                                    ${n.status}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <a href="${n.link}" style="padding: 7px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                            <i class="ri-arrow-right-up-line"></i> Open
+                        </a>
+                        ${isUnread ? `<button type="button" onclick="markSingleAsRead(${n.id})" style="padding: 7px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;"><i class="ri-check-line"></i> Mark as Read</button>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
-        const profileToggle = document.getElementById('profileToggle');
-        const profileDropdown = document.getElementById('profileDropdown');
-        if (profileToggle && profileDropdown) {
-            profileToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
-            });
-            document.addEventListener('click', () => {
-                profileDropdown.style.display = 'none';
-            });
+
+        function markSingleAsRead(id) {
+            const list = getStoredNotifs();
+            const n = list.find(item => item.id === id);
+            if (n) n.status = 'Read';
+            saveNotifs(list);
+            renderNotifs();
         }
+
+        function markAllAsRead() {
+            const list = getStoredNotifs();
+            list.forEach(n => { n.status = 'Read'; });
+            saveNotifs(list);
+            const t = document.getElementById('toastAlert');
+            t.style.display = 'flex';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+            renderNotifs();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNotifs();
+        });
     </script>
     <script src="assets/js/role-system.js"></script>
 </body>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>User Profile</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="topbarSearchInput" placeholder="Search this page" aria-label="Search across accessible records">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-line"></i> My Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <section class="welcome-panel" style="margin-bottom: 22px;">
+                    <div>
+                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                            <i class="ri-user-settings-line" style="color: #15803d;"></i> Account Profile &amp; Security
+                        </h2>
+                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
+                            Manage your personal details, institutional affiliation, and security credentials.
+                        </p>
+                    </div>
+                </section>
+
+                <div id="saveToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #86efac; color: #166534;">
+                    <i class="ri-checkbox-circle-line"></i> Profile information saved successfully!
+                </div>
+
+                <div style="display: grid; grid-template-columns: minmax(280px, 320px) 1fr; gap: 24px; align-items: flex-start;">
+                    <!-- User Identity Badge Card -->
+                    <article class="panel" style="margin: 0; padding: 26px 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df; text-align: center;">
+                        <div style="width: 88px; height: 88px; border-radius: 50%; background: #dcfce7; color: #15803d; border: 3px solid #86efac; display: inline-grid; place-items: center; font-size: 2.2rem; font-weight: 800; margin-bottom: 14px;" id="profileAvatarBig">
+                            SA
+                        </div>
+                        <h3 id="profileNameBig" style="margin: 0 0 4px; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Super Administrator</h3>
+                        <p id="profileRoleBig" style="margin: 0 0 8px; font-size: 0.88rem; color: #15803d; font-weight: 700;">Executive Administrator</p>
+                        <span id="profileCollegeBig" class="dept-pill" style="display: inline-block; padding: 4px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px; font-size: 0.78rem; color: #475569; font-weight: 600;">Office of the Vice President</span>
+
+                        <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid #f1f5f9; text-align: left; font-size: 0.84rem; display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; justify-content: space-between; color: #64748b;">
+                                <span>Status:</span>
+                                <strong style="color: #166534;"><i class="ri-checkbox-circle-fill"></i> Active</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; color: #64748b;">
+                                <span>Account Tier:</span>
+                                <strong style="color: #0f172a;">Verified Institutional</strong>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Edit Form Card -->
+                    <article class="panel" style="margin: 0; padding: 26px 28px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
+                        <h3 style="margin: 0 0 16px; font-size: 1.18rem; font-weight: 800; color: #0f172a; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">Personal Details</h3>
+                        <form onsubmit="handleSaveProfile(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Full Name</label>
+                                    <input type="text" id="profFullName" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Institutional Email</label>
+                                    <input type="email" id="profEmail" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Username</label>
+                                    <input type="text" id="profUsername" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 8px; font-size: 0.88rem; color: #64748b;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Contact Phone Number</label>
+                                    <input type="text" id="profPhone" placeholder="+63 912 345 6789" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Gender</label>
+                                    <select id="profGender" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Prefer not to say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Birthday</label>
+                                    <input type="date" id="profBirthday" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                                </div>
+                            </div>
+
+                            <div style="padding-top: 14px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end;">
+                                <button type="submit" class="primary-btn" style="padding: 11px 24px; border-radius: 10px; background: #15803d; color: #ffffff; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="ri-save-line"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </article>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function loadProfile() {
+            const userJson = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
+            if (userJson) {
+                try {
+                    const u = JSON.parse(userJson);
+                    document.getElementById('profFullName').value = u.fullname || 'Super Administrator';
+                    document.getElementById('profEmail').value = u.email || 'admin@plsp.edu.ph';
+                    document.getElementById('profUsername').value = u.username || 'admin';
+                    document.getElementById('profPhone').value = u.phone || '+63 949 123 4567';
+                    document.getElementById('profGender').value = u.gender || 'Prefer not to say';
+                    document.getElementById('profBirthday').value = u.birthday || '1990-01-01';
+
+                    document.getElementById('profileNameBig').textContent = u.fullname || 'Super Administrator';
+                    document.getElementById('profileRoleBig').textContent = u.role || 'Executive Administrator';
+                    document.getElementById('profileCollegeBig').textContent = u.department || 'Office of the Vice President';
+
+                    const initials = (u.fullname || 'SA').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                    document.getElementById('profileAvatarBig').textContent = initials;
+                } catch(e) {}
+            }
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            const userJson = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user') || '{}';
+            try {
+                const u = JSON.parse(userJson);
+                u.fullname = document.getElementById('profFullName').value.trim();
+                u.email = document.getElementById('profEmail').value.trim();
+                u.phone = document.getElementById('profPhone').value.trim();
+                u.gender = document.getElementById('profGender').value;
+                u.birthday = document.getElementById('profBirthday').value;
+
+                sessionStorage.setItem('irecord_user', JSON.stringify(u));
+                localStorage.setItem('irecord_user', JSON.stringify(u));
+
+                const toast = document.getElementById('saveToast');
+                toast.style.display = 'flex';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                loadProfile();
+            } catch(e) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>

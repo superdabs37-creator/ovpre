@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Search | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>System Search</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="topbarSearchInput" placeholder="Search this page" aria-label="Search across accessible records">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-line"></i> My Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <section class="panel" style="margin-bottom: 22px; padding: 24px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
+                    <div class="panel-heading" style="margin-bottom: 16px;">
+                        <h2 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Universal System Search</h2>
+                        <span id="searchResultCount" style="color: #64748b; font-size: 0.88rem;">Search across research proposals, extension projects, official documents, activities, and bulletins.</span>
+                    </div>
+
+                    <form onsubmit="executeSearch(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="search" id="mainSearchInput" placeholder="Enter keywords, titles, or authors..." style="flex: 1; min-width: 260px; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                        <button type="submit" class="primary-btn" style="padding: 12px 24px; border-radius: 10px; background: #15803d; color: #ffffff; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="ri-search-line"></i> Search
+                        </button>
+                    </form>
+                </section>
+
+                <section class="panel" style="padding: 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
+                    <div class="table-scroll">
+                        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
+                                    <th style="padding: 12px 10px;">Record Type</th>
+                                    <th style="padding: 12px 10px;">Title &amp; Match</th>
+                                    <th style="padding: 12px 10px;">Status / Scope</th>
+                                    <th style="padding: 12px 10px;">Date</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="searchResultsBody" style="font-size: 0.88rem;">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const allRecordsSearchIndex = [
+            { type: 'Research Proposal', title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming', status: 'Approved', date: '2026-01-15', url: 'research.html' },
+            { type: 'Research Proposal', title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households', status: 'Pending Coordinator Review', date: '2026-02-01', url: 'research.html' },
+            { type: 'Research Proposal', title: 'Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station', status: 'Pending Director Review', date: '2026-02-12', url: 'research.html' },
+            { type: 'Extension Project', title: 'Community Water Filtration System Installation in Barangay San Lucas', status: 'Approved', date: '2025-07-20', url: 'extension.html' },
+            { type: 'Extension Project', title: 'Digital Literacy and Cybersecurity Bootcamp for San Pablo Senior Citizens', status: 'Pending Coordinator Review', date: '2026-02-10', url: 'extension.html' },
+            { type: 'Document', title: 'University Research Agenda & Guidelines 2024-2028', status: 'Approved', date: '2025-11-10', url: 'admin-documents.html' },
+            { type: 'Document', title: 'Standard Research Grant Proposal Application Form (Form 1A)', status: 'Approved', date: '2026-01-05', url: 'admin-documents.html' },
+            { type: 'Activity', title: 'Annual University Research Colloquium 2026', status: 'Approved', date: '2026-03-24', url: 'activities.html' },
+            { type: 'Announcement', title: 'Call for Faculty Research & Creative Works Proposals (Cycle 1 FY 2026)', status: 'Published', date: '2026-02-01', url: 'announcements.html' }
+        ];
+
+        function executeSearch(e) {
+            if (e) e.preventDefault();
+            const q = (document.getElementById('mainSearchInput').value || '').trim().toLowerCase();
+            const tbody = document.getElementById('searchResultsBody');
+            tbody.replaceChildren();
+
+            const matches = allRecordsSearchIndex.filter(r => !q || r.title.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
+
+            document.getElementById('searchResultCount').textContent = `${matches.length} result${matches.length === 1 ? '' : 's'} found for query "${q || 'All'}"`;
+
+            if (!matches.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 32px; color: #64748b;">No accessible records matched your query.</td></tr>';
+                return;
+            }
+
+            matches.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+                tr.innerHTML = `
+                    <td style="padding: 12px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.78rem;">${m.type}</span></td>
+                    <td style="padding: 12px 10px;"><strong style="color: #0f172a;">${m.title}</strong></td>
+                    <td style="padding: 12px 10px;"><span class="status-pill status-approved" style="font-size: 0.76rem; padding: 3px 8px; border-radius: 999px;">${m.status}</span></td>
+                    <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem;">${m.date}</td>
+                    <td style="padding: 12px 10px; text-align: center;">
+                        <a href="${m.url}" class="ghost-btn" style="padding: 5px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; color: #15803d; font-weight: 700; text-decoration: none; font-size: 0.8rem;">Open</a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get('q');
+            if (q) {
+                document.getElementById('mainSearchInput').value = q;
+            }
+            executeSearch();
+        });
+    </script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>

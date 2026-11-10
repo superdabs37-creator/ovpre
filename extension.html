@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extension Initiatives | I-Record</title>
+    <title>Extension Management | I-Record</title>
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
     <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,388 +13,821 @@
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
-        <aside class="sidebar" id="sidebar">
-            <a class="brand" href="dashboard.html">
-                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
-                <strong>I-Record</strong>
-            </a>
-            <nav class="sidebar-nav">
-                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
-                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
-                <a class="active" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
-                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
-                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
-                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
-                <a href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
-                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
-            </nav>
-            <div class="sidebar-footer">
-                <i class="ri-shield-keyhole-line"></i>
-                <span>Executive Administration</span>
-            </div>
-        </aside>
+${getSidebar('extension.html')}
 
         <div class="page-wrap">
-            <header class="topbar">
-                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
-                    <i class="ri-menu-line"></i>
-                </button>
-                <div class="topbar-title">
-                    <h1>Extension Initiatives</h1>
-                </div>
-                <div class="topbar-search">
-                    <i class="ri-search-line"></i>
-                    <input type="search" id="tableSearch" placeholder="Search outreach projects..." oninput="filterTable()">
-                </div>
-                <a class="topbar-icon" href="notifications.html">
-                    <i class="ri-notification-3-line"></i>
-                </a>
-                <div class="profile-menu">
-                    <button class="profile-button" type="button" id="profileToggle">
-                        <span class="avatar">SA</span>
-                        <span id="userNameDisplay">Super Administrator</span>
-                        <i class="ri-arrow-down-s-line"></i>
-                    </button>
-                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
-                        <div class="profile-dropdown-identity">
-                            <strong>Super Administrator</strong>
-                            <small>System Administrator</small>
-                        </div>
-                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
-                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
-                    </div>
-                </div>
-            </header>
+${getTopbar('Extension Management')}
 
             <main class="content-area">
-                <section class="welcome-panel" style="margin-bottom: 22px;">
-                    <div>
-                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
-                            <i class="ri-community-line" style="color: #0d9488;"></i> Community Outreach &amp; Extension Initiatives
-                        </h2>
-                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
-                            Track barangay partnerships, LGU MoA agreements, and community development impact.
-                        </p>
+                <!-- =========================================================
+                     MODULE HEADER
+                ========================================================= -->
+                <section class="module-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
+                    <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #ccfbf1; color: #0d9488; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
+                        <i class="ri-community-line"></i>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-primary" onclick="openAddModal()" style="background: #0d9488; color: #fff; padding: 10px 18px; border-radius: 9px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;">
-                            <i class="ri-add-line"></i> New Extension Project
-                        </button>
+                        <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0d9488;">Extension Repository</p>
+                        <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Extension Management</h2>
+                        <span style="font-size: 0.84rem; color: #64748b;">Community Pipeline: Proponent &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval</span>
                     </div>
                 </section>
 
-                <div class="panel" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: #fff; border: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <label for="statusFilter" style="font-size: 0.82rem; font-weight: 700; color: #475569;">Filter Status:</label>
-                        <select id="statusFilter" onchange="filterTable()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.84rem; font-weight: 600;">
-                            <option value="all">All Projects</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Ongoing">Ongoing</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                    </div>
-                    <span id="recordCount" style="font-size: 0.85rem; font-weight: 700; color: #166534; background: #f0fdf4; padding: 6px 12px; border-radius: 999px;">
-                        Showing 5 Initiatives
-                    </span>
-                </div>
+                <div id="actionToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px;"></div>
 
-                <article class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 20px;">
-                    <div class="table-responsive">
+                <!-- SUBMIT EXTENSION PROJECT PANEL (LAUNCHER) -->
+                <section class="panel modal-launcher-panel" style="margin-bottom: 20px; padding: 18px 22px; border-radius: 14px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                    <div>
+                        <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 800; color: #0d9488;">Extension Initiatives</h3>
+                        <span style="font-size: 0.88rem; color: #64748b;">Submit a new community extension initiative or outreach project for screening.</span>
+                    </div>
+                    <button class="primary-btn" type="button" onclick="openCreateProjectModal()" style="display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; background: #0d9488; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">
+                        <i class="ri-add-line"></i> Submit Extension Project
+                    </button>
+                </section>
+
+                <!-- PROJECTS TABLE PANEL -->
+                <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div class="portal-table-tabs" style="display: flex; gap: 8px;">
+                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchView('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #0d9488; color: #ffffff; cursor: pointer;">
+                                <i class="ri-community-line"></i>
+                                <span>Active Projects</span>
+                                <span class="tab-count" id="activeBadge" style="background: rgba(255,255,255,0.25); padding: 2px 7px; border-radius: 999px; font-size: 0.75rem;">6</span>
+                            </button>
+                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchView('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                                <i class="ri-archive-line"></i>
+                                <span>Archived</span>
+                                <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 7px; border-radius: 999px; font-size: 0.75rem;">1</span>
+                            </button>
+                        </div>
+
+                        <!-- Filters -->
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Filter:</label>
+                            <select id="stageFilter" onchange="applyFilters()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.82rem; font-weight: 600; background: #ffffff;">
+                                <option value="all">All Stages &amp; Statuses</option>
+                                <option value="Pending Coordinator Review">Pending Coordinator Review</option>
+                                <option value="Pending Director Review">Pending Director Review</option>
+                                <option value="Pending Executive Approval">Pending Executive Approval</option>
+                                <option value="Approved">Approved</option>
+                                <option value="For Revision">For Revision</option>
+                            </select>
+                            <select id="collegeFilter" onchange="applyFilters()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.82rem; font-weight: 600; background: #ffffff;">
+                                <option value="all">All Colleges</option>
+                                <option value="College of Computer Studies and Technology">CCST</option>
+                                <option value="College of Engineering">COE</option>
+                                <option value="College of Nursing and Allied Health Sciences">CONAHS</option>
+                                <option value="College of Business Administration">CBA</option>
+                                <option value="College of Arts and Sciences">CAS</option>
+                                <option value="College of Teacher Education">CTE</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Selection Toolbar -->
+                    <div id="bulkToolbar" style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; margin-bottom: 14px;">
+                        <span id="bulkCountText" style="font-size: 0.86rem; font-weight: 700; color: #166534;">0 selected</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" id="bulkActionBtn" onclick="handleBulkAction()" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                <i class="ri-archive-line"></i> <span>Archive Selected</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll">
                         <table class="data-table" id="extensionTable" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
-                                    <th style="padding: 12px 10px;">ID</th>
-                                    <th style="padding: 12px 10px;">Project Title &amp; Partner</th>
-                                    <th style="padding: 12px 10px;">Lead Coordinator / College</th>
+                                    <th style="padding: 12px 10px; width: 40px;">
+                                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)">
+                                    </th>
+                                    <th style="padding: 12px 10px;">Project &amp; Lead</th>
+                                    <th style="padding: 12px 10px;">Partner / Location</th>
+                                    <th style="padding: 12px 10px;">College</th>
                                     <th style="padding: 12px 10px;">Budget</th>
+                                    <th style="padding: 12px 10px;">Stage</th>
                                     <th style="padding: 12px 10px;">Status</th>
-                                    <th style="padding: 12px 10px;">Manage / Action</th>
+                                    <th style="padding: 12px 10px; text-align: center;">Manage / Action</th>
                                 </tr>
                             </thead>
-                            <tbody style="font-size: 0.88rem;" id="tableBody">
-                                <!-- Row 1 -->
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#EX-201</td>
-                                    <td style="padding: 14px 10px;">
-                                        <div style="font-weight: 700; color: #0f172a;">Community Water Filtration System Installation in Barangay San Lucas</div>
-                                        <small style="color: #64748b;">Partner: Barangay Council of San Lucas II</small>
-                                    </td>
-                                    <td style="padding: 14px 10px; color: #334155;">Engr. Katrina Valdez <br><small style="color: #94a3b8;">COE</small></td>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 110,000.00</td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Completed</span></td>
-                                    <td style="padding: 14px 10px;">
-                                        <button type="button" class="btn" onclick="openDetails(201)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
-                                            <i class="ri-eye-line"></i> Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 2 -->
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#EX-202</td>
-                                    <td style="padding: 14px 10px;">
-                                        <div style="font-weight: 700; color: #0f172a;">Oplan Kalusugan: Barangay Maternal and Neonatal Care Mentorship</div>
-                                        <small style="color: #64748b;">Partner: City Health Office - San Pablo</small>
-                                    </td>
-                                    <td style="padding: 14px 10px; color: #334155;">Prof. Lorna Bautista <br><small style="color: #94a3b8;">CONAHS</small></td>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 85,000.00</td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Ongoing</span></td>
-                                    <td style="padding: 14px 10px;">
-                                        <button type="button" class="btn" onclick="openDetails(202)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
-                                            <i class="ri-eye-line"></i> Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 3 -->
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#EX-203</td>
-                                    <td style="padding: 14px 10px;">
-                                        <div style="font-weight: 700; color: #0f172a;">MSME Financial Management and Digital Bookkeeping Mentorship Clinic</div>
-                                        <small style="color: #64748b;">Partner: San Pablo Women's Multi-Purpose Cooperative</small>
-                                    </td>
-                                    <td style="padding: 14px 10px; color: #334155;">Prof. Raymond Cruz <br><small style="color: #94a3b8;">CBA</small></td>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 75,000.00</td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Ongoing</span></td>
-                                    <td style="padding: 14px 10px;">
-                                        <button type="button" class="btn" onclick="openDetails(203)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
-                                            <i class="ri-eye-line"></i> Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 4 -->
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#EX-204</td>
-                                    <td style="padding: 14px 10px;">
-                                        <div style="font-weight: 700; color: #0f172a;">Community Grassroots Sports Clinic and Youth Leadership Development</div>
-                                        <small style="color: #64748b;">Partner: Sangguniang Kabataan Federation - San Pablo</small>
-                                    </td>
-                                    <td style="padding: 14px 10px; color: #334155;">Coach Marlon Reyes <br><small style="color: #94a3b8;">CTE</small></td>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 60,000.00</td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
-                                    <td style="padding: 14px 10px;">
-                                        <button type="button" class="btn" onclick="openDetails(204)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
-                                            <i class="ri-eye-line"></i> Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 5 -->
-                                <tr>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#EX-205</td>
-                                    <td style="padding: 14px 10px;">
-                                        <div style="font-weight: 700; color: #0f172a;">Barangay Homestay Hospitality and Sanitation Standards Training</div>
-                                        <small style="color: #64748b;">Partner: San Pablo Eco-Tourism Council</small>
-                                    </td>
-                                    <td style="padding: 14px 10px; color: #334155;">Chef Maria Santos <br><small style="color: #94a3b8;">CTHM</small></td>
-                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 55,000.00</td>
-                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
-                                    <td style="padding: 14px 10px;">
-                                        <button type="button" class="btn" onclick="openDetails(205)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
-                                            <i class="ri-eye-line"></i> Details
-                                        </button>
-                                    </td>
-                                </tr>
+                            <tbody id="extensionTableBody" style="font-size: 0.88rem;">
+                                <!-- Populated by JS -->
                             </tbody>
                         </table>
                     </div>
-                </article>
+
+                    <!-- Table Pagination Footer -->
+                    <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
+                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 6 of 6 entries</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button type="button" id="prevPageBtn" onclick="changePage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
+                            <span id="paginationNumbers" style="display: flex; gap: 4px;"></span>
+                            <button type="button" id="nextPageBtn" onclick="changePage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
+                        </div>
+                    </div>
+                </section>
             </main>
         </div>
     </div>
 
-    <!-- DETAILS MODAL -->
-    <dialog id="detailsModal" style="width: min(720px, calc(100% - 32px)); border: none; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 id="modalTitle" style="margin: 0; font-size: 1.15rem; color: #0f172a; font-weight: 800;">Extension Initiative Details</h3>
-            <button type="button" onclick="document.getElementById('detailsModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+    <!-- =========================================================
+         MODALS
+    ========================================================= -->
+
+    <!-- 1. CREATE EXTENSION PROJECT MODAL -->
+    <dialog id="createProjectModal" style="width: min(720px, calc(100% - 32px)); max-width: 720px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <div>
+                <span class="badge" style="background: #ccfbf1; color: #0d9488; font-weight: 700; font-size: 0.76rem; padding: 3px 8px; border-radius: 6px;">Extension</span>
+                <h3 style="margin: 4px 0 0; color: #0f172a; font-size: 1.2rem; font-weight: 800;">Submit Extension Project</h3>
+                <small style="color: #64748b;">Community Outreach Initiative Routing &amp; Screening</small>
+            </div>
+            <button type="button" onclick="closeDialog('createProjectModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
         </div>
-        <div style="padding: 24px; line-height: 1.6;" id="modalBody"></div>
-    </dialog>
-
-    <!-- ADD EXTENSION MODAL -->
-    <dialog id="addModal" style="width: min(600px, calc(100% - 32px)); border: none; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a; font-weight: 800;">Submit Extension Initiative</h3>
-            <button type="button" onclick="document.getElementById('addModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
-        </div>
-        <form style="padding: 24px;" onsubmit="handleNewProject(event)">
-            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Initiative Title</label>
-            <input type="text" id="newTitle" required placeholder="Enter community project title" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
-
-            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Partner Community / LGU</label>
-            <input type="text" id="newPartner" required placeholder="Barangay / Beneficiary" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
-
-            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Lead Coordinator</label>
-            <input type="text" id="newCoord" required placeholder="Faculty In-Charge" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
-
-            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Approved Budget</label>
-            <input type="text" id="newBudget" placeholder="e.g. PHP 80,000.00" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;">
-
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" onclick="document.getElementById('addModal').close()" style="padding: 10px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 700; cursor: pointer;">Cancel</button>
-                <button type="submit" style="padding: 10px 18px; border-radius: 8px; border: none; background: #15803d; color: #fff; font-weight: 700; cursor: pointer;">Save Initiative</button>
+        <form onsubmit="handleCreateProject(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 80px); overflow-y: auto;">
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Project / Program Title</label>
+                <input type="text" id="newTitle" required placeholder="Full extension project title" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Lead Project Coordinator</label>
+                    <input type="text" id="newCoordinator" required placeholder="Lead faculty extensionist" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
+                    <select id="newCollege" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                        <option value="College of Computer Studies and Technology">College of Computer Studies and Technology</option>
+                        <option value="College of Engineering">College of Engineering</option>
+                        <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                        <option value="College of Business Administration">College of Business Administration</option>
+                        <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                        <option value="College of Teacher Education">College of Teacher Education</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Community Partner / LGU / NGO</label>
+                    <input type="text" id="newPartner" required placeholder="Partner agency or barangay" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Location / Venue</label>
+                    <input type="text" id="newLocation" required placeholder="Sitio / Barangay, City" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Proposed Budget (PHP)</label>
+                    <input type="number" id="newBudget" value="80000" step="5000" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Start Date</label>
+                    <input type="date" id="newStartDate" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">End Date</label>
+                    <input type="date" id="newEndDate" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Beneficiaries &amp; Estimated Headcount</label>
+                <input type="text" id="newBeneficiaries" required placeholder="e.g. 150 local farmers / senior citizens" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Project Objectives &amp; Action Plan</label>
+                <textarea id="newObjectives" rows="4" required placeholder="Detail specific outreach targets, expected community deliverables, and impact metrics..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Project Proposal / MOA File (.pdf, .docx; up to 15 MB)</label>
+                <input type="file" id="newFile" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #f8fafc;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="button" onclick="closeDialog('createProjectModal')" style="padding: 10px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button type="submit" style="padding: 10px 22px; border-radius: 8px; border: none; background: #0d9488; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-send-plane-line"></i> Submit to Coordinator
+                </button>
             </div>
         </form>
     </dialog>
 
-    <script>
-        const extensionData = {
-            201: {
-                id: '#EX-201',
-                title: 'Community Water Filtration System Installation in Barangay San Lucas',
-                partner: 'Barangay Council of San Lucas II',
-                coord: 'Engr. Katrina Valdez (COE)',
-                budget: 'PHP 110,000.00',
-                status: 'Completed',
-                summary: 'Engineering extension project installing low-cost gravity-fed multi-stage filtration units for underserved households in Sitio Ilaya.',
-                pdf: 'uploads/records/sample-2-community-water-filtration-system-instal.pdf'
-            },
-            202: {
-                id: '#EX-202',
-                title: 'Oplan Kalusugan: Barangay Maternal and Neonatal Care Mentorship',
-                partner: 'City Health Office - San Pablo',
-                coord: 'Prof. Lorna Bautista (CONAHS)',
-                budget: 'PHP 85,000.00',
-                status: 'Ongoing',
-                summary: 'Comprehensive healthcare outreach training barangay health workers in pre-natal monitoring, gestational nutrition, and infant care.',
-                pdf: 'uploads/records/sample-3-oplan-kalusugan-barangay-maternal-and-n.pdf'
-            },
-            203: {
-                id: '#EX-203',
-                title: 'MSME Financial Management and Digital Bookkeeping Mentorship Clinic',
-                partner: 'San Pablo Women\'s Multi-Purpose Cooperative',
-                coord: 'Prof. Raymond Cruz (CBA)',
-                budget: 'PHP 75,000.00',
-                status: 'Ongoing',
-                summary: 'Series of weekend workshops training women cooperative entrepreneurs on basic QuickBooks, cloud invoicing, and tax compliance.',
-                pdf: 'uploads/records/sample-5-msme-financial-management-and-digital-bo.pdf'
-            },
-            204: {
-                id: '#EX-204',
-                title: 'Community Grassroots Sports Clinic and Youth Leadership Development',
-                partner: 'Sangguniang Kabataan Federation - San Pablo',
-                coord: 'Coach Marlon Reyes (CTE)',
-                budget: 'PHP 60,000.00',
-                status: 'Approved',
-                summary: 'Athletic mentoring clinic training youth coaches in basketball fundamentals, sportsmanship values, and tournament organizing.',
-                pdf: 'uploads/records/sample-6-community-grassroots-sports-clinic-and-y.pdf'
-            },
-            205: {
-                id: '#EX-205',
-                title: 'Barangay Homestay Hospitality and Sanitation Standards Training',
-                partner: 'San Pablo Eco-Tourism Council',
-                coord: 'Chef Maria Santos (CTHM)',
-                budget: 'PHP 55,000.00',
-                status: 'Approved',
-                summary: 'Hospitality workshops educating local homeowners around Lake Sampaloc on DOT sanitary guidelines and guest meal preparation.',
-                pdf: 'uploads/records/sample-8-barangay-homestay-hospitality-and-sanita.pdf'
-            }
-        };
+    <!-- 2. DETAILS & AUDIT TRAIL MODAL -->
+    <dialog id="detailsModal" style="width: min(720px, calc(100% - 32px)); max-width: 720px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <div>
+                <h3 style="margin: 0; color: #0f172a; font-size: 1.2rem; font-weight: 800;">Extension Project Details</h3>
+                <small id="detailHeaderSub" style="color: #64748b;"></small>
+            </div>
+            <button type="button" onclick="closeDialog('detailsModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 80px); overflow-y: auto;">
+            <div>
+                <h4 id="detailTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.15rem; font-weight: 800; line-height: 1.4;"></h4>
+                <p id="detailMeta" style="margin: 0; color: #64748b; font-size: 0.85rem;"></p>
+            </div>
 
-        function openDetails(id) {
-            const data = extensionData[id];
-            if (!data) return;
-            const modal = document.getElementById('detailsModal');
-            document.getElementById('modalTitle').textContent = data.id + ': ' + data.title;
-            document.getElementById('modalBody').innerHTML = `
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 18px;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
-                        <div>
-                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">Community Partner</span>
-                            <strong style="color: #0f172a;">${data.partner}</strong>
-                        </div>
-                        <div>
-                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">Lead In-Charge</span>
-                            <strong style="color: #0f172a;">${data.coord}</strong>
-                        </div>
-                        <div>
-                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">Project Budget</span>
-                            <strong style="color: #15803d;">${data.budget}</strong>
-                        </div>
-                        <div>
-                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">Current Progress</span>
-                            <strong style="color: #0d9488;">${data.status}</strong>
-                        </div>
-                    </div>
-                </div>
-                <h4 style="margin: 0 0 6px; color: #0f172a; font-size: 0.95rem;">Implementation Summary</h4>
-                <p style="color: #334155; font-size: 0.9rem; margin-bottom: 20px;">${data.summary}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-                    <span style="font-size: 0.82rem; color: #64748b;"><i class="ri-attachment-line"></i> Attached Initiative Documentation</span>
-                    <a href="${data.pdf}" target="_blank" class="btn" style="padding: 8px 14px; border-radius: 8px; background: #15803d; color: #fff; text-decoration: none; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
-                        <i class="ri-file-pdf-line"></i> Preview / Download Document
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+                <strong style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase;">Objectives &amp; Outreach Scope</strong>
+                <p id="detailObjectives" style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.6;"></p>
+                <div id="detailBeneficiariesRow" style="margin-top: 8px; font-size: 0.84rem; color: #0d9488; font-weight: 600;"></div>
+            </div>
+
+            <div id="detailRemarksSection" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+            <div>
+                <h4 style="margin: 8px 0 6px; font-size: 0.95rem; color: #0d9488; display: flex; align-items: center; gap: 6px;">
+                    <i class="ri-history-line"></i> Audit Trail &amp; Workflow History
+                </h4>
+                <div id="detailTimeline" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 0.82rem; display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" id="detailPreviewBtn" onclick="openPreviewModal()" class="primary-btn" style="padding: 8px 14px; font-size: 0.82rem; background: #0d9488; color: #ffffff; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="ri-eye-line"></i> Preview Document
+                    </button>
+                    <a id="detailDownloadBtn" href="#" download class="ghost-btn" style="padding: 8px 14px; font-size: 0.82rem; border: 1px solid #cbd5e1; border-radius: 8px; color: #1e293b; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="ri-download-line"></i> Download
                     </a>
                 </div>
-            `;
-            modal.showModal();
+                <div id="detailArchiveToggleWrap"></div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- 3. COORDINATOR ENDORSEMENT MODAL -->
+    <dialog id="coordModal" style="width: min(580px, calc(100% - 32px)); max-width: 580px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #fffbeb;">
+            <h3 style="margin: 0; color: #b45309; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="ri-shield-check-line"></i> College Extension Coordinator Screening
+            </h3>
+            <button type="button" onclick="closeDialog('coordModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <form onsubmit="handleCoordinatorAction(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <input type="hidden" id="coordPropId">
+            <h4 id="coordTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Endorsement Remarks / Screening Feedback:</label>
+                <textarea id="coordRemarks" rows="3" required placeholder="Enter screening remarks before endorsing to Extension Director..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="submit" name="decision" value="endorse" style="padding: 9px 16px; border-radius: 8px; border: none; background: #0d9488; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-check-line"></i> Endorse to Director
+                </button>
+                <button type="submit" name="decision" value="revision" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fed7aa; background: #fff7ed; color: #c2410c; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-arrow-go-back-line"></i> Return for Revision
+                </button>
+                <button type="submit" name="decision" value="decline" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 700; cursor: pointer;">
+                    Decline
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- 4. DIRECTOR EVALUATION MODAL -->
+    <dialog id="dirModal" style="width: min(620px, calc(100% - 32px)); max-width: 620px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #eff6ff;">
+            <h3 style="margin: 0; color: #1d4ed8; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="ri-award-line"></i> Extension Director Project Evaluation
+            </h3>
+            <button type="button" onclick="closeDialog('dirModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <form onsubmit="handleDirectorAction(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <input type="hidden" id="dirPropId">
+            <h4 id="dirTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Approved Extension Budget (PHP):</label>
+                <input type="number" step="5000" id="dirApprovedBudget" value="80000" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Director Evaluation &amp; Community Impact Remarks:</label>
+                <textarea id="dirRemarks" rows="3" required placeholder="Evaluation regarding beneficiary readiness and partner alignment..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="submit" name="decision" value="endorse" style="padding: 9px 16px; border-radius: 8px; border: none; background: #1d4ed8; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-send-plane-line"></i> Endorse to Executive
+                </button>
+                <button type="submit" name="decision" value="revision" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fed7aa; background: #fff7ed; color: #c2410c; font-weight: 700; cursor: pointer;">
+                    Return for Revision
+                </button>
+                <button type="submit" name="decision" value="decline" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 700; cursor: pointer;">
+                    Decline
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- 5. EXECUTIVE APPROVAL MODAL -->
+    <dialog id="execModal" style="width: min(600px, calc(100% - 32px)); max-width: 600px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f3e8ff;">
+            <h3 style="margin: 0; color: #7e22ce; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i class="ri-checkbox-circle-line"></i> OVPRE Executive Final Approval
+            </h3>
+            <button type="button" onclick="closeDialog('execModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <form onsubmit="handleExecutiveAction(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <input type="hidden" id="execPropId">
+            <h4 id="execTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
+            <div>
+                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Executive Resolution &amp; Grant Release Directives:</label>
+                <textarea id="execRemarks" rows="4" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">Approved for field execution under the University Community Extension Program. Funds authorized for release.</textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="submit" name="decision" value="approve" style="padding: 10px 20px; border-radius: 8px; border: none; background: #16a34a; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-check-double-line"></i> Grant Final Approval
+                </button>
+                <button type="submit" name="decision" value="disapprove" style="padding: 10px 18px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 700; cursor: pointer;">
+                    Disapprove
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- 6. DOCUMENT PREVIEW MODAL -->
+    <dialog id="previewModal" style="width: min(840px, calc(100% - 32px)); max-width: 840px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <h3 id="previewTitle" style="margin: 0; color: #0f172a; font-size: 1.1rem; font-weight: 800;"></h3>
+            <button type="button" onclick="closeDialog('previewModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 24px; text-align: center; background: #f1f5f9; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;">
+            <i class="ri-file-pdf-2-line" style="font-size: 4rem; color: #0d9488;"></i>
+            <div>
+                <h4 id="previewFilename" style="margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; color: #0f172a;">Extension_Document.pdf</h4>
+                <p style="margin: 0; color: #64748b; font-size: 0.85rem;">Simulated Institutional Extension Document Preview</p>
+            </div>
+            <a href="#" download id="previewDownloadLink" class="primary-btn" style="padding: 9px 18px; border-radius: 8px; background: #0d9488; color: #ffffff; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="ri-download-cloud-line"></i> Download Document
+            </a>
+        </div>
+    </dialog>
+
+    <!-- =========================================================
+         SCRIPT LOGIC
+    ========================================================= -->
+    <script>
+        let currentTab = 'active';
+        let currentPage = 1;
+        const pageSize = 10;
+        let selectedIds = new Set();
+        let currentPreviewProject = null;
+
+        function getStoredProjects() {
+            try {
+                const s = localStorage.getItem('ovpre_extension_projects');
+                if (s) return JSON.parse(s);
+            } catch(e) {}
+            localStorage.setItem('ovpre_extension_projects', JSON.stringify(${JSON.stringify(initialExtensionData)}));
+            return ${JSON.stringify(initialExtensionData)};
         }
 
-        function openAddModal() {
-            document.getElementById('addModal').showModal();
+        function saveProjects(data) {
+            localStorage.setItem('ovpre_extension_projects', JSON.stringify(data));
         }
 
-        function handleNewProject(e) {
-            e.preventDefault();
-            const title = document.getElementById('newTitle').value;
-            const partner = document.getElementById('newPartner').value;
-            const coord = document.getElementById('newCoord').value;
-            const budget = document.getElementById('newBudget').value || 'PHP 60,000.00';
-            const newId = 200 + Math.floor(Math.random() * 799);
-
-            extensionData[newId] = {
-                id: '#EX-' + newId,
-                title: title,
-                partner: partner,
-                coord: coord,
-                budget: budget,
-                status: 'Ongoing',
-                summary: 'New community outreach initiative for ' + partner + '.',
-                pdf: 'uploads/records/sample-2-community-water-filtration-system-instal.pdf'
-            };
-
-            const tbody = document.getElementById('tableBody');
-            const newRow = document.createElement('tr');
-            newRow.style.borderBottom = '1px solid #f1f5f9';
-            newRow.innerHTML = `
-                <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#EX-${newId}</td>
-                <td style="padding: 14px 10px;">
-                    <div style="font-weight: 700; color: #0f172a;">${title}</div>
-                    <small style="color: #64748b;">Partner: ${partner}</small>
-                </td>
-                <td style="padding: 14px 10px; color: #334155;">${coord}</td>
-                <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">${budget}</td>
-                <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Ongoing</span></td>
-                <td style="padding: 14px 10px;">
-                    <button type="button" class="btn" onclick="openDetails(${newId})" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
-                        <i class="ri-eye-line"></i> Details
-                    </button>
-                </td>
-            `;
-            tbody.prepend(newRow);
-            document.getElementById('addModal').close();
-            alert('Extension initiative successfully added!');
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('actionToast');
+            t.style.display = 'flex';
+            t.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
+            t.style.border = `1px solid ${type === 'success' ? '#86efac' : '#fecaca'}`;
+            t.style.color = type === 'success' ? '#166534' : '#b91c1c';
+            t.innerHTML = `<i class="${type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line'}"></i> ${msg}`;
+            setTimeout(() => { t.style.display = 'none'; }, 4000);
         }
 
-        function filterTable() {
-            const query = document.getElementById('tableSearch').value.toLowerCase();
-            const status = document.getElementById('statusFilter').value;
-            const rows = document.querySelectorAll('#tableBody tr');
-            let visibleCount = 0;
+        function getUserRole() {
+            try {
+                const u = JSON.parse(sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user') || '{}');
+                return u.role || 'Super Admin';
+            } catch(e) { return 'Super Admin'; }
+        }
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const matchesQuery = text.includes(query);
-                const matchesStatus = status === 'all' || text.includes(status.toLowerCase());
-                if (matchesQuery && matchesStatus) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
+        function switchView(tab) {
+            currentTab = tab;
+            currentPage = 1;
+            selectedIds.clear();
+            document.getElementById('tabActiveBtn').style.background = tab === 'active' ? '#0d9488' : '#ffffff';
+            document.getElementById('tabActiveBtn').style.color = tab === 'active' ? '#ffffff' : '#475569';
+            document.getElementById('tabArchivedBtn').style.background = tab === 'archived' ? '#0d9488' : '#ffffff';
+            document.getElementById('tabArchivedBtn').style.color = tab === 'archived' ? '#ffffff' : '#475569';
+            document.getElementById('bulkActionBtn').querySelector('span').textContent = tab === 'active' ? 'Archive Selected' : 'Restore Selected';
+            document.getElementById('selectAllCheckbox').checked = false;
+            updateBulkToolbar();
+            renderTable();
+        }
+
+        function applyFilters() {
+            currentPage = 1;
+            renderTable();
+        }
+
+        function renderTable() {
+            const all = getStoredProjects();
+            const role = getUserRole();
+            const isCoord = role.includes('Coordinator') || role === 'Super Admin';
+            const isDir = role.includes('Director') || role === 'Super Admin';
+            const isExec = role === 'Super Admin' || role === 'OVPRE Admin';
+
+            const activeList = all.filter(p => !p.archived);
+            const archivedList = all.filter(p => p.archived);
+            document.getElementById('activeBadge').textContent = activeList.length;
+            document.getElementById('archivedBadge').textContent = archivedList.length;
+
+            let filtered = currentTab === 'active' ? activeList : archivedList;
+
+            const stageVal = document.getElementById('stageFilter').value;
+            if (stageVal !== 'all') {
+                filtered = filtered.filter(p => p.status === stageVal || p.stage === stageVal);
+            }
+
+            const colVal = document.getElementById('collegeFilter').value;
+            if (colVal !== 'all') {
+                filtered = filtered.filter(p => p.college === colVal);
+            }
+
+            const searchVal = (document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
+            if (searchVal) {
+                filtered = filtered.filter(p => 
+                    p.title.toLowerCase().includes(searchVal) ||
+                    p.coordinator.toLowerCase().includes(searchVal) ||
+                    p.community_partner.toLowerCase().includes(searchVal)
+                );
+            }
+
+            const total = filtered.length;
+            const startIdx = (currentPage - 1) * pageSize;
+            const pageItems = filtered.slice(startIdx, startIdx + pageSize);
+
+            const tbody = document.getElementById('extensionTableBody');
+            tbody.replaceChildren();
+
+            if (!pageItems.length) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `<td colspan="8" style="text-align: center; padding: 32px; color: #64748b;">No ${currentTab} extension projects found.</td>`;
+                tbody.appendChild(emptyRow);
+            } else {
+                pageItems.forEach(p => {
+                    const row = document.createElement('tr');
+                    row.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+
+                    let statusBg = '#dcfce7', statusColor = '#166534';
+                    if (p.status === 'Pending Coordinator Review' || p.status === 'Pending') {
+                        statusBg = '#fef3c7'; statusColor = '#92400e';
+                    } else if (p.status === 'Pending Director Review' || p.status === 'Under Review') {
+                        statusBg = '#e0f2fe'; statusColor = '#0369a1';
+                    } else if (p.status === 'Pending Executive Approval') {
+                        statusBg = '#f3e8ff'; statusColor = '#7e22ce';
+                    } else if (p.status === 'For Revision') {
+                        statusBg = '#fff7ed'; statusColor = '#c2410c';
+                    }
+
+                    // Build actions based on user role and project status
+                    let actionButtons = '';
+                    if (currentTab === 'active') {
+                        if (isCoord && (p.status === 'Pending Coordinator Review' || p.status === 'Pending')) {
+                            actionButtons += `<button type="button" class="btn" onclick="openCoordModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #0d9488; color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-right: 4px;"><i class="ri-check-line"></i> Endorse</button>`;
+                        }
+                        if (isDir && (p.status === 'Pending Director Review' || p.status === 'Under Review')) {
+                            actionButtons += `<button type="button" class="btn" onclick="openDirModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #1d4ed8; color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-right: 4px;"><i class="ri-award-line"></i> Evaluate</button>`;
+                        }
+                        if (isExec && p.status === 'Pending Executive Approval') {
+                            actionButtons += `<button type="button" class="btn" onclick="openExecModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #7e22ce; color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-right: 4px;"><i class="ri-shield-check-line"></i> Approve</button>`;
+                        }
+                    }
+
+                    actionButtons += `<button type="button" class="btn" onclick="openDetailsModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #f1f5f9; color: #1e293b; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;"><i class="ri-eye-line"></i> Details</button>`;
+
+                    row.innerHTML = `
+                        <td style="padding: 12px 10px;">
+                            <input type="checkbox" class="row-checkbox" value="${p.id}" ${selectedIds.has(p.id) ? 'checked' : ''} onchange="toggleRowSelect(${p.id}, this)">
+                        </td>
+                        <td style="padding: 12px 10px;">
+                            <strong style="color: #0f172a; line-height: 1.4; display: block;">${p.title}</strong>
+                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                                <i class="ri-user-line"></i> Lead: ${p.coordinator} | <i class="ri-calendar-line"></i> ${p.start_date} to ${p.end_date}
+                            </div>
+                        </td>
+                        <td style="padding: 12px 10px;">
+                            <strong>${p.community_partner}</strong>
+                            <div style="font-size: 0.78rem; color: #64748b;"><i class="ri-map-pin-line"></i> ${p.location}</div>
+                        </td>
+                        <td style="padding: 12px 10px;"><span class="dept-pill" style="font-size: 0.78rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 3px 8px; border-radius: 6px; color: #475569;">${p.college.replace('College of ', '')}</span></td>
+                        <td style="padding: 12px 10px; font-weight: 700; color: #0d9488;">PHP ${Number(p.approved_budget || p.budget).toLocaleString()}</td>
+                        <td style="padding: 12px 10px; font-weight: 600; color: #0d9488; font-size: 0.82rem;">${p.stage}</td>
+                        <td style="padding: 12px 10px;">
+                            <span class="status-pill" style="background: ${statusBg}; color: ${statusColor}; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.76rem; display: inline-block;">${p.status}</span>
+                        </td>
+                        <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
+                            ${actionButtons}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Update Pagination
+            const pageCount = Math.max(1, Math.ceil(total / pageSize));
+            document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + pageSize, total)} of ${total} entries` : 'No records';
+            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+            document.getElementById('nextPageBtn').disabled = currentPage >= pageCount;
+
+            const pNumContainer = document.getElementById('paginationNumbers');
+            pNumContainer.replaceChildren();
+            for (let i = 1; i <= pageCount; i++) {
+                const b = document.createElement('button');
+                b.textContent = i;
+                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === currentPage ? 'background: #0d9488; color: #fff;' : 'background: #fff; color: #1e293b;'}`;
+                b.onclick = () => { currentPage = i; renderTable(); };
+                pNumContainer.appendChild(b);
+            }
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderTable();
+        }
+
+        function toggleSelectAll(master) {
+            const rows = document.querySelectorAll('.row-checkbox');
+            rows.forEach(r => {
+                const id = parseInt(r.value, 10);
+                r.checked = master.checked;
+                if (master.checked) selectedIds.add(id);
+                else selectedIds.delete(id);
+            });
+            updateBulkToolbar();
+        }
+
+        function toggleRowSelect(id, box) {
+            if (box.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+            updateBulkToolbar();
+        }
+
+        function updateBulkToolbar() {
+            const tb = document.getElementById('bulkToolbar');
+            if (selectedIds.size > 0) {
+                tb.style.display = 'flex';
+                document.getElementById('bulkCountText').textContent = `${selectedIds.size} project${selectedIds.size > 1 ? 's' : ''} selected`;
+            } else {
+                tb.style.display = 'none';
+            }
+        }
+
+        function handleBulkAction() {
+            const all = getStoredProjects();
+            const shouldArchive = currentTab === 'active';
+            all.forEach(p => {
+                if (selectedIds.has(p.id)) {
+                    p.archived = shouldArchive;
                 }
             });
-            document.getElementById('recordCount').textContent = `Showing ${visibleCount} Initiatives`;
+            saveProjects(all);
+            selectedIds.clear();
+            showToast(`Selected projects have been ${shouldArchive ? 'archived' : 'restored'}.`);
+            switchView(currentTab);
         }
+
+        function openDialog(id) {
+            const d = document.getElementById(id);
+            if (d) d.showModal();
+        }
+
+        function closeDialog(id) {
+            const d = document.getElementById(id);
+            if (d) d.close();
+        }
+
+        function openCreateProjectModal() {
+            openDialog('createProjectModal');
+        }
+
+        function handleCreateProject(e) {
+            e.preventDefault();
+            const all = getStoredProjects();
+            const newP = {
+                id: Date.now(),
+                title: document.getElementById('newTitle').value.trim(),
+                coordinator: document.getElementById('newCoordinator').value.trim(),
+                community_partner: document.getElementById('newPartner').value.trim(),
+                location: document.getElementById('newLocation').value.trim(),
+                college: document.getElementById('newCollege').value,
+                budget: parseFloat(document.getElementById('newBudget').value) || 0,
+                approved_budget: parseFloat(document.getElementById('newBudget').value) || 0,
+                start_date: document.getElementById('newStartDate').value,
+                end_date: document.getElementById('newEndDate').value,
+                beneficiaries: document.getElementById('newBeneficiaries').value.trim(),
+                objectives: document.getElementById('newObjectives').value.trim(),
+                stage: 'Stage 1: Coordinator Screening',
+                status: 'Pending Coordinator Review',
+                created_at: new Date().toISOString().slice(0, 10),
+                coordinator_remarks: '',
+                director_remarks: '',
+                executive_remarks: '',
+                document_filename: document.getElementById('newFile').files[0]?.name || 'Extension_Project_Proposal.pdf',
+                archived: false
+            };
+            all.unshift(newP);
+            saveProjects(all);
+            closeDialog('createProjectModal');
+            showToast('Extension project submitted successfully! Routed to College Coordinator.');
+            renderTable();
+        }
+
+        function openDetailsModal(id) {
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+            currentPreviewProject = p;
+
+            document.getElementById('detailHeaderSub').textContent = `Lead: ${p.coordinator} | ${p.college}`;
+            document.getElementById('detailTitle').textContent = p.title;
+            document.getElementById('detailMeta').textContent = `Partner: ${p.community_partner} (${p.location}) | Duration: ${p.start_date} to ${p.end_date} | Budget: PHP ${Number(p.approved_budget || p.budget).toLocaleString()}`;
+            document.getElementById('detailObjectives').textContent = p.objectives || 'No detailed scope provided.';
+            document.getElementById('detailBeneficiariesRow').textContent = `Target Beneficiaries: ${p.beneficiaries || 'Not specified'}`;
+
+            const remSec = document.getElementById('detailRemarksSection');
+            remSec.replaceChildren();
+
+            if (p.coordinator_remarks) {
+                const b = document.createElement('div');
+                b.style.cssText = 'border-left: 3px solid #b45309; padding-left: 10px; font-size: 0.85rem;';
+                b.innerHTML = `<strong style="color: #b45309;">Coordinator Endorsement:</strong><p style="margin: 2px 0;">${p.coordinator_remarks}</p><small style="color: #64748b;">By: ${p.coordinator_name || 'College Extension Coordinator'}</small>`;
+                remSec.appendChild(b);
+            }
+
+            if (p.director_remarks) {
+                const b = document.createElement('div');
+                b.style.cssText = 'border-left: 3px solid #1d4ed8; padding-left: 10px; font-size: 0.85rem;';
+                b.innerHTML = `<strong style="color: #1d4ed8;">Director Evaluation:</strong><p style="margin: 2px 0;">${p.director_remarks}</p><small style="color: #64748b;">By: ${p.director_name || 'Extension Director'}</small>`;
+                remSec.appendChild(b);
+            }
+
+            if (p.executive_remarks) {
+                const b = document.createElement('div');
+                b.style.cssText = 'border-left: 3px solid #7e22ce; padding-left: 10px; font-size: 0.85rem;';
+                b.innerHTML = `<strong style="color: #7e22ce;">Executive Final Approval:</strong><p style="margin: 2px 0;">${p.executive_remarks}</p><small style="color: #64748b;">By: ${p.executive_name || 'Executive VP'}</small>`;
+                remSec.appendChild(b);
+            }
+
+            const tline = document.getElementById('detailTimeline');
+            tline.innerHTML = `
+                <div><strong>Project Submitted:</strong> ${p.created_at} by ${p.coordinator}</div>
+                ${p.coordinator_remarks ? `<div><strong>Screened & Endorsed:</strong> by ${p.coordinator_name || 'Coordinator'}</div>` : ''}
+                ${p.director_remarks ? `<div><strong>Director Evaluation:</strong> Approved grant PHP ${Number(p.approved_budget).toLocaleString()}</div>` : ''}
+                ${p.executive_remarks ? `<div><strong>Executive Approval:</strong> Final grant authorized</div>` : ''}
+            `;
+
+            const wrap = document.getElementById('detailArchiveToggleWrap');
+            wrap.innerHTML = `
+                <button type="button" onclick="toggleArchiveSingle(${p.id})" style="padding: 8px 14px; font-size: 0.82rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer; color: ${p.archived ? '#15803d' : '#b45309'};">
+                    <i class="${p.archived ? 'ri-arrow-go-back-line' : 'ri-archive-line'}"></i> ${p.archived ? 'Restore Project' : 'Archive Project'}
+                </button>
+            `;
+
+            openDialog('detailsModal');
+        }
+
+        function toggleArchiveSingle(id) {
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+            p.archived = !p.archived;
+            saveProjects(all);
+            closeDialog('detailsModal');
+            showToast(`Project has been ${p.archived ? 'archived' : 'restored'}.`);
+            switchView(currentTab);
+        }
+
+        function openCoordModal(id) {
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('coordPropId').value = p.id;
+            document.getElementById('coordTitle').textContent = p.title;
+            document.getElementById('coordRemarks').value = 'Endorsed. Community partnership, beneficiary readiness, and budget verified.';
+            openDialog('coordModal');
+        }
+
+        function handleCoordinatorAction(e) {
+            e.preventDefault();
+            const decision = e.submitter.value;
+            const id = parseInt(document.getElementById('coordPropId').value, 10);
+            const remarks = document.getElementById('coordRemarks').value.trim();
+
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (p) {
+                p.coordinator_remarks = remarks;
+                p.coordinator_name = 'College Extension Coordinator';
+                if (decision === 'endorse') {
+                    p.stage = 'Stage 2: Director Evaluation';
+                    p.status = 'Pending Director Review';
+                } else if (decision === 'revision') {
+                    p.stage = 'Revisions';
+                    p.status = 'For Revision';
+                } else {
+                    p.stage = 'Declined';
+                    p.status = 'Declined';
+                }
+                saveProjects(all);
+                closeDialog('coordModal');
+                showToast(`Coordinator action recorded: ${decision.toUpperCase()}.`);
+                renderTable();
+            }
+        }
+
+        function openDirModal(id) {
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('dirPropId').value = p.id;
+            document.getElementById('dirTitle').textContent = p.title;
+            document.getElementById('dirApprovedBudget').value = p.budget || 80000;
+            document.getElementById('dirRemarks').value = 'Evaluated and approved. High community merit and tangible impact.';
+            openDialog('dirModal');
+        }
+
+        function handleDirectorAction(e) {
+            e.preventDefault();
+            const decision = e.submitter.value;
+            const id = parseInt(document.getElementById('dirPropId').value, 10);
+            const budget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
+            const remarks = document.getElementById('dirRemarks').value.trim();
+
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (p) {
+                p.approved_budget = budget;
+                p.director_remarks = remarks;
+                p.director_name = 'Prof. Extension Director';
+                if (decision === 'endorse') {
+                    p.stage = 'Stage 3: Executive Approval';
+                    p.status = 'Pending Executive Approval';
+                } else if (decision === 'revision') {
+                    p.stage = 'Revisions';
+                    p.status = 'For Revision';
+                } else {
+                    p.stage = 'Declined';
+                    p.status = 'Declined';
+                }
+                saveProjects(all);
+                closeDialog('dirModal');
+                showToast(`Director evaluation saved: ${decision.toUpperCase()}.`);
+                renderTable();
+            }
+        }
+
+        function openExecModal(id) {
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('execPropId').value = p.id;
+            document.getElementById('execTitle').textContent = p.title;
+            openDialog('execModal');
+        }
+
+        function handleExecutiveAction(e) {
+            e.preventDefault();
+            const decision = e.submitter.value;
+            const id = parseInt(document.getElementById('execPropId').value, 10);
+            const remarks = document.getElementById('execRemarks').value.trim();
+
+            const all = getStoredProjects();
+            const p = all.find(item => item.id === id);
+            if (p) {
+                p.executive_remarks = remarks;
+                p.executive_name = 'Executive Vice President';
+                if (decision === 'approve') {
+                    p.stage = 'Completed';
+                    p.status = 'Approved';
+                } else {
+                    p.stage = 'Declined';
+                    p.status = 'Declined';
+                }
+                saveProjects(all);
+                closeDialog('execModal');
+                showToast('Executive grant decision recorded successfully!');
+                renderTable();
+            }
+        }
+
+        function openPreviewModal() {
+            if (!currentPreviewProject) return;
+            document.getElementById('previewTitle').textContent = currentPreviewProject.title;
+            document.getElementById('previewFilename').textContent = currentPreviewProject.document_filename || 'Extension_Project.pdf';
+            openDialog('previewModal');
+        }
+
+        document.getElementById('topbarSearchInput')?.addEventListener('input', () => {
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Initialize table
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+        });
     </script>
     <script src="assets/js/role-system.js"></script>
 </body>

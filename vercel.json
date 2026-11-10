@@ -67,6 +67,18 @@
       "dest": "/notifications.html"
     },
     {
+      "src": "^/profile$",
+      "dest": "/profile.html"
+    },
+    {
+      "src": "^/forgot-password$",
+      "dest": "/forgot-password.html"
+    },
+    {
+      "src": "^/search$",
+      "dest": "/search.html"
+    },
+    {
       "src": "^/assets/(.*)",
       "dest": "/assets/$1"
     },
