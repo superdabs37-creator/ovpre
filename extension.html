@@ -60,7 +60,7 @@
                             <small>System Administrator</small>
                         </div>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
-                        <a href="login.html"><i class="ri-logout-circle-line"></i> Logout</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
                 </div>
             </header>

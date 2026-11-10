@@ -22,35 +22,23 @@
                 <h1>I-Record</h1>
             </div>
 
-            <div id="loginAlert" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem; align-items: center; gap: 8px;">
-                <i class="ri-checkbox-circle-line" style="font-size: 1.2rem;"></i> <span id="loginAlertText">Sign-in successful! Redirecting...</span>
-            </div>
+            <!-- Dynamic alerts (registered, logout, errors) -->
+            <div id="loginNotice" style="display: none; padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem; align-items: center; gap: 8px;"></div>
 
             <form class="login-form" id="loginForm">
                 <label for="username">Username or email</label>
                 <div class="input-control">
                     <i class="ri-user-line"></i>
-                    <input type="text" id="username" name="username" placeholder="Enter username or email" value="admin" required>
+                    <input type="text" id="username" name="username" placeholder="Enter username or email" required>
                 </div>
 
                 <label for="password">Password</label>
                 <div class="input-control">
                     <i class="ri-lock-line"></i>
-                    <input type="password" id="password" name="password" placeholder="Enter password" value="password123" required>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
                     <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Show password" style="background:none;border:none;padding:0;cursor:pointer;color:var(--muted);display:flex;align-items:center;margin-left:auto;">
                         <i class="ri-eye-line" id="togglePasswordIcon"></i>
                     </button>
-                </div>
-
-                <div style="margin: 10px 0 14px;">
-                    <label for="roleSelect" style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Sign in as Role:</label>
-                    <select id="roleSelect" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 0.88rem; font-weight: 600; color: #0f172a; cursor: pointer;">
-                        <option value="Super Admin">System Administrator (Full Access)</option>
-                        <option value="Research Director">Research Director</option>
-                        <option value="Extension Director">Extension Director</option>
-                        <option value="Research Coordinator">Research Coordinator</option>
-                        <option value="Faculty Researcher">Faculty Researcher / Proponent</option>
-                    </select>
                 </div>
 
                 <div class="login-tools">
@@ -78,6 +66,24 @@
 
     <script>
         (() => {
+            // Check URL parameters for banners
+            const urlParams = new URLSearchParams(window.location.search);
+            const noticeBox = document.getElementById('loginNotice');
+            if (urlParams.get('registered') === '1') {
+                noticeBox.style.display = 'flex';
+                noticeBox.style.background = '#f0fdf4';
+                noticeBox.style.border = '1px solid #86efac';
+                noticeBox.style.color = '#166534';
+                noticeBox.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Your account has been created and activated! You can now sign in immediately.';
+            } else if (urlParams.get('logout') === '1') {
+                noticeBox.style.display = 'flex';
+                noticeBox.style.background = '#eff6ff';
+                noticeBox.style.border = '1px solid #bfdbfe';
+                noticeBox.style.color = '#1e40af';
+                noticeBox.innerHTML = '<i class="ri-information-line" style="font-size: 1.25rem;"></i> You have been successfully signed out.';
+            }
+
+            // Password reveal toggle
             const toggleBtn = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('togglePasswordIcon');
@@ -93,30 +99,83 @@
                 });
             }
 
+            // Login submission handler
             const loginForm = document.getElementById('loginForm');
-            const loginAlert = document.getElementById('loginAlert');
             const submitBtn = document.getElementById('submitBtn');
 
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const username = document.getElementById('username').value.trim() || 'Administrator';
-                const role = document.getElementById('roleSelect').value;
-
-                // Save session in sessionStorage and localStorage
-                const userSession = {
-                    id: 1,
-                    username: username,
-                    fullname: role === 'Super Admin' ? 'Super Administrator' : (username.charAt(0).toUpperCase() + username.slice(1)),
-                    role: role,
-                    email: username + '@plsp.edu.ph',
-                    logged_in: true
-                };
-                sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
-                localStorage.setItem('irecord_user', JSON.stringify(userSession));
+                const usernameInput = document.getElementById('username').value.trim();
+                const passwordInput = document.getElementById('password').value;
 
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Signing in...';
-                loginAlert.style.display = 'flex';
+
+                // Look up in registered users first
+                let registeredUsers = [];
+                try {
+                    registeredUsers = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+                } catch(err) {}
+
+                const matchedUser = registeredUsers.find(u => 
+                    u.username.toLowerCase() === usernameInput.toLowerCase() || 
+                    u.email.toLowerCase() === usernameInput.toLowerCase()
+                );
+
+                let userSession;
+                if (matchedUser) {
+                    userSession = {
+                        id: matchedUser.id || 1,
+                        username: matchedUser.username,
+                        fullname: matchedUser.fullname,
+                        role: matchedUser.role,
+                        email: matchedUser.email,
+                        department: matchedUser.department || '',
+                        logged_in: true
+                    };
+                } else {
+                    const lower = usernameInput.toLowerCase();
+                    let role = 'Super Admin';
+                    let fullname = 'Super Administrator';
+
+                    if (lower.includes('director') && lower.includes('extension')) {
+                        role = 'Extension Director';
+                        fullname = 'Extension Director';
+                    } else if (lower.includes('director') || lower.includes('research')) {
+                        role = 'Research Director';
+                        fullname = 'Research Director';
+                    } else if (lower.includes('coord') && lower.includes('extension')) {
+                        role = 'Extension Coordinator';
+                        fullname = 'Extension Coordinator';
+                    } else if (lower.includes('coord')) {
+                        role = 'Research Coordinator';
+                        fullname = 'Research Coordinator';
+                    } else if (lower.includes('exten')) {
+                        role = 'Faculty Extensionist';
+                        fullname = usernameInput ? (usernameInput.charAt(0).toUpperCase() + usernameInput.slice(1)) : 'Faculty Extensionist';
+                    } else if (lower !== 'admin' && usernameInput) {
+                        role = 'Faculty Researcher';
+                        fullname = usernameInput.charAt(0).toUpperCase() + usernameInput.slice(1);
+                    }
+
+                    userSession = {
+                        id: 1,
+                        username: usernameInput || 'admin',
+                        fullname: fullname,
+                        role: role,
+                        email: (usernameInput || 'admin') + '@plsp.edu.ph',
+                        logged_in: true
+                    };
+                }
+
+                sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+                localStorage.setItem('irecord_user', JSON.stringify(userSession));
+
+                noticeBox.style.display = 'flex';
+                noticeBox.style.background = '#f0fdf4';
+                noticeBox.style.border = '1px solid #86efac';
+                noticeBox.style.color = '#166534';
+                noticeBox.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Sign-in successful! Redirecting to dashboard...';
 
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';

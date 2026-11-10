@@ -72,11 +72,11 @@
             </p>
 
             <div class="hero-buttons">
-                <a href="dashboard.html" class="primary-btn">
-                    <i class="ri-dashboard-line"></i> Go to Dashboard
-                </a>
-                <a href="login.html" class="secondary-btn">
+                <a href="login.html" class="primary-btn" id="heroAuthBtn">
                     <i class="ri-login-circle-line"></i> Sign in to I-Record
+                </a>
+                <a href="#about" class="secondary-btn">
+                    Explore the system
                 </a>
             </div>
 
@@ -257,6 +257,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     window.addEventListener('scroll', updateHeader, { passive: true });
     updateHeader();
+
+    // Check login state to update hero button, matching PHP flow
+    try {
+        const user = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user'));
+        if (user && user.logged_in) {
+            const heroBtn = document.getElementById('heroAuthBtn');
+            if (heroBtn) {
+                heroBtn.href = 'dashboard.html';
+                heroBtn.innerHTML = '<i class="ri-dashboard-line"></i> Go to Dashboard';
+            }
+        }
+    } catch (e) {}
 });
 </script>
 
