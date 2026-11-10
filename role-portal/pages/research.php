@@ -621,8 +621,8 @@ foreach ($projects as $p) {
                         <td>
                             <?php if ($attachmentUrl): ?>
                                 <div class="file-actions">
-                                    <a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener" title="Download Document">
-                                        <i class="ri-download-line"></i> File
+                                    <a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener" title="View Document">
+                                        <i class="ri-eye-line"></i> View
                                     </a>
                                 </div>
                             <?php else: ?>
@@ -672,7 +672,7 @@ foreach ($projects as $p) {
 
                                     <?php if ($attachmentUrl): ?>
                                         <a class="ghost-btn action-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener">
-                                            <i class="ri-download-line"></i><span>Download Document</span>
+                                            <i class="ri-eye-line"></i><span>View Document</span>
                                         </a>
                                     <?php endif; ?>
 
@@ -777,7 +777,7 @@ foreach ($projects as $p) {
                             <p style="margin: 4px 0; color: #4b5563;"><?php echo nl2br(h($rep['description'])); ?></p>
                             <?php if (!empty($rep['attachment_filename'])): ?>
                                 <a class="ghost-btn mini-btn" href="<?php echo h(record_access_url($rep['attachment_filename'], '../', (int) $rep['document_id'])); ?>" target="_blank" rel="noopener">
-                                    <i class="ri-file-download-line"></i> Download Attachment
+                                    <i class="ri-eye-line"></i> View Attachment
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -815,7 +815,7 @@ foreach ($projects as $p) {
             <?php if (!empty($project['attachment_filename'])): ?>
                 <div style="margin: 6px 0 10px;">
                     <a class="ghost-btn mini-btn" href="<?php echo h(record_access_url($project['attachment_filename'], '../', (int) $project['document_id'])); ?>" target="_blank" rel="noopener">
-                        <i class="ri-file-download-line"></i> View / Download Submitted Document
+                        <i class="ri-eye-line"></i> View Submitted Document
                     </a>
                 </div>
             <?php endif; ?>

@@ -13,3 +13,7 @@ Thumbs.db
 /ovpre.sql
 /database/supabase_data.sql
 
+# Vercel deployment artifacts
+.vercel
+
+

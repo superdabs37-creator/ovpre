@@ -76,31 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'delete_archived_document') {
-        $id = (int) ($_POST['id'] ?? 0);
-        $stmt = db()->prepare('SELECT filename FROM documents WHERE id = ? AND archived_at IS NOT NULL');
-        $stmt->execute([$id]);
-        $record = $stmt->fetch();
-        if (!$record) {
-            flash('error', 'That archived record could not be found.');
-            redirect_to('system-backup.php#archived-records');
-        }
-        $versionStmt = db()->prepare('SELECT filename FROM document_versions WHERE document_id = ?');
-        $versionStmt->execute([$id]);
-        $filenames = array_column($versionStmt->fetchAll(), 'filename');
-        $filenames[] = $record['filename'];
-        try {
-            db()->beginTransaction();
-            db()->prepare('DELETE FROM archived_documents WHERE document_id = ?')->execute([$id]);
-            db()->prepare('DELETE FROM documents WHERE id = ? AND archived_at IS NOT NULL')->execute([$id]);
-            db()->commit();
-            backup_delete_record_files($filenames);
-            log_action((int) $user['id'], "Permanently deleted archived document #{$id}");
-            flash('success', 'Archived record permanently deleted.');
-        } catch (Throwable $error) {
-            if (db()->inTransaction()) db()->rollBack();
-            error_log('Archived record deletion failed: ' . $error->getMessage());
-            flash('error', 'The archived record could not be deleted.');
-        }
+        flash('error', 'Deleting archived records is disabled.');
         redirect_to('system-backup.php#archived-records');
     }
 
@@ -212,7 +188,6 @@ renderHeader('Backup and Recovery', 'backup');
                     <td><?php echo h($record['archive_reason'] ?: '-'); ?></td>
                     <td><div class="archive-record-actions">
                         <form method="post"><?php echo csrf_field(); ?><input type="hidden" name="action" value="unarchive_document"><input type="hidden" name="id" value="<?php echo (int) $record['id']; ?>"><button class="ghost-btn action-btn" type="submit"><i class="ri-arrow-go-back-line"></i><span>Unarchive</span></button></form>
-                        <form method="post" onsubmit="return confirm('Permanently delete this archived record and its file versions? This cannot be undone.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete_archived_document"><input type="hidden" name="id" value="<?php echo (int) $record['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Deleted</span></button></form>
                     </div></td>
                 </tr>
             <?php endforeach; ?>

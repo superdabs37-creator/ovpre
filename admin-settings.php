@@ -49,16 +49,6 @@ renderModuleHeader('System Settings', 'Configure security rules, upload limits, 
     </div>
 <?php endif; ?>
 
-<section class="panel" style="margin-bottom: 20px;">
-    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-        <div>
-            <h2 style="margin: 0 0 4px; font-size: 1.25rem;">Database Protection & Snapshots</h2>
-            <p style="margin: 0; color: var(--muted); font-size: 0.9rem;">Create system backups or merge historical data records.</p>
-        </div>
-        <a class="primary-btn" href="system-backup.php"><i class="ri-database-2-line"></i> Backup and Recovery</a>
-    </div>
-</section>
-
 <form method="post" action="admin-settings.php">
     <?php echo csrf_field(); ?>
     <section class="settings-grid">

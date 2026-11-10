@@ -7,8 +7,10 @@ function record_file_url(string $filename, int $documentId, ?int $versionId = nu
     return record_access_url($filename, '', $documentId, $versionId);
 }
 
-function record_is_previewable(string $filename): bool {
-    return in_array(strtolower(pathinfo(preg_replace('/^storage:/', '', $filename), PATHINFO_EXTENSION)), ['pdf', 'jpg', 'jpeg', 'png'], true);
+if (!function_exists('record_is_previewable')) {
+    function record_is_previewable(string $filename): bool {
+        return in_array(strtolower(pathinfo(preg_replace('/^storage:/', '', $filename), PATHINFO_EXTENSION)), ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'svg'], true);
+    }
 }
 
 function render_record_selection(string $tableId, string $entity, array $actions, bool $openResearch = false, bool $archivedView = false): void {
@@ -19,10 +21,8 @@ function render_record_selection(string $tableId, string $entity, array $actions
     echo '<form id="' . h($formId) . '" method="post" data-bulk-selection-form>' . csrf_field();
     echo '<input type="hidden" name="action" value="bulk_table"><input type="hidden" name="entity" value="' . h($entity) . '">';
     foreach ($actions as $action => $label) {
-        if ($action === 'delete' && !in_array(($GLOBALS['user']['role'] ?? ''), [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) continue;
-        $danger = $action === 'delete' ? ' danger-btn' : ' ghost-btn';
-        $confirm = $action === 'delete' ? ' data-confirm-delete' : '';
-        echo '<button class="' . trim($danger) . ' action-btn" type="submit" name="bulk_action" value="' . h($action) . '" data-bulk-submit' . $confirm . '><i class="ri-' . ($action === 'delete' ? 'delete-bin-line' : ($action === 'archive' ? 'archive-line' : 'arrow-go-back-line')) . '"></i><span>' . h($label) . '</span></button>';
+        if ($action === 'delete') continue;
+        echo '<button class="ghost-btn action-btn" type="submit" name="bulk_action" value="' . h($action) . '" data-bulk-submit><i class="ri-' . ($action === 'archive' ? 'archive-line' : 'arrow-go-back-line') . '"></i><span>' . h($label) . '</span></button>';
     }
     if ($archivedView) echo '<input type="hidden" name="archived_view" value="1">';
     echo '</form></div>';
@@ -66,21 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 flash('success', 'Selected records archived.');
             } elseif ($bulkAction === 'delete') {
-                if (!in_array(($user['role'] ?? ''), [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
-                    flash('error', 'Only authorized administrators can permanently delete records.');
-                    redirect_to('admin-documents.php');
-                }
-                $stmt = db()->prepare("SELECT id, filename FROM documents WHERE id IN ($placeholders)");
-                $stmt->execute($ids);
-                foreach ($stmt->fetchAll() as $doc) {
-                    db()->prepare('DELETE FROM documents WHERE id = ?')->execute([(int) $doc['id']]);
-                    $path = UPLOAD_DIR . '/' . $doc['filename'];
-                    if (is_file($path)) {
-                        unlink($path);
-                    }
-                    log_action((int) $user['id'], 'Bulk deleted document #' . (int) $doc['id']);
-                }
-                flash('success', 'Selected records deleted.');
+                flash('error', 'Deleting records is disabled. Use archive instead.');
+                redirect_to('admin-documents.php');
             }
         }
     } elseif ($action === 'bulk_table') {
@@ -88,11 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $entity = (string) ($_POST['entity'] ?? '');
         $bulkAction = (string) ($_POST['bulk_action'] ?? '');
         $allowed = [
-            'research' => ['archive', 'restore', 'unarchive', 'delete'],
-            'extension' => ['archive', 'restore', 'unarchive', 'delete'],
-            'activity' => ['archive', 'restore', 'unarchive', 'delete'],
-            'document' => ['archive', 'unarchive', 'delete'],
-            'announcement' => ['restore', 'delete'],
+            'research' => ['archive', 'restore', 'unarchive'],
+            'extension' => ['archive', 'restore', 'unarchive'],
+            'activity' => ['archive', 'restore', 'unarchive'],
+            'document' => ['archive', 'unarchive'],
+            'announcement' => ['restore'],
         ];
         $redirectArchived = (isset($_GET['archived']) && $_GET['archived'] === '1') || (isset($_POST['archived_view']) && $_POST['archived_view'] === '1');
         if (!$ids || !isset($allowed[$entity]) || !in_array($bulkAction, $allowed[$entity], true)) {
@@ -119,42 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 db()->prepare("UPDATE documents SET archived_at = NULL, updated_at = NOW() WHERE archived_at IS NOT NULL AND id IN ($marks)")->execute($ids);
                 foreach ($ids as $docId) log_review('document', $docId, (int) $user['id'], 'Restored', 'Restored from Record Management.');
                 flash('success', 'Selected records restored from the archive.');
-            } elseif ($bulkAction === 'delete') {
-                $fileStmt = db()->prepare("SELECT id, filename FROM documents WHERE id IN ($marks)" . ($isArchivedView ? ' AND archived_at IS NOT NULL' : ''));
-                $fileStmt->execute($ids);
-                $files = [];
-                foreach ($fileStmt->fetchAll() as $record) {
-                    $versionStmt = db()->prepare('SELECT filename FROM document_versions WHERE document_id = ?');
-                    $versionStmt->execute([(int) $record['id']]);
-                    $files = array_merge($files, array_column($versionStmt->fetchAll(), 'filename'), [$record['filename']]);
-                }
-                db()->beginTransaction();
-                try {
-                    db()->prepare("DELETE FROM archived_documents WHERE document_id IN ($marks)")->execute($ids);
-                    db()->prepare("DELETE FROM documents WHERE id IN ($marks)" . ($isArchivedView ? ' AND archived_at IS NOT NULL' : ''))->execute($ids);
-                    db()->commit();
-                    if (function_exists('supabase_request')) {
-                        $storagePaths = [];
-                        $uploadRoot = realpath(UPLOAD_DIR);
-                        foreach ($files as $filename) {
-                            $filename = (string) $filename;
-                            if (str_starts_with($filename, 'storage:')) {
-                                $storagePaths[] = ltrim(substr($filename, 8), '/');
-                            } elseif ($uploadRoot !== false) {
-                                $localPath = realpath(UPLOAD_DIR . DIRECTORY_SEPARATOR . $filename);
-                                if ($localPath !== false && str_starts_with($localPath, $uploadRoot . DIRECTORY_SEPARATOR) && is_file($localPath)) unlink($localPath);
-                            }
-                        }
-                        if ($storagePaths) {
-                            try { supabase_request('DELETE', '/storage/v1/object/' . rawurlencode(SUPABASE_STORAGE_BUCKET), ['prefixes' => array_values(array_unique($storagePaths))], null, true); }
-                            catch (Throwable $error) { error_log('Bulk record storage cleanup failed: ' . $error->getMessage()); }
-                        }
-                    }
-                    flash('success', 'Selected records permanently deleted.');
-                } catch (Throwable $error) {
-                    if (db()->inTransaction()) db()->rollBack();
-                    throw $error;
-                }
             }
         } elseif ($entity === 'activity') {
             ensure_activity_archived_at_column();
@@ -164,11 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($bulkAction === 'restore' || $bulkAction === 'unarchive') {
                 db()->prepare("UPDATE activities SET archived_at = NULL WHERE archived_at IS NOT NULL AND id IN ($marks)")->execute($ids);
                 flash('success', 'Selected activities restored.');
-            } else {
-                db()->prepare("DELETE FROM activities WHERE id IN ($marks)")->execute($ids);
-                flash('success', 'Selected activities permanently deleted.');
             }
-            foreach ($ids as $activityId) log_action((int) $user['id'], 'Bulk ' . ($bulkAction === 'archive' ? 'archived' : ($bulkAction === 'delete' ? 'deleted' : 'restored')) . " activity #{$activityId}");
+            foreach ($ids as $activityId) log_action((int) $user['id'], 'Bulk ' . ($bulkAction === 'archive' ? 'archived' : 'restored') . " activity #{$activityId}");
         } elseif ($entity === 'research' || $entity === 'extension') {
             $table = $entity === 'research' ? 'research_projects' : 'extension_projects';
             if ($bulkAction === 'archive') {
@@ -185,18 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     log_action((int) $user['id'], "Bulk restored {$entity} submission #{$recordId}");
                 }
                 flash('success', 'Selected ' . $entity . ' submissions restored.');
-            } else {
-                db()->prepare("DELETE FROM {$table} WHERE id IN ($marks)")->execute($ids);
-                foreach ($ids as $recordId) log_action((int) $user['id'], "Permanently deleted {$entity} submission #{$recordId}");
-                flash('success', 'Selected submissions permanently deleted.');
             }
         } elseif ($entity === 'announcement') {
             if ($bulkAction === 'restore') {
                 db()->prepare("UPDATE announcements SET status = 'Published' WHERE status = 'Archived' AND id IN ($marks)")->execute($ids);
                 flash('success', 'Selected announcements restored.');
-            } else {
-                db()->prepare("DELETE FROM announcements WHERE status = 'Archived' AND id IN ($marks)")->execute($ids);
-                flash('success', 'Selected archived announcements permanently deleted.');
             }
         }
     } elseif ($action === 'status') {
@@ -253,22 +194,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         log_action((int) $user['id'], "Restored document #{$id}");
         flash('success', 'Document restored.');
     } elseif ($action === 'delete') {
-        if (!in_array(($user['role'] ?? ''), [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
-            flash('error', 'Only authorized administrators can permanently delete records.');
-            redirect_to('admin-documents.php');
-        }
-        $stmt = db()->prepare('SELECT filename FROM documents WHERE id = ?');
-        $stmt->execute([$id]);
-        $doc = $stmt->fetch();
-        if ($doc) {
-            db()->prepare('DELETE FROM documents WHERE id = ?')->execute([$id]);
-            $path = UPLOAD_DIR . '/' . $doc['filename'];
-            if (is_file($path)) {
-                unlink($path);
-            }
-            log_action((int) $user['id'], "Permanently deleted document #{$id}");
-            flash('success', 'Document permanently deleted.');
-        }
+        flash('error', 'Deleting records is disabled. Use archive instead.');
+        $redirectArchived = (isset($_GET['archived']) && $_GET['archived'] === '1') || (isset($_POST['archived_view']) && $_POST['archived_view'] === '1');
+        redirect_to('admin-documents.php' . ($redirectArchived ? '?archived=1' : ''));
     } elseif ($action === 'announcement_restore') {
         db()->prepare('UPDATE announcements SET status = "Published" WHERE id = ?')->execute([$id]);
         log_action((int) $user['id'], "Restored announcement #{$id}");
@@ -360,7 +288,7 @@ renderHeader('Record Management', 'documents');
     <details class="submission-folder" <?php echo !$archived ? 'open' : ''; ?>>
         <summary><span><i class="ri-flask-line"></i> <?php echo $archived ? 'Archived Research Submissions' : 'Research Management Submissions'; ?></span><strong><?php echo count($researchSubmissions); ?></strong></summary>
     <div class="table-scroll">
-        <?php render_record_selection('researchSubmissionTable', 'research', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
+        <?php render_record_selection('researchSubmissionTable', 'research', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="researchSubmissionTable">
             <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable"><span>Select all</span></label></th><th>Research Title</th><th>College</th><th>Researchers</th><th>Submitted By</th><th>Assigned To</th><th>Status</th><th>Date</th><th>Manage</th></tr></thead>
             <tbody>
@@ -387,7 +315,7 @@ renderHeader('Record Management', 'documents');
     <details class="submission-folder">
         <summary><span><i class="ri-community-line"></i> <?php echo $archived ? 'Archived Extension Project Submissions' : 'Extension Project Submissions'; ?></span><strong><?php echo count($extensionSubmissions); ?></strong></summary>
     <div class="table-scroll">
-        <?php render_record_selection('extensionSubmissionTable', 'extension', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
+        <?php render_record_selection('extensionSubmissionTable', 'extension', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="extensionSubmissionTable">
             <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>College</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
             <tbody>
@@ -414,7 +342,7 @@ renderHeader('Record Management', 'documents');
     <details class="submission-folder">
         <summary><span><i class="ri-calendar-event-line"></i> <?php echo $archived ? 'Archived Activity Submissions' : 'Activity Submissions'; ?></span><strong><?php echo count($activitySubmissions); ?></strong></summary>
     <div class="table-scroll">
-        <?php render_record_selection('activitySubmissionTable', 'activity', $archived ? ['restore' => 'Restore Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
+        <?php render_record_selection('activitySubmissionTable', 'activity', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="activitySubmissionTable">
             <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-activitySubmissionTable" type="checkbox" aria-label="Select all activities" data-select-all="activitySubmissionTable"><span>Select all</span></label></th><th>Activity</th><th>College</th><th>Type</th><th>Venue</th><th>Date</th><th>Submitted By</th><th>Manage</th></tr></thead>
             <tbody>
@@ -447,7 +375,7 @@ renderHeader('Record Management', 'documents');
 <section class="panel">
     <div class="panel-heading"><h2 id="recordsPanelTitle"><?php echo $archived ? 'Archived Records' : 'All Records'; ?></h2><span id="recordsPanelSubtitle">Open a category card above to view its documents.</span></div>
     <div class="table-scroll">
-        <?php render_record_selection('recordsTable', 'document', $archived ? ['unarchive' => 'Unarchive Selected', 'delete' => 'Delete Selected'] : ['archive' => 'Archive Selected', 'delete' => 'Delete Selected'], false, $archived); ?>
+        <?php render_record_selection('recordsTable', 'document', $archived ? ['unarchive' => 'Unarchive Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="recordsTable">
             <thead><tr><th><label class="select-all-control"><input form="bulk-recordsTable" type="checkbox" aria-label="Select all records" data-select-all="recordsTable"><span>Select all</span></label></th><th>Document</th><th>Author</th><th>College</th><th>Date</th><th>Status</th><th>Assigned</th><th>Uploaded By</th><th>Manage</th></tr></thead>
             <tbody>
@@ -477,7 +405,7 @@ renderHeader('Record Management', 'documents');
 <section class="panel">
     <div class="panel-heading"><h2>Archived Announcements</h2><span><?php echo count($archivedAnnouncements); ?> archived announcement<?php echo count($archivedAnnouncements) === 1 ? '' : 's'; ?></span></div>
     <div class="table-scroll">
-        <?php render_record_selection('archivedAnnouncementsTable', 'announcement', ['restore' => 'Restore Selected', 'delete' => 'Delete Selected']); ?>
+        <?php render_record_selection('archivedAnnouncementsTable', 'announcement', ['restore' => 'Restore Selected']); ?>
         <table class="data-table portal-table" id="archivedAnnouncementsTable">
             <thead><tr><th><label class="select-all-control"><input form="bulk-archivedAnnouncementsTable" type="checkbox" aria-label="Select all archived announcements" data-select-all="archivedAnnouncementsTable"><span>Select all</span></label></th><th>Announcement</th><th>Audience</th><th>Archived Status</th><th>Posted By</th><th>Date Posted</th><th>Manage</th></tr></thead>
             <tbody>
@@ -541,12 +469,10 @@ if (!empty($docIds)) {
             <form method="post" class="record-archive-form"><?php echo csrf_field(); ?><input type="hidden" name="action" value="archive"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><input type="hidden" name="reason" value="Archived from Record Management"><button class="ghost-btn action-btn" type="submit"><i class="ri-archive-line"></i><span>Archive</span></button></form>
         <?php else: ?>
             <button class="ghost-btn action-btn" type="button" data-open-modal="restore-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button>
-            <button class="danger-btn action-btn" type="button" data-open-modal="delete-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-delete-bin-line"></i><span>Delete</span></button>
         <?php endif; ?>
     </div></article></div>
     <div class="modal" id="status-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Record</h2><input type="hidden" name="action" value="status"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><label class="field"><span>Status</span><select name="status"><?php foreach (['Pending', 'Under Review', 'Approved', 'Declined'] as $status): ?><option <?php echo $doc['status'] === $status ? 'selected' : ''; ?>><?php echo h($status); ?></option><?php endforeach; ?></select></label><div class="field"><span>Assign Reviewer / Coordinator</span><select name="searchable-select" class="searchable-select" data-placeholder="Unassigned" data-search-placeholder="Search reviewer or coordinator..."><option value="">Unassigned</option><?php foreach ($assignableUsers as $assignee): ?><option value="<?php echo (int) $assignee['id']; ?>" <?php echo (int) ($doc['assigned_to'] ?? 0) === (int) $assignee['id'] ? 'selected' : ''; ?>><?php echo h($assignee['fullname'] . ' - ' . $assignee['role']); ?></option><?php endforeach; ?></select></div><label class="field"><span>Approval / Rejection Remarks</span><textarea name="remarks" rows="4"><?php echo h($doc['status_remarks']); ?></textarea></label><button class="primary-btn"><i class="ri-save-line"></i> Save Review</button></form></div>
     <div class="modal" id="restore-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Retrieve Record</h2><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><p>Retrieve this archived record to the active workflow?</p><button class="primary-btn"><i class="ri-arrow-go-back-line"></i> Retrieve Record</button></form></div>
-    <div class="modal" id="delete-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><form class="modal-card" method="post"><?php echo csrf_field(); ?><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Delete Record</h2><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><p>This permanently deletes the record and its stored file.</p><button class="danger-btn"><i class="ri-delete-bin-line"></i> Permanently Delete</button></form></div>
     <div class="modal" id="timeline-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Review Timeline</h2><div class="timeline-list"><?php $tLogs = $docTimelineMap[(int) $doc['id']] ?? []; foreach ($tLogs as $log): ?><div><strong><?php echo h($log['action']); ?></strong><p><?php echo h($log['remarks'] ?: 'No remarks.'); ?></p><small><?php echo h(($log['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($log['created_at']))); ?></small></div><?php endforeach; ?><div><strong>Uploaded</strong><p><?php echo h($doc['description'] ?: 'Record submitted.'); ?></p><small><?php echo h(date('M d, Y h:i A', strtotime($doc['created_at']))); ?></small></div></div></article></div>
     <div class="modal" id="versions-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Version History</h2><div class="timeline-list"><?php $versions = $docVersionsMap[(int) $doc['id']] ?? []; foreach ($versions as $version): ?><div><strong><?php echo h($version['version_label']); ?></strong><p><a href="<?php echo h(record_file_url($version['filename'], (int) $version['document_id'], (int) $version['id'])); ?>">Download version</a></p><small><?php echo h(($version['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($version['created_at']))); ?></small></div><?php endforeach; ?></div></article></div>
     <?php if (record_is_previewable($doc['filename'])): ?><div class="modal" id="preview-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card preview-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2><?php echo h($doc['title']); ?></h2><?php $ext = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION)); if ($ext === 'pdf'): ?><iframe class="document-preview" data-src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" src="about:blank"></iframe><?php else: ?><img class="document-preview-image" data-src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" alt="<?php echo h($doc['title']); ?>"><?php endif; ?></article></div><?php endif; ?>

@@ -38,29 +38,36 @@ function create_sample_pdf(string $filePath, string $title, string $subtitle, st
     $cleanSub = substr(preg_replace('/[^a-zA-Z0-9 ,.\-:]/', '', $subtitle), 0, 75);
     $cleanContent = substr(preg_replace('/[^a-zA-Z0-9 ,.\-:]/', '', $content), 0, 180);
 
-    $stream = "BT /F1 18 Tf 50 720 Td (" . $cleanTitle . ") Tj ET\n" .
-              "BT /F2 12 Tf 50 690 Td (" . $cleanSub . ") Tj ET\n" .
-              "BT /F2 10 Tf 50 650 Td (" . $cleanContent . ") Tj ET\n" .
-              "BT /F2 9 Tf 50 100 Td (Official Sample Document - OVPRE I-Record Repository) Tj ET";
+    $stream = "BT\n/F1 18 Tf\n50 720 Td\n(" . $cleanTitle . ") Tj\nET\n" .
+              "BT\n/F2 12 Tf\n50 690 Td\n(" . $cleanSub . ") Tj\nET\n" .
+              "BT\n/F2 10 Tf\n50 650 Td\n(" . $cleanContent . ") Tj\nET\n" .
+              "BT\n/F2 9 Tf\n50 100 Td\n(Official Document - OVPRE Repository) Tj\nET\n";
     $len = strlen($stream);
 
-    $pdf = "%PDF-1.4\n" .
-           "1 0 obj <</Type /Catalog /Pages 2 0 R>> endobj\n" .
-           "2 0 obj <</Type /Pages /Kids [3 0 R] /Count 1>> endobj\n" .
-           "3 0 obj <</Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /MediaBox [0 0 612 792] /Contents 6 0 R>> endobj\n" .
-           "4 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold>> endobj\n" .
-           "5 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>> endobj\n" .
-           "6 0 obj <</Length {$len}>> stream\n{$stream}\nendstream\nendobj\n" .
-           "xref\n0 7\n" .
-           "0000000000 65535 f \n" .
-           "0000000009 00000 n \n" .
-           "0000000056 00000 n \n" .
-           "0000000111 00000 n \n" .
-           "0000000244 00000 n \n" .
-           "0000000320 00000 n \n" .
-           "0000000391 00000 n \n" .
-           "trailer <</Size 7 /Root 1 0 R>>\n" .
-           "startxref\n" . (450 + $len) . "\n%%EOF\n";
+    $header = "%PDF-1.4\n";
+    $objects = [];
+    $objects[1] = "1 0 obj\n<</Type /Catalog /Pages 2 0 R>>\nendobj\n";
+    $objects[2] = "2 0 obj\n<</Type /Pages /Kids [3 0 R] /Count 1>>\nendobj\n";
+    $objects[3] = "3 0 obj\n<</Type /Page /Parent 2 0 R /Resources <</Font <</F1 4 0 R /F2 5 0 R>>>> /MediaBox [0 0 612 792] /Contents 6 0 R>>\nendobj\n";
+    $objects[4] = "4 0 obj\n<</Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold>>\nendobj\n";
+    $objects[5] = "5 0 obj\n<</Type /Font /Subtype /Type1 /BaseFont /Helvetica>>\nendobj\n";
+    $objects[6] = "6 0 obj\n<</Length " . $len . ">>\nstream\n" . $stream . "endstream\nendobj\n";
+
+    $pdf = $header;
+    $offsets = [];
+    foreach ($objects as $num => $obj) {
+        $offsets[$num] = strlen($pdf);
+        $pdf .= $obj;
+    }
+
+    $xrefOffset = strlen($pdf);
+    $pdf .= "xref\n0 7\n";
+    $pdf .= "0000000000 65535 f \n";
+    for ($i = 1; $i <= 6; $i++) {
+        $pdf .= sprintf("%010d 00000 n \n", $offsets[$i]);
+    }
+    $pdf .= "trailer\n<</Size 7 /Root 1 0 R>>\n";
+    $pdf .= "startxref\n" . $xrefOffset . "\n%%EOF\n";
 
     file_put_contents($filePath, $pdf);
 }

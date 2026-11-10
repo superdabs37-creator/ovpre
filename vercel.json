@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**/*.php": {
+      "runtime": "vercel-php@0.7.2"
+    },
+    "*.php": {
+      "runtime": "vercel-php@0.7.2"
+    },
+    "*/*.php": {
+      "runtime": "vercel-php@0.7.2"
+    },
+    "role-portal/pages/*.php": {
+      "runtime": "vercel-php@0.7.2"
+    }
+  },
+  "routes": [
+    {
+      "src": "^/(config\\.local\\.php|.*\\.(sql|ini|log))$",
+      "status": 403
+    },
+    {
+      "src": "^/(includes|vendor|scratch)/.*",
+      "status": 403
+    },
+    {
+      "src": "^/$",
+      "dest": "/landing.php"
+    },
+    {
+      "src": "^/research-director(/.*)?$",
+      "dest": "/dashboard.php"
+    },
+    {
+      "src": "^/extension-director(/.*)?$",
+      "dest": "/dashboard.php"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "^/role-portal/assets/(.*)",
+      "dest": "/role-portal/assets/$1"
+    },
+    {
+      "src": "^/uploads/(.*)",
+      "dest": "/uploads/$1"
+    },
+    {
+      "src": "^/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}

@@ -44,22 +44,64 @@ if ($versionId > 0) {
     }
     $filename = (string) $versionFilename;
 }
+
+$ext = strtolower(pathinfo($originalName ?: $filename, PATHINFO_EXTENSION));
+$mimeMap = [
+    'pdf' => 'application/pdf',
+    'png' => 'image/png',
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'gif' => 'image/gif',
+    'webp' => 'image/webp',
+    'svg' => 'image/svg+xml',
+    'txt' => 'text/plain; charset=UTF-8',
+    'html' => 'text/html; charset=UTF-8',
+    'doc' => 'application/msword',
+    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+$mime = $mimeMap[$ext] ?? 'application/pdf';
+$safeName = str_replace(["\r", "\n", '"'], '', basename($originalName ?: $filename));
+$isDownload = isset($_GET['download']) && $_GET['download'] === '1';
+$disposition = $isDownload ? 'attachment' : 'inline';
+
 if (str_starts_with($filename, 'storage:')) {
-    header('Cache-Control: no-store');
-    header('Location: ' . supabase_storage_signed_url(substr($filename, 8)), true, 302);
+    $objectPath = substr($filename, 8);
+    $signedUrl = supabase_storage_signed_url($objectPath);
+
+    header('Content-Type: ' . $mime);
+    header('Content-Disposition: ' . $disposition . '; filename="' . $safeName . '"');
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: private, no-store');
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($signedUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 60,
+            CURLOPT_HEADER => false,
+        ]);
+        curl_exec($ch);
+        curl_close($ch);
+    } else {
+        readfile($signedUrl);
+    }
     exit;
 }
+
 $root = realpath(UPLOAD_DIR);
 $path = realpath(UPLOAD_DIR . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $filename));
 if (!$root || !$path || !str_starts_with($path, $root . DIRECTORY_SEPARATOR) || !is_file($path)) {
     http_response_code(404);
     exit('File not found.');
 }
-$mime = (new finfo(FILEINFO_MIME_TYPE))->file($path) ?: 'application/octet-stream';
-$safeName = str_replace(["\r", "\n", '"'], '', basename($originalName ?: $path));
-header('Content-Type: ' . $mime);
+
+$finfoMime = (new finfo(FILEINFO_MIME_TYPE))->file($path);
+$localMime = $mimeMap[$ext] ?? ($finfoMime && $finfoMime !== 'application/octet-stream' ? $finfoMime : 'application/pdf');
+
+header('Content-Type: ' . $localMime);
 header('Content-Length: ' . (string) filesize($path));
-header('Content-Disposition: inline; filename="' . $safeName . '"');
+header('Content-Disposition: ' . $disposition . '; filename="' . $safeName . '"');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, no-store');
 readfile($path);

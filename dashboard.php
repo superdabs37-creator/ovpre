@@ -562,53 +562,63 @@ renderHeader('Dashboard', 'dashboard');
 ========================================================= -->
 <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px;">
     <!-- Records -->
-    <div class="panel" style="margin: 0; padding: 16px; border-left: 4px solid #15803d; background: #ffffff;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">Academic Records</span>
-            <i class="ri-file-text-line" style="font-size: 1.3rem; color: #15803d;"></i>
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 8px 22px rgba(21, 128, 61, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Academic Records</span>
+            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                <i class="ri-file-text-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            </span>
         </div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;"><?php echo $totalDocuments; ?></div>
-        <small style="color: #64748b; font-size: 0.8rem;">Cataloged in repository</small>
+        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalDocuments; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Cataloged in repository</small>
     </div>
 
     <!-- Research Proposals -->
-    <div class="panel" style="margin: 0; padding: 16px; border-left: 4px solid #0284c7; background: #ffffff;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">Research Proposals</span>
-            <i class="ri-flask-line" style="font-size: 1.3rem; color: #0284c7;"></i>
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 8px 22px rgba(2, 132, 199, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Research Proposals</span>
+            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                <i class="ri-flask-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            </span>
         </div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;"><?php echo $totalResearch; ?></div>
-        <small style="color: #64748b; font-size: 0.8rem;">Faculty submissions</small>
+        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalResearch; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Faculty submissions</small>
     </div>
 
     <!-- Extension Projects -->
-    <div class="panel" style="margin: 0; padding: 16px; border-left: 4px solid #10b981; background: #ffffff;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">Extension Initiatives</span>
-            <i class="ri-community-line" style="font-size: 1.3rem; color: #10b981;"></i>
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 8px 22px rgba(13, 148, 136, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Extension Initiatives</span>
+            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                <i class="ri-community-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            </span>
         </div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;"><?php echo $totalExtension; ?></div>
-        <small style="color: #64748b; font-size: 0.8rem;">Community outreach</small>
+        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalExtension; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Community outreach</small>
     </div>
 
     <!-- Colleges Participation -->
-    <div class="panel" style="margin: 0; padding: 16px; border-left: 4px solid #7c3aed; background: #ffffff;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">Colleges Active</span>
-            <i class="ri-government-line" style="font-size: 1.3rem; color: #7c3aed;"></i>
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 8px 22px rgba(124, 58, 237, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Colleges Active</span>
+            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                <i class="ri-government-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            </span>
         </div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;"><?php echo $activeCollegesCount; ?> / <?php echo $totalColleges; ?></div>
-        <small style="color: #64748b; font-size: 0.8rem;">Colleges with submissions</small>
+        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeCollegesCount; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalColleges; ?></span></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Colleges with submissions</small>
     </div>
 
     <!-- Active Faculty -->
-    <div class="panel" style="margin: 0; padding: 16px; border-left: 4px solid #d97706; background: #ffffff;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">Registered Users</span>
-            <i class="ri-team-line" style="font-size: 1.3rem; color: #d97706;"></i>
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 8px 22px rgba(217, 119, 6, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Registered Users</span>
+            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                <i class="ri-team-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            </span>
         </div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;"><?php echo $activeUsers; ?> <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">/ <?php echo $totalUsers; ?></span></div>
-        <small style="color: #64748b; font-size: 0.8rem;">Active accounts</small>
+        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeUsers; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalUsers; ?></span></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Active accounts</small>
     </div>
 </section>
 
@@ -869,7 +879,7 @@ renderHeader('Dashboard', 'dashboard');
                         <th style="text-align: left;">Submission Title</th>
                         <th style="text-align: center; width: 125px;">Status</th>
                         <th style="text-align: center; width: 115px; white-space: nowrap;">Submitted</th>
-                        <th style="text-align: center; width: 95px;">Action</th>
+                        <th style="text-align: center; width: 100px;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="personSubmissionsTableBody"></tbody>
@@ -1072,15 +1082,24 @@ renderHeader('Dashboard', 'dashboard');
                     actionCell.style.textAlign = 'center';
                     actionCell.style.verticalAlign = 'middle';
                     actionCell.style.whiteSpace = 'nowrap';
+                    actionCell.style.width = '100px';
 
                     const viewBtn = document.createElement('button');
                     viewBtn.type = 'button';
-                    viewBtn.className = 'ghost-btn mini-btn';
+                    viewBtn.className = 'ghost-btn action-btn';
                     viewBtn.title = 'View submission details';
-                    viewBtn.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; font-size: 0.76rem; font-weight: 700; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; cursor: pointer; transition: all 0.15s;';
-                    viewBtn.innerHTML = '<i class="ri-eye-line"></i> View';
-                    viewBtn.onmouseover = () => { viewBtn.style.background = '#15803d'; viewBtn.style.color = '#ffffff'; };
-                    viewBtn.onmouseout = () => { viewBtn.style.background = '#f0fdf4'; viewBtn.style.color = '#15803d'; };
+                    viewBtn.style.cssText = 'display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: auto; min-width: 68px; min-height: 30px; height: 30px; padding: 0 12px; font-size: 0.78rem; font-weight: 700; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box;';
+                    viewBtn.innerHTML = '<i class="ri-eye-line" style="font-size: 0.92rem;"></i> View';
+                    viewBtn.onmouseover = () => {
+                        viewBtn.style.background = '#15803d';
+                        viewBtn.style.color = '#ffffff';
+                        viewBtn.style.borderColor = '#15803d';
+                    };
+                    viewBtn.onmouseout = () => {
+                        viewBtn.style.background = '#f0fdf4';
+                        viewBtn.style.color = '#15803d';
+                        viewBtn.style.borderColor = '#bbf7d0';
+                    };
                     viewBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         openQuickPreview(submission, person);

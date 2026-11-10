@@ -75,21 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'delete') {
-        if (!in_array(($user['role'] ?? ''), ['Super Admin', 'OVPRE Admin'], true)) {
-            http_response_code(403);
-            exit('Only authorized administrators can permanently delete activities.');
-        }
-        $id = (int) ($_POST['id'] ?? 0);
-        $stmt = db()->prepare('SELECT title FROM activities WHERE id = ? LIMIT 1');
-        $stmt->execute([$id]);
-        $activity = $stmt->fetch();
-        if (!$activity) {
-            flash('error', 'That activity could not be found.');
-        } else {
-            db()->prepare('DELETE FROM activities WHERE id = ?')->execute([$id]);
-            log_action((int) $user['id'], 'Permanently deleted activity #' . $id . ': ' . $activity['title']);
-            flash('success', 'Activity permanently deleted.');
-        }
+        flash('error', 'Deleting activities is disabled. Use archive instead.');
         $isArchivedRedirect = (($_GET['archived'] ?? '') === '1') || (($_POST['archived_view'] ?? '') === '1');
         redirect_to('activities.php' . ($isArchivedRedirect ? '?archived=1' : ''));
     }
@@ -129,15 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('success', count($ids) . ' activity record(s) restored.');
             redirect_to('activities.php?archived=1');
         } elseif ($bulkAction === 'delete') {
-            if (!in_array(($user['role'] ?? ''), ['Super Admin', 'OVPRE Admin'], true)) {
-                http_response_code(403);
-                exit('Only authorized administrators can delete activities.');
-            }
-            db()->prepare("DELETE FROM activities WHERE id IN ($marks)")->execute($ids);
-            foreach ($ids as $activityId) {
-                log_action((int) $user['id'], 'Bulk permanently deleted activity #' . $activityId);
-            }
-            flash('success', count($ids) . ' activity record(s) permanently deleted.');
+            flash('error', 'Deleting activities is disabled. Use archive instead.');
             redirect_to('activities.php' . ($isArchivedView ? '?archived=1' : ''));
         } else {
             flash('error', 'Invalid bulk action.');
@@ -357,9 +335,6 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                     <i class="ri-archive-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
-            <button class="action-btn btn-delete-natural" type="submit" name="bulk_action" value="delete" data-bulk-submit data-confirm-delete>
-                <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
-            </button>
         </form>
     </div>
 
@@ -483,9 +458,6 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                             <i class="ri-close-line"></i><span>Reject</span>
                         </button>
                     <?php endif; ?>
-                    <button type="submit" formnovalidate name="action" value="delete" id="deleteActivityButton" onclick="return confirm('Permanently delete this activity? This cannot be undone.');" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
-                        <i class="ri-delete-bin-line"></i><span>Delete</span>
-                    </button>
                 </div>
                 <div class="activity-modal-primary" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
                     <button type="button" data-close-modal style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 600; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: all 0.15s;">

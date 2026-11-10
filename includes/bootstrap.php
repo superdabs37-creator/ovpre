@@ -361,6 +361,46 @@ function ensure_activity_archived_at_column(): void {
     $checked = true;
 }
 
+if (!function_exists('ensure_research_archived_at_column')) {
+function ensure_research_archived_at_column(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            db()->exec('ALTER TABLE research_projects ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ DEFAULT NULL');
+        } else {
+            $column = db()->query("SHOW COLUMNS FROM research_projects LIKE 'archived_at'")->fetch();
+            if (!$column) {
+                db()->exec('ALTER TABLE research_projects ADD COLUMN archived_at DATETIME DEFAULT NULL');
+            }
+        }
+    } catch (Throwable $e) {}
+    $checked = true;
+}
+}
+
+if (!function_exists('ensure_extension_archived_at_column')) {
+function ensure_extension_archived_at_column(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            db()->exec('ALTER TABLE extension_projects ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ DEFAULT NULL');
+        } else {
+            $column = db()->query("SHOW COLUMNS FROM extension_projects LIKE 'archived_at'")->fetch();
+            if (!$column) {
+                db()->exec('ALTER TABLE extension_projects ADD COLUMN archived_at DATETIME DEFAULT NULL');
+            }
+        }
+    } catch (Throwable $e) {}
+    $checked = true;
+}
+}
+
 function ensure_extension_proposal_columns(): void {
     if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
         return;
@@ -791,3 +831,11 @@ function record_access_url(string $filename, string $localPrefix = '', ?int $doc
     }
     return $localPrefix . 'download-document.php?id=' . $documentId . ($versionId ? '&version=' . $versionId : '');
 }
+
+if (!function_exists('record_is_previewable')) {
+    function record_is_previewable(string $filename): bool
+    {
+        return in_array(strtolower(pathinfo(preg_replace('/^storage:/', '', $filename), PATHINFO_EXTENSION)), ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'svg'], true);
+    }
+}
+

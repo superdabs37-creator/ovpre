@@ -35,7 +35,7 @@ function renderHeader($pageTitle, $currentPage)
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo h($pageTitle); ?> | <?php echo APP_NAME; ?></title>
         <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
-        <link rel="stylesheet" href="assets/css/style.css?v=20261105-scroll-timeline">
+        <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@ function renderHeader($pageTitle, $currentPage)
     </head>
 
     <body>
-        <div class="app-shell">
+        <div class="app-shell sidebar-expanded" id="appShell">
             <aside class="sidebar" id="sidebar">
                 <a class="brand" href="dashboard.php">
                     <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
@@ -52,43 +52,43 @@ function renderHeader($pageTitle, $currentPage)
                 </a>
                 <nav class="sidebar-nav">
                     <?php if ($isSuperAdmin): ?>
-                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
-                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
-                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
-                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
-                        <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php"><i class="ri-shield-user-line"></i><span>User Security</span></a>
-                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
-                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
-                        <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                        <a class="<?php echo activePage('settings', $currentPage); ?>" href="admin-settings.php" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
                     <?php elseif ($isOVPREAdmin): ?>
-                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
-                        <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php"><i class="ri-team-line"></i><span>Users</span></a>
-                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
-                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
-                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
-                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php"><i class="ri-history-line"></i><span>System Activity</span></a>
-                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                        <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                        <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
                     <?php else: ?>
-                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php"><i class="ri-file-search-line"></i><span>Records</span></a>
-                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                        <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                         <?php if ($canSeeResearch): ?>
-                            <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php"><i class="ri-flask-line"></i><span>Research</span></a>
+                            <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
                         <?php endif; ?>
                         <?php if ($canSeeExtension): ?>
-                            <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php"><i class="ri-community-line"></i><span>Extension</span></a>
+                            <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
                         <?php endif; ?>
-                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
                     <?php endif; ?>
                 </nav>
-                <div class="sidebar-footer">
+                <div class="sidebar-footer" title="<?php echo $isSuperAdmin ? 'Executive Administration' : 'Institutional Operations'; ?>">
                     <?php if ($isSuperAdmin): ?>
                         <i class="ri-shield-keyhole-line"></i>
                         <span>Executive Administration</span>
@@ -149,7 +149,7 @@ function renderHeader($pageTitle, $currentPage)
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="assets/js/app.js?v=20261105-perf"></script>
+        <script src="assets/js/app.js?v=20261109-fixed"></script>
     </body>
 
     </html>

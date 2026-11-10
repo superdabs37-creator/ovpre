@@ -47,28 +47,6 @@ function recovery_entity_label(string $entity): string
     return $entity === 'extension' ? 'extension' : 'research';
 }
 
-/** Makes sure extension_projects can be archived (research_projects is handled in role-portal.php). */
-function ensure_extension_archived_at_column(): void
-{
-    static $checked = false;
-    if ($checked) {
-        return;
-    }
-    try {
-        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
-            db()->exec('ALTER TABLE extension_projects ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ DEFAULT NULL');
-        } else {
-            $column = db()->query("SHOW COLUMNS FROM extension_projects LIKE 'archived_at'")->fetch();
-            if (!$column) {
-                db()->exec('ALTER TABLE extension_projects ADD COLUMN archived_at DATETIME DEFAULT NULL');
-            }
-        }
-    } catch (Throwable $error) {
-        error_log('Could not ensure extension_projects.archived_at: ' . $error->getMessage());
-    }
-    $checked = true;
-}
-
 /**
  * SQL fragment (aliases: p = project row, u = submitter) and bound params that limit
  * a query to the records the current role may manage.

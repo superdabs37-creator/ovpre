@@ -13,7 +13,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
 
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/landing.css?v=20261019-bg-animation">
+    <link rel="stylesheet" href="assets/css/landing.css?v=20261110-colors">
 </head>
 
 <body>
@@ -34,7 +34,7 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
             <a href="#about">About</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
-            <a href="register.php" style="color:#15803d; font-weight:700;">Register</a>
+            <a href="register.php">Register</a>
         </nav>
 
     </div>
@@ -338,6 +338,21 @@ $pageTitle = "I-Record | Office of the Vice President for Research and Extension
     </div>
 
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const header = document.querySelector('.header');
+    function updateHeader() {
+        if (window.scrollY > 20) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    updateHeader();
+});
+</script>
 
 </body>
 </html>

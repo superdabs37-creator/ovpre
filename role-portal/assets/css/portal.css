@@ -42,28 +42,60 @@ button {
 .role-shell {
     min-height: 100vh;
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 80px minmax(0, 1fr);
+    transition: grid-template-columns 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-shell.sidebar-expanded {
+    grid-template-columns: 260px minmax(0, 1fr);
 }
 
 .role-sidebar {
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 50;
-    width: 280px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    width: 80px;
     height: 100vh;
+    overflow-x: hidden;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 18px;
-    padding: 22px;
+    padding: 20px 10px;
     color: var(--white);
     background: linear-gradient(180deg, #0b2f1b, var(--green-700));
-    transform: translateX(-100%);
-    transition: transform .25s ease;
+    transform: none;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    scrollbar-width: none;
+}
+
+.role-sidebar::-webkit-scrollbar {
+    width: 0;
+    display: none;
 }
 
 .role-sidebar.open {
     transform: translateX(0);
+}
+
+.role-shell.sidebar-expanded .role-sidebar {
+    width: 260px;
+    padding: 22px 18px;
+    align-items: stretch;
+    scrollbar-width: thin;
+}
+
+.role-shell.sidebar-expanded .role-sidebar::-webkit-scrollbar {
+    width: 5px;
+    display: block;
+}
+
+button[data-role-sidebar],
+.icon-btn[data-role-sidebar] {
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
 }
 
 .role-sidebar-backdrop {
@@ -84,13 +116,38 @@ button {
 .role-brand {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     font-weight: 900;
+    text-decoration: none;
+    color: #ffffff;
+    width: 100%;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.role-brand:hover {
+    transform: scale(1.05);
+    opacity: 0.95;
+}
+
+.role-brand strong {
+    display: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.role-shell.sidebar-expanded .role-brand {
+    justify-content: flex-start;
+}
+
+.role-shell.sidebar-expanded .role-brand strong {
+    display: inline-block;
 }
 
 .role-brand span {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     display: grid;
     place-items: center;
     color: #0b2f1b;
@@ -101,6 +158,12 @@ button {
     overflow: hidden;
     padding: 2px;
     flex-shrink: 0;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.role-brand:hover span {
+    transform: scale(1.08) rotate(3deg);
+    box-shadow: 0 0 14px rgba(234, 179, 8, 0.45);
 }
 
 .role-brand span img {
@@ -118,28 +181,106 @@ button {
 }
 
 .role-nav {
-    display: grid;
-    gap: 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.role-shell.sidebar-expanded .role-nav {
+    align-items: stretch;
 }
 
 .role-nav a {
     display: flex;
     align-items: center;
-    gap: 11px;
-    min-height: 44px;
-    padding: 0 12px;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    min-height: 48px;
+    padding: 0;
     color: rgba(255, 255, 255, .84);
     border-radius: 14px;
-    transition: .2s ease;
+    position: relative;
+    text-decoration: none;
+    transition: background 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.role-nav a:hover,
+.role-nav a span {
+    display: none;
+    white-space: nowrap;
+}
+
+.role-shell.sidebar-expanded .role-nav a {
+    width: 100%;
+    height: auto;
+    min-height: 44px;
+    padding: 12px 14px;
+    justify-content: flex-start;
+    gap: 11px;
+}
+
+.role-shell.sidebar-expanded .role-nav a span {
+    display: inline-block;
+}
+
+.role-admin-nav-back span {
+    display: none;
+    white-space: nowrap;
+}
+
+.role-shell.sidebar-expanded .role-admin-nav-back span {
+    display: inline-block;
+}
+
+.role-nav a:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(250, 204, 21, 0.35);
+}
+
+.role-shell.sidebar-expanded .role-nav a:hover {
+    transform: translateX(6px);
+    box-shadow: inset 4px 0 0 var(--yellow), 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+
+.role-nav a:hover i {
+    transform: scale(1.18);
+    color: var(--yellow);
+}
+
 .role-nav a.active {
     color: #0b2f1b;
     background: var(--yellow);
-    transform: translateX(3px);
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(234, 179, 8, 0.38);
 }
 
+.role-nav a.active:hover {
+    color: #0b2f1b;
+    background: var(--yellow);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 18px rgba(234, 179, 8, 0.48);
+}
+
+.role-shell.sidebar-expanded .role-nav a.active:hover {
+    transform: translateX(6px);
+}
+
+.role-nav a.active i {
+    color: #0b2f1b;
+    transform: none;
+}
+
+.role-nav i {
+    font-size: 1.3rem;
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .role-page {
     min-width: 0;
 }
@@ -1360,42 +1501,94 @@ body.modal-open {
 
 .notification-actions .ghost-btn,
 .notification-actions .primary-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 38px;
-    padding: 0 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 10px;
-    white-space: nowrap;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 13px !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    letter-spacing: normal !important;
+    line-height: 1 !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.18s ease-in-out !important;
+    transform: none !important;
+    isolation: auto !important;
+    overflow: visible !important;
 }
 
-.notification-btn-mark {
-    color: var(--green-800, #15803d) !important;
-    background: var(--green-100) !important;
-    border: 1px solid #bbf7d0 !important;
+.notification-actions .ghost-btn::before,
+.notification-actions .ghost-btn::after,
+.notification-actions .primary-btn::before,
+.notification-actions .primary-btn::after {
+    display: none !important;
+    content: none !important;
 }
 
-.notification-btn-mark:hover {
-    background: #bbf7d0 !important;
-    color: var(--green-900) !important;
-    border-color: #86efac !important;
+.notification-btn-mark,
+.notification-actions .notification-btn-mark {
+    color: #166534 !important;
+    background: #dcfce7 !important;
+    border: 1px solid #86efac !important;
+    box-shadow: 0 1px 2px rgba(22, 163, 74, 0.08) !important;
 }
 
-.notification-btn-open {
+.notification-btn-mark:hover,
+.notification-actions .notification-btn-mark:hover {
+    background: #16a34a !important;
+    color: #ffffff !important;
+    border-color: #15803d !important;
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.28) !important;
+    transform: translateY(-1px) !important;
+}
+
+.notification-btn-mark i,
+.notification-actions .notification-btn-mark i {
+    font-size: 0.95rem !important;
+    color: inherit !important;
+    transform: none !important;
+}
+
+.notification-btn-mark span,
+.notification-actions .notification-btn-mark span {
+    color: inherit !important;
+    font-weight: 600 !important;
+}
+
+.notification-btn-open,
+.notification-actions .notification-btn-open {
     color: #1e293b !important;
     background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
 
-.notification-btn-open:hover {
-    background: #f1f5f9 !important;
-    border-color: #cbd5e1 !important;
-    color: #0f172a !important;
+.notification-btn-open:hover,
+.notification-actions .notification-btn-open:hover {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border-color: #0f172a !important;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2) !important;
+    transform: translateY(-1px) !important;
+}
+
+.notification-btn-open i,
+.notification-actions .notification-btn-open i {
+    font-size: 0.95rem !important;
+    color: inherit !important;
+    transform: none !important;
+}
+
+.notification-btn-open span,
+.notification-actions .notification-btn-open span {
+    color: inherit !important;
+    font-weight: 600 !important;
 }
 
 @media (max-width: 640px) {
@@ -1640,20 +1833,49 @@ body.modal-open {
         position: fixed;
         inset: 0 auto 0 0;
         z-index: 50;
-        width: 280px;
+        width: 260px;
+        align-items: stretch;
+        padding: 24px 18px;
         transform: translateX(-100%);
         transition: .25s ease;
+        scrollbar-width: thin;
     }
 
     .role-sidebar.open {
         transform: translateX(0);
     }
 
-    .icon-btn {
+    .role-brand {
+        justify-content: flex-start;
+    }
+
+    .role-brand strong {
+        display: inline-block;
+    }
+
+    .role-nav {
+        align-items: stretch;
+    }
+
+    .role-nav a {
+        width: 100%;
+        height: auto;
+        min-height: 44px;
+        padding: 12px 14px;
+        justify-content: flex-start;
+        gap: 11px;
+    }
+
+    .role-nav a span {
+        display: inline-block;
+    }
+
+    .icon-btn,
+    button[data-role-sidebar],
+    .icon-btn[data-role-sidebar] {
         display: inline-grid;
         place-items: center;
     }
-
     .role-topbar {
         padding: 13px 16px;
     }

@@ -1,5 +1,6 @@
 const roleSidebar = document.getElementById('roleSidebar');
 const roleSidebarToggle = document.querySelector('[data-role-sidebar]');
+const roleShell = document.querySelector('.role-shell');
 if (roleSidebar && roleSidebarToggle) {
     const backdrop = document.createElement('button');
     backdrop.type = 'button';
@@ -13,12 +14,34 @@ if (roleSidebar && roleSidebarToggle) {
         roleSidebarToggle.setAttribute('aria-expanded', String(isOpen));
     };
 
-    roleSidebarToggle.addEventListener('click', () => setRoleSidebarOpen(!roleSidebar.classList.contains('open')));
-    backdrop.addEventListener('click', () => setRoleSidebarOpen(false));
-    roleSidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setRoleSidebarOpen(false)));
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') setRoleSidebarOpen(false);
+    roleSidebarToggle.addEventListener('click', () => {
+        if (window.innerWidth > 900) {
+            const isExpanded = roleShell ? roleShell.classList.toggle('sidebar-expanded') : roleSidebar.classList.toggle('expanded');
+            roleSidebarToggle.setAttribute('aria-expanded', String(isExpanded));
+            try {
+                localStorage.setItem('ovpre_role_sidebar_expanded', isExpanded ? '1' : '0');
+            } catch (e) {}
+        } else {
+            setRoleSidebarOpen(!roleSidebar.classList.contains('open'));
+        }
     });
+    backdrop.addEventListener('click', () => setRoleSidebarOpen(false));
+    roleSidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) setRoleSidebarOpen(false);
+    }));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            if (window.innerWidth <= 900) setRoleSidebarOpen(false);
+        }
+    });
+
+    try {
+        if (localStorage.getItem('ovpre_role_sidebar_expanded') === '1' && window.innerWidth > 900) {
+            if (roleShell) roleShell.classList.add('sidebar-expanded');
+            roleSidebar.classList.add('expanded');
+            roleSidebarToggle.setAttribute('aria-expanded', 'true');
+        }
+    } catch (e) {}
 }
 
 const roleProfileToggle = document.querySelector('[data-role-profile-toggle]');

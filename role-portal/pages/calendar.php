@@ -83,9 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect_to('calendar.php');
             }
             if ($action === 'delete') {
-                db()->prepare("DELETE FROM activities WHERE id = ?")->execute([$requestId]);
-                log_action((int) $user['id'], 'Deleted calendar activity #' . $requestId);
-                flash('success', 'Calendar activity deleted.');
+                flash('error', 'Deleting schedule requests is disabled. Use archive instead.');
                 redirect_to('calendar.php');
             }
         } else {
@@ -96,10 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect_to('calendar.php');
             }
             if ($action === 'delete') {
-                db()->prepare("DELETE FROM activities WHERE id = ? AND created_by = ? AND approval_status <> 'Approved'")
-                    ->execute([$requestId, (int) $user['id']]);
-                log_action((int) $user['id'], 'Deleted unapproved calendar request #' . $requestId);
-                flash('success', 'Schedule request deleted.');
+                flash('error', 'Deleting schedule requests is disabled. Use archive instead.');
                 redirect_to('calendar.php');
             }
         }
@@ -143,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $requestsArchived = ($_GET['requests_archived'] ?? '') === '1';
 $activitiesArchived = ($_GET['activities_archived'] ?? '') === '1';
 
-$user = portal_header($isResearchCoordinator ? 'Activities' : 'Calendar', 'calendar');
+$user = portal_header('Calendar of Activities', 'calendar');
 $isExtensionCoordinator = PORTAL_ROLE === 'Extension Coordinator';
 $isResearchCoordinator = PORTAL_ROLE === 'Research Coordinator';
 $isResearchDirector = in_array(PORTAL_ROLE, ['Research Director', 'Director for Research and Creative Works'], true);
@@ -351,12 +346,6 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                                         <input type="hidden" name="request_id" value="<?php echo (int) $request['id']; ?>">
                                         <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
                                     </form>
-                                    <form method="post" style="display:inline;" onsubmit="return confirm('Delete this schedule request?');">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="request_id" value="<?php echo (int) $request['id']; ?>">
-                                        <button class="danger-btn mini-btn" type="submit"><i class="ri-delete-bin-line"></i> Delete</button>
-                                    </form>
                                 <?php else: ?>
                                     <form method="post" style="display:inline;">
                                         <?php echo csrf_field(); ?>
@@ -459,22 +448,28 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                         <td>
                             <div class="file-actions">
                                 <?php if ($activitiesArchived): ?>
-                                    <form method="post" style="margin:0;">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="hidden" name="action" value="restore_activity">
-                                        <input type="hidden" name="activity_id" value="<?php echo (int) $activity['id']; ?>">
-                                        <button class="ghost-btn mini-btn" type="submit"><i class="ri-arrow-go-back-line"></i> Restore</button>
-                                    </form>
+                                    <?php if ($isDirector || (int) ($activity['created_by'] ?? 0) === (int) $user['id']): ?>
+                                        <form method="post" style="margin:0;">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="action" value="restore_activity">
+                                            <input type="hidden" name="activity_id" value="<?php echo (int) $activity['id']; ?>">
+                                            <button class="ghost-btn mini-btn" type="submit"><i class="ri-arrow-go-back-line"></i> Restore</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="muted" style="font-size:0.8rem;">—</span>
+                                    <?php endif; ?>
                                 <?php else: ?>
                                     <?php if ($isDirector || (int) ($activity['created_by'] ?? 0) === (int) $user['id']): ?>
                                         <button class="ghost-btn mini-btn" type="button" data-edit-schedule="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-edit-line"></i> Edit</button>
+                                        <form method="post" style="margin:0;" onsubmit="return confirm('Archive this activity?');">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="action" value="archive_activity">
+                                            <input type="hidden" name="activity_id" value="<?php echo (int) $activity['id']; ?>">
+                                            <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <button class="ghost-btn mini-btn" type="button" data-view-activity="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-eye-line"></i> View</button>
                                     <?php endif; ?>
-                                    <form method="post" style="margin:0;" onsubmit="return confirm('Archive this activity?');">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="hidden" name="action" value="archive_activity">
-                                        <input type="hidden" name="activity_id" value="<?php echo (int) $activity['id']; ?>">
-                                        <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
-                                    </form>
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -631,5 +626,41 @@ if (activityCalendarEl && window.FullCalendar) {
     });
     calendar.render();
 }
+
+document.querySelectorAll('[data-view-activity]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        try {
+            const data = JSON.parse(btn.dataset.viewActivity || '{}');
+            const titleEl = document.getElementById('modalEventTitle');
+            const catEl = document.getElementById('modalEventCategory');
+            const dateEl = document.getElementById('modalEventDate');
+            const venueEl = document.getElementById('modalEventVenue');
+            const descEl = document.getElementById('modalEventDescription');
+            const modal = document.getElementById('activityDetailModal');
+            const editBtn = document.getElementById('modalEventEditBtn');
+
+            if (titleEl) titleEl.textContent = data.title || 'Event Details';
+            if (catEl) catEl.textContent = data.type || 'Activity';
+            if (dateEl) {
+                const startStr = data.dateFrom || '-';
+                const endStr = data.dateTo || startStr;
+                dateEl.textContent = startStr === endStr ? startStr : (startStr + ' to ' + endStr);
+            }
+            if (venueEl) venueEl.textContent = data.venue || 'N/A';
+            if (descEl) descEl.textContent = data.description || 'No additional details provided.';
+            if (editBtn) editBtn.style.display = 'none';
+
+            if (modal) {
+                closeRoleModal();
+                activeRoleModal = modal;
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            }
+        } catch (e) {
+            console.error('Error opening view activity modal', e);
+        }
+    });
+});
 </script>
 <?php portal_footer(); ?>

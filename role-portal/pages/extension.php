@@ -787,8 +787,8 @@ $projects = portal_extension_projects();
                         <td>
                             <?php if ($attachmentUrl): ?>
                                 <div class="file-actions" style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
-                                    <a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener" title="Download Document">
-                                        <i class="ri-download-line"></i> File
+                                    <a class="ghost-btn mini-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener" title="View Document">
+                                        <i class="ri-eye-line"></i> View
                                     </a>
                                     <?php if ($isExtensionist && $pStatus === 'Needs Revision'): ?>
                                         <button class="ghost-btn mini-btn" type="button" data-open-modal="resubmit-<?php echo (int) $project['id']; ?>" title="Edit / Replace Submitted File" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; width: auto; padding: 0 8px; font-size: 0.75rem;">
@@ -853,7 +853,7 @@ $projects = portal_extension_projects();
 
                                     <?php if ($attachmentUrl): ?>
                                         <a class="ghost-btn action-btn" href="<?php echo h($attachmentUrl); ?>" target="_blank" rel="noopener">
-                                            <i class="ri-download-line"></i><span>Download Document</span>
+                                            <i class="ri-eye-line"></i><span>View Document</span>
                                         </a>
                                     <?php endif; ?>
                                 </div>
@@ -1015,7 +1015,7 @@ $projects = portal_extension_projects();
                             <p style="margin: 4px 0; color: #4b5563;"><?php echo nl2br(h($rep['description'])); ?></p>
                             <?php if (!empty($rep['attachment_filename'])): ?>
                                 <a class="ghost-btn mini-btn" href="<?php echo h(record_access_url($rep['attachment_filename'], '../', (int) $rep['document_id'])); ?>" target="_blank" rel="noopener">
-                                    <i class="ri-file-download-line"></i> Download Attachment
+                                    <i class="ri-eye-line"></i> View Attachment
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -1283,7 +1283,7 @@ $projects = portal_extension_projects();
                         <?php if ($resubmitFileUrl): ?>
                             <div>
                                 <a href="<?php echo h($resubmitFileUrl); ?>" target="_blank" rel="noopener" class="ghost-btn mini-btn" style="background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px;" title="View or download current file">
-                                    <i class="ri-download-2-line"></i> View / Download Current File
+                                    <i class="ri-eye-line"></i> View Current File
                                 </a>
                             </div>
                         <?php endif; ?>

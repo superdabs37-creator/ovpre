@@ -81,7 +81,7 @@ portal_notice($notice);
             </div>
             <div class="notification-actions">
                 <?php if ($targetLink !== ''): ?>
-                    <a class="ghost-btn notification-btn-open" href="<?php echo h($href); ?>">
+                    <a class="ghost-btn action-btn notification-btn-open" href="<?php echo h($href); ?>">
                         <i class="ri-arrow-right-up-line"></i> Open
                     </a>
                 <?php endif; ?>
@@ -89,7 +89,7 @@ portal_notice($notice);
                     <form method="post" class="notification-read-form">
                         <?php echo csrf_field(); ?>
                         <input type="hidden" name="id" value="<?php echo (int) $note['id']; ?>">
-                        <button class="ghost-btn notification-btn-mark" type="submit" title="Mark as Read">
+                        <button class="ghost-btn action-btn notification-btn-mark" type="submit" title="Mark as Read">
                             <i class="ri-check-line"></i> Mark as Read
                         </button>
                     </form>

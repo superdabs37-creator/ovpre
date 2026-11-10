@@ -58,17 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('error', 'Announcement could not be found or is already published.');
         }
     } elseif ($action === 'delete') {
-        $id = (int) ($_POST['id'] ?? 0);
-        $stmt = db()->prepare('SELECT title FROM announcements WHERE id = ? LIMIT 1');
-        $stmt->execute([$id]);
-        $ann = $stmt->fetch();
-        if (!$ann) {
-            flash('error', 'Announcement could not be found.');
-        } else {
-            db()->prepare('DELETE FROM announcements WHERE id = ?')->execute([$id]);
-            log_action((int) $user['id'], "Permanently deleted announcement #{$id}: {$ann['title']}");
-            flash('success', 'Announcement permanently deleted.');
-        }
+        flash('error', 'Deleting announcements is disabled. Use archive instead.');
     } elseif ($action === 'bulk') {
         $ids = array_values(array_unique(array_filter(array_map('intval', $_POST['ids'] ?? []), static fn($id) => $id > 0)));
         $bulkAction = (string) ($_POST['bulk_action'] ?? '');
@@ -95,11 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('success', count($ids) . ' announcement(s) restored.');
             redirect_to('announcements.php?archived=1');
         } elseif ($bulkAction === 'delete') {
-            db()->prepare("DELETE FROM announcements WHERE id IN ($marks)")->execute($ids);
-            foreach ($ids as $annId) {
-                log_action((int) $user['id'], 'Bulk permanently deleted announcement #' . $annId);
-            }
-            flash('success', count($ids) . ' announcement(s) permanently deleted.');
+            flash('error', 'Deleting announcements is disabled. Use archive instead.');
             redirect_to('announcements.php' . ($isArchivedRedirect ? '?archived=1' : ''));
         }
     }
@@ -222,9 +208,6 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
                     <i class="ri-archive-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
-            <button class="action-btn btn-delete-natural" type="submit" name="bulk_action" value="delete" data-bulk-submit data-confirm-delete>
-                <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
-            </button>
         </form>
     </div>
 
@@ -290,15 +273,6 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements', 'announceme
                                         </button>
                                     </form>
                                 <?php endif; ?>
-                                <form method="post" style="margin: 0;" onsubmit="return confirm('Permanently delete this announcement? This cannot be undone.');">
-                                    <?php echo csrf_field(); ?>
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>">
-                                    <?php if ($archived): ?><input type="hidden" name="archived_view" value="1"><?php endif; ?>
-                                    <button class="action-btn btn-delete-natural" type="submit" title="Permanently Delete Announcement">
-                                        <i class="ri-delete-bin-line"></i><span>Delete</span>
-                                    </button>
-                                </form>
                             </div>
                         </td>
                     </tr>

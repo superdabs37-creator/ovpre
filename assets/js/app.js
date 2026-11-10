@@ -1,3 +1,4 @@
+const appShell = document.querySelector('.app-shell') || document.querySelector('#appShell');
 const sidebar = document.querySelector('#sidebar');
 const sidebarToggle = document.querySelector('[data-toggle-sidebar]');
 const profileToggle = document.querySelector('[data-profile-toggle]');
@@ -17,13 +18,42 @@ if (sidebarToggle && sidebar) {
     };
 
     sidebarToggle.addEventListener('click', () => {
-        setSidebarOpen(!sidebar.classList.contains('open'));
+        if (window.innerWidth > 900) {
+            const isExpanded = appShell ? appShell.classList.toggle('sidebar-expanded') : sidebar.classList.toggle('expanded');
+            sidebarToggle.setAttribute('aria-expanded', String(isExpanded));
+            try {
+                localStorage.setItem('ovpre_admin_sidebar_expanded', isExpanded ? '1' : '0');
+            } catch (e) {}
+        } else {
+            setSidebarOpen(!sidebar.classList.contains('open'));
+        }
     });
+
     backdrop.addEventListener('click', () => setSidebarOpen(false));
-    sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setSidebarOpen(false)));
+    sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) setSidebarOpen(false);
+    }));
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') setSidebarOpen(false);
+        if (event.key === 'Escape') {
+            if (window.innerWidth <= 900) setSidebarOpen(false);
+        }
     });
+
+    // Restore desktop sidebar expanded state from localStorage
+    try {
+        const stored = localStorage.getItem('ovpre_admin_sidebar_expanded');
+        if (window.innerWidth > 900) {
+            if (stored === '0') {
+                if (appShell) appShell.classList.remove('sidebar-expanded');
+                sidebar.classList.remove('expanded');
+                sidebarToggle.setAttribute('aria-expanded', 'false');
+            } else {
+                if (appShell) appShell.classList.add('sidebar-expanded');
+                sidebar.classList.add('expanded');
+                sidebarToggle.setAttribute('aria-expanded', 'true');
+            }
+        }
+    } catch (e) {}
 }
 
 if (profileToggle && profileDropdown) {
@@ -530,7 +560,9 @@ function closeModal(modal) {
     if (!modal) return;
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    if (!document.querySelector('.modal.open')) {
+        document.body.style.overflow = '';
+    }
 }
 
 function closeAnnouncementModal() {

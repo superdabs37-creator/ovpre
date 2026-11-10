@@ -31,6 +31,46 @@ if ($isExtensionCoordinator) {
 }
 $announcements = array_slice(portal_announcements(), 0, 3);
 
+$allCalendarActivities = db()->query("SELECT * FROM activities WHERE approval_status = 'Approved' AND archived_at IS NULL ORDER BY date ASC")->fetchAll();
+
+$eventColors = [
+    'Seminar' => '#15803d',
+    'Training' => '#2563eb',
+    'Workshop' => '#0891b2',
+    'Community Outreach' => '#b45309',
+    'Project Defense' => '#7c3aed',
+    'Research Proposal' => '#15803d',
+    'Research Colloquium' => '#0891b2',
+    'Research Completion and Final Presentation' => '#7c3aed',
+    'Research Publication' => '#2563eb',
+    'Research Seminar' => '#15803d',
+    'Research Monitoring and Evaluation' => '#b45309',
+];
+
+$dashboardCalendarEvents = array_map(static function (array $act) use ($eventColors): array {
+    $type = (string) ($act['activity_type'] ?? 'Activity');
+    $startDate = (string) ($act['date'] ?? '');
+    $endDate = (string) (!empty($act['date_to']) ? $act['date_to'] : $startDate);
+    return [
+        'id' => (string) $act['id'],
+        'title' => (string) $act['title'],
+        'start' => $startDate,
+        'end' => date('Y-m-d', strtotime($endDate . ' +1 day')),
+        'allDay' => true,
+        'backgroundColor' => $eventColors[$type] ?? '#15803d',
+        'borderColor' => $eventColors[$type] ?? '#15803d',
+        'textColor' => '#ffffff',
+        'extendedProps' => [
+            'type' => $type,
+            'approvalStatus' => (string) ($act['approval_status'] ?? 'Approved'),
+            'venue' => (string) ($act['venue'] ?? ''),
+            'description' => (string) ($act['description'] ?? ''),
+            'date' => $startDate,
+            'dateTo' => $endDate,
+        ],
+    ];
+}, $allCalendarActivities);
+
 $departmentCounts = [];
 $monthlySubmissions = [];
 $statusDistribution = [];
@@ -132,6 +172,68 @@ $submissionLink = match (PORTAL_ROLE) {
         <a class="primary-btn" href="<?php echo h($submissionLink); ?>"><i class="ri-add-circle-line"></i> <?php echo h($submissionLabel); ?></a>
         <a class="ghost-btn" href="../submitted-files.php"><i class="ri-folder-open-line"></i> View All Files</a>
     </div>
+</section>
+
+<!-- CALENDAR OF ACTIVITIES (COMPACT / MODERATE SIZE) -->
+<style>
+#dashboardActivityCalendar {
+    max-height: 460px;
+}
+#dashboardActivityCalendar .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 10px;
+}
+#dashboardActivityCalendar .fc-toolbar-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+#dashboardActivityCalendar .fc-button {
+    padding: 3px 9px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+#dashboardActivityCalendar .fc-daygrid-day-number {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 2px 5px;
+}
+#dashboardActivityCalendar .fc-daygrid-day-frame {
+    min-height: 48px;
+}
+#dashboardActivityCalendar .fc-event {
+    font-size: 0.72rem;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+</style>
+<section class="panel fullcalendar-panel" style="margin-bottom: 20px; padding: 16px 20px; background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0fdf4; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                <i class="ri-calendar-event-line"></i>
+            </div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.12rem; font-weight: 800; color: #0f172a; line-height: 1.25;">Calendar of Activities</h2>
+                <small style="color: #64748b; font-size: 0.78rem;">University-wide schedule of extension outreach, workshops, training, and institutional events.</small>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div class="calendar-legend fullcalendar-legend" style="margin: 0; display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.76rem;">
+                <span><i class="legend-dot seminar" style="background:#15803d; width:8px; height:8px; border-radius:50%; display:inline-block;"></i> Seminar</span>
+                <span><i class="legend-dot training" style="background:#2563eb; width:8px; height:8px; border-radius:50%; display:inline-block;"></i> Training</span>
+                <span><i class="legend-dot workshop" style="background:#0891b2; width:8px; height:8px; border-radius:50%; display:inline-block;"></i> Workshop</span>
+                <span><i class="legend-dot outreach" style="background:#b45309; width:8px; height:8px; border-radius:50%; display:inline-block;"></i> Outreach</span>
+                <span><i class="legend-dot defense" style="background:#7c3aed; width:8px; height:8px; border-radius:50%; display:inline-block;"></i> Defense</span>
+            </div>
+            <?php if (portal_can('calendar')): ?>
+                <a href="calendar.php" class="ghost-btn mini-btn" style="padding: 4px 10px; font-size: 0.76rem; font-weight: 700; color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="ri-calendar-line"></i> Full View
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div id="dashboardActivityCalendar"></div>
 </section>
 <?php if (!$isDirector): ?>
 <section class="stats-grid">
@@ -256,7 +358,7 @@ $submissionLink = match (PORTAL_ROLE) {
     <article class="panel">
         <div class="panel-heading">
             <h2><?php echo $isResearchCoordinator || $isResearcher ? 'Research Activities' : ($isExtensionCoordinator || $isFacultyExtensionist ? 'Extension Activities' : 'Recent Activities'); ?></h2>
-            <?php if (portal_can('calendar')): ?><a href="calendar.php">Calendar</a><?php endif; ?>
+            <?php if (portal_can('calendar')): ?><a href="calendar.php">Calendar of Activities</a><?php endif; ?>
         </div>
         <div class="list">
             <?php if (empty($activities)): ?>
@@ -306,7 +408,8 @@ $submissionLink = match (PORTAL_ROLE) {
         </div>
     </article>
 </section>
-<?php foreach ($activities as $activity): ?>
+
+<?php foreach ($allCalendarActivities as $activity): ?>
     <div class="modal" id="activity-detail-<?php echo (int) $activity['id']; ?>" aria-hidden="true">
         <div class="modal-backdrop" data-close-modal></div>
         <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="activity-title-<?php echo (int) $activity['id']; ?>" style="max-width: 540px;">
@@ -346,4 +449,36 @@ $submissionLink = match (PORTAL_ROLE) {
     </div>
 <?php endforeach; ?>
 
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script>
+window.dashboardCalendarEvents = <?php echo json_encode($dashboardCalendarEvents, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+document.addEventListener('DOMContentLoaded', () => {
+    const dashCalendarEl = document.getElementById('dashboardActivityCalendar');
+    if (dashCalendarEl && window.FullCalendar) {
+        const dashCalendar = new FullCalendar.Calendar(dashCalendarEl, {
+            initialView: 'dayGridMonth',
+            height: 440,
+            dayMaxEvents: 2,
+            nowIndicator: true,
+            events: window.dashboardCalendarEvents || [],
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,listMonth'
+            },
+            eventClick(info) {
+                const actId = info.event.id;
+                const modal = document.getElementById('activity-detail-' + actId);
+                if (modal) {
+                    modal.classList.add('open');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        });
+        dashCalendar.render();
+    }
+});
+</script>
 <?php portal_footer(); ?>

@@ -163,7 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         body.register-body {
-            background: linear-gradient(135deg, #f0fdf4 0%, #e2e8f0 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;

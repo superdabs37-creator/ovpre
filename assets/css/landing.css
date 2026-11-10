@@ -1,21 +1,37 @@
 /* Public landing page */
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+}
+
+section[id],
+div[id] {
+    scroll-margin-top: 88px;
 }
 
 .header {
     position: fixed;
     inset: 0 0 auto;
-    z-index: 30;
-    background: rgba(255, 255, 255, 0.88);
+    z-index: 100;
+    padding: 14px 0;
+    background: rgba(255, 255, 255, 0.94);
     border: 0;
-    border-bottom: 1px solid rgba(230, 237, 232, 0.8);
-    box-shadow: none;
+    border-bottom: 1px solid rgba(22, 163, 74, 0.15);
+    box-shadow: 0 4px 20px rgba(15, 61, 36, 0.05);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: padding 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.header.scrolled {
+    padding: 10px 0;
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 2px solid #16a34a;
+    box-shadow: 0 6px 24px rgba(15, 61, 36, 0.1);
 }
 
 .hero {
-    padding-top: 150px;
+    padding-top: 130px;
 }
 
 .container {
@@ -33,16 +49,22 @@ html {
 }
 
 .nav-container {
-    min-height: 78px;
+    min-height: 52px;
     justify-content: space-between;
-    gap: 24px;
+    gap: 20px;
 }
 
 .landing-brand {
     display: inline-flex;
     align-items: center;
-    gap: 11px;
+    gap: 12px;
     color: #0f3d24;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.landing-brand:hover {
+    transform: translateY(-1px);
 }
 
 .landing-brand img {
@@ -50,13 +72,31 @@ html {
     height: 44px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 3px 12px rgba(15, 61, 36, .14);
+    border: 2px solid #facc15;
+    box-shadow: 0 2px 10px rgba(15, 61, 36, 0.18);
 }
 
-.landing-brand span { display: grid; gap: 2px; }
-.landing-brand strong { font-size: 1rem; }
-.landing-brand small { color: #6f7b73; font-size: .72rem; }
+.landing-brand span {
+    display: grid;
+    gap: 1px;
+}
+
+.landing-brand strong {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #0f3d24;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.landing-brand small {
+    color: #15803d;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
 
 .logo {
     gap: 12px;
@@ -90,20 +130,49 @@ html {
 }
 
 .navbar {
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin: 0;
 }
 
 .navbar a {
-    padding: 11px 14px;
-    color: #315440;
-    border-radius: 12px;
+    padding: 8px 16px;
+    color: #173d25;
+    border-radius: 999px;
     font-weight: 700;
+    font-size: 0.94rem;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
-.navbar a:hover {
+.navbar a:hover,
+.navbar a:focus-visible {
     color: #0f3d24;
     background: #dcfce7;
+    transform: translateY(-1px);
+}
+
+.navbar a.active {
+    color: #0f3d24;
+    background: #facc15;
+}
+
+.navbar a[href*="register"] {
+    background: #15803d;
+    color: #ffffff !important;
+    padding: 8px 20px;
+    border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(21, 128, 61, 0.28);
+    font-weight: 800;
+    margin-left: 6px;
+}
+
+.navbar a[href*="register"]:hover {
+    background: #0f3d24;
+    color: #facc15 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(15, 61, 36, 0.32);
 }
 
 .navbar .login-btn {
@@ -120,8 +189,8 @@ html {
     align-items: center;
     padding: 76px 0;
     overflow: hidden;
-    background: 
-        radial-gradient(circle at 85% 18%, rgba(250, 204, 21, 0.22), transparent 35%), 
+    background:
+        radial-gradient(circle at 85% 18%, rgba(250, 204, 21, 0.22), transparent 35%),
         radial-gradient(circle at 15% 85%, rgba(34, 197, 94, 0.18), transparent 40%),
         linear-gradient(135deg, #f0fdf4 0%, #ffffff 45%, #ecfdf5 75%, #fefce8 100%);
     background-size: 160% 160%;
@@ -150,7 +219,7 @@ html {
 .bg-mesh-grid {
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
         linear-gradient(to right, rgba(21, 128, 61, 0.045) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(21, 128, 61, 0.045) 1px, transparent 1px);
     background-size: 44px 44px;
@@ -210,9 +279,11 @@ html {
     0% {
         background-position: 0% 0%;
     }
+
     50% {
         background-position: 100% 100%;
     }
+
     100% {
         background-position: 0% 0%;
     }
@@ -222,6 +293,7 @@ html {
     0% {
         background-position: 0 0;
     }
+
     100% {
         background-position: 44px 44px;
     }
@@ -231,9 +303,11 @@ html {
     0% {
         transform: translate3d(0, 0, 0) scale(1);
     }
+
     50% {
         transform: translate3d(65px, 40px, 0) scale(1.1);
     }
+
     100% {
         transform: translate3d(-30px, 75px, 0) scale(0.95);
     }
@@ -243,9 +317,11 @@ html {
     0% {
         transform: translate3d(0, 0, 0) scale(1);
     }
+
     50% {
         transform: translate3d(-55px, -35px, 0) scale(1.14);
     }
+
     100% {
         transform: translate3d(-85px, 30px, 0) scale(0.92);
     }
@@ -255,9 +331,11 @@ html {
     0% {
         transform: translate3d(0, 0, 0) scale(1);
     }
+
     50% {
         transform: translate3d(45px, -50px, 0) scale(1.08);
     }
+
     100% {
         transform: translate3d(-40px, -20px, 0) scale(0.96);
     }
@@ -267,9 +345,11 @@ html {
     0% {
         transform: translate3d(0, 0, 0) scale(0.92);
     }
+
     50% {
         transform: translate3d(-30px, 45px, 0) scale(1.16);
     }
+
     100% {
         transform: translate3d(50px, 25px, 0) scale(1);
     }
@@ -291,7 +371,7 @@ html {
 
 .welcome-text,
 .section-label,
-.section-heading > span {
+.section-heading>span {
     color: #15803d;
     font-size: 0.78rem;
     font-weight: 900;
@@ -343,7 +423,7 @@ html {
 
 .hero-text p,
 .about-text p,
-.contact-content > div:first-child p {
+.contact-content>div:first-child p {
     color: #6f7b73;
     font-size: 1.05rem;
     line-height: 1.8;
@@ -377,7 +457,10 @@ html {
     transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.hero-buttons .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 13px 26px rgba(202, 153, 0, .25); }
+.hero-buttons .primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 13px 26px rgba(202, 153, 0, .25);
+}
 
 .hero-buttons .secondary-btn {
     color: #166534;
@@ -542,7 +625,7 @@ html {
     border-radius: 16px;
 }
 
-.contact-item > span {
+.contact-item>span {
     font-size: 1.35rem;
 }
 
@@ -581,7 +664,10 @@ html {
         justify-items: center;
     }
 
-    .hero-text { max-width: 900px; text-align: center; }
+    .hero-text {
+        max-width: 900px;
+        text-align: center;
+    }
 
     .hero-card {
         max-width: 560px;
@@ -608,7 +694,9 @@ html {
         padding: 14px 0;
     }
 
-    .landing-brand { flex: 0 0 auto; }
+    .landing-brand {
+        flex: 0 0 auto;
+    }
 
     .navbar {
         width: 100%;
@@ -616,6 +704,10 @@ html {
         gap: 2px;
         margin: 0;
         justify-content: center;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 4px 0;
     }
 
     .navbar a {
@@ -632,7 +724,9 @@ html {
         padding: 58px 0;
     }
 
-    .hero-text { text-align: center; }
+    .hero-text {
+        text-align: center;
+    }
 
     .hero-card {
         padding: 24px;
@@ -665,20 +759,95 @@ html {
         flex-direction: column;
     }
 
-    .bg-orb.orb-1 { width: 280px; height: 280px; filter: blur(40px); }
-    .bg-orb.orb-2 { width: 250px; height: 250px; filter: blur(40px); }
-    .bg-orb.orb-3 { width: 230px; height: 230px; filter: blur(35px); }
-    .bg-orb.orb-4 { width: 180px; height: 180px; filter: blur(30px); }
+    .bg-orb.orb-1 {
+        width: 280px;
+        height: 280px;
+        filter: blur(40px);
+    }
+
+    .bg-orb.orb-2 {
+        width: 250px;
+        height: 250px;
+        filter: blur(40px);
+    }
+
+    .bg-orb.orb-3 {
+        width: 230px;
+        height: 230px;
+        filter: blur(35px);
+    }
+
+    .bg-orb.orb-4 {
+        width: 180px;
+        height: 180px;
+        filter: blur(30px);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .hero {
         animation: none !important;
     }
+
     .bg-mesh-grid,
     .bg-orb {
         animation: none !important;
         transform: none !important;
     }
 }
+/* =========================================================
+   Landing page color polish (same palette as login/register)
+   gold #E5A93B | forest green #11572C | royal blue #0B4F9F | off-white #F8FAFC
+   ========================================================= */
+body {
+    background-color: #F8FAFC;
+}
 
+/* Hero: richer gold + green glow with a hint of royal blue */
+.hero {
+    background:
+        radial-gradient(ellipse 48% 55% at 88% 12%, rgba(229, 169, 59, 0.34), transparent 70%),
+        radial-gradient(ellipse 50% 55% at 8% 92%, rgba(62, 155, 79, 0.30), transparent 70%),
+        radial-gradient(ellipse 34% 40% at 50% 100%, rgba(11, 79, 159, 0.08), transparent 70%),
+        linear-gradient(135deg, #F2FBF4 0%, #FFFFFF 45%, #EEF8F0 75%, #FFF8E6 100%);
+    background-size: 160% 160%;
+}
+
+/* Features: warm cream with gold (top-left) and green (bottom-right) glows + dot texture */
+.features-section {
+    background-color: #FFFDF8;
+    background-image:
+        radial-gradient(rgba(17, 87, 44, 0.10) 1px, transparent 1.4px),
+        radial-gradient(ellipse 45% 50% at 0% 0%, rgba(229, 169, 59, 0.20), transparent 70%),
+        radial-gradient(ellipse 50% 55% at 100% 100%, rgba(62, 155, 79, 0.18), transparent 72%),
+        linear-gradient(180deg, #FFFDF8 0%, #F4FAF5 100%);
+    background-size: 28px 28px, auto, auto, auto;
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+}
+
+/* About: fresh mint with soft blue + gold accents */
+.about-section {
+    background-color: #EAF6EC;
+    background-image:
+        radial-gradient(ellipse 42% 50% at 100% 0%, rgba(229, 169, 59, 0.22), transparent 70%),
+        radial-gradient(ellipse 40% 50% at 0% 100%, rgba(11, 79, 159, 0.10), transparent 72%),
+        linear-gradient(135deg, #E6F5E9 0%, #F1FAF3 55%, #E3F3E7 100%);
+    background-repeat: no-repeat;
+}
+
+/* Contact: clean off-white with green and gold glows */
+.contact-section {
+    background-color: #F8FAFC;
+    background-image:
+        radial-gradient(ellipse 45% 55% at 0% 100%, rgba(62, 155, 79, 0.20), transparent 72%),
+        radial-gradient(ellipse 42% 50% at 100% 0%, rgba(229, 169, 59, 0.20), transparent 70%),
+        linear-gradient(180deg, #F8FAFC 0%, #F1F8F3 100%);
+    background-repeat: no-repeat;
+}
+
+/* Footer: keep dark green but add a subtle gold glow so it isn't flat */
+.footer {
+    background-image:
+        radial-gradient(ellipse 40% 140% at 0% 0%, rgba(229, 169, 59, 0.16), transparent 70%),
+        linear-gradient(135deg, #0F3D24 0%, #11572C 100%);
+}

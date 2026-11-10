@@ -46,13 +46,13 @@ const ROLE_PORTALS = [
         'slug' => 'faculty-extensionist',
         'title' => 'Faculty Extensionist Portal',
         'purpose' => 'Submit extension proposals, community milestones, liquidation, and impact outputs',
-        'nav' => ['dashboard', 'extension', 'notifications', 'status', 'recovery'],
+        'nav' => ['dashboard', 'extension', 'calendar', 'notifications', 'status', 'recovery'],
     ],
     'Researcher' => [
         'slug' => 'researcher',
         'title' => 'Researcher Portal',
         'purpose' => 'Submit proposals, report milestones, liquidation, and dissemination outputs',
-        'nav' => ['dashboard', 'research', 'notifications', 'status', 'recovery'],
+        'nav' => ['dashboard', 'research', 'calendar', 'notifications', 'status', 'recovery'],
     ],
 ];
 
@@ -68,7 +68,9 @@ function portal_require_user(): array
     if (!$user) {
         redirect_to('../index.php');
     }
-    if (role_access_group((string) ($user['role'] ?? '')) !== PORTAL_ROLE) {
+    $userRole = role_access_group((string) ($user['role'] ?? ''));
+    $isAdmin = in_array($userRole, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true);
+    if (!$isAdmin && $userRole !== PORTAL_ROLE) {
         http_response_code(403);
         exit('This portal is not available for your role.');
     }
@@ -103,7 +105,7 @@ function portal_nav_items(): array
         'research' => ['Research Submission', 'research.php', 'ri-flask-line'],
         'extension' => ['Extension Submission', 'extension.php', 'ri-community-line'],
         'analytics' => ['Analytics', 'analytics.php', 'ri-bar-chart-box-line'],
-        'calendar' => ['Calendar', 'calendar.php', 'ri-calendar-event-line'],
+        'calendar' => ['Calendar of Activities', 'calendar.php', 'ri-calendar-event-line'],
         'reports' => ['Reports', 'reports.php', 'ri-file-chart-line'],
         'announcements' => ['Announcements', 'announcements.php', 'ri-megaphone-line'],
         'notifications' => ['Notifications', 'notifications.php', 'ri-notification-3-line'],
@@ -114,7 +116,6 @@ function portal_nav_items(): array
         $items['status'][0] = 'Extension Submission Status';
     } elseif (PORTAL_ROLE === 'Research Coordinator' || PORTAL_ROLE === 'Researcher') {
         $items['status'][0] = 'Research Submission Status';
-        $items['calendar'][0] = 'Activities';
     }
     return $items;
 }
@@ -122,6 +123,8 @@ function portal_nav_items(): array
 function portal_header(string $title, string $current): array
 {
     $user = portal_require_user();
+    $userRole = role_access_group((string) ($user['role'] ?? ''));
+    $isAdmin = in_array($userRole, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true);
     ensure_activity_archived_at_column();
     ensure_research_archived_at_column();
     ensure_extension_archived_at_column();
@@ -151,9 +154,17 @@ function portal_header(string $title, string $current): array
                 <a class="role-brand" href="dashboard.php"><span><img src="../assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span><strong><?php echo h($config['title']); ?></strong></a>
                 <nav class="role-nav">
                     <?php foreach (portal_nav_items() as $key => [$label, $href, $icon]): ?>
-                        <?php if (portal_can($key)): ?><a class="<?php echo portal_active($key, $current); ?>" href="<?php echo h($href); ?>"><i class="<?php echo h($icon); ?>"></i><span><?php echo h($label); ?></span></a><?php endif; ?>
+                        <?php if (portal_can($key)): ?><a class="<?php echo portal_active($key, $current); ?>" href="<?php echo h($href); ?>" title="<?php echo h($label); ?>"><i class="<?php echo h($icon); ?>"></i><span><?php echo h($label); ?></span></a><?php endif; ?>
                     <?php endforeach; ?>
                 </nav>
+                <?php if ($isAdmin): ?>
+                    <div class="role-admin-sidebar-box" style="margin-top: auto; width: 100%; padding-top: 10px;">
+                        <a href="../dashboard.php" class="role-admin-nav-back" title="Return to Admin Dashboard" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; font-size: 0.82rem; font-weight: 700; color: #0b2f1b; background: #facc15; border-radius: 12px; text-decoration: none;">
+                            <i class="ri-arrow-left-line"></i>
+                            <span>Admin Dashboard</span>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </aside>
             <div class="role-page">
                 <header class="role-topbar">
@@ -163,6 +174,11 @@ function portal_header(string $title, string $current): array
                     </div>
                     <form class="role-search" action="../search.php" method="get" role="search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" name="q" placeholder="Search all records" aria-label="Search all accessible records"></form>
                     <span class="role-chip"><?php echo h(PORTAL_ROLE); ?></span>
+                    <?php if ($isAdmin): ?>
+                        <a href="../dashboard.php" class="role-chip" style="background: #facc15; color: #0b2f1b; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;" title="Return to Admin Dashboard">
+                            <i class="ri-arrow-left-line"></i> Admin Dashboard
+                        </a>
+                    <?php endif; ?>
                     <div class="role-profile-menu">
                         <button class="role-profile-button" type="button" data-role-profile-toggle aria-expanded="false" aria-haspopup="true" aria-label="Open profile menu">
                             <span class="role-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><?php echo h(portal_initials($name)); ?><?php endif; ?></span>
@@ -172,8 +188,11 @@ function portal_header(string $title, string $current): array
                             <div class="role-profile-identity">
                                 <span class="role-profile-large-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><i class="ri-user-3-fill"></i><?php endif; ?></span>
                                 <strong><?php echo h($name); ?></strong>
-                                <small><?php echo h(PORTAL_ROLE); ?></small>
+                                <small><?php echo $isAdmin ? 'Admin View (' . h(PORTAL_ROLE) . ')' : h(PORTAL_ROLE); ?></small>
                             </div>
+                            <?php if ($isAdmin): ?>
+                                <a href="../dashboard.php" style="color: #15803d; font-weight: 700;"><i class="ri-arrow-left-line"></i> Return to Admin Dashboard</a>
+                            <?php endif; ?>
                             <a href="../profile.php"><i class="ri-user-settings-line"></i> Edit Profile</a>
                             <a href="../profile.php?section=password"><i class="ri-lock-password-line"></i> Change Password</a>
                             <a href="../logout.php"><i class="ri-logout-circle-line"></i> Logout</a>
@@ -250,16 +269,6 @@ function portal_header(string $title, string $current): array
                     'pending_documents' => (int) db()->query('SELECT COUNT(*) FROM documents WHERE status IN ("Pending","Under Review") AND archived_at IS NULL')->fetchColumn(),
                     'approved_documents' => (int) db()->query('SELECT COUNT(*) FROM documents WHERE status = "Approved" AND archived_at IS NULL')->fetchColumn(),
                 ];
-            }
-
-            function ensure_research_archived_at_column(): void
-            {
-                static $checked = false;
-                if ($checked) return;
-                try {
-                    db()->exec('ALTER TABLE research_projects ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ DEFAULT NULL');
-                } catch (Throwable $e) {}
-                $checked = true;
             }
 
             function portal_recent_activities(): array
