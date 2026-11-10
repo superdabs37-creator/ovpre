@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Management | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .report-stat-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(15, 61, 36, 0.05);
+            transition: all 0.2s ease;
+        }
+        .report-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(15, 61, 36, 0.12);
+            border-color: #86efac;
+        }
+        .report-stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 1.45rem;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="active" href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Executive Reports &amp; Institutional Analytics</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="reportSearch" placeholder="Search reports & metrics..." oninput="filterReportTable()">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- Welcome / Hero Panel -->
+                <section class="welcome-panel" style="margin-bottom: 22px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: #15803d; margin-bottom: 6px;">
+                            <i class="ri-file-chart-line"></i>
+                            <span>INSTITUTIONAL PERFORMANCE REPORTING</span>
+                        </div>
+                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                            <i class="ri-line-chart-line" style="color: #15803d;"></i> Reports Management &amp; Analytics
+                        </h2>
+                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
+                            Institutional performance audit, college submission metrics, grant allocation utilization, and faculty accomplishments.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button type="button" onclick="exportToCSV()" style="padding: 10px 16px; border-radius: 9px; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="ri-file-excel-2-line"></i> Export CSV
+                        </button>
+                        <button type="button" onclick="window.print()" style="padding: 10px 18px; border-radius: 9px; font-weight: 700; background: #15803d; color: #ffffff; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
+                            <i class="ri-printer-line"></i> Print Official Report
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Filter Controls Panel -->
+                <section class="panel" style="margin-bottom: 22px; padding: 20px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                        <strong style="color: #0f172a; font-size: 0.95rem;"><i class="ri-filter-3-line" style="color: #15803d;"></i> Report Scope &amp; Parameters</strong>
+                        <span style="font-size: 0.8rem; color: #64748b;">Filtering updates metrics and data tables in real-time</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 5px;">Academic Year:</label>
+                            <select id="filterYear" onchange="applyFilters()" style="width: 100%; padding: 9px 12px; border-radius: 9px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
+                                <option value="All">All Fiscal Years</option>
+                                <option value="2026" selected>FY 2026</option>
+                                <option value="2025">FY 2025</option>
+                                <option value="2024">FY 2024</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 5px;">College / Department:</label>
+                            <select id="filterCollege" onchange="applyFilters()" style="width: 100%; padding: 9px 12px; border-radius: 9px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
+                                <option value="All">All Colleges</option>
+                                <option value="CCST">College of Computer Studies and Technology (CCST)</option>
+                                <option value="COE">College of Engineering (COE)</option>
+                                <option value="CONAHS">College of Nursing and Allied Health Sciences (CONAHS)</option>
+                                <option value="CAS">College of Arts and Sciences (CAS)</option>
+                                <option value="CBA">College of Business and Accountancy (CBA)</option>
+                                <option value="CTE">College of Teacher Education (CTE)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 5px;">Proposal Track:</label>
+                            <select id="filterTrack" onchange="applyFilters()" style="width: 100%; padding: 9px 12px; border-radius: 9px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
+                                <option value="All">All Tracks (Research &amp; Extension)</option>
+                                <option value="Research">Academic Research Only</option>
+                                <option value="Extension">Community Extension Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 5px;">Status Stage:</label>
+                            <select id="filterStatus" onchange="applyFilters()" style="width: 100%; padding: 9px 12px; border-radius: 9px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
+                                <option value="All">All Workflow Stages</option>
+                                <option value="Approved">Approved / Completed</option>
+                                <option value="Under Review">Under Review</option>
+                                <option value="Pending">Pending Screening</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Summary KPI Stat Cards -->
+                <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 22px;">
+                    <div class="report-stat-card">
+                        <div class="report-stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                            <i class="ri-flask-line"></i>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Research Outputs</span>
+                            <h3 id="statResearch" style="margin: 4px 0 0; font-size: 1.7rem; font-weight: 800; color: #0f172a;">16</h3>
+                        </div>
+                    </div>
+
+                    <div class="report-stat-card">
+                        <div class="report-stat-icon" style="background: #ccfbf1; color: #0f766e;">
+                            <i class="ri-community-line"></i>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Extension Programs</span>
+                            <h3 id="statExtension" style="margin: 4px 0 0; font-size: 1.7rem; font-weight: 800; color: #0f172a;">7</h3>
+                        </div>
+                    </div>
+
+                    <div class="report-stat-card">
+                        <div class="report-stat-icon" style="background: #fef3c7; color: #b45309;">
+                            <i class="ri-hand-coin-line"></i>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Grants Allocated</span>
+                            <h3 id="statGrants" style="margin: 4px 0 0; font-size: 1.7rem; font-weight: 800; color: #0f172a;">₱1,250,000</h3>
+                        </div>
+                    </div>
+
+                    <div class="report-stat-card">
+                        <div class="report-stat-icon" style="background: #f0fdf4; color: #15803d;">
+                            <i class="ri-medal-line"></i>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Accomplishments</span>
+                            <h3 id="statAccomplishments" style="margin: 4px 0 0; font-size: 1.7rem; font-weight: 800; color: #0f172a;">24</h3>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Interactive Charts Row -->
+                <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 22px;">
+                    <!-- Line Chart -->
+                    <div style="background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 14px rgba(0,0,0,0.04);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <strong style="color: #0f172a; font-size: 0.95rem;">Monthly Output Trajectory</strong>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #15803d; background: #dcfce7; padding: 3px 8px; border-radius: 999px;">FY 2026</span>
+                        </div>
+                        <div style="position: relative; height: 230px;">
+                            <canvas id="reportTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Donut Chart -->
+                    <div style="background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 14px rgba(0,0,0,0.04);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <strong style="color: #0f172a; font-size: 0.95rem;">Status &amp; Approval Pipeline</strong>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #0369a1; background: #e0f2fe; padding: 3px 8px; border-radius: 999px;">Distribution</span>
+                        </div>
+                        <div style="position: relative; height: 230px;">
+                            <canvas id="reportStatusChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Table Panel -->
+                <section class="panel" style="padding: 22px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0 0 4px; font-size: 1.15rem; color: #0f172a;">Institutional Records &amp; Project Roster</h3>
+                            <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Comprehensive catalog of research proposals, extension services, and accomplishment reports.</p>
+                        </div>
+                        <span id="reportRowCount" style="font-size: 0.84rem; font-weight: 700; color: #15803d; background: #f0fdf4; padding: 6px 14px; border-radius: 999px;">
+                            Showing 7 Reports
+                        </span>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table" id="reportTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px;">Title / Project</th>
+                                    <th style="padding: 12px;">Track</th>
+                                    <th style="padding: 12px;">College</th>
+                                    <th style="padding: 12px;">Lead Proponent</th>
+                                    <th style="padding: 12px;">Date</th>
+                                    <th style="padding: 12px;">Status</th>
+                                    <th style="padding: 12px;">Approved Grant</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportBody">
+                                <tr data-track="Research" data-college="CCST" data-status="Approved">
+                                    <td style="padding: 14px 12px;"><strong>AI-Driven Soil Salinity Mapping</strong><br><small style="color:#64748b;">REC-00104</small></td>
+                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Research</span></td>
+                                    <td>CCST</td>
+                                    <td>Prof. Juan Dela Cruz</td>
+                                    <td>Nov 08, 2026</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td><strong>₱120,000.00</strong></td>
+                                </tr>
+                                <tr data-track="Research" data-college="CONAHS" data-status="Approved">
+                                    <td style="padding: 14px 12px;"><strong>Pediatric Immunization Hesitancy Dynamics</strong><br><small style="color:#64748b;">REC-00105</small></td>
+                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Research</span></td>
+                                    <td>CONAHS</td>
+                                    <td>Prof. Lorna Bautista</td>
+                                    <td>Nov 06, 2026</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td><strong>₱95,000.00</strong></td>
+                                </tr>
+                                <tr data-track="Extension" data-college="CONAHS" data-status="Approved">
+                                    <td style="padding: 14px 12px;"><strong>Barangay Health Sanitation &amp; Water Purification</strong><br><small style="color:#64748b;">EXT-00088</small></td>
+                                    <td><span style="background: #ccfbf1; color: #0f766e; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Extension</span></td>
+                                    <td>CONAHS</td>
+                                    <td>Prof. Maria Bautista</td>
+                                    <td>Nov 04, 2026</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td><strong>₱150,000.00</strong></td>
+                                </tr>
+                                <tr data-track="Extension" data-college="CBA" data-status="Approved">
+                                    <td style="padding: 14px 12px;"><strong>Community MSME Financial Literacy Clinic</strong><br><small style="color:#64748b;">EXT-00089</small></td>
+                                    <td><span style="background: #ccfbf1; color: #0f766e; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Extension</span></td>
+                                    <td>CBA</td>
+                                    <td>Prof. Elena Cruz</td>
+                                    <td>Nov 02, 2026</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td><strong>₱80,000.00</strong></td>
+                                </tr>
+                                <tr data-track="Research" data-college="COE" data-status="Under Review">
+                                    <td style="padding: 14px 12px;"><strong>Renewable Solar-Thermal Hybrid Desalination</strong><br><small style="color:#64748b;">REC-00106</small></td>
+                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Research</span></td>
+                                    <td>COE</td>
+                                    <td>Engr. Roberto Lim</td>
+                                    <td>Oct 28, 2026</td>
+                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
+                                    <td><strong>₱200,000.00</strong></td>
+                                </tr>
+                                <tr data-track="Research" data-college="CCST" data-status="Pending">
+                                    <td style="padding: 14px 12px;"><strong>Deep Learning for Real-Time Plant Pathogen Identification</strong><br><small style="color:#64748b;">REC-00107</small></td>
+                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Research</span></td>
+                                    <td>CCST</td>
+                                    <td>Prof. Engr. Mark Santos</td>
+                                    <td>Oct 20, 2026</td>
+                                    <td><span style="background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Pending</span></td>
+                                    <td><strong>₱110,000.00</strong></td>
+                                </tr>
+                                <tr data-track="Extension" data-college="CAS" data-status="Approved">
+                                    <td style="padding: 14px 12px;"><strong>Mental Wellness and Psychosocial First Aid Network</strong><br><small style="color:#64748b;">EXT-00090</small></td>
+                                    <td><span style="background: #ccfbf1; color: #0f766e; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">Extension</span></td>
+                                    <td>CAS</td>
+                                    <td>Dr. Grace Mendoza</td>
+                                    <td>Oct 15, 2026</td>
+                                    <td><span style="background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td><strong>₱95,000.00</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Charts Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            const ctxTrend = document.getElementById('reportTrendChart');
+            if (ctxTrend) {
+                new Chart(ctxTrend, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+                        datasets: [
+                            {
+                                label: 'Research Proposals',
+                                data: [2, 3, 2, 4, 3, 5],
+                                borderColor: '#0284c7',
+                                backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                                fill: true,
+                                tension: 0.35
+                            },
+                            {
+                                label: 'Extension Projects',
+                                data: [1, 1, 2, 1, 2, 2],
+                                borderColor: '#0d9488',
+                                backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                                fill: true,
+                                tension: 0.35
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+
+            const ctxStatus = document.getElementById('reportStatusChart');
+            if (ctxStatus) {
+                new Chart(ctxStatus, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Approved / Completed', 'Under Review', 'Pending Screening'],
+                        datasets: [{
+                            data: [5, 1, 1],
+                            backgroundColor: ['#15803d', '#0284c7', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } } },
+                        cutout: '65%'
+                    }
+                });
+            }
+        });
+
+        // Filter Functionality
+        function applyFilters() {
+            const college = document.getElementById('filterCollege').value;
+            const track = document.getElementById('filterTrack').value;
+            const status = document.getElementById('filterStatus').value;
+            const rows = document.querySelectorAll('#reportBody tr');
+            let count = 0;
+
+            rows.forEach(r => {
+                const rCollege = r.getAttribute('data-college');
+                const rTrack = r.getAttribute('data-track');
+                const rStatus = r.getAttribute('data-status');
+
+                const matchCollege = (college === 'All' || rCollege === college);
+                const matchTrack = (track === 'All' || rTrack === track);
+                const matchStatus = (status === 'All' || rStatus === status);
+
+                if (matchCollege && matchTrack && matchStatus) {
+                    r.style.display = '';
+                    count++;
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+
+            document.getElementById('reportRowCount').textContent = `Showing ${count} Reports`;
+        }
+
+        function filterReportTable() {
+            const q = document.getElementById('reportSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#reportBody tr');
+            let count = 0;
+            rows.forEach(r => {
+                const text = r.textContent.toLowerCase();
+                if (text.includes(q)) {
+                    r.style.display = '';
+                    count++;
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+            document.getElementById('reportRowCount').textContent = `Showing ${count} Reports`;
+        }
+
+        function exportToCSV() {
+            let csv = "Title,Track,College,Lead Proponent,Date,Status,Approved Grant\n";
+            const rows = document.querySelectorAll('#reportBody tr');
+            rows.forEach(r => {
+                if (r.style.display !== 'none') {
+                    const cols = r.querySelectorAll('td');
+                    const rowData = Array.from(cols).map(c => `"${c.innerText.replace(/"/g, '""').replace(/\n/g, ' ')}"`);
+                    csv += rowData.join(',') + "\n";
+                }
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `OVPRE-Report-${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Sidebar & Profile Toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+            document.addEventListener('click', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
+    </script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>

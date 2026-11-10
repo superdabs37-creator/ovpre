@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management &amp; Activity | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            place-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-card {
+            background: #ffffff;
+            border-radius: 20px;
+            width: min(100%, 580px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 22px 24px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a class="active" href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>User Management &amp; Access Control</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="userSearch" placeholder="Search users by name, email, role..." oninput="filterUserTable()">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- Welcome Banner -->
+                <section class="welcome-panel" style="margin-bottom: 22px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: #15803d; margin-bottom: 6px;">
+                            <i class="ri-shield-user-line"></i>
+                            <span>ACCESS CONTROL &amp; DIRECTORY</span>
+                        </div>
+                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                            <i class="ri-team-line" style="color: #15803d;"></i> User Management &amp; System Directory
+                        </h2>
+                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
+                            Manage roles, permissions, college affiliations, and account activation states across the university.
+                        </p>
+                    </div>
+                    <div>
+                        <button type="button" onclick="openAddUserModal()" style="padding: 10px 18px; border-radius: 9px; font-weight: 700; background: #15803d; color: #ffffff; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
+                            <i class="ri-user-add-line"></i> Add New User
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Filters & Search Toolbar -->
+                <div class="panel" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Status:</label>
+                            <select id="userStatusFilter" onchange="filterUserTable()" style="padding: 7px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.84rem; font-weight: 600;">
+                                <option value="All">All Statuses</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">College Affiliation:</label>
+                            <select id="userCollegeFilter" onchange="filterUserTable()" style="padding: 7px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.84rem; font-weight: 600;">
+                                <option value="All">All Colleges</option>
+                                <option value="CCST">CCST</option>
+                                <option value="COE">COE</option>
+                                <option value="CONAHS">CONAHS</option>
+                                <option value="CAS">CAS</option>
+                                <option value="CBA">CBA</option>
+                                <option value="Institutional">None (Institutional / OVPRE)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <span id="userCountBadge" style="font-size: 0.85rem; font-weight: 700; color: #166534; background: #f0fdf4; padding: 6px 14px; border-radius: 999px;">
+                        Loading Users...
+                    </span>
+                </div>
+
+                <!-- Users Table -->
+                <article class="panel" style="padding: 22px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div class="table-scroll">
+                        <table class="data-table" id="usersTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px;">ID</th>
+                                    <th style="padding: 12px;">Full Name</th>
+                                    <th style="padding: 12px;">Email &amp; Username</th>
+                                    <th style="padding: 12px;">Role</th>
+                                    <th style="padding: 12px;">College</th>
+                                    <th style="padding: 12px;">Registered</th>
+                                    <th style="padding: 12px;">Status</th>
+                                    <th style="padding: 12px; text-align: right;">Manage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- Populated dynamically by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0 0 4px; color: #0f172a; font-size: 1.2rem;"><i class="ri-user-settings-line" style="color: #15803d;"></i> Edit User Account</h3>
+                    <p style="margin: 0; font-size: 0.82rem; color: #64748b;">Modify institutional appointment, permissions, and profile details.</p>
+                </div>
+                <button type="button" onclick="closeEditUserModal()" style="border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form id="editUserForm" onsubmit="saveUserChanges(event)">
+                <input type="hidden" id="editUserId">
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Full Name *</label>
+                            <input type="text" id="editFullName" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Username *</label>
+                            <input type="text" id="editUsername" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Institutional Email *</label>
+                        <input type="email" id="editEmail" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">System Role *</label>
+                            <select id="editRole" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
+                                <option value="Super Admin">Super Administrator</option>
+                                <option value="OVPRE Admin">OVPRE Admin</option>
+                                <option value="Research Director">Research Director</option>
+                                <option value="Extension Director">Extension Director</option>
+                                <option value="Research Coordinator">Research Coordinator</option>
+                                <option value="Extension Coordinator">Extension Coordinator</option>
+                                <option value="Faculty Researcher">Faculty Researcher</option>
+                                <option value="Faculty Extensionist">Faculty Extensionist</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
+                            <select id="editCollege" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem;">
+                                <option value="Institutional">None (Institutional / OVPRE)</option>
+                                <option value="CCST">College of Computer Studies and Technology (CCST)</option>
+                                <option value="COE">College of Engineering (COE)</option>
+                                <option value="CONAHS">College of Nursing and Allied Health Sciences (CONAHS)</option>
+                                <option value="CAS">College of Arts and Sciences (CAS)</option>
+                                <option value="CBA">College of Business and Accountancy (CBA)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Account Status</label>
+                        <select id="editStatus" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem;">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeEditUserModal()" style="padding: 9px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Cancel</button>
+                    <button type="submit" style="padding: 9px 22px; border-radius: 8px; border: none; background: #15803d; color: #fff; cursor: pointer; font-weight: 700;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0 0 4px; color: #0f172a; font-size: 1.2rem;"><i class="ri-user-add-line" style="color: #15803d;"></i> Create New User Account</h3>
+                    <p style="margin: 0; font-size: 0.82rem; color: #64748b;">Add an authorized faculty, director, or administrative member.</p>
+                </div>
+                <button type="button" onclick="closeAddUserModal()" style="border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form id="addUserForm" onsubmit="createUser(event)">
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Full Name *</label>
+                            <input type="text" id="addFullName" placeholder="e.g. Prof. Juan Dela Cruz" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Username *</label>
+                            <input type="text" id="addUsername" placeholder="e.g. jdelacruz" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Institutional Email *</label>
+                        <input type="email" id="addEmail" placeholder="e.g. jdelacruz@dlsp.edu.ph" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">System Role *</label>
+                            <select id="addRole" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
+                                <option value="Faculty Researcher">Faculty Researcher</option>
+                                <option value="Faculty Extensionist">Faculty Extensionist</option>
+                                <option value="Research Coordinator">Research Coordinator</option>
+                                <option value="Extension Coordinator">Extension Coordinator</option>
+                                <option value="Research Director">Research Director</option>
+                                <option value="Extension Director">Extension Director</option>
+                                <option value="OVPRE Admin">OVPRE Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
+                            <select id="addCollege" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem;">
+                                <option value="CCST">College of Computer Studies and Technology (CCST)</option>
+                                <option value="COE">College of Engineering (COE)</option>
+                                <option value="CONAHS">College of Nursing and Allied Health Sciences (CONAHS)</option>
+                                <option value="CAS">College of Arts and Sciences (CAS)</option>
+                                <option value="CBA">College of Business and Accountancy (CBA)</option>
+                                <option value="Institutional">None (Institutional / OVPRE)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeAddUserModal()" style="padding: 9px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Cancel</button>
+                    <button type="submit" style="padding: 9px 22px; border-radius: 8px; border: none; background: #15803d; color: #fff; cursor: pointer; font-weight: 700;">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_USERS = [
+            { id: 1, fullname: 'Super Administrator', email: 'admin@dlsp.edu.ph', username: 'admin', role: 'Super Admin', college: 'Institutional', created_at: '2026-09-01', status: 'Active' },
+            { id: 2, fullname: 'Dr. Aris Ramos', email: 'aramos@dlsp.edu.ph', username: 'aramos_rd', role: 'Research Director', college: 'Institutional', created_at: '2026-09-15', status: 'Active' },
+            { id: 3, fullname: 'Dr. Maricel Gomez', email: 'mgomez@dlsp.edu.ph', username: 'mgomez_ed', role: 'Extension Director', college: 'Institutional', created_at: '2026-09-18', status: 'Active' },
+            { id: 4, fullname: 'Prof. Engr. Mark Santos', email: 'msantos@dlsp.edu.ph', username: 'msantos_ccst', role: 'Research Coordinator', college: 'CCST', created_at: '2026-10-01', status: 'Active' },
+            { id: 5, fullname: 'Prof. Elena Cruz', email: 'ecruz@dlsp.edu.ph', username: 'ecruz_cba', role: 'Extension Coordinator', college: 'CBA', created_at: '2026-10-05', status: 'Active' },
+            { id: 6, fullname: 'Prof. Juan Dela Cruz', email: 'jdelacruz@dlsp.edu.ph', username: 'jdelacruz', role: 'Faculty Researcher', college: 'CCST', created_at: '2026-10-12', status: 'Active' },
+            { id: 7, fullname: 'Prof. Maria Bautista', email: 'mbautista@dlsp.edu.ph', username: 'mbautista', role: 'Faculty Extensionist', college: 'CONAHS', created_at: '2026-10-14', status: 'Active' },
+            { id: 8, fullname: 'Prof. Lorna Bautista', email: 'lbautista@dlsp.edu.ph', username: 'lbautista', role: 'Faculty Researcher', college: 'CONAHS', created_at: '2026-10-20', status: 'Active' }
+        ];
+
+        function getUsers() {
+            try {
+                let saved = JSON.parse(localStorage.getItem('irecord_registered_users'));
+                if (!saved || !saved.length) {
+                    localStorage.setItem('irecord_registered_users', JSON.stringify(DEFAULT_USERS));
+                    return DEFAULT_USERS;
+                }
+                return saved;
+            } catch(e) {
+                return DEFAULT_USERS;
+            }
+        }
+
+        function renderUsers(usersToRender) {
+            const users = usersToRender || getUsers();
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-status', u.status || 'Active');
+                tr.setAttribute('data-college', u.college || 'CCST');
+
+                let roleBadgeColor = '#e0f2fe; color: #0284c7;';
+                if (u.role.includes('Director')) roleBadgeColor = '#dcfce7; color: #15803d;';
+                else if (u.role.includes('Coordinator')) roleBadgeColor = '#ede9fe; color: #7c3aed;';
+                else if (u.role.includes('Admin')) roleBadgeColor = '#fef3c7; color: #b45309;';
+                else if (u.role.includes('Extensionist')) roleBadgeColor = '#ccfbf1; color: #0f766e;';
+
+                tr.innerHTML = `
+                    <td style="padding: 14px 12px; font-weight: 700; color: #64748b;">#${u.id}</td>
+                    <td style="padding: 14px 12px;"><strong style="color: #0f172a;">${u.fullname}</strong></td>
+                    <td style="padding: 14px 12px; font-size: 0.88rem; color: #475569;">${u.email}<br><small style="color: #64748b;">@${u.username}</small></td>
+                    <td style="padding: 14px 12px;"><span style="background: ${roleBadgeColor} padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem;">${u.role}</span></td>
+                    <td style="padding: 14px 12px; font-size: 0.86rem; color: #334155;">${u.college || u.department || 'CCST'}</td>
+                    <td style="padding: 14px 12px; font-size: 0.82rem; color: #64748b;">${u.created_at ? u.created_at.slice(0,10) : '2026-11-01'}</td>
+                    <td style="padding: 14px 12px;"><span style="background: ${u.status === 'Inactive' ? '#fee2e2; color: #dc2626;' : '#dcfce7; color: #15803d;'} padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">${u.status || 'Active'}</span></td>
+                    <td style="padding: 14px 12px; text-align: right;">
+                        <button type="button" onclick="editUser(${u.id})" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-size: 0.82rem; font-weight: 600; margin-right: 4px;">
+                            <i class="ri-edit-line"></i> Edit
+                        </button>
+                        ${u.role !== 'Super Admin' ? `
+                            <button type="button" onclick="deleteUser(${u.id})" style="padding: 5px 8px; border-radius: 6px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer; font-size: 0.82rem;">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('userCountBadge').textContent = `Showing ${users.length} Active Accounts`;
+        }
+
+        function filterUserTable() {
+            const query = document.getElementById('userSearch').value.toLowerCase();
+            const status = document.getElementById('userStatusFilter').value;
+            const college = document.getElementById('userCollegeFilter').value;
+
+            const allUsers = getUsers();
+            const filtered = allUsers.filter(u => {
+                const matchQ = u.fullname.toLowerCase().includes(query) || u.email.toLowerCase().includes(query) || u.role.toLowerCase().includes(query) || u.username.toLowerCase().includes(query);
+                const matchStatus = (status === 'All' || (u.status || 'Active') === status);
+                const matchCollege = (college === 'All' || (u.college || 'CCST').includes(college));
+                return matchQ && matchStatus && matchCollege;
+            });
+            renderUsers(filtered);
+        }
+
+        function editUser(id) {
+            const users = getUsers();
+            const user = users.find(u => u.id === id);
+            if (!user) return;
+
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editFullName').value = user.fullname;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editCollege').value = user.college || 'CCST';
+            document.getElementById('editStatus').value = user.status || 'Active';
+
+            document.getElementById('editUserModal').classList.add('open');
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').classList.remove('open');
+        }
+
+        function saveUserChanges(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editUserId').value);
+            let users = getUsers();
+            const idx = users.findIndex(u => u.id === id);
+            if (idx !== -1) {
+                users[idx].fullname = document.getElementById('editFullName').value;
+                users[idx].username = document.getElementById('editUsername').value;
+                users[idx].email = document.getElementById('editEmail').value;
+                users[idx].role = document.getElementById('editRole').value;
+                users[idx].college = document.getElementById('editCollege').value;
+                users[idx].status = document.getElementById('editStatus').value;
+                localStorage.setItem('irecord_registered_users', JSON.stringify(users));
+                renderUsers();
+                closeEditUserModal();
+            }
+        }
+
+        function openAddUserModal() {
+            document.getElementById('addUserModal').classList.add('open');
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').classList.remove('open');
+        }
+
+        function createUser(e) {
+            e.preventDefault();
+            let users = getUsers();
+            const newUser = {
+                id: Date.now(),
+                fullname: document.getElementById('addFullName').value,
+                username: document.getElementById('addUsername').value,
+                email: document.getElementById('addEmail').value,
+                role: document.getElementById('addRole').value,
+                college: document.getElementById('addCollege').value,
+                created_at: new Date().toISOString().slice(0, 10),
+                status: 'Active'
+            };
+            users.unshift(newUser);
+            localStorage.setItem('irecord_registered_users', JSON.stringify(users));
+            renderUsers();
+            closeAddUserModal();
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to remove this account from the user directory?')) {
+                let users = getUsers();
+                users = users.filter(u => u.id !== id);
+                localStorage.setItem('irecord_registered_users', JSON.stringify(users));
+                renderUsers();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderUsers();
+        });
+
+        // Sidebar & Profile Toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+            document.addEventListener('click', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
+    </script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>

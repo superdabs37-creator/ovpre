@@ -31,6 +31,22 @@
       "dest": "/extension.html"
     },
     {
+      "src": "^/admin-reports$",
+      "dest": "/admin-reports.html"
+    },
+    {
+      "src": "^/admin-users$",
+      "dest": "/admin-users.html"
+    },
+    {
+      "src": "^/system-activity$",
+      "dest": "/system-activity.html"
+    },
+    {
+      "src": "^/system-backup$",
+      "dest": "/system-backup.html"
+    },
+    {
       "src": "^/admin-settings$",
       "dest": "/admin-settings.html"
     },

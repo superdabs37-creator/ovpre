@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup &amp; Recovery | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a class="active" href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Backup &amp; Disaster Recovery</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search archived records...">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- Welcome Banner -->
+                <section class="welcome-panel" style="margin-bottom: 22px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: #15803d; margin-bottom: 6px;">
+                            <i class="ri-database-2-line"></i>
+                            <span>DATA RESILIENCE &amp; ARCHIVAL PROTECTION</span>
+                        </div>
+                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                            <i class="ri-database-line" style="color: #15803d;"></i> Backup &amp; Recovery
+                        </h2>
+                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
+                            Create portable database snapshots, recover system state, and restore archived institutional records.
+                        </p>
+                    </div>
+                </section>
+
+                <div id="backupAlert" style="display: none; padding: 14px 18px; border-radius: 12px; margin-bottom: 18px; font-size: 0.92rem; align-items: center; gap: 10px;"></div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 22px;">
+                    <!-- Create Backup Section -->
+                    <section class="panel" style="padding: 24px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <span style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #15803d; display: inline-grid; place-items: center; font-size: 1.3rem;">
+                                <i class="ri-download-cloud-line"></i>
+                            </span>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a;">Create Database Backup</h3>
+                                <small style="color: #64748b;">Portable JSON snapshot of institutional data</small>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin: 0 0 16px;">
+                            Download an encrypted JSON snapshot containing users, research proposals, extension projects, calendar activities, announcements, and audit trails. Store this file securely.
+                        </p>
+                        <button type="button" onclick="downloadDatabaseSnapshot()" style="width: 100%; padding: 12px 18px; border-radius: 10px; border: none; background: #15803d; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
+                            <i class="ri-download-line"></i> Download Backup Snapshot (.json)
+                        </button>
+                    </section>
+
+                    <!-- Restore Backup Section -->
+                    <section class="panel" style="padding: 24px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <span style="width: 40px; height: 40px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: inline-grid; place-items: center; font-size: 1.3rem;">
+                                <i class="ri-history-line"></i>
+                            </span>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a;">Recover from Database Backup</h3>
+                                <small style="color: #64748b;">Merge snapshot into current repository</small>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin: 0 0 14px;">
+                            Recovery merges saved records into the active system. Newer records are kept unless their IDs match the backup.
+                        </p>
+                        <form id="restoreForm" onsubmit="handleRestore(event)">
+                            <div style="margin-bottom: 10px;">
+                                <input type="file" id="backupFileInput" accept=".json,application/json" required style="width: 100%; font-size: 0.84rem;">
+                            </div>
+                            <div style="margin-bottom: 14px;">
+                                <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #dc2626; margin-bottom: 4px;">Type MERGE BACKUP to confirm:</label>
+                                <input type="text" id="confirmInput" placeholder="MERGE BACKUP" required style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 700;">
+                            </div>
+                            <button type="submit" style="width: 100%; padding: 11px 18px; border-radius: 10px; border: none; background: #dc2626; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i class="ri-refresh-line"></i> Merge Backup into Database
+                            </button>
+                        </form>
+                    </section>
+                </div>
+
+                <!-- Archived Records Section -->
+                <section class="panel" id="archived-records" style="padding: 24px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0 0 4px; font-size: 1.15rem; color: #0f172a;"><i class="ri-archive-line" style="color: #15803d;"></i> Archived Records &amp; Data Recovery</h3>
+                            <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Decommissioned or superseded proposals and documents preserved under university retention policies.</p>
+                        </div>
+                        <span id="archiveCountBadge" style="font-size: 0.84rem; font-weight: 700; color: #15803d; background: #f0fdf4; padding: 6px 14px; border-radius: 999px;">
+                            3 Archived Records
+                        </span>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table" id="archiveTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px;">Record Title</th>
+                                    <th style="padding: 12px;">Archived Document File</th>
+                                    <th style="padding: 12px;">Archived By</th>
+                                    <th style="padding: 12px;">Archived Date</th>
+                                    <th style="padding: 12px;">Retention Reason</th>
+                                    <th style="padding: 12px; text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="archiveBody">
+                                <tr id="arcRow-1">
+                                    <td style="padding: 14px 12px;">
+                                        <strong>Urban Agroforestry Pilot &amp; Microclimate Study</strong><br>
+                                        <small style="color: #64748b;">REC-00042</small>
+                                    </td>
+                                    <td style="padding: 14px 12px; font-size: 0.85rem; color: #475569;"><i class="ri-file-pdf-line" style="color: #dc2626;"></i> urban-agroforestry-prelim-2024.pdf</td>
+                                    <td style="padding: 14px 12px; color: #334155;">Super Administrator</td>
+                                    <td style="padding: 14px 12px; color: #64748b;">Oct 12, 2026</td>
+                                    <td style="padding: 14px 12px; font-size: 0.84rem; color: #475569;">Superseded by 2026 updated CCST grant proposal</td>
+                                    <td style="padding: 14px 12px; text-align: right;">
+                                        <button type="button" onclick="unarchiveRecord(1, 'Urban Agroforestry Pilot')" style="padding: 6px 12px; border-radius: 6px; border: 1.5px solid #86efac; background: #f0fdf4; color: #15803d; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-arrow-go-back-line"></i> Unarchive
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr id="arcRow-2">
+                                    <td style="padding: 14px 12px;">
+                                        <strong>LGU San Pablo Coastal Waste Profiling Draft</strong><br>
+                                        <small style="color: #64748b;">EXT-00031</small>
+                                    </td>
+                                    <td style="padding: 14px 12px; font-size: 0.85rem; color: #475569;"><i class="ri-file-pdf-line" style="color: #dc2626;"></i> lgu-sanpablo-waste-draft.pdf</td>
+                                    <td style="padding: 14px 12px; color: #334155;">Dr. Maricel Gomez</td>
+                                    <td style="padding: 14px 12px; color: #64748b;">Sep 25, 2026</td>
+                                    <td style="padding: 14px 12px; font-size: 0.84rem; color: #475569;">Consolidated into FY 2026 Lake Conservation Agreement</td>
+                                    <td style="padding: 14px 12px; text-align: right;">
+                                        <button type="button" onclick="unarchiveRecord(2, 'LGU San Pablo Coastal Waste')" style="padding: 6px 12px; border-radius: 6px; border: 1.5px solid #86efac; background: #f0fdf4; color: #15803d; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-arrow-go-back-line"></i> Unarchive
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr id="arcRow-3">
+                                    <td style="padding: 14px 12px;">
+                                        <strong>Faculty Research Ethics Checklist Template (Rev. 2)</strong><br>
+                                        <small style="color: #64748b;">DOC-00018</small>
+                                    </td>
+                                    <td style="padding: 14px 12px; font-size: 0.85rem; color: #475569;"><i class="ri-file-text-line" style="color: #0284c7;"></i> ethics-checklist-r2.docx</td>
+                                    <td style="padding: 14px 12px; color: #334155;">Super Administrator</td>
+                                    <td style="padding: 14px 12px; color: #64748b;">Aug 18, 2026</td>
+                                    <td style="padding: 14px 12px; font-size: 0.84rem; color: #475569;">Replaced by 2026 Institutional Ethics Guidelines (Rev. 3)</td>
+                                    <td style="padding: 14px 12px; text-align: right;">
+                                        <button type="button" onclick="unarchiveRecord(3, 'Ethics Checklist Template')" style="padding: 6px 12px; border-radius: 6px; border: 1.5px solid #86efac; background: #f0fdf4; color: #15803d; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-arrow-go-back-line"></i> Unarchive
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function downloadDatabaseSnapshot() {
+            const registeredUsers = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+            const payload = {
+                format: 'ovpre-database-backup-v1',
+                created_at: new Date().toISOString(),
+                database: 'ovpre_db',
+                institution: 'Dalubhasaan ng Lungsod ng San Pablo (DLSP)',
+                office: 'Office of the Vice President for Research and Extension (OVPRE)',
+                tables: {
+                    users: registeredUsers,
+                    departments: [
+                        { id: 1, name: 'CCST' }, { id: 2, name: 'COE' }, { id: 3, name: 'CONAHS' },
+                        { id: 4, name: 'CAS' }, { id: 5, name: 'CBA' }, { id: 6, name: 'CTE' }
+                    ],
+                    proposals_count: 16,
+                    extension_projects_count: 7,
+                    backup_timestamp: Date.now()
+                }
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `ovpre-backup-${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+
+            showAlert('success', '<i class="ri-checkbox-circle-line" style="font-size: 1.3rem;"></i> Database snapshot successfully generated and downloaded.');
+        }
+
+        function handleRestore(e) {
+            e.preventDefault();
+            const confirmVal = document.getElementById('confirmInput').value.trim();
+            if (confirmVal !== 'MERGE BACKUP') {
+                showAlert('error', '<i class="ri-error-warning-line" style="font-size: 1.3rem;"></i> Confirmation text must match exactly "MERGE BACKUP".');
+                return;
+            }
+
+            const fileInput = document.getElementById('backupFileInput');
+            if (!fileInput.files.length) {
+                showAlert('error', '<i class="ri-error-warning-line" style="font-size: 1.3rem;"></i> Please choose a valid JSON backup file.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const parsed = JSON.parse(evt.target.result);
+                    if (parsed.format === 'ovpre-database-backup-v1' && parsed.tables) {
+                        showAlert('success', '<i class="ri-checkbox-circle-line" style="font-size: 1.3rem;"></i> Backup recovery completed: institutional snapshot merged into system successfully.');
+                        document.getElementById('restoreForm').reset();
+                    } else {
+                        showAlert('error', '<i class="ri-error-warning-line" style="font-size: 1.3rem;"></i> The uploaded file is not a valid OVPRE backup snapshot.');
+                    }
+                } catch(err) {
+                    showAlert('error', '<i class="ri-error-warning-line" style="font-size: 1.3rem;"></i> Invalid JSON structure in uploaded backup.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function unarchiveRecord(id, title) {
+            const row = document.getElementById(`arcRow-${id}`);
+            if (row) {
+                row.remove();
+                const remaining = document.querySelectorAll('#archiveBody tr').length;
+                document.getElementById('archiveCountBadge').textContent = `${remaining} Archived Records`;
+                showAlert('success', `<i class="ri-checkbox-circle-line" style="font-size: 1.3rem;"></i> Record "${title}" unarchived and restored to active records.`);
+            }
+        }
+
+        function showAlert(type, html) {
+            const box = document.getElementById('backupAlert');
+            box.style.display = 'flex';
+            if (type === 'success') {
+                box.style.background = '#f0fdf4';
+                box.style.border = '1px solid #86efac';
+                box.style.color = '#166534';
+            } else {
+                box.style.background = '#fef2f2';
+                box.style.border = '1px solid #fecaca';
+                box.style.color = '#b91c1c';
+            }
+            box.innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Sidebar & Profile Toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+            document.addEventListener('click', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
+    </script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>
