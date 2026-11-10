@@ -51,9 +51,17 @@
                 <div class="profile-menu">
                     <button class="profile-button" type="button" id="profileToggle">
                         <span class="avatar">SA</span>
-                        <span>Super Administrator</span>
+                        <span id="userNameDisplay">Super Administrator</span>
                         <i class="ri-arrow-down-s-line"></i>
                     </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
                 </div>
             </header>
 
@@ -101,5 +109,26 @@
             </main>
         </div>
     </div>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+            document.addEventListener('click', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
+    </script>
+    <script src="assets/js/role-system.js"></script>
 </body>
 </html>
