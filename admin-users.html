@@ -114,27 +114,6 @@
             </header>
 
             <main class="content-area">
-                <!-- Welcome Banner -->
-                <section class="welcome-panel" style="margin-bottom: 22px;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: #15803d; margin-bottom: 6px;">
-                            <i class="ri-shield-user-line"></i>
-                            <span>ACCESS CONTROL &amp; DIRECTORY</span>
-                        </div>
-                        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
-                            <i class="ri-team-line" style="color: #15803d;"></i> User Management &amp; System Directory
-                        </h2>
-                        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
-                            Manage roles, permissions, college affiliations, and account activation states across the university.
-                        </p>
-                    </div>
-                    <div>
-                        <button type="button" onclick="openAddUserModal()" style="padding: 10px 18px; border-radius: 9px; font-weight: 700; background: #15803d; color: #ffffff; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
-                            <i class="ri-user-add-line"></i> Add New User
-                        </button>
-                    </div>
-                </section>
-
                 <!-- Filters & Search Toolbar -->
                 <div class="panel" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;">
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
@@ -159,9 +138,14 @@
                             </select>
                         </div>
                     </div>
-                    <span id="userCountBadge" style="font-size: 0.85rem; font-weight: 700; color: #166534; background: #f0fdf4; padding: 6px 14px; border-radius: 999px;">
-                        Loading Users...
-                    </span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="userCountBadge" style="font-size: 0.85rem; font-weight: 700; color: #166534; background: #f0fdf4; padding: 6px 14px; border-radius: 999px;">
+                            Loading Users...
+                        </span>
+                        <button type="button" onclick="openAddUserModal()" style="padding: 7px 15px; border-radius: 8px; font-weight: 700; font-size: 0.84rem; background: #15803d; color: #ffffff; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
+                            <i class="ri-user-add-line"></i> Add New User
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Users Table -->

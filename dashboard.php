@@ -544,20 +544,6 @@ renderHeader('Dashboard', 'dashboard');
 ?>
 
 <!-- =========================================================
-     ADMIN ANALYTICAL DASHBOARD HEADER & QUICK DISPATCH
-========================================================= -->
-<section class="welcome-panel">
-    <div>
-        <h2 style="margin: 0 0 6px; font-size: 1.55rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
-            <i class="ri-bar-chart-box-line" style="color: #15803d;"></i> Analytical Command Center
-        </h2>
-        <p class="welcome-greeting" style="font-size: 0.95rem; color: #475569; margin: 0;">
-            Real-time visual intelligence: submission trends, college output comparisons, and pipeline status distributions.
-        </p>
-    </div>
-</section>
-
-<!-- =========================================================
      ANALYTICAL KPI SUMMARY CAPSULES
 ========================================================= -->
 <section class="kpi-capsules-grid">
