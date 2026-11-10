@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Record | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="active" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="submitted-files.html" title="Submitted Files"><i class="ri-folder-open-line"></i><span>Submitted Files</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Upload Record</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search across accessible records">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <span id="dropdownUserRole">Executive Administrator</span>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- Module Header -->
+                <section class="module-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #dcfce7; color: #15803d; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
+                            <i class="ri-upload-cloud-line"></i>
+                        </div>
+                        <div>
+                            <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #15803d;">Secure File Upload</p>
+                            <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Upload Record</h2>
+                            <span style="font-size: 0.84rem; color: #64748b;">Accepted file types: PDF, DOCX, XLSX, and PPTX (max 25MB per upload).</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="admin-documents.html" class="ghost-btn" style="padding: 9px 16px; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #334155; text-decoration: none; font-weight: 700; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="ri-arrow-left-line"></i> Back to Repository
+                        </a>
+                    </div>
+                </section>
+
+                <div id="uploadToast" style="display: none; padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #86efac; color: #166534;">
+                    <i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Record uploaded and successfully queued in institutional repository! Redirecting...
+                </div>
+
+                <!-- Form Panel -->
+                <section class="panel" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 26px;">
+                    <form class="editor-panel" id="uploadForm" onsubmit="handleUploadSubmit(event)">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 18px;">
+                            <div>
+                                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Document Title <span style="color: #ef4444;">*</span></label>
+                                <input type="text" id="docTitle" name="title" placeholder="e.g. FY 2026 Community Extension Strategic Framework" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem; outline: none;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Author / Proponent <span style="color: #ef4444;">*</span></label>
+                                <input type="text" id="docAuthor" name="author" placeholder="Author name" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem; outline: none;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Category <span style="color: #ef4444;">*</span></label>
+                                <select id="docCategory" name="category_id" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem; outline: none;">
+                                    <option value="Research Proposal">Research Proposal</option>
+                                    <option value="Community Extension">Community Extension</option>
+                                    <option value="Policies & Manuals">Policies &amp; Manuals</option>
+                                    <option value="Official Forms">Official Forms &amp; Templates</option>
+                                    <option value="Minutes of Meeting">Minutes of Meeting</option>
+                                    <option value="Accomplishment Report">Accomplishment Report</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">College Affiliation <span style="color: #ef4444;">*</span></label>
+                                <select id="docDepartment" name="department_id" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem; outline: none;">
+                                    <option value="College of Computer Studies and Technology (CCST)">College of Computer Studies and Technology (CCST)</option>
+                                    <option value="College of Engineering (COE)">College of Engineering (COE)</option>
+                                    <option value="College of Nursing and Allied Health Sciences (CONAHS)">College of Nursing and Allied Health Sciences (CONAHS)</option>
+                                    <option value="College of Arts and Sciences (CAS)">College of Arts and Sciences (CAS)</option>
+                                    <option value="College of Business and Accountancy (CBA)">College of Business and Accountancy (CBA)</option>
+                                    <option value="College of Teacher Education (CTE)">College of Teacher Education (CTE)</option>
+                                    <option value="College of Criminal Justice Education (CCJE)">College of Criminal Justice Education (CCJE)</option>
+                                    <option value="College of Tourism and Hospitality Management (CTHM)">College of Tourism and Hospitality Management (CTHM)</option>
+                                    <option value="College of Public Administration and Governance (CPAG)">College of Public Administration and Governance (CPAG)</option>
+                                    <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Submission Date <span style="color: #ef4444;">*</span></label>
+                                <input type="date" id="docDate" name="submission_date" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem; outline: none;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Select File <span style="color: #ef4444;">*</span></label>
+                                <input type="file" id="docFile" name="document" accept=".pdf,.docx,.xlsx,.pptx" required style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.85rem; background: #f8fafc;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 22px;">
+                            <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 6px;">Description / Executive Summary</label>
+                            <textarea id="docDescription" name="description" rows="5" placeholder="Brief abstract, purpose of submission, target beneficiaries or deliverables..." style="width: 100%; padding: 12px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem; outline: none; font-family: inherit; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                            <a href="admin-documents.html" class="ghost-btn" style="padding: 10px 20px; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #334155; text-decoration: none; font-weight: 700;">Cancel</a>
+                            <button class="primary-btn post-btn" type="submit" id="submitBtn" style="padding: 10px 24px; border-radius: 8px; background: #15803d; color: #ffffff; border: none; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
+                                <i class="ri-save-line"></i> Save Record
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="assets/js/role-system.js"></script>
+    <script>
+        // Set today's date
+        document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+
+        // Autofill author based on logged in user
+        try {
+            const user = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user'));
+            if (user && user.fullname) {
+                document.getElementById('docAuthor').value = user.fullname;
+            }
+        } catch(e) {}
+
+        function handleUploadSubmit(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Uploading & Saving...';
+
+            const title = document.getElementById('docTitle').value.trim();
+            const author = document.getElementById('docAuthor').value.trim();
+            const category = document.getElementById('docCategory').value;
+            const department = document.getElementById('docDepartment').value;
+            const subDate = document.getElementById('docDate').value;
+            const desc = document.getElementById('docDescription').value.trim();
+            const fileInput = document.getElementById('docFile');
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : `${title.toLowerCase().replace(/\\s+/g, '_')}.pdf`;
+
+            const newDoc = {
+                id: Date.now(),
+                title: title,
+                desc: desc,
+                category: category,
+                uploader: author,
+                college: department.includes('(') ? department.split('(')[1].replace(')', '') : department,
+                status: 'Under Review',
+                date: new Date(subDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                filename: fileName
+            };
+
+            // Save to submitted files
+            try {
+                let existing = JSON.parse(localStorage.getItem('irecord_submitted_files') || '[]');
+                existing.unshift(newDoc);
+                localStorage.setItem('irecord_submitted_files', JSON.stringify(existing));
+            } catch(err) {}
+
+            // Save to admin documents
+            try {
+                let adminDocs = JSON.parse(localStorage.getItem('irecord_admin_documents') || '[]');
+                adminDocs.unshift({
+                    id: newDoc.id,
+                    title: newDoc.title,
+                    author: newDoc.uploader,
+                    category: newDoc.category,
+                    department: newDoc.college,
+                    date: newDoc.date,
+                    status: newDoc.status,
+                    description: newDoc.desc,
+                    file_name: newDoc.filename
+                });
+                localStorage.setItem('irecord_admin_documents', JSON.stringify(adminDocs));
+            } catch(err) {}
+
+            const toast = document.getElementById('uploadToast');
+            toast.style.display = 'flex';
+
+            setTimeout(() => {
+                window.location.href = 'submitted-files.html';
+            }, 800);
+        }
+
+        // Topbar dropdown & sidebar toggle
+        document.getElementById('profileToggle')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dd = document.getElementById('profileDropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.addEventListener('click', () => {
+            const dd = document.getElementById('profileDropdown');
+            if (dd) dd.style.display = 'none';
+        });
+
+        document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+            const shell = document.getElementById('appShell');
+            shell.classList.toggle('sidebar-expanded');
+            shell.classList.toggle('sidebar-collapsed');
+        });
+    </script>
+</body>
+</html>

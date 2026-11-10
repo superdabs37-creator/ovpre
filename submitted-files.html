@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitted Files | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="active" href="submitted-files.html" title="Submitted Files"><i class="ri-folder-open-line"></i><span>Submitted Files</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Submitted Files</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="quickSearchInput" placeholder="Search this page" oninput="handleTableSearch(this.value)">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <span id="dropdownUserRole">Executive Administrator</span>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- Module Header -->
+                <section class="module-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #f0fdf4; color: #15803d; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
+                            <i class="ri-folder-open-line"></i>
+                        </div>
+                        <div>
+                            <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #15803d;">Shared File Repository</p>
+                            <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Submitted Files</h2>
+                            <span style="font-size: 0.84rem; color: #64748b;">Browse files available to your account and college affiliation.</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <a href="upload-document.html" class="primary-btn" style="padding: 10px 18px; border-radius: 9px; font-weight: 700; background: #15803d; color: #ffffff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
+                            <i class="ri-upload-cloud-line"></i> Upload New Document
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Files Table Panel -->
+                <section class="panel" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 20px;">
+                    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <h2 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">Files Available to You</h2>
+                        <label class="table-search" style="position: relative; display: inline-block;">
+                            <span class="sr-only">Search files</span>
+                            <i class="ri-search-line" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                            <input type="search" id="fileTableSearch" oninput="handleTableSearch(this.value)" placeholder="Search files..." style="padding: 8px 14px 8px 34px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; width: 240px;">
+                        </label>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table" id="submittedFilesTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 0.82rem; text-transform: uppercase;">
+                                    <th style="padding: 12px;">Title</th>
+                                    <th style="padding: 12px;">Category</th>
+                                    <th style="padding: 12px;">Submitted By</th>
+                                    <th style="padding: 12px;">Status</th>
+                                    <th style="padding: 12px;">Date</th>
+                                    <th style="padding: 12px; text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="filesTableBody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                        <p class="search-empty" id="emptyNotice" style="display: none; padding: 30px; text-align: center; color: #64748b; font-size: 0.92rem;">
+                            <i class="ri-file-search-line" style="font-size: 2rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
+                            No matching files found.
+                        </p>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; font-size: 0.86rem; color: #64748b;">
+                        <span id="pageInfoSpan">Showing 1 to 5 of 5 files</span>
+                        <div style="display: flex; gap: 6px;" id="paginationControls">
+                            <button type="button" class="ghost-btn mini-btn" id="prevPageBtn" disabled style="padding: 5px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Previous</button>
+                            <button type="button" class="ghost-btn mini-btn" id="nextPageBtn" disabled style="padding: 5px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Next</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Document Preview Modal -->
+    <div id="filePreviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; place-items: center; padding: 20px;">
+        <div style="background: #ffffff; border-radius: 16px; width: 100%; max-width: 580px; box-shadow: 0 20px 45px rgba(0,0,0,0.2); overflow: hidden;">
+            <div style="padding: 18px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-file-text-line" style="color: #15803d;"></i> <span id="previewTitle">Document Preview</span>
+                </h3>
+                <button type="button" onclick="closePreviewModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 24px;">
+                <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; font-size: 0.9rem; margin-bottom: 18px;">
+                    <strong style="color: #64748b;">Category:</strong> <span id="previewCategory">-</span>
+                    <strong style="color: #64748b;">Author/Uploader:</strong> <span id="previewAuthor">-</span>
+                    <strong style="color: #64748b;">Date:</strong> <span id="previewDate">-</span>
+                    <strong style="color: #64748b;">Status:</strong> <span id="previewStatus">-</span>
+                    <strong style="color: #64748b;">Description:</strong> <span id="previewDesc">-</span>
+                </div>
+                <div style="padding: 16px; background: #f1f5f9; border-radius: 10px; text-align: center; margin-bottom: 18px;">
+                    <i class="ri-file-pdf-2-line" style="font-size: 2.8rem; color: #dc2626; display: block; margin-bottom: 6px;"></i>
+                    <strong id="previewFileName" style="font-size: 0.92rem; color: #1e293b; display: block;">file.pdf</strong>
+                    <span style="font-size: 0.78rem; color: #64748b;">Secure Institutional Document Storage</span>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" onclick="closePreviewModal()" class="ghost-btn" style="padding: 8px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Close</button>
+                    <button type="button" onclick="alert('Downloading verified institutional record...');" class="primary-btn" style="padding: 8px 18px; border-radius: 8px; background: #15803d; color: #fff; border: none; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ri-download-2-line"></i> Download Record
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/role-system.js"></script>
+    <script>
+        // Default documents matching submitted-files.php
+        const defaultFiles = [
+            { id: 1, title: 'AI-Powered Agricultural Soil Health Analyzer', desc: 'Predictive machine learning algorithm for local farmers in Laguna.', category: 'Research Proposal', uploader: 'Prof. Juan Dela Cruz', college: 'CCST', status: 'Approved', date: 'Oct 24, 2026', filename: 'research_proposal_ccst_soil.pdf' },
+            { id: 2, title: 'Barangay Healthcare Literacy & Teleconsultation', desc: 'Community nursing outreach for elderly hypertensive patients.', category: 'Community Extension', uploader: 'Prof. Maria Bautista', college: 'CONAHS', status: 'Approved', date: 'Oct 18, 2026', filename: 'ext_literacy_conahs.pdf' },
+            { id: 3, title: 'Smart Hydroponics Water Nutrient Circulation Unit', desc: 'IoT automated sensor node designed for small-scale urban gardens.', category: 'Research Proposal', uploader: 'Prof. Engr. Mark Santos', college: 'COE', status: 'Under Review', date: 'Oct 12, 2026', filename: 'smart_hydroponics_laguna.pdf' },
+            { id: 4, title: 'MSME Financial Literacy & Cloud Bookkeeping Bootcamp', desc: 'Cooperative digital management workshops for San Pablo retailers.', category: 'Community Extension', uploader: 'Prof. Elena Cruz', college: 'CBA', status: 'Approved', date: 'Oct 05, 2026', filename: 'msme_bookkeeping_cba.pdf' },
+            { id: 5, title: 'OVPRE University Research Guidelines Manual 2026', desc: 'Institutional protocol and revised publication ethics compliance.', category: 'Policies & Manuals', uploader: 'Dr. Aris Ramos', college: 'OVPRE Office', status: 'Approved', date: 'Sep 29, 2026', filename: 'ovpre_research_manual_2026.pdf' }
+        ];
+
+        function getStoredFiles() {
+            try {
+                const stored = localStorage.getItem('irecord_submitted_files');
+                if (stored) return JSON.parse(stored);
+            } catch(e) {}
+            return defaultFiles;
+        }
+
+        let currentFiles = getStoredFiles();
+
+        function renderFiles(list) {
+            const tbody = document.getElementById('filesTableBody');
+            const emptyNotice = document.getElementById('emptyNotice');
+            tbody.innerHTML = '';
+
+            if (!list || list.length === 0) {
+                emptyNotice.style.display = 'block';
+                document.getElementById('pageInfoSpan').textContent = 'Showing 0 files';
+                return;
+            }
+
+            emptyNotice.style.display = 'none';
+            document.getElementById('pageInfoSpan').textContent = `Showing 1 to ${list.length} of ${list.length} files`;
+
+            list.forEach(item => {
+                const statusStyle = item.status === 'Approved' ? 'background: #dcfce7; color: #15803d; border: 1px solid #86efac;' :
+                                    item.status === 'Under Review' ? 'background: #fef3c7; color: #b45309; border: 1px solid #fde68a;' :
+                                    'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #f1f5f9';
+                tr.innerHTML = `
+                    <td style="padding: 14px 12px;">
+                        <strong style="color: #0f172a; font-size: 0.92rem; display: block;">${item.title}</strong>
+                        <small style="color: #64748b; font-size: 0.78rem;">${item.desc || ''}</small>
+                    </td>
+                    <td style="padding: 14px 12px; font-size: 0.88rem; color: #334155;">${item.category}</td>
+                    <td style="padding: 14px 12px; font-size: 0.88rem; color: #334155;">
+                        <strong>${item.uploader}</strong>
+                        <br><small style="color: #64748b;">${item.college || ''}</small>
+                    </td>
+                    <td style="padding: 14px 12px;">
+                        <span style="display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; ${statusStyle}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td style="padding: 14px 12px; font-size: 0.86rem; color: #64748b;">${item.date}</td>
+                    <td style="padding: 14px 12px; text-align: right;">
+                        <button type="button" onclick="openPreview(${item.id})" class="ghost-btn mini-btn" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #86efac; background: #f0fdf4; color: #15803d; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                            <i class="ri-eye-line"></i> View File
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function handleTableSearch(query) {
+            const term = (query || '').toLowerCase().trim();
+            if (!term) {
+                renderFiles(currentFiles);
+                return;
+            }
+            const filtered = currentFiles.filter(f => 
+                f.title.toLowerCase().includes(term) ||
+                (f.desc && f.desc.toLowerCase().includes(term)) ||
+                f.category.toLowerCase().includes(term) ||
+                f.uploader.toLowerCase().includes(term) ||
+                (f.college && f.college.toLowerCase().includes(term))
+            );
+            renderFiles(filtered);
+        }
+
+        function openPreview(fileId) {
+            const item = currentFiles.find(f => f.id === fileId);
+            if (!item) return;
+
+            document.getElementById('previewTitle').textContent = item.title;
+            document.getElementById('previewCategory').textContent = item.category;
+            document.getElementById('previewAuthor').textContent = `${item.uploader} (${item.college || 'Institutional'})`;
+            document.getElementById('previewDate').textContent = item.date;
+            document.getElementById('previewStatus').textContent = item.status;
+            document.getElementById('previewDesc').textContent = item.desc || 'No additional summary provided.';
+            document.getElementById('previewFileName').textContent = item.filename || `${item.title.toLowerCase().replace(/\\s+/g, '_')}.pdf`;
+
+            document.getElementById('filePreviewModal').style.display = 'grid';
+        }
+
+        function closePreviewModal() {
+            document.getElementById('filePreviewModal').style.display = 'none';
+        }
+
+        // Topbar dropdown & sidebar toggle
+        document.getElementById('profileToggle')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dd = document.getElementById('profileDropdown');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.addEventListener('click', () => {
+            const dd = document.getElementById('profileDropdown');
+            if (dd) dd.style.display = 'none';
+        });
+
+        document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+            const shell = document.getElementById('appShell');
+            shell.classList.toggle('sidebar-expanded');
+            shell.classList.toggle('sidebar-collapsed');
+        });
+
+        // Initial render
+        renderFiles(currentFiles);
+    </script>
+</body>
+</html>

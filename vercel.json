@@ -8,7 +8,23 @@
     },
     {
       "src": "^/landing$",
-      "dest": "/index.html"
+      "dest": "/landing.html"
+    },
+    {
+      "src": "^/reset-password$",
+      "dest": "/reset-password.html"
+    },
+    {
+      "src": "^/submitted-files$",
+      "dest": "/submitted-files.html"
+    },
+    {
+      "src": "^/upload-document$",
+      "dest": "/upload-document.html"
+    },
+    {
+      "src": "^/admin-pending-users$",
+      "dest": "/admin-pending-users.html"
     },
     {
       "src": "^/login$",
