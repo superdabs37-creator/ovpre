@@ -3737,8 +3737,8 @@ button {
 
 .settings-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
 }
 
 .setting-card {
@@ -5715,11 +5715,46 @@ body.register-body .stepper-nav {
     }
 }
 
-/* Solid KPI Cards hover effect */
+/* Solid KPI Cards hover effect & Rock-Solid Alignment */
+.kpi-capsules-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    margin-bottom: 24px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+}
+
 .kpi-solid-card {
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 116px !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    transition: transform 0.22s ease, box-shadow 0.22s ease !important;
 }
 
 .kpi-solid-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-3px) !important;
+}
+
+@media (max-width: 1200px) {
+    .kpi-capsules-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .kpi-capsules-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-capsules-grid {
+        grid-template-columns: 1fr !important;
+    }
 }

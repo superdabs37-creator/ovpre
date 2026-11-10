@@ -560,65 +560,65 @@ renderHeader('Dashboard', 'dashboard');
 <!-- =========================================================
      ANALYTICAL KPI SUMMARY CAPSULES
 ========================================================= -->
-<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px;">
+<section class="kpi-capsules-grid">
     <!-- Records -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 8px 22px rgba(21, 128, 61, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Academic Records</span>
-            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
-                <i class="ri-file-text-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Academic Records</span>
+            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                <i class="ri-file-text-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
-        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalDocuments; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Cataloged in repository</small>
+        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalDocuments; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
     </div>
 
     <!-- Research Proposals -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 8px 22px rgba(2, 132, 199, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Research Proposals</span>
-            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
-                <i class="ri-flask-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
+            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                <i class="ri-flask-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
-        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalResearch; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Faculty submissions</small>
+        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalResearch; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
     </div>
 
     <!-- Extension Projects -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 8px 22px rgba(13, 148, 136, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Extension Initiatives</span>
-            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
-                <i class="ri-community-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
+            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                <i class="ri-community-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
-        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalExtension; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Community outreach</small>
+        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalExtension; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
     </div>
 
     <!-- Colleges Participation -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 8px 22px rgba(124, 58, 237, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Colleges Active</span>
-            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
-                <i class="ri-government-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges Active</span>
+            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                <i class="ri-government-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
-        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeCollegesCount; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalColleges; ?></span></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Colleges with submissions</small>
+        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeCollegesCount; ?> <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalColleges; ?></span></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
     </div>
 
     <!-- Active Faculty -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 8px 22px rgba(217, 119, 6, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Registered Users</span>
-            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
-                <i class="ri-team-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
+            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                <i class="ri-team-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
-        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeUsers; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalUsers; ?></span></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Active accounts</small>
+        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeUsers; ?> <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalUsers; ?></span></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
     </div>
 </section>
 
