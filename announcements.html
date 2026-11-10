@@ -13,10 +13,63 @@
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
-${getSidebar('announcements.html')}
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
+                <a class="active" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
 
         <div class="page-wrap">
-${getTopbar('Announcements')}
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Announcements Management</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="quickSearchInput" placeholder="Search announcements..." oninput="handleSearch(this.value)">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <span id="dropdownUserRole">Executive Administrator</span>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
 
             <main class="content-area">
                 <!-- =========================================================
@@ -151,13 +204,71 @@ ${getTopbar('Announcements')}
         let annPage = 1;
         const annPageSize = 6;
 
+        const initialAnnouncements = [
+            {
+                id: 1,
+                title: "Call for Research Proposals: FY 2026 Institutional Seed Funding",
+                content: "The Office of the Vice President for Research and Extension invites full-time faculty members to submit applied research proposals aligned with the university strategic research priorities. Selected proposals are eligible for institutional grants up to PHP 250,000.",
+                category: "Research Call",
+                audience: "All Faculty",
+                priority: "High",
+                date: "Oct 15, 2026",
+                expiry: "Dec 15, 2026",
+                archived: false
+            },
+            {
+                id: 2,
+                title: "Guidelines on Extension Program Liquidation and Impact Reporting",
+                content: "All College Extension Coordinators and project heads must submit complete liquidation reports and community beneficiary feedback surveys within 30 days of project conclusion.",
+                category: "Policy",
+                audience: "Extension Coordinators",
+                priority: "Medium",
+                date: "Oct 20, 2026",
+                expiry: "Nov 30, 2026",
+                archived: false
+            },
+            {
+                id: 3,
+                title: "Annual University Research Colloquium & Best Paper Awards 2026",
+                content: "The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are welcome across all nine academic colleges.",
+                category: "Event",
+                audience: "General Academic Community",
+                priority: "Urgent",
+                date: "Oct 28, 2026",
+                expiry: "Dec 10, 2026",
+                archived: false
+            },
+            {
+                id: 4,
+                title: "Quarterly Submission Window for Community Extension Proposals",
+                content: "The fourth quarter submission window for community extension proposals will officially close on November 25, 2026. Please ensure coordinator endorsements are secured prior to submission.",
+                category: "Extension Call",
+                audience: "Faculty Extensionists",
+                priority: "High",
+                date: "Nov 01, 2026",
+                expiry: "Nov 25, 2026",
+                archived: false
+            },
+            {
+                id: 5,
+                title: "FY 2025 Institutional Research Accomplishment Archive",
+                content: "Completed project deliverables and published journal papers for academic year 2025 have been archived in the central institutional repository.",
+                category: "Archived Notice",
+                audience: "University Wide",
+                priority: "Low",
+                date: "Jan 10, 2026",
+                expiry: "Closed",
+                archived: true
+            }
+        ];
+
         function getStoredAnnouncements() {
             try {
                 const s = localStorage.getItem('ovpre_announcements');
                 if (s) return JSON.parse(s);
             } catch(e) {}
-            localStorage.setItem('ovpre_announcements', JSON.stringify(${JSON.stringify(initialAnnouncements)}));
-            return ${JSON.stringify(initialAnnouncements)};
+            localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
+            return initialAnnouncements;
         }
 
         function saveAnnouncements(data) {

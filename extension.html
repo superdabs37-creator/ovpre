@@ -13,10 +13,63 @@
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
-${getSidebar('extension.html')}
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="active" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
+                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
+                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
+                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
 
         <div class="page-wrap">
-${getTopbar('Extension Management')}
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Extension Management</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="quickSearchInput" placeholder="Search this page" oninput="applyFilters()">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <span id="dropdownUserRole">Executive Administrator</span>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
 
             <main class="content-area">
                 <!-- =========================================================
@@ -372,13 +425,191 @@ ${getTopbar('Extension Management')}
         let selectedIds = new Set();
         let currentPreviewProject = null;
 
+        const initialExtensionData = [
+            {
+                id: 1,
+                title: "Barangay San Gabriel Community Health and Hypertension Teleconsultation",
+                coordinator: "Prof. Maria Bautista",
+                college: "College of Nursing and Allied Health Sciences",
+                partner: "Barangay San Gabriel Health Center & LGU San Pablo",
+                location: "Brgy. San Gabriel, San Pablo City",
+                beneficiaries: "120 Senior Citizens & Hypertensive Patients",
+                budget: 85000,
+                approved_budget: 80000,
+                stage: "Completed",
+                status: "Approved",
+                progress_status: "Completed",
+                created_at: "2026-01-20",
+                description: "Community nursing outreach providing regular blood pressure monitoring, telehealth education, and maintenance medication guidance.",
+                coordinator_remarks: "Screened and fully endorsed. Solid community partner agreement and clear health targets.",
+                coordinator_name: "Prof. CONAHS Coordinator",
+                director_remarks: "Approved with rating 95.00. High community impact and clear barangay integration.",
+                director_name: "Dr. Maricel Gomez",
+                evaluation_rating: "95.00",
+                executive_remarks: "Final executive approval granted. Fund release authorized under University Extension Support.",
+                executive_name: "Executive VP / Director",
+                document_filename: "San_Gabriel_Health_Extension.pdf",
+                archived: false
+            },
+            {
+                id: 2,
+                title: "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
+                coordinator: "Prof. Elena Cruz",
+                college: "College of Business Administration",
+                partner: "San Pablo City Public Market Cooperative",
+                location: "San Pablo City Public Market",
+                beneficiaries: "85 Micro-Retailers and Market Vendors",
+                budget: 65000,
+                approved_budget: 65000,
+                stage: "Stage 1: Coordinator Screening",
+                status: "Pending Coordinator Review",
+                progress_status: "Planning",
+                created_at: "2026-02-05",
+                description: "Hands-on workshops teaching cashless payment platforms (GCash, Maya), mobile inventory tracking, and basic cash flow management.",
+                coordinator_remarks: "",
+                coordinator_name: "",
+                director_remarks: "",
+                director_name: "",
+                evaluation_rating: "",
+                executive_remarks: "",
+                executive_name: "",
+                document_filename: "Market_Vendors_Financial_Literacy.pdf",
+                archived: false
+            },
+            {
+                id: 3,
+                title: "Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation",
+                coordinator: "Prof. Engr. Mark Santos",
+                college: "College of Engineering",
+                partner: "Brgy. Concepcion Urban Farmers Association",
+                location: "Brgy. Concepcion, San Pablo City",
+                beneficiaries: "60 Urban Farming Families",
+                budget: 120000,
+                approved_budget: 110000,
+                stage: "Stage 2: Director Evaluation",
+                status: "Pending Director Review",
+                progress_status: "Planning",
+                created_at: "2026-02-14",
+                description: "Installation of modular solar-assisted nutrient circulating hydroponic growing beds for household food security.",
+                coordinator_remarks: "Screened and verified feasible. Prototype design compliant with low-cost criteria.",
+                coordinator_name: "Engr. COE Coordinator",
+                director_remarks: "",
+                director_name: "",
+                evaluation_rating: "91.50",
+                executive_remarks: "",
+                executive_name: "",
+                document_filename: "Urban_Hydroponics_Extension.pdf",
+                archived: false
+            },
+            {
+                id: 4,
+                title: "Basic Python Programming and Cybersecurity Awareness for Public High Schools",
+                coordinator: "Prof. Juan Dela Cruz",
+                college: "College of Computer Studies and Technology",
+                partner: "San Pablo City National High School",
+                location: "San Pablo City",
+                beneficiaries: "140 Senior High School STEM Students",
+                budget: 70000,
+                approved_budget: 70000,
+                stage: "Stage 3: Executive Approval",
+                status: "Pending Executive Approval",
+                progress_status: "Planning",
+                created_at: "2026-02-22",
+                description: "Weekend coding bootcamps and anti-phishing/scam awareness modules facilitated by university IT faculty and student mentors.",
+                coordinator_remarks: "Endorsed. Meets university mission for STEM community empowerment.",
+                coordinator_name: "Prof. CCST Coordinator",
+                director_remarks: "Recommended for executive release with 93.00 evaluation rating.",
+                director_name: "Dr. Maricel Gomez",
+                evaluation_rating: "93.00",
+                executive_remarks: "",
+                executive_name: "",
+                document_filename: "Python_Highschool_Extension.pdf",
+                archived: false
+            },
+            {
+                id: 5,
+                title: "Community Disaster Preparedness and First Aid Emergency Response Training",
+                coordinator: "Prof. Arthur Lim",
+                college: "College of Criminal Justice Education",
+                partner: "San Pablo City CDRRMO & Red Cross",
+                location: "Brgy. San Nicolas, San Pablo City",
+                beneficiaries: "95 Barangay Tanods & Volunteer Responders",
+                budget: 95000,
+                approved_budget: 90000,
+                stage: "Completed",
+                status: "Approved",
+                progress_status: "Completed",
+                created_at: "2026-01-10",
+                description: "Emergency rescue simulation drills, basic life support certification, and evacuation protocol mapping for lakeside communities.",
+                coordinator_remarks: "Endorsed. Solid coordination with local CDRRMO.",
+                coordinator_name: "Prof. CCJE Coordinator",
+                director_remarks: "Rating: 94.00. Completed successfully with certification issued.",
+                director_name: "Dr. Maricel Gomez",
+                evaluation_rating: "94.00",
+                executive_remarks: "Approved and liquidated. Accomplishment report filed.",
+                executive_name: "Executive VP / Director",
+                document_filename: "Disaster_FirstAid_Training.pdf",
+                archived: false
+            },
+            {
+                id: 6,
+                title: "Barangay Homestay Hospitality and Sanitation Standards Workshop",
+                coordinator: "Prof. Janice Aquino",
+                college: "College of Tourism and Hospitality Management",
+                partner: "Seven Lakes Ecotourism Association",
+                location: "Sampaloc Lake & Pandin Lake, San Pablo City",
+                beneficiaries: "50 Homestay Operators & Ecotourism Guides",
+                budget: 55000,
+                approved_budget: 50000,
+                stage: "Stage 1: Coordinator Screening",
+                status: "Needs Revision",
+                progress_status: "Planning",
+                created_at: "2026-02-28",
+                description: "Food safety, hygiene protocols, and guest service excellence workshops for eco-tourism homestay operators.",
+                coordinator_remarks: "Returned for revision. Please clarify venue permits and partner counterpart contribution.",
+                coordinator_name: "Prof. CTHM Coordinator",
+                director_remarks: "",
+                director_name: "",
+                evaluation_rating: "",
+                executive_remarks: "",
+                executive_name: "",
+                document_filename: "Homestay_Hospitality_Workshop.pdf",
+                archived: false
+            },
+            {
+                id: 7,
+                title: "Lakeside Solid Waste Segregation & Bio-Enzyme Composting Initiative",
+                coordinator: "Prof. Roberto Dizon",
+                college: "College of Arts and Sciences",
+                partner: "Lakeside Cleanliness Task Force",
+                location: "Palakpakin Lake, San Pablo City",
+                beneficiaries: "75 Lakeshore Household Residents",
+                budget: 60000,
+                approved_budget: 60000,
+                stage: "Archived",
+                status: "Approved",
+                progress_status: "Completed",
+                created_at: "2025-11-15",
+                description: "Biochemical organic composting drive using indigenous microorganisms to treat household kitchen waste near lake waters.",
+                coordinator_remarks: "Archived post-completion.",
+                coordinator_name: "Dr. CAS Coordinator",
+                director_remarks: "Project closed successfully.",
+                director_name: "Dr. Maricel Gomez",
+                evaluation_rating: "92.00",
+                executive_remarks: "Certified completed.",
+                executive_name: "Executive VP / Director",
+                document_filename: "BioEnzyme_Composting_Report.pdf",
+                archived: true
+            }
+        ];
+
         function getStoredProjects() {
             try {
                 const s = localStorage.getItem('ovpre_extension_projects');
                 if (s) return JSON.parse(s);
             } catch(e) {}
-            localStorage.setItem('ovpre_extension_projects', JSON.stringify(${JSON.stringify(initialExtensionData)}));
-            return ${JSON.stringify(initialExtensionData)};
+            localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialExtensionData));
+            return initialExtensionData;
         }
 
         function saveProjects(data) {
@@ -445,7 +676,7 @@ ${getTopbar('Extension Management')}
                 filtered = filtered.filter(p => p.college === colVal);
             }
 
-            const searchVal = (document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
+            const searchVal = (document.getElementById('quickSearchInput')?.value || document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
             if (searchVal) {
                 filtered = filtered.filter(p => 
                     p.title.toLowerCase().includes(searchVal) ||
