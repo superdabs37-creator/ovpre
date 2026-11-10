@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Announcements | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="active" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Campus Announcements</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search announcements...">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span>Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div class="module-header" style="margin-bottom: 22px;">
+                    <div class="module-title">
+                        <h2><i class="ri-megaphone-line"></i> Institutional Advisories &amp; Call for Papers</h2>
+                        <p>Official notices from the Office of the Vice President for Research and Extension.</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; gap: 18px;">
+                    <article class="panel" style="padding: 22px; border-radius: 14px; background: #ffffff; border: 1px solid #dbe7df;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Call for Proposals</span>
+                            <span style="font-size: 0.8rem; color: #64748b;">Nov 10, 2026</span>
+                        </div>
+                        <h3 style="margin: 0 0 8px; color: #0f172a; font-size: 1.15rem;">FY 2026 Institutional Research &amp; Extension Grant Applications Open</h3>
+                        <p style="margin: 0; color: #334155; font-size: 0.9rem; line-height: 1.6;">
+                            The OVPRE is pleased to invite all full-time and part-time faculty researchers to submit interdisciplinary research and community outreach proposals for the upcoming fiscal cycle. Seed grants of up to PHP 150,000.00 will be allocated across passed RIUH proposals.
+                        </p>
+                    </article>
+
+                    <article class="panel" style="padding: 22px; border-radius: 14px; background: #ffffff; border: 1px solid #dbe7df;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">University Advisory</span>
+                            <span style="font-size: 0.8rem; color: #64748b;">Nov 08, 2026</span>
+                        </div>
+                        <h3 style="margin: 0 0 8px; color: #0f172a; font-size: 1.15rem;">Online Submission Deadline for Mid-Year Accomplishment Reports</h3>
+                        <p style="margin: 0; color: #334155; font-size: 0.9rem; line-height: 1.6;">
+                            College Coordinators are reminded to verify all pending faculty extension progress and terminal reports in the I-Record portal before the end of the semester accreditation audit.
+                        </p>
+                    </article>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

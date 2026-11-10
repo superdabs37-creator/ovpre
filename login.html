@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261015-simple-login-background">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="login-body">
+    <main class="login-shell">
+        <section class="login-card">
+            <div class="login-logo">
+                <img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo">
+            </div>
+            <div class="login-copy">
+                <p>Office of the Vice President for Research and Extension</p>
+                <h1>I-Record</h1>
+            </div>
+
+            <div id="loginAlert" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem; align-items: center; gap: 8px;">
+                <i class="ri-checkbox-circle-line" style="font-size: 1.2rem;"></i> <span id="loginAlertText">Sign-in successful! Redirecting...</span>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <label for="username">Username or email</label>
+                <div class="input-control">
+                    <i class="ri-user-line"></i>
+                    <input type="text" id="username" name="username" placeholder="Enter username or email" value="admin" required>
+                </div>
+
+                <label for="password">Password</label>
+                <div class="input-control">
+                    <i class="ri-lock-line"></i>
+                    <input type="password" id="password" name="password" placeholder="Enter password" value="password123" required>
+                    <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Show password" style="background:none;border:none;padding:0;cursor:pointer;color:var(--muted);display:flex;align-items:center;margin-left:auto;">
+                        <i class="ri-eye-line" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+
+                <div style="margin: 10px 0 14px;">
+                    <label for="roleSelect" style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Sign in as Role:</label>
+                    <select id="roleSelect" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 0.88rem; font-weight: 600; color: #0f172a; cursor: pointer;">
+                        <option value="Super Admin">System Administrator (Full Access)</option>
+                        <option value="Research Director">Research Director</option>
+                        <option value="Extension Director">Extension Director</option>
+                        <option value="Research Coordinator">Research Coordinator</option>
+                        <option value="Faculty Researcher">Faculty Researcher / Proponent</option>
+                    </select>
+                </div>
+
+                <div class="login-tools">
+                    <label class="check-control">
+                        <input type="checkbox" name="remember" checked>
+                        <span>Remember me</span>
+                    </label>
+                    <a href="forgot-password.html" onclick="alert('Password reset link is simulated in demo mode.'); return false;">Forgot Password?</a>
+                </div>
+
+                <button class="primary-btn full-btn" type="submit" id="submitBtn">
+                    <i class="ri-login-circle-line"></i> Sign in
+                </button>
+
+                <div style="text-align: center; margin: 16px 0 10px; font-size: 0.92rem; color: #64748b;">
+                    Don't have an account? <a href="register.html" style="color: #15803d; font-weight: 700; text-decoration: underline;">Create an account</a>
+                </div>
+
+                <p class="portal-link full-btn">
+                    <a href="index.html"><i class="ri-arrow-left-line"></i> Back to Home</a>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const toggleBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+
+            if (toggleBtn && passwordInput && toggleIcon) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    toggleIcon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+                    toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                    toggleIcon.style.color = isPassword ? '#15803d' : '#6f7b73';
+                });
+            }
+
+            const loginForm = document.getElementById('loginForm');
+            const loginAlert = document.getElementById('loginAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value.trim() || 'Administrator';
+                const role = document.getElementById('roleSelect').value;
+
+                // Save session in sessionStorage and localStorage
+                const userSession = {
+                    id: 1,
+                    username: username,
+                    fullname: role === 'Super Admin' ? 'Super Administrator' : (username.charAt(0).toUpperCase() + username.slice(1)),
+                    role: role,
+                    email: username + '@plsp.edu.ph',
+                    logged_in: true
+                };
+                sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+                localStorage.setItem('irecord_user', JSON.stringify(userSession));
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Signing in...';
+                loginAlert.style.display = 'flex';
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 600);
+            });
+        })();
+    </script>
+</body>
+</html>

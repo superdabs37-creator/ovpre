@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Proposals | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="active" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Research Proposals</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" id="tableSearch" placeholder="Search proposals..." oninput="filterTable()">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <strong>Super Administrator</strong>
+                            <small>System Administrator</small>
+                        </div>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div class="module-header" style="margin-bottom: 22px;">
+                    <div class="module-title">
+                        <h2><i class="ri-flask-line"></i> Research Management &amp; Screening Portal</h2>
+                        <p>Evaluate faculty research proposals, track RIUH ratings, and manage grant approvals.</p>
+                    </div>
+                    <div class="module-actions">
+                        <button type="button" class="btn btn-primary" onclick="openAddModal()" style="background: #15803d; color: #fff; padding: 9px 16px; border-radius: 9px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;">
+                            <i class="ri-add-line"></i> Submit Proposal
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: #fff; border: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <label for="statusFilter" style="font-size: 0.82rem; font-weight: 700; color: #475569;">Filter Status:</label>
+                        <select id="statusFilter" onchange="filterTable()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.84rem; font-weight: 600;">
+                            <option value="all">All Statuses</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                    <span id="recordCount" style="font-size: 0.85rem; font-weight: 700; color: #166534; background: #f0fdf4; padding: 6px 12px; border-radius: 999px;">
+                        Showing 6 Proposals
+                    </span>
+                </div>
+
+                <article class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 20px;">
+                    <div class="table-responsive">
+                        <table class="data-table" id="proposalsTable" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
+                                    <th style="padding: 12px 10px;">ID</th>
+                                    <th style="padding: 12px 10px;">Title &amp; Proponent</th>
+                                    <th style="padding: 12px 10px;">College / Dept</th>
+                                    <th style="padding: 12px 10px;">Grant / Funding</th>
+                                    <th style="padding: 12px 10px;">Status</th>
+                                    <th style="padding: 12px 10px;">Manage / Action</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-size: 0.88rem;" id="tableBody">
+                                <!-- Row 1 -->
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-101</td>
+                                    <td style="padding: 14px 10px;">
+                                        <div style="font-weight: 700; color: #0f172a;">AI-Driven Early Crop Disease Detection for Calabarzon Farming</div>
+                                        <small style="color: #64748b;">Lead: Dr. Aris Thorne, Engr. Mark Santos</small>
+                                    </td>
+                                    <td style="padding: 14px 10px; color: #334155;">College of Computer Studies and Technology</td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 150,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <button type="button" class="btn" onclick="openDetails(101)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-102</td>
+                                    <td style="padding: 14px 10px;">
+                                        <div style="font-weight: 700; color: #0f172a;">Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households</div>
+                                        <small style="color: #64748b;">Lead: Prof. Lorna Bautista</small>
+                                    </td>
+                                    <td style="padding: 14px 10px; color: #334155;">College of Nursing and Allied Health Sciences</td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 125,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Pending Coordinator Review</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <button type="button" class="btn" onclick="openDetails(102)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-103</td>
+                                    <td style="padding: 14px 10px;">
+                                        <div style="font-weight: 700; color: #0f172a;">Preservation of San Pablo Indigenous Folk Legends and Oral Literature</div>
+                                        <small style="color: #64748b;">Lead: Dr. Gabriel Mendoza</small>
+                                    </td>
+                                    <td style="padding: 14px 10px; color: #334155;">College of Arts and Sciences</td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 80,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <button type="button" class="btn" onclick="openDetails(103)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Row 4 -->
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-104</td>
+                                    <td style="padding: 14px 10px;">
+                                        <div style="font-weight: 700; color: #0f172a;">Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</div>
+                                        <small style="color: #64748b;">Lead: Prof. Raymond Cruz</small>
+                                    </td>
+                                    <td style="padding: 14px 10px; color: #334155;">College of Business and Accountancy</td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 95,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <button type="button" class="btn" onclick="openDetails(104)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Row 5 -->
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-105</td>
+                                    <td style="padding: 14px 10px;">
+                                        <div style="font-weight: 700; color: #0f172a;">Pedagogical Framework for Multilingual Math Instruction in Secondary Schools</div>
+                                        <small style="color: #64748b;">Lead: Dr. Elena Santos</small>
+                                    </td>
+                                    <td style="padding: 14px 10px; color: #334155;">College of Teacher Education</td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 110,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <button type="button" class="btn" onclick="openDetails(105)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Row 6 -->
+                                <tr>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-106</td>
+                                    <td style="padding: 14px 10px;">
+                                        <div style="font-weight: 700; color: #0f172a;">Internal Audit Compliance and Public Procurement Governance in LGUs</div>
+                                        <small style="color: #64748b;">Lead: Atty. Ricardo Santos</small>
+                                    </td>
+                                    <td style="padding: 14px 10px; color: #334155;">College of Public Administration and Governance</td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">PHP 90,000.00</td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
+                                    <td style="padding: 14px 10px;">
+                                        <button type="button" class="btn" onclick="openDetails(106)" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                                            <i class="ri-eye-line"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </main>
+        </div>
+    </div>
+
+    <!-- DETAILS MODAL (WITH DOCUMENT PREVIEW INSIDE) -->
+    <dialog id="detailsModal" style="width: min(720px, calc(100% - 32px)); border: none; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <h3 id="modalTitle" style="margin: 0; font-size: 1.15rem; color: #0f172a; font-weight: 800;">Research Proposal Details</h3>
+            <button type="button" onclick="document.getElementById('detailsModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+        </div>
+        <div style="padding: 24px; line-height: 1.6;" id="modalBody">
+            <!-- Dynamic Content -->
+        </div>
+    </dialog>
+
+    <!-- ADD PROPOSAL MODAL -->
+    <dialog id="addModal" style="width: min(600px, calc(100% - 32px)); border: none; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a; font-weight: 800;">Submit Research Proposal</h3>
+            <button type="button" onclick="document.getElementById('addModal').close()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+        </div>
+        <form style="padding: 24px;" onsubmit="handleNewProposal(event)">
+            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Proposal Title</label>
+            <input type="text" id="newTitle" required placeholder="Enter full research title" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
+
+            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Lead Proponents</label>
+            <input type="text" id="newProponents" required placeholder="Faculty names" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
+
+            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">College / Department</label>
+            <select id="newCollege" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
+                <option>College of Computer Studies and Technology</option>
+                <option>College of Engineering</option>
+                <option>College of Nursing and Allied Health Sciences</option>
+                <option>College of Arts and Sciences</option>
+                <option>College of Business and Accountancy</option>
+                <option>College of Teacher Education</option>
+                <option>College of Criminal Justice Education</option>
+                <option>College of Tourism and Hospitality Management</option>
+                <option>College of Public Administration and Governance</option>
+            </select>
+
+            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.88rem;">Funding / Estimated Budget</label>
+            <input type="text" id="newBudget" placeholder="e.g. PHP 120,000.00" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" onclick="document.getElementById('addModal').close()" style="padding: 10px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 700; cursor: pointer;">Cancel</button>
+                <button type="submit" style="padding: 10px 18px; border-radius: 8px; border: none; background: #15803d; color: #fff; font-weight: 700; cursor: pointer;">Submit Proposal</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const proposalsData = {
+            101: {
+                id: '#RP-101',
+                title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming',
+                proponent: 'Dr. Aris Thorne, Engr. Mark Santos',
+                college: 'College of Computer Studies and Technology',
+                grant: 'PHP 150,000.00',
+                status: 'Approved',
+                riuh: 'Passed RIUH (94.5%)',
+                abstract: 'An empirical machine learning framework employing convolutional neural networks to classify leaf rot and rust in coffee and cacao plantations across Laguna.',
+                pdf: 'uploads/records/sample-1-ai-driven-crop-disease-detection.pdf'
+            },
+            102: {
+                id: '#RP-102',
+                title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households',
+                proponent: 'Prof. Lorna Bautista',
+                college: 'College of Nursing and Allied Health Sciences',
+                grant: 'PHP 125,000.00',
+                status: 'Pending Coordinator Review',
+                riuh: 'Under Screening',
+                abstract: 'A cross-sectional epidemiologic study investigating behavioral predictors and health literacy factors among mothers in rural Laguna communities.',
+                pdf: 'uploads/records/sample-3-pediatric-immunization-hesitancy-dynamic.pdf'
+            },
+            103: {
+                id: '#RP-103',
+                title: 'Preservation of San Pablo Indigenous Folk Legends and Oral Literature',
+                proponent: 'Dr. Gabriel Mendoza',
+                college: 'College of Arts and Sciences',
+                grant: 'PHP 80,000.00',
+                status: 'Approved',
+                riuh: 'Passed RIUH (91.0%)',
+                abstract: 'Cultural and linguistic documentation of Seven Lakes folklore through dialectological mapping and video ethnography.',
+                pdf: 'uploads/records/sample-4-preservation-of-san-pablo-indigenous-fol.pdf'
+            },
+            104: {
+                id: '#RP-104',
+                title: 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency',
+                proponent: 'Prof. Raymond Cruz',
+                college: 'College of Business and Accountancy',
+                grant: 'PHP 95,000.00',
+                status: 'Under Review',
+                riuh: 'Pending Director Assessment',
+                abstract: 'Empirical survey examining financial technology uptake, online logistics barriers, and inventory replenishment patterns among 250 local MSMEs.',
+                pdf: 'uploads/records/sample-5-micro-enterprise-e-commerce-adoption-and.pdf'
+            },
+            105: {
+                id: '#RP-105',
+                title: 'Pedagogical Framework for Multilingual Math Instruction in Secondary Schools',
+                proponent: 'Dr. Elena Santos',
+                college: 'College of Teacher Education',
+                grant: 'PHP 110,000.00',
+                status: 'Approved',
+                riuh: 'Passed RIUH (89.5%)',
+                abstract: 'Mixed-methods evaluation of mother-tongue and English code-switching in enhancing mathematical conceptual reasoning.',
+                pdf: 'uploads/records/sample-7-pedagogical-framework-for-multilingual-m.pdf'
+            },
+            106: {
+                id: '#RP-106',
+                title: 'Internal Audit Compliance and Public Procurement Governance in LGUs',
+                proponent: 'Atty. Ricardo Santos',
+                college: 'College of Public Administration and Governance',
+                grant: 'PHP 90,000.00',
+                status: 'Under Review',
+                riuh: 'Pending Review',
+                abstract: 'Assessment of internal control mechanisms, procurement transparency metrics, and electronic audit trails in local municipal offices.',
+                pdf: 'uploads/records/sample-9-internal-audit-compliance-and-public-pro.pdf'
+            }
+        };
+
+        function openDetails(id) {
+            const data = proposalsData[id];
+            if (!data) return;
+            const modal = document.getElementById('detailsModal');
+            document.getElementById('modalTitle').textContent = data.id + ': ' + data.title;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 18px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">Proponent</span>
+                            <strong style="color: #0f172a;">${data.proponent}</strong>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">College Unit</span>
+                            <strong style="color: #0f172a;">${data.college}</strong>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">Grant Allocation</span>
+                            <strong style="color: #15803d;">${data.grant}</strong>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block;">RIUH Status</span>
+                            <strong style="color: #0284c7;">${data.riuh}</strong>
+                        </div>
+                    </div>
+                </div>
+                <h4 style="margin: 0 0 6px; color: #0f172a; font-size: 0.95rem;">Abstract</h4>
+                <p style="color: #334155; font-size: 0.9rem; margin-bottom: 20px;">${data.abstract}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                    <span style="font-size: 0.82rem; color: #64748b;"><i class="ri-attachment-line"></i> Attached Proposal Document</span>
+                    <a href="${data.pdf}" target="_blank" class="btn" style="padding: 8px 14px; border-radius: 8px; background: #15803d; color: #fff; text-decoration: none; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ri-file-pdf-line"></i> Preview / Download Document
+                    </a>
+                </div>
+            `;
+            modal.showModal();
+        }
+
+        function openAddModal() {
+            document.getElementById('addModal').showModal();
+        }
+
+        function handleNewProposal(e) {
+            e.preventDefault();
+            const title = document.getElementById('newTitle').value;
+            const proponents = document.getElementById('newProponents').value;
+            const college = document.getElementById('newCollege').value;
+            const budget = document.getElementById('newBudget').value || 'PHP 100,000.00';
+            const newId = 100 + Math.floor(Math.random() * 899);
+
+            proposalsData[newId] = {
+                id: '#RP-' + newId,
+                title: title,
+                proponent: proponents,
+                college: college,
+                grant: budget,
+                status: 'Pending Coordinator Review',
+                riuh: 'Initial Screening',
+                abstract: 'Recently submitted proposal by ' + proponents + '.',
+                pdf: 'uploads/records/sample-1-ai-driven-crop-disease-detection.pdf'
+            };
+
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.style.borderBottom = '1px solid #f1f5f9';
+            newRow.innerHTML = `
+                <td style="padding: 14px 10px; font-weight: 700; color: #64748b;">#RP-${newId}</td>
+                <td style="padding: 14px 10px;">
+                    <div style="font-weight: 700; color: #0f172a;">${title}</div>
+                    <small style="color: #64748b;">Lead: ${proponents}</small>
+                </td>
+                <td style="padding: 14px 10px; color: #334155;">${college}</td>
+                <td style="padding: 14px 10px; font-weight: 700; color: #15803d;">${budget}</td>
+                <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Pending</span></td>
+                <td style="padding: 14px 10px;">
+                    <button type="button" class="btn" onclick="openDetails(${newId})" style="padding: 6px 12px; border-radius: 6px; background: #f1f5f9; color: #0f172a; font-size: 0.8rem; font-weight: 700; border: 1px solid #cbd5e1; cursor: pointer;">
+                        <i class="ri-eye-line"></i> Details
+                    </button>
+                </td>
+            `;
+            tbody.prepend(newRow);
+            document.getElementById('addModal').close();
+            alert('Proposal successfully submitted and listed!');
+        }
+
+        function filterTable() {
+            const query = document.getElementById('tableSearch').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#tableBody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const matchesQuery = text.includes(query);
+                const matchesStatus = status === 'all' || text.includes(status.toLowerCase());
+                if (matchesQuery && matchesStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            document.getElementById('recordCount').textContent = `Showing ${visibleCount} Proposals`;
+        }
+    </script>
+</body>
+</html>

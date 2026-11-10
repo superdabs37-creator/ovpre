@@ -1,51 +1,66 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.php": {
-      "runtime": "vercel-php@0.7.2"
-    },
-    "*.php": {
-      "runtime": "vercel-php@0.7.2"
-    },
-    "*/*.php": {
-      "runtime": "vercel-php@0.7.2"
-    },
-    "role-portal/pages/*.php": {
-      "runtime": "vercel-php@0.7.2"
-    }
-  },
+  "cleanUrls": true,
   "routes": [
     {
-      "src": "^/(config\\.local\\.php|.*\\.(sql|ini|log))$",
-      "status": 403
-    },
-    {
-      "src": "^/(includes|vendor|scratch)/.*",
-      "status": 403
-    },
-    {
       "src": "^/$",
-      "dest": "/landing.php"
+      "dest": "/index.html"
     },
     {
-      "src": "^/research-director(/.*)?$",
-      "dest": "/dashboard.php"
+      "src": "^/landing$",
+      "dest": "/index.html"
     },
     {
-      "src": "^/extension-director(/.*)?$",
-      "dest": "/dashboard.php"
+      "src": "^/login$",
+      "dest": "/login.html"
+    },
+    {
+      "src": "^/register$",
+      "dest": "/register.html"
+    },
+    {
+      "src": "^/dashboard$",
+      "dest": "/dashboard.html"
+    },
+    {
+      "src": "^/research$",
+      "dest": "/research.html"
+    },
+    {
+      "src": "^/extension$",
+      "dest": "/extension.html"
+    },
+    {
+      "src": "^/admin-settings$",
+      "dest": "/admin-settings.html"
+    },
+    {
+      "src": "^/admin-documents$",
+      "dest": "/admin-documents.html"
+    },
+    {
+      "src": "^/announcements$",
+      "dest": "/announcements.html"
+    },
+    {
+      "src": "^/activities$",
+      "dest": "/activities.html"
+    },
+    {
+      "src": "^/notifications$",
+      "dest": "/notifications.html"
     },
     {
       "src": "^/assets/(.*)",
       "dest": "/assets/$1"
     },
     {
-      "src": "^/role-portal/assets/(.*)",
-      "dest": "/role-portal/assets/$1"
-    },
-    {
       "src": "^/uploads/(.*)",
       "dest": "/uploads/$1"
+    },
+    {
+      "src": "^/(.*)\\.html$",
+      "dest": "/$1.html"
     },
     {
       "src": "^/(.*)",

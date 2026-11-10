@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="login-body">
+    <main class="login-shell" style="max-width: 520px;">
+        <section class="login-card" style="padding: 30px;">
+            <div class="login-logo">
+                <img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo">
+            </div>
+            <div class="login-copy">
+                <p>Office of the Vice President for Research and Extension</p>
+                <h1>Create an Account</h1>
+            </div>
+
+            <div id="regAlert" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 12px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem; align-items: center; gap: 8px;">
+                <i class="ri-checkbox-circle-line" style="font-size: 1.2rem;"></i> Account created and activated! Redirecting to login...
+            </div>
+
+            <form class="login-form" id="registerForm">
+                <label for="fullname">Full Name</label>
+                <div class="input-control">
+                    <i class="ri-user-line"></i>
+                    <input type="text" id="fullname" name="fullname" placeholder="Prof. Juan Dela Cruz" required>
+                </div>
+
+                <label for="email">Institutional Email</label>
+                <div class="input-control">
+                    <i class="ri-mail-line"></i>
+                    <input type="email" id="email" name="email" placeholder="juan.delacruz@plsp.edu.ph" required>
+                </div>
+
+                <label for="department">College / Department</label>
+                <div class="input-control">
+                    <i class="ri-government-line"></i>
+                    <select id="department" name="department_id" style="width: 100%; border: none; background: transparent; font-size: 0.9rem; outline: none; padding: 8px 0; color: #1e293b;" required>
+                        <option value="">Select College / Unit</option>
+                        <option value="1">College of Computer Studies and Technology (CCST)</option>
+                        <option value="2">College of Engineering (COE)</option>
+                        <option value="3">College of Nursing and Allied Health Sciences (CONAHS)</option>
+                        <option value="4">College of Arts and Sciences (CAS)</option>
+                        <option value="5">College of Business and Accountancy (CBA)</option>
+                        <option value="6">College of Teacher Education (CTE)</option>
+                        <option value="7">College of Criminal Justice Education (CCJE)</option>
+                        <option value="8">College of Tourism and Hospitality Management (CTHM)</option>
+                        <option value="9">College of Public Administration and Governance (CPAG)</option>
+                    </select>
+                </div>
+
+                <label for="role">Requested System Role</label>
+                <div class="input-control">
+                    <i class="ri-shield-user-line"></i>
+                    <select id="role" name="role" style="width: 100%; border: none; background: transparent; font-size: 0.9rem; outline: none; padding: 8px 0; color: #1e293b;" required>
+                        <option value="Faculty Researcher">Faculty Researcher</option>
+                        <option value="Faculty Extensionist">Faculty Extensionist</option>
+                        <option value="Research Coordinator">Research Coordinator</option>
+                        <option value="Extension Coordinator">Extension Coordinator</option>
+                    </select>
+                </div>
+
+                <label for="username">Username</label>
+                <div class="input-control">
+                    <i class="ri-at-line"></i>
+                    <input type="text" id="username" name="username" placeholder="jdelacruz" required>
+                </div>
+
+                <label for="password">Password</label>
+                <div class="input-control">
+                    <i class="ri-lock-line"></i>
+                    <input type="password" id="password" name="password" placeholder="Create strong password" required>
+                </div>
+
+                <button class="primary-btn full-btn" type="submit" id="submitRegBtn" style="margin-top: 10px;">
+                    <i class="ri-user-add-line"></i> Register Account
+                </button>
+
+                <div style="text-align: center; margin: 16px 0 6px; font-size: 0.92rem; color: #64748b;">
+                    Already have an account? <a href="login.html" style="color: #15803d; font-weight: 700; text-decoration: underline;">Sign In here</a>
+                </div>
+
+                <p class="portal-link full-btn">
+                    <a href="index.html"><i class="ri-arrow-left-line"></i> Back to Home</a>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitRegBtn');
+            const regAlert = document.getElementById('regAlert');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Registering...';
+            regAlert.style.display = 'flex';
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 800);
+        });
+    </script>
+</body>
+</html>

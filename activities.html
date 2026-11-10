@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Activities &amp; Events | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="active" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>University Calendar &amp; Activities</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search events...">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span>Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div class="module-header" style="margin-bottom: 22px;">
+                    <div class="module-title">
+                        <h2><i class="ri-calendar-event-line"></i> Research &amp; Extension Calendar</h2>
+                        <p>University schedule for proposal defenses, community outreach drives, and research colloquia.</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;">
+                    <article class="panel" style="padding: 22px; border-radius: 14px; background: #ffffff; border: 1px solid #dbe7df;">
+                        <div style="display: flex; gap: 16px; align-items: flex-start;">
+                            <div style="background: #f0fdf4; border: 1px solid #86efac; color: #15803d; border-radius: 10px; padding: 12px; text-align: center; min-width: 65px;">
+                                <span style="display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">NOV</span>
+                                <strong style="display: block; font-size: 1.5rem; line-height: 1;">18</strong>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0 0 6px; font-size: 1.05rem; color: #0f172a;">2026 Annual Inter-College Research Colloquium</h3>
+                                <p style="margin: 0 0 8px; font-size: 0.85rem; color: #64748b;"><i class="ri-map-pin-line"></i> University Audio-Visual Center</p>
+                                <p style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.5;">Faculty presentation of completed institutional research projects and intellectual property outputs.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="panel" style="padding: 22px; border-radius: 14px; background: #ffffff; border: 1px solid #dbe7df;">
+                        <div style="display: flex; gap: 16px; align-items: flex-start;">
+                            <div style="background: #e0f2fe; border: 1px solid #7dd3fc; color: #0284c7; border-radius: 10px; padding: 12px; text-align: center; min-width: 65px;">
+                                <span style="display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">NOV</span>
+                                <strong style="display: block; font-size: 1.5rem; line-height: 1;">24</strong>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0 0 6px; font-size: 1.05rem; color: #0f172a;">San Pablo Barangay Health &amp; Sanitation Mentorship</h3>
+                                <p style="margin: 0 0 8px; font-size: 0.85rem; color: #64748b;"><i class="ri-map-pin-line"></i> Barangay San Lucas II Covered Court</p>
+                                <p style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.5;">Joint outreach mission by CONAHS and COE deploying low-cost water purification stations.</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

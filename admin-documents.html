@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Records Repository | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="active" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Academic Records Repository</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search records...">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span>Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div class="module-header" style="margin-bottom: 22px;">
+                    <div class="module-title">
+                        <h2><i class="ri-file-search-line"></i> Centralized Records Repository</h2>
+                        <p>Browse official research proposals, publications, terminal accomplishment reports, and university extension agreements.</p>
+                    </div>
+                </div>
+
+                <article class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <div class="table-responsive">
+                        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
+                                    <th style="padding: 12px 10px;">Document Title</th>
+                                    <th style="padding: 12px 10px;">Category</th>
+                                    <th style="padding: 12px 10px;">Author / Proponent</th>
+                                    <th style="padding: 12px 10px;">Date Uploaded</th>
+                                    <th style="padding: 12px 10px;">Format &amp; Action</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-size: 0.88rem;">
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">AI-Driven Early Crop Disease Detection for Calabarzon Farming - Research Document</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research Proposal</span></td>
+                                    <td style="padding: 14px 10px; color: #475569;">Dr. Aris Thorne (CCST)</td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Nov 10, 2026</td>
+                                    <td style="padding: 14px 10px;">
+                                        <a href="uploads/records/sample-1-ai-driven-crop-disease-detection.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-file-pdf-line"></i> Download PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Limnological Assessment and Biodiversity Indices of Lake Pandin and Lake Yambo</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Publication</span></td>
+                                    <td style="padding: 14px 10px; color: #475569;">Dr. Gabriel Mendoza (CAS)</td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Nov 09, 2026</td>
+                                    <td style="padding: 14px 10px;">
+                                        <a href="uploads/records/sample-4-limnological-assessment-and-biodiversity.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-file-pdf-line"></i> Download PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Community Water Filtration System Installation in Barangay San Lucas</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #ccfbf1; color: #0f766e; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Extension Project</span></td>
+                                    <td style="padding: 14px 10px; color: #475569;">Engr. Katrina Valdez (COE)</td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Nov 08, 2026</td>
+                                    <td style="padding: 14px 10px;">
+                                        <a href="uploads/records/sample-2-community-water-filtration-system-instal.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-file-pdf-line"></i> Download PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Terminal Accomplishment Report: Oplan Kalusugan Barangay Health Mission Phase 1</td>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #ffedd5; color: #9a3412; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Accomplishment Report</span></td>
+                                    <td style="padding: 14px 10px; color: #475569;">Prof. Lorna Bautista (CONAHS)</td>
+                                    <td style="padding: 14px 10px; color: #64748b;">Nov 05, 2026</td>
+                                    <td style="padding: 14px 10px;">
+                                        <a href="uploads/records/sample-3-terminal-accomplishment-report-oplan-ka.pdf" target="_blank" class="btn" style="padding: 6px 12px; border-radius: 6px; background: #15803d; color: #fff; text-decoration: none; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="ri-file-pdf-line"></i> Download PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

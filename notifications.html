@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Notifications | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Notifications</h1>
+                </div>
+                <div class="topbar-search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search alerts...">
+                </div>
+                <a class="topbar-icon" href="notifications.html">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span>Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div class="module-header" style="margin-bottom: 22px;">
+                    <div class="module-title">
+                        <h2><i class="ri-notification-3-line"></i> System Alerts &amp; Workflow Notifications</h2>
+                        <p>Track proposal endorsements, director approvals, and document cataloging alerts.</p>
+                    </div>
+                </div>
+
+                <div class="panel" style="padding: 16px 20px; border-radius: 14px; background: #ffffff; border: 1px solid #dbe7df;">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #f1f5f9;">
+                            <span style="width: 36px; height: 36px; border-radius: 8px; background: #dcfce7; color: #15803d; display: inline-grid; place-items: center; font-size: 1.2rem;"><i class="ri-checkbox-circle-line"></i></span>
+                            <div style="flex: 1;">
+                                <strong style="color: #0f172a; font-size: 0.92rem; display: block;">Proposal Endorsement Approved</strong>
+                                <p style="margin: 3px 0 0; color: #475569; font-size: 0.85rem;">The research proposal "AI-Driven Early Crop Disease Detection" was formally endorsed by the Research Director.</p>
+                                <small style="color: #94a3b8; font-size: 0.78rem;">2 hours ago</small>
+                            </div>
+                        </li>
+
+                        <li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid #f1f5f9;">
+                            <span style="width: 36px; height: 36px; border-radius: 8px; background: #e0f2fe; color: #0284c7; display: inline-grid; place-items: center; font-size: 1.2rem;"><i class="ri-file-text-line"></i></span>
+                            <div style="flex: 1;">
+                                <strong style="color: #0f172a; font-size: 0.92rem; display: block;">New Proposal Submitted</strong>
+                                <p style="margin: 3px 0 0; color: #475569; font-size: 0.85rem;">Prof. Lorna Bautista submitted "Pediatric Immunization Hesitancy Dynamics" for screening.</p>
+                                <small style="color: #94a3b8; font-size: 0.78rem;">Yesterday at 3:45 PM</small>
+                            </div>
+                        </li>
+
+                        <li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 0;">
+                            <span style="width: 36px; height: 36px; border-radius: 8px; background: #fef3c7; color: #92400e; display: inline-grid; place-items: center; font-size: 1.2rem;"><i class="ri-information-line"></i></span>
+                            <div style="flex: 1;">
+                                <strong style="color: #0f172a; font-size: 0.92rem; display: block;">System Security Notice</strong>
+                                <p style="margin: 3px 0 0; color: #475569; font-size: 0.85rem;">University two-factor authentication and session security policies are currently active.</p>
+                                <small style="color: #94a3b8; font-size: 0.78rem;">3 days ago</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview Dashboard | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a class="active" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1>Overview Dashboard</h1>
+                </div>
+                <div class="topbar-search" role="search">
+                    <i class="ri-search-line"></i>
+                    <input type="search" placeholder="Search this page" aria-label="Search across accessible records">
+                </div>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" id="profileToggle">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
+                        </div>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html" onclick="sessionStorage.clear(); localStorage.clear();"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div class="module-header" style="margin-bottom: 22px;">
+                    <div class="module-title">
+                        <h2><i class="ri-dashboard-line"></i> University Research &amp; Extension Command Center</h2>
+                        <p>Institutional oversight, KPI intelligence, and inter-college submission tracking.</p>
+                    </div>
+                    <div class="module-actions">
+                        <a href="research.html" class="btn btn-primary" style="background: #15803d; color: #fff; padding: 9px 15px; border-radius: 9px; font-weight: 700; display: inline-flex; align-items: center; gap: 7px; text-decoration: none;">
+                            <i class="ri-add-line"></i> New Proposal
+                        </a>
+                        <a href="admin-documents.html" class="btn" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 9px 15px; border-radius: 9px; font-weight: 700; display: inline-flex; align-items: center; gap: 7px; text-decoration: none;">
+                            <i class="ri-folder-open-line"></i> Browse Records
+                        </a>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     ANALYTICAL KPI SUMMARY CAPSULES (SOLID VIBRANT COLORS)
+                ========================================================= -->
+                <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px;">
+                    <!-- Academic Records -->
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 8px 22px rgba(21, 128, 61, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Academic Records</span>
+                            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                                <i class="ri-file-text-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+                            </span>
+                        </div>
+                        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">25</div>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Cataloged in repository</small>
+                    </div>
+
+                    <!-- Research Proposals -->
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 8px 22px rgba(2, 132, 199, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Research Proposals</span>
+                            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                                <i class="ri-flask-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+                            </span>
+                        </div>
+                        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">16</div>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Faculty submissions</small>
+                    </div>
+
+                    <!-- Extension Initiatives -->
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 8px 22px rgba(13, 148, 136, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Extension Initiatives</span>
+                            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                                <i class="ri-community-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+                            </span>
+                        </div>
+                        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">7</div>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Community outreach</small>
+                    </div>
+
+                    <!-- Colleges Participation -->
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 8px 22px rgba(124, 58, 237, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Colleges Active</span>
+                            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                                <i class="ri-government-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+                            </span>
+                        </div>
+                        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">9 <span style="font-size: 1rem; font-weight: 600; opacity: 0.88;">/ 9</span></div>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Colleges with submissions</small>
+                    </div>
+
+                    <!-- Active Faculty -->
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 18px 20px; border-radius: 16px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 8px 22px rgba(217, 119, 6, 0.24); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9);">Registered Users</span>
+                            <span style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center;">
+                                <i class="ri-team-line" style="font-size: 1.18rem; color: #ffffff;"></i>
+                            </span>
+                        </div>
+                        <div style="font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">15 <span style="font-size: 1rem; font-weight: 600; opacity: 0.88;">/ 15</span></div>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.8rem;">Active accounts</small>
+                    </div>
+                </section>
+
+                <!-- =========================================================
+                     BENCHMARK: SUBMISSIONS BY ACADEMIC COLLEGE
+                ========================================================= -->
+                <article class="panel chart-panel featured-spotlight-card" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); background: #ffffff; padding: 22px 24px;">
+                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px;">
+                        <div>
+                            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 999px; color: #15803d; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                                <i class="ri-sparkling-fill"></i> Primary University Benchmark
+                            </div>
+                            <h2 style="color: #166534; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
+                                <i class="ri-building-line" style="color: #15803d; font-size: 1.45rem;"></i> Submission Analytics by College and Program
+                            </h2>
+                            <span style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 5px;">Submissions mapped across all 9 collegiate departments</span>
+                        </div>
+                        <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
+                            25 Total Submissions
+                        </span>
+                    </div>
+                    <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px;">
+                        <canvas id="collegeSubmissionsChart"></canvas>
+                    </div>
+                </article>
+
+                <!-- =========================================================
+                     ROW 2: TRENDS & STATUS BREAKDOWN
+                ========================================================= -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                    <!-- Monthly Submission Trends -->
+                    <article class="panel chart-panel" style="margin: 0; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 20px 22px;">
+                        <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                            <div>
+                                <h3 style="margin: 0; color: #166534; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                                    <i class="ri-line-chart-line"></i> Monthly Submission Trends
+                                </h3>
+                                <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.82rem;">Research and extension volume over past months</span>
+                            </div>
+                            <span class="badge" style="background: #f0fdf4; color: #166534; padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 700;">Year 2026</span>
+                        </div>
+                        <div style="position: relative; width: 100%; height: 260px;">
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                    </article>
+
+                    <!-- Status Distribution Donut -->
+                    <article class="panel chart-panel" style="margin: 0; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 20px 22px;">
+                        <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                            <div>
+                                <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                                    <i class="ri-pie-chart-2-line" style="color: #15803d;"></i> Submission Status Breakdown
+                                </h3>
+                                <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.82rem;">Current institutional review states</span>
+                            </div>
+                            <span class="badge" style="background: #f1f5f9; color: #334155; padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 700;">23 Active</span>
+                        </div>
+                        <div style="position: relative; width: 100%; height: 260px;">
+                            <canvas id="statusDonutChart"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- =========================================================
+                     RECENT SUBMISSIONS TABLE
+                ========================================================= -->
+                <article class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.18rem; font-weight: 800; color: #0f172a;">Recent Project Submissions</h3>
+                            <span style="font-size: 0.84rem; color: #64748b;">Latest proposals submitted for coordinator and director review</span>
+                        </div>
+                        <a href="research.html" style="font-size: 0.88rem; font-weight: 700; color: #15803d; text-decoration: none;">View all research &rarr;</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
+                                    <th style="padding: 12px 10px;">Type</th>
+                                    <th style="padding: 12px 10px;">Title</th>
+                                    <th style="padding: 12px 10px;">Proponent / College</th>
+                                    <th style="padding: 12px 10px;">Status</th>
+                                    <th style="padding: 12px 10px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-size: 0.88rem;">
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research</span></td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">AI-Driven Early Crop Disease Detection for Calabarzon Farming</td>
+                                    <td style="padding: 14px 10px; color: #475569;">Dr. Aris Thorne <br><small style="color: #94a3b8;">CCST</small></td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill status-approved" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Approved</span></td>
+                                    <td style="padding: 14px 10px;"><a href="research.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #ccfbf1; color: #0f766e; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Extension</span></td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Community Water Filtration System Installation in Barangay San Lucas</td>
+                                    <td style="padding: 14px 10px; color: #475569;">Engr. Katrina Valdez <br><small style="color: #94a3b8;">COE</small></td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
+                                    <td style="padding: 14px 10px;"><a href="extension.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research</span></td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households</td>
+                                    <td style="padding: 14px 10px; color: #475569;">Prof. Lorna Bautista <br><small style="color: #94a3b8;">CONAHS</small></td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Pending Review</span></td>
+                                    <td style="padding: 14px 10px;"><a href="research.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 14px 10px;"><span class="badge" style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem;">Research</span></td>
+                                    <td style="padding: 14px 10px; font-weight: 700; color: #0f172a;">Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</td>
+                                    <td style="padding: 14px 10px; color: #475569;">Prof. Raymond Cruz <br><small style="color: #94a3b8;">CBA</small></td>
+                                    <td style="padding: 14px 10px;"><span class="status-pill" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">Under Review</span></td>
+                                    <td style="padding: 14px 10px;"><a href="research.html" class="btn" style="padding: 5px 12px; border-radius: 6px; background: #f1f5f9; color: #1e293b; font-size: 0.8rem; font-weight: 600; text-decoration: none;">Review</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Profile Dropdown & Sidebar Toggle
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
+
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const appShell = document.getElementById('appShell');
+        if (sidebarToggle && appShell) {
+            sidebarToggle.addEventListener('click', () => {
+                appShell.classList.toggle('sidebar-collapsed');
+            });
+        }
+
+        // Hydrate User from Storage
+        const userJson = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
+        if (userJson) {
+            try {
+                const u = JSON.parse(userJson);
+                if (u.fullname) document.getElementById('userNameDisplay').textContent = u.fullname;
+                if (u.fullname) document.getElementById('dropdownUserName').textContent = u.fullname;
+                if (u.role) document.getElementById('dropdownUserRole').textContent = u.role;
+            } catch(e) {}
+        }
+
+        // Render Charts with Chart.js
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1. College Submissions Horizontal Bar Chart
+            const ctxColleges = document.getElementById('collegeSubmissionsChart');
+            if (ctxColleges) {
+                new Chart(ctxColleges, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            'Computer Studies & Tech (CCST)',
+                            'Engineering (COE)',
+                            'Nursing & Allied Health (CONAHS)',
+                            'Arts and Sciences (CAS)',
+                            'Business & Accountancy (CBA)',
+                            'Teacher Education (CTE)',
+                            'Criminal Justice Education (CCJE)',
+                            'Tourism & Hospitality (CTHM)',
+                            'Public Admin & Governance (CPAG)'
+                        ],
+                        datasets: [
+                            {
+                                label: 'Research Proposals',
+                                data: [3, 2, 2, 2, 2, 2, 2, 1, 1],
+                                backgroundColor: '#0284c7',
+                                borderRadius: 6
+                            },
+                            {
+                                label: 'Extension Initiatives',
+                                data: [1, 1, 1, 0, 1, 1, 1, 1, 1],
+                                backgroundColor: '#0d9488',
+                                borderRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 14, font: { family: 'Inter', weight: 600 } } }
+                        },
+                        scales: {
+                            x: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+                            y: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Inter', weight: 600 } } }
+                        }
+                    }
+                });
+            }
+
+            // 2. Monthly Trend Line Chart
+            const ctxTrend = document.getElementById('monthlyTrendChart');
+            if (ctxTrend) {
+                new Chart(ctxTrend, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                        datasets: [
+                            {
+                                label: 'Research',
+                                data: [1, 2, 1, 3, 2, 4, 3, 2, 3, 4, 3, 2],
+                                borderColor: '#0284c7',
+                                backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                                fill: true,
+                                tension: 0.35
+                            },
+                            {
+                                label: 'Extension',
+                                data: [0, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1],
+                                borderColor: '#0d9488',
+                                backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                                fill: true,
+                                tension: 0.35
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+                        scales: { y: { beginAtZero: true, grid: { color: '#f8fafc' }, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+
+            // 3. Status Donut Chart
+            const ctxDonut = document.getElementById('statusDonutChart');
+            if (ctxDonut) {
+                new Chart(ctxDonut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Approved', 'Under Review', 'Pending Coordinator', 'Needs Revision'],
+                        datasets: [{
+                            data: [12, 6, 4, 2],
+                            backgroundColor: ['#15803d', '#0284c7', '#d97706', '#ef4444'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { family: 'Inter', weight: 600 } } }
+                        },
+                        cutout: '68%'
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
