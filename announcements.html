@@ -97,55 +97,37 @@
                         </button>
                     </div>
 
-                    <!-- BULK SELECTION TOOLBAR -->
-                    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" id="announcementsSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px;">
-                        <span data-selection-count id="announcementsSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
-                        <form id="bulk-announcementsTable" onsubmit="handleBulkAnnouncementsSubmit(event)" style="margin: 0;">
-                            <span id="bulkAnnouncementsBtnContainer">
-                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcements?');" style="background: #15803d; color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                    <i class="ri-archive-line"></i><span>Archive Selected</span>
-                                </button>
-                            </span>
-                        </form>
-                    </div>
-
-                    <div class="table-scroll" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
-                        <table class="data-table" id="announcementsTable" style="width: 100%; border-collapse: collapse;">
-                            <thead style="background: #ecfdf5;">
-                                <tr style="border-bottom: 1px solid #d1fae5;">
-                                    <th class="table-checkbox-col" style="width: 44px; text-align: center; padding: 12px 8px;">
-                                        <label class="select-all-control">
-                                            <input form="bulk-announcementsTable" type="checkbox" aria-label="Select all announcements" data-select-all="announcementsTable">
-                                            <span>Select all</span>
-                                        </label>
+                    <div class="table-scroll">
+                        <table class="data-table" id="announcementsTable" style="width: 100%; min-width: 860px; border-collapse: collapse;">
+                            <thead style="background: #ecfdf5; border-bottom: 2px solid #bbf7d0;">
+                                <tr style="text-align: left;">
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('title')">
+                                        ANNOUNCEMENT TITLE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('title')">
-                                        ANNOUNCEMENT TITLE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('category')">
+                                        CATEGORY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('category')">
-                                        CATEGORY <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('audience')">
+                                        AUDIENCE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('audience')">
-                                        AUDIENCE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('priority')">
+                                        PRIORITY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('priority')">
-                                        PRIORITY <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('date')">
+                                        PUBLISHED DATE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('date')">
-                                        PUBLISHED DATE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('expiry')">
+                                        EXPIRY DATE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('expiry')">
-                                        EXPIRY DATE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
-                                    </th>
-                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
-                                        MANAGE / ACTION <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center;">
+                                        MANAGE / ACTION <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody id="announcementsTableBody" style="font-size: 0.88rem;">
 
     <tr data-table-row data-priority="High" data-category="Research Call" id="announcement-row-1" style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 14px 14px; max-width: 320px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(1)">Call for Research Proposals: FY 2026 Institutional Seed Funding</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The Office of the Vice President for Research and Extension invites full-time faculty members to submit a...</p>
         </td>
@@ -164,7 +146,7 @@
 
 
     <tr data-table-row data-priority="Medium" data-category="Policy" id="announcement-row-2" style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 14px 14px; max-width: 320px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(2)">Guidelines on Extension Program Liquidation and Impact Reporting</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">All College Extension Coordinators and project heads must submit complete liquidation reports and communi...</p>
         </td>
@@ -183,7 +165,7 @@
 
 
     <tr data-table-row data-priority="Urgent" data-category="Event" id="announcement-row-3" style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 14px 14px; max-width: 320px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(3)">Annual University Research Colloquium & Best Paper Awards 2026</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are w...</p>
         </td>
@@ -202,7 +184,7 @@
 
 
     <tr data-table-row data-priority="High" data-category="Extension Call" id="announcement-row-4" style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 14px 14px; max-width: 320px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(4)">Quarterly Submission Window for Community Extension Proposals</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The fourth quarter submission window for community extension proposals will officially close on November ...</p>
         </td>
@@ -424,15 +406,6 @@
                 archBtn.style.color = '#ffffff';
                 archBtn.style.border = 'none';
             }
-
-            const bulkBtnContainer = document.getElementById('bulkAnnouncementsBtnContainer');
-            if (bulkBtnContainer) {
-                if (tab === 'archived') {
-                    bulkBtnContainer.innerHTML = '<button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit style="color: #15803d; border: 1.5px solid #bbf7d0; background: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore Selected</span></button>';
-                } else {
-                    bulkBtnContainer.innerHTML = '<button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm(\'Archive selected announcements?\');" style="background: #15803d; color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive Selected</span></button>';
-                }
-            }
             renderAnnouncements();
         }
 
@@ -508,7 +481,7 @@
 
             if (!pageItems.length) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 36px; color: #64748b;">No ' + (currentAnnTab === 'active' ? 'published' : 'archived') + ' announcements found.</td>';
+                tr.innerHTML = '<td colspan="7" style="text-align: center; padding: 36px 16px; color: #64748b;"><i class="ri-inbox-line" style="font-size: 2.2rem; display: block; margin-bottom: 8px; color: #94a3b8;"></i> No ' + (currentAnnTab === 'active' ? 'published' : 'archived') + ' announcements found.</td>';
                 tbody.appendChild(tr);
             } else {
                 pageItems.forEach(a => {
@@ -524,17 +497,14 @@
                     ` : `
                         <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                             <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
                         </div>
                     `;
 
                     tr.innerHTML = `
-                        <td class="table-checkbox-col" style="width: 44px; text-align: center; padding: 14px 8px;">
-                            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="${a.id}" aria-label="Select announcement ${a.id}" data-row-select="announcementsTable">
-                        </td>
-                        <td style="padding: 14px 14px; max-width: 320px;">
+                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
                             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(${a.id})">${OVPRE.h(a.title)}</strong>
-                            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">${OVPRE.h(a.content.slice(0, 105))}...</p>
+                            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">${OVPRE.h(a.content.slice(0, 95))}...</p>
                         </td>
                         <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">${OVPRE.h(a.category)}</td>
                         <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">${OVPRE.h(a.audience)}</td>
@@ -563,45 +533,7 @@
                 b.onclick = () => { annPage = i; renderAnnouncements(); };
                 pNumContainer.appendChild(b);
             }
-
-            const selectAll = document.querySelector('[data-select-all="announcementsTable"]');
-            if (selectAll) {
-                selectAll.checked = false;
-                selectAll.indeterminate = false;
-            }
-            const tb = document.querySelector('[data-selection-toolbar="announcementsTable"]');
-            if (tb) {
-                tb.hidden = true;
-                const countBadge = tb.querySelector('[data-selection-count]');
-                if (countBadge) countBadge.textContent = '0 selected';
-            }
-            if (typeof window.initTableSelectionEngine === 'function') {
-                window.initTableSelectionEngine();
-            }
         }
-
-        window.handleBulkAnnouncementsSubmit = function(e) {
-            e.preventDefault();
-            const checkedBoxes = Array.from(document.querySelectorAll('#announcementsTable [data-row-select]:checked'));
-            const ids = checkedBoxes.map(c => Number(c.value));
-            if (!ids.length) {
-                OVPRE.toast('Please select at least one announcement.', 'error');
-                return;
-            }
-            const submitBtn = e.submitter || document.activeElement;
-            const action = (submitBtn && submitBtn.value) ? submitBtn.value : (currentAnnTab === 'archived' ? 'restore' : 'archive');
-            const all = getStoredAnnouncements();
-            ids.forEach(id => {
-                const item = all.find(a => a.id === id);
-                if (item) item.archived = (action === 'archive');
-                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
-                    OVPRE_SUPABASE.archiveAnnouncement(id, action === 'archive');
-                }
-            });
-            saveAnnouncements(all);
-            OVPRE.toast(action === 'archive' ? `${ids.length} announcement(s) archived successfully.` : `${ids.length} announcement(s) restored successfully.`, 'success');
-            renderAnnouncements();
-        };
 
         function changeAnnouncePage(delta) {
             annPage += delta;
