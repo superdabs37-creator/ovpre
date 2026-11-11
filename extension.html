@@ -88,12 +88,17 @@
 
                 <!-- ACTIVE / ARCHIVED VIEW SELECTOR (IN WHITE CONTAINER MATCHING SCREENSHOT) -->
                 <section class="panel" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 12px; background: #fff;">
-                    <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
-                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchExtensionTab('active')">
-                            <i class="ri-folder-line"></i><span>Active Projects (<span id="activeCount">6</span>)</span>
-                        </button>
-                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchExtensionTab('archived')">
-                            <i class="ri-archive-line"></i><span>Archived Projects (<span id="archivedCount">1</span>)</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
+                            <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchExtensionTab('active')">
+                                <i class="ri-folder-line"></i><span>Active Projects (<span id="activeCount">6</span>)</span>
+                            </button>
+                            <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchExtensionTab('archived')">
+                                <i class="ri-archive-line"></i><span>Archived Projects (<span id="archivedCount">1</span>)</span>
+                            </button>
+                        </div>
+                        <button type="button" class="primary-btn action-btn" onclick="openCreateProjectModal()" id="btnSubmitProject" style="display: inline-flex; align-items: center; gap: 6px; background: #15803d; color: #fff; font-weight: 600;">
+                            <i class="ri-add-circle-line"></i><span>Submit Extension Proposal</span>
                         </button>
                     </div>
                 </section>
@@ -331,12 +336,58 @@
         </article>
     </div>
 
+    <!-- FACULTY RESUBMIT MODAL -->
+    <div class="modal" id="resubmitExtensionModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card simple-submit-modal" style="max-width: 680px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head">
+                <span class="category-badge" style="background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;">Revision &amp; Resubmission</span>
+                <h2 style="margin: 6px 0;">Resubmit Extension Project Proposal</h2>
+                <p>Stage 1: Revise extension project according to screening feedback and resubmit to College Coordinator</p>
+            </div>
+            <div id="resubmitExtFeedbackBox" style="background: #fff7ed; border-left: 4px solid #ea580c; padding: 12px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 0.88rem;">
+                <strong style="color: #c2410c;"><i class="ri-feedback-line"></i> Reviewer / Coordinator Feedback:</strong>
+                <div id="resubmitExtFeedbackText" style="margin-top: 4px; color: #9a3412; line-height: 1.45;"></div>
+            </div>
+            <form class="editor-panel" id="resubmitExtensionForm" onsubmit="handleResubmitExtensionProject(event)">
+                <input type="hidden" id="resubmitExtProjId" name="id">
+                <div class="form-grid">
+                    <label class="field"><span>Project Title</span><input name="project_title" id="resubmitExtTitle" required></label>
+                    <label class="field"><span>Coordinator / Lead</span><input name="coordinator" id="resubmitExtCoordinator" required></label>
+                    <label class="field"><span>Community Partner / LGU</span><input name="community_partner" id="resubmitExtPartner" required></label>
+                    <label class="field"><span>Location</span><input name="location" id="resubmitExtLocation" required></label>
+                    <label class="field"><span>College / Office</span>
+                        <select name="college" id="resubmitExtCollege" required>
+                            <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                            <option value="College of Business Administration">College of Business Administration</option>
+                            <option value="College of Engineering">College of Engineering</option>
+                            <option value="College of Agriculture">College of Agriculture</option>
+                            <option value="College of Computer Studies">College of Computer Studies</option>
+                            <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                            <option value="College of Teacher Education">College of Teacher Education</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Target Budget (PHP)</span><input type="number" step="0.01" name="budget" id="resubmitExtBudget" required></label>
+                    <label class="field"><span>Start Date</span><input type="date" name="start_date" id="resubmitExtStartDate" required></label>
+                    <label class="field"><span>End Date</span><input type="date" name="end_date" id="resubmitExtEndDate" required></label>
+                </div>
+                <label class="field"><span>Project Description &amp; Beneficiaries</span><textarea rows="4" name="description" id="resubmitExtDescription" required></textarea></label>
+                <label class="field"><span>Upload Revised Document / MOA (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="resubmitExtFile" accept=".pdf,.doc,.docx,.zip"></label>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
+                    <button class="primary-btn post-btn" type="submit" style="background: #0284c7;"><i class="ri-refresh-line"></i> Resubmit to Coordinator</button>
+                </div>
+            </form>
+        </article>
+    </div>
+
     <!-- COORDINATOR SCREENING MODAL -->
     <div class="modal" id="coordModal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-backdrop" data-close-modal></div>
         <form class="modal-card" id="coordForm" onsubmit="handleCoordSubmit(event)" style="max-width: 620px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
-            <h2 style="color: #15803d;"><i class="ri-check-double-line"></i> College Extension Coordinator Screening</h2>
+            <h2 id="coordModalHeading" style="color: #15803d;"><i class="ri-check-double-line"></i> College Extension Coordinator Screening</h2>
             <input type="hidden" id="coordProjId" name="id">
             <p><strong id="coordProjTitle"></strong></p>
             <label class="field"><span>Screening Remarks &amp; Community Alignment:</span>
@@ -584,7 +635,7 @@
         {
                 "id": 6,
                 "title": "STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)",
-                "coordinator": "Prof. Arnel Santos",
+                "coordinator": "Prof. Maria Bautista",
                 "college": "College of Computer Studies",
                 "partner": "Sangguniang Kabataan Federation of San Pablo City",
                 "location": "San Pablo City Youth Center",
@@ -592,14 +643,15 @@
                 "budget": 110000,
                 "approved_budget": 110000,
                 "stage": "Stage 1: Coordinator Screening",
-                "status": "Pending Coordinator Review",
+                "status": "Needs Revision",
                 "progress_status": "Planning",
                 "created_at": "2026-03-20",
                 "start_date": "2026-03-20",
                 "end_date": "2026-05-20",
                 "description": "Introductory Python, micro:bit microcontrollers, and basic electronics workshops aiming at tech apprenticeship pathway.",
-                "coordinator_remarks": "College coordinator reviewing training curriculum modules.",
-                "coordinator_name": "Prof. CCS Coordinator",
+                "coordinator_remarks": "Please provide the formal SK Federation partnership MOA and detailed itemized logistics budget before endorsement.",
+                "coordinator_name": "Prof. Elena Cruz",
+                "coordinator_reviewed_at": "2026-03-22",
                 "document_filename": "STEM_Youth_Bootcamp_Plan.pdf",
                 "archived": false
         },
@@ -659,12 +711,47 @@
             renderTable();
         }
 
+        function getCurrentUserRole() {
+            try {
+                if (window.OVPRE && OVPRE.user) return OVPRE.user().role;
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw).role || 'Super Admin';
+            } catch (e) {}
+            return 'Super Admin';
+        }
+
+        function getCurrentUserFullname() {
+            try {
+                if (window.OVPRE && OVPRE.user) return OVPRE.user().fullname;
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw).fullname || 'Super Administrator';
+            } catch (e) {}
+            return 'Super Administrator';
+        }
+
+        function openCreateProjectModal() {
+            const role = getCurrentUserRole();
+            const fullname = getCurrentUserFullname();
+            const coordInput = document.getElementById('createCoordinator');
+            if (coordInput && (!coordInput.value || coordInput.value.includes('Prof. Elena Cruz'))) {
+                coordInput.value = fullname || 'Faculty Lead';
+            }
+            OVPRE.openModal('createExtensionProjectModal');
+        }
+
         function renderTable() {
             const all = getProjects();
             const activeList = all.filter(p => !p.archived);
             const archivedList = all.filter(p => p.archived);
             document.getElementById('activeCount').textContent = activeList.length;
             document.getElementById('archivedCount').textContent = archivedList.length;
+
+            const userRole = getCurrentUserRole();
+            const isSuperAdmin = (userRole === 'Super Admin' || userRole === 'OVPRE Admin');
+            const isCoordinator = (userRole === 'Extension Coordinator' || isSuperAdmin);
+            const isDirector = (userRole === 'Extension Director' || isSuperAdmin);
+            const isExecutive = isSuperAdmin;
+            const isFaculty = (userRole === 'Faculty Extensionist' || userRole === 'User');
 
             const list = currentTab === 'active' ? activeList : archivedList;
             const tbody = document.getElementById('extensionProjectsBody');
@@ -696,10 +783,51 @@
 
                     let actionsHtml = '';
                     if (currentTab === 'active') {
+                        let workflowBtns = '';
+
+                        // Stage 1: Coordinator Screening (Coordinator or Super Admin)
+                        if (isCoordinator && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse project to Extension Director">
+                                    <i class="ri-check-double-line"></i><span>Endorse</span>
+                                </button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed;" title="Return to faculty for revision">
+                                    <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                                </button>
+                            `;
+                        }
+                        // Stage 2: Director Evaluation (Director or Super Admin)
+                        else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director Project Evaluation">
+                                    <i class="ri-award-line"></i><span>Evaluate</span>
+                                </button>
+                            `;
+                        }
+                        // Stage 3: Executive Final Approval (Super Admin / Executive)
+                        else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
+                                    <i class="ri-shield-check-line"></i><span>Approve</span>
+                                </button>
+                            `;
+                        }
+                        // Faculty Resubmission (on Needs Revision)
+                        else if ((isFaculty || isSuperAdmin) && pStatus === 'Needs Revision') {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised extension project">
+                                    <i class="ri-refresh-line"></i><span>Resubmit</span>
+                                </button>
+                            `;
+                        }
+
                         actionsHtml = `
-                            <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-                                <i class="ri-eye-line"></i><span>Details</span>
-                            </button>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                ${workflowBtns}
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <i class="ri-eye-line"></i><span>Details</span>
+                                </button>
+                            </div>
                         `;
                     } else {
                         actionsHtml = `
@@ -744,7 +872,7 @@
         }
 
         // --- SUBMIT EXTENSION PROPOSAL ---
-        function handleCreateExtensionProject(event) {
+        async function handleCreateExtensionProject(event) {
             event.preventDefault();
             const title = document.getElementById('createTitle').value.trim();
             const coordinator = document.getElementById('createCoordinator').value.trim();
@@ -755,10 +883,25 @@
             const startDate = document.getElementById('createStartDate').value;
             const endDate = document.getElementById('createEndDate').value;
             const description = document.getElementById('createDescription').value.trim();
+            const fileInput = document.getElementById('createFile');
+            const file = fileInput && fileInput.files && fileInput.files[0];
+
+            let docFilename = file ? file.name : (title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
+            let docUrl = '';
+
+            if (file && window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    const uploadRes = await OVPRE_SUPABASE.uploadDocument(file, 'extension');
+                    if (uploadRes && uploadRes.url) {
+                        docUrl = uploadRes.url;
+                    }
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] File upload error:', e);
+                }
+            }
 
             const all = getProjects();
             const newId = (all.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0)) + 1;
-            const docFilename = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf';
 
             const newProject = {
                 id: newId,
@@ -777,15 +920,125 @@
                 created_at: new Date().toISOString().slice(0, 10),
                 description,
                 document_filename: docFilename,
+                document_url: docUrl,
                 archived: false
             };
 
             all.unshift(newProject);
             saveProjects(all);
 
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.createExtensionProject(newProject);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] create error:', e);
+                }
+            }
+
             OVPRE.closeModal('createExtensionProjectModal');
             document.getElementById('createExtensionProjectForm').reset();
             OVPRE.toast('Extension proposal submitted successfully! Routed to College Coordinator.', 'success');
+            renderTable();
+        }
+
+        // --- FACULTY RESUBMIT MODAL & HANDLER ---
+        function openResubmitModal(id) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+
+            document.getElementById('resubmitExtProjId').value = p.id;
+            document.getElementById('resubmitExtTitle').value = p.title || '';
+            document.getElementById('resubmitExtCoordinator').value = p.coordinator || '';
+            document.getElementById('resubmitExtPartner').value = p.partner || '';
+            document.getElementById('resubmitExtLocation').value = p.location || '';
+            document.getElementById('resubmitExtCollege').value = p.college || 'College of Computer Studies';
+            document.getElementById('resubmitExtBudget').value = p.budget || '';
+            document.getElementById('resubmitExtStartDate').value = p.start_date || '';
+            document.getElementById('resubmitExtEndDate').value = p.end_date || '';
+            document.getElementById('resubmitExtDescription').value = p.description || '';
+
+            const feedback = p.director_remarks || p.coordinator_remarks || 'Please address reviewer comments and attach your revised project documentation.';
+            const feedbackEl = document.getElementById('resubmitExtFeedbackText');
+            if (feedbackEl) {
+                feedbackEl.textContent = feedback;
+            }
+            OVPRE.openModal('resubmitExtensionModal');
+        }
+
+        async function handleResubmitExtensionProject(event) {
+            event.preventDefault();
+            const id = Number(document.getElementById('resubmitExtProjId').value);
+            const title = document.getElementById('resubmitExtTitle').value.trim();
+            const coordinator = document.getElementById('resubmitExtCoordinator').value.trim();
+            const partner = document.getElementById('resubmitExtPartner').value.trim();
+            const location = document.getElementById('resubmitExtLocation').value.trim();
+            const college = document.getElementById('resubmitExtCollege').value;
+            const budget = parseFloat(document.getElementById('resubmitExtBudget').value) || 0;
+            const startDate = document.getElementById('resubmitExtStartDate').value;
+            const endDate = document.getElementById('resubmitExtEndDate').value;
+            const description = document.getElementById('resubmitExtDescription').value.trim();
+            const fileInput = document.getElementById('resubmitExtFile');
+            const file = fileInput && fileInput.files && fileInput.files[0];
+
+            const all = getProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+
+            let docFilename = p.document_filename;
+            let docUrl = p.document_url || '';
+
+            if (file) {
+                docFilename = file.name;
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    try {
+                        const uploadRes = await OVPRE_SUPABASE.uploadDocument(file, 'extension');
+                        if (uploadRes && uploadRes.url) {
+                            docUrl = uploadRes.url;
+                        }
+                    } catch (e) {
+                        console.warn('[OVPRE Supabase] File upload error:', e);
+                    }
+                }
+            }
+
+            p.title = title;
+            p.coordinator = coordinator;
+            p.partner = partner;
+            p.location = location;
+            p.college = college;
+            p.budget = budget;
+            p.approved_budget = budget;
+            p.start_date = startDate || p.start_date;
+            p.end_date = endDate || p.end_date;
+            p.description = description;
+            p.document_filename = docFilename;
+            p.document_url = docUrl;
+            p.status = 'Pending Coordinator Review';
+            p.stage = 'Stage 1: Coordinator Screening';
+            p.resubmitted_at = new Date().toISOString().slice(0, 10);
+
+            saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, {
+                        project_title: title,
+                        coordinator,
+                        community_partner: partner,
+                        location,
+                        budget,
+                        status: 'Pending Coordinator Review',
+                        workflow_stage: 'Stage 1: Coordinator Screening',
+                        status_remarks: 'Revised and resubmitted by proponent'
+                    });
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
+            OVPRE.closeModal('resubmitExtensionModal');
+            OVPRE.toast('Revised extension project resubmitted to College Coordinator successfully!', 'success');
             renderTable();
         }
 
@@ -797,10 +1050,21 @@
             document.getElementById('coordProjId').value = p.id;
             document.getElementById('coordProjTitle').textContent = p.title;
             document.getElementById('coordRemarks').value = p.coordinator_remarks || '';
+
+            const heading = document.getElementById('coordModalHeading');
+            if (heading) {
+                if (isRevisionOnly) {
+                    heading.style.color = '#c2410c';
+                    heading.innerHTML = '<i class="ri-arrow-go-back-line"></i> Return Project for Faculty Revision';
+                } else {
+                    heading.style.color = '#15803d';
+                    heading.innerHTML = '<i class="ri-check-double-line"></i> College Extension Coordinator Screening';
+                }
+            }
             OVPRE.openModal('coordModal');
         }
 
-        function handleCoordSubmit(event) {
+        async function handleCoordSubmit(event) {
             event.preventDefault();
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'endorse';
@@ -811,25 +1075,45 @@
             const p = all.find(item => item.id === id);
             if (!p) return;
 
+            const fullname = getCurrentUserFullname();
             p.coordinator_remarks = remarks;
-            p.coordinator_name = "College Coordinator";
+            p.coordinator_name = fullname || "College Coordinator";
             p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            let supabaseUpdates = {
+                status_remarks: remarks
+            };
 
             if (action === 'endorse') {
                 p.status = 'Pending Director Review';
                 p.stage = 'Stage 2: Director Evaluation';
+                supabaseUpdates.status = 'Pending Director Review';
+                supabaseUpdates.workflow_stage = 'Stage 2: Director Evaluation';
                 OVPRE.toast('Project endorsed to Extension Director!', 'success');
             } else if (action === 'revision') {
                 p.status = 'Needs Revision';
                 p.stage = 'Stage 1: Coordinator Screening';
+                supabaseUpdates.status = 'Needs Revision';
+                supabaseUpdates.workflow_stage = 'Stage 1: Coordinator Screening';
                 OVPRE.toast('Project returned to faculty for revision.', 'info');
             } else if (action === 'decline') {
                 p.status = 'Declined';
                 p.stage = 'Terminated';
+                supabaseUpdates.status = 'Declined';
+                supabaseUpdates.workflow_stage = 'Terminated';
                 OVPRE.toast('Project declined at college screening stage.', 'error');
             }
 
             saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, supabaseUpdates);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
             OVPRE.closeModal('coordModal');
             renderTable();
         }
@@ -847,7 +1131,7 @@
             OVPRE.openModal('dirModal');
         }
 
-        function handleDirSubmit(event) {
+        async function handleDirSubmit(event) {
             event.preventDefault();
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'endorse';
@@ -860,27 +1144,49 @@
             const p = all.find(item => item.id === id);
             if (!p) return;
 
+            const fullname = getCurrentUserFullname();
             p.evaluation_rating = rating;
             p.approved_budget = appBudget;
             p.director_remarks = remarks;
-            p.director_name = "Dr. Maricel Gomez";
+            p.director_name = fullname || "Dr. Maricel Gomez";
             p.director_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            let supabaseUpdates = {
+                status_remarks: remarks,
+                evaluation_rating: parseFloat(rating) || null,
+                approved_budget: appBudget
+            };
 
             if (action === 'endorse') {
                 p.status = 'Pending Executive Approval';
                 p.stage = 'Stage 3: Executive Approval';
+                supabaseUpdates.status = 'Pending Executive Approval';
+                supabaseUpdates.workflow_stage = 'Stage 3: Executive Approval';
                 OVPRE.toast('Extension Director evaluation completed. Endorsed to Executive VP!', 'success');
             } else if (action === 'revision') {
                 p.status = 'Needs Revision';
                 p.stage = 'Stage 1: Coordinator Screening';
+                supabaseUpdates.status = 'Needs Revision';
+                supabaseUpdates.workflow_stage = 'Stage 1: Coordinator Screening';
                 OVPRE.toast('Project returned for revision by Director.', 'info');
             } else if (action === 'decline') {
                 p.status = 'Declined';
                 p.stage = 'Terminated';
+                supabaseUpdates.status = 'Declined';
+                supabaseUpdates.workflow_stage = 'Terminated';
                 OVPRE.toast('Project declined by Extension Director.', 'error');
             }
 
             saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, supabaseUpdates);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
             OVPRE.closeModal('dirModal');
             renderTable();
         }
@@ -896,7 +1202,7 @@
             OVPRE.openModal('execModal');
         }
 
-        function handleExecSubmit(event) {
+        async function handleExecSubmit(event) {
             event.preventDefault();
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'approve';
@@ -907,22 +1213,41 @@
             const p = all.find(item => item.id === id);
             if (!p) return;
 
+            const fullname = getCurrentUserFullname();
             p.executive_remarks = remarks;
-            p.executive_name = "Super Administrator";
+            p.executive_name = fullname || "Super Administrator";
             p.executive_approved_at = new Date().toISOString().slice(0, 10);
+
+            let supabaseUpdates = {
+                status_remarks: remarks
+            };
 
             if (action === 'approve') {
                 p.status = 'Approved';
                 p.stage = 'Completed';
                 p.progress_status = 'Ongoing';
+                supabaseUpdates.status = 'Approved';
+                supabaseUpdates.workflow_stage = 'Completed';
+                supabaseUpdates.progress_status = 'Ongoing';
                 OVPRE.toast('Final Executive Approval granted! Extension project is officially approved.', 'success');
             } else {
                 p.status = 'Declined';
                 p.stage = 'Terminated';
+                supabaseUpdates.status = 'Declined';
+                supabaseUpdates.workflow_stage = 'Terminated';
                 OVPRE.toast('Project disapproved by Executive Office.', 'error');
             }
 
             saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, supabaseUpdates);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
             OVPRE.closeModal('execModal');
             renderTable();
         }

@@ -371,67 +371,45 @@
     }
 
     function adaptResearchPage(config, user) {
-        const welcomePanel = document.querySelector('.welcome-panel');
-        if (welcomePanel) {
-            const h2 = welcomePanel.querySelector('h2');
-            const p = welcomePanel.querySelector('p');
+        const headerEl = document.querySelector('.module-header') || document.querySelector('.welcome-panel');
+        if (headerEl) {
+            const h2 = headerEl.querySelector('h2');
+            const sub = headerEl.querySelector('span, p');
 
             if (config.roleName === 'Faculty Researcher') {
-                if (h2) h2.innerHTML = `<i class="ri-flask-line" style="color: #15803d;"></i> My Research Proposals &amp; Grants`;
-                if (p) p.textContent = `Submit institutional research proposals, track college coordinator endorsements, and monitor grant disbursement status.`;
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Proponent View</span>`;
+                if (sub) sub.textContent = `Academic Pipeline: Submit Proposal &rarr; College Coordinator Screening &rarr; Director Evaluation &rarr; Executive Approval`;
             } else if (config.roleName === 'Research Coordinator') {
-                if (h2) h2.innerHTML = `<i class="ri-flask-line" style="color: #15803d;"></i> College Research Screening &amp; Endorsements`;
-                if (p) p.textContent = `Screen faculty proposals submitted from your college, verify ethical compliance, and endorse to the Research Director.`;
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #15803d; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Coordinator Screening</span>`;
+                if (sub) sub.textContent = `Stage 1: Screen proposals, endorse to Research Director, or return to faculty for revision.`;
             } else if (config.roleName === 'Research Director') {
-                if (h2) h2.innerHTML = `<i class="ri-flask-line" style="color: #15803d;"></i> Institutional Research Evaluation &amp; Approvals`;
-                if (p) p.textContent = `Evaluate endorsed research proposals across all colleges, assign RIUH scores, and recommend executive grant funding.`;
-            } else if (config.roleName.includes('Extension')) {
-                // Extensionist on research page notice
-                const noticeBanner = document.createElement('div');
-                noticeBanner.style.cssText = 'background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1e40af; padding: 12px 18px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;';
-                noticeBanner.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="ri-information-line" style="font-size: 1.25rem;"></i>
-                        <span>You are signed in as <strong>${config.roleName}</strong>. Your main focus is Community Extension Services.</span>
-                    </div>
-                    <a href="extension.html" style="background: #2563eb; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 0.82rem;">
-                        Go to Extension Initiatives <i class="ri-arrow-right-line"></i>
-                    </a>
-                `;
-                welcomePanel.insertAdjacentElement('beforebegin', noticeBanner);
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #1d4ed8; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Director RIUH Review</span>`;
+                if (sub) sub.textContent = `Stage 2: Evaluate endorsed research proposals, enter RIUH rating and budget allocation, and endorse to Executive VP.`;
+            } else if (config.roleName === 'Super Admin' || config.roleName === 'OVPRE Admin') {
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #7e22ce; background: #faf5ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Executive Oversight</span>`;
+                if (sub) sub.textContent = `Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (RIUH) &rarr; Executive Final Approval`;
             }
         }
     }
 
     function adaptExtensionPage(config, user) {
-        const welcomePanel = document.querySelector('.welcome-panel');
-        if (welcomePanel) {
-            const h2 = welcomePanel.querySelector('h2');
-            const p = welcomePanel.querySelector('p');
+        const headerEl = document.querySelector('.module-header') || document.querySelector('.welcome-panel');
+        if (headerEl) {
+            const h2 = headerEl.querySelector('h2');
+            const sub = headerEl.querySelector('span, p');
 
             if (config.roleName === 'Faculty Extensionist') {
-                if (h2) h2.innerHTML = `<i class="ri-community-line" style="color: #0d9488;"></i> My Community Outreach &amp; Extension Projects`;
-                if (p) p.textContent = `Submit community projects, log training milestones, track barangay partnership impact, and submit liquidation reports.`;
+                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #16a34a; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Practitioner View</span>`;
+                if (sub) sub.textContent = `Academic Pipeline: Submit Proposal &rarr; College Coordinator Screening &rarr; Director Evaluation &rarr; Executive Approval`;
             } else if (config.roleName === 'Extension Coordinator') {
-                if (h2) h2.innerHTML = `<i class="ri-community-line" style="color: #0d9488;"></i> College Extension Screening &amp; Coordination`;
-                if (p) p.textContent = `Screen and endorse extension initiatives from your college, monitor community visits, and review impact documentation.`;
+                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #d97706; background: #fffbeb; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Coordinator Screening</span>`;
+                if (sub) sub.textContent = `Stage 1: Screen community project proposals, verify partner viability, and endorse to Director.`;
             } else if (config.roleName === 'Extension Director') {
-                if (h2) h2.innerHTML = `<i class="ri-community-line" style="color: #0d9488;"></i> Institutional Extension Oversight &amp; Evaluation`;
-                if (p) p.textContent = `Evaluate community development programs across all colleges, approve LGU/Barangay MoA clearances, and allocate institutional outreach resources.`;
-            } else if (config.roleName.includes('Research') && config.roleName !== 'Super Admin') {
-                // Researcher on extension page notice
-                const noticeBanner = document.createElement('div');
-                noticeBanner.style.cssText = 'background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1e40af; padding: 12px 18px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;';
-                noticeBanner.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="ri-information-line" style="font-size: 1.25rem;"></i>
-                        <span>You are signed in as <strong>${config.roleName}</strong>. Your main focus is Academic Research Proposals.</span>
-                    </div>
-                    <a href="research.html" style="background: #0284c7; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 0.82rem;">
-                        Go to Research Proposals <i class="ri-arrow-right-line"></i>
-                    </a>
-                `;
-                welcomePanel.insertAdjacentElement('beforebegin', noticeBanner);
+                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #0d9488; background: #f0fdfa; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Director Evaluation</span>`;
+                if (sub) sub.textContent = `Stage 2: Evaluate extension initiatives, assign rating and approved funding allocation, and endorse to Executive VP.`;
+            } else if (config.roleName === 'Super Admin' || config.roleName === 'OVPRE Admin') {
+                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #7e22ce; background: #faf5ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Executive Oversight</span>`;
+                if (sub) sub.textContent = `Academic Pipeline: Faculty Extensionist &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval`;
             }
         }
     }
