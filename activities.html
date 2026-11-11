@@ -459,22 +459,27 @@
                 return !a.archived_at && a.approval_status === 'Approved' && (a.date_to || a.date) >= nowStr;
             });
             approvedActive.sort(function(a, b) { return a.date.localeCompare(b.date); });
-            const next6 = approvedActive.slice(0, 6);
+            const upcomingList = approvedActive.slice(0, 15);
 
-            if (next6.length === 0) {
-                container.innerHTML = '<p class="muted">No upcoming activities yet.</p>';
+            const countEl = document.querySelector('.upcoming-heading span');
+            if (countEl) {
+                countEl.textContent = approvedActive.length + ' upcoming';
+            }
+
+            if (upcomingList.length === 0) {
+                container.innerHTML = '<p class="muted" style="padding: 16px 0; text-align: center; font-size: 0.84rem;">No upcoming activities yet.</p>';
                 return;
             }
 
-            container.innerHTML = next6.map(function(activity) {
+            container.innerHTML = upcomingList.map(function(activity) {
                 const d = new Date(activity.date + 'T00:00:00');
                 const dayNum = String(d.getDate()).padStart(2, '0');
                 const monthShort = d.toLocaleString('en-US', { month: 'short' });
-                return '<article>' +
+                return '<article style="cursor: pointer;" onclick="if(window.activityCalendarInstance){ window.activityCalendarInstance.gotoDate(\'' + activity.date + '\'); }" title="Click to view on calendar">' +
                     '<div class="upcoming-date"><strong>' + dayNum + '</strong><span>' + monthShort + '</span></div>' +
                     '<div>' +
                         '<h3>' + escapeHtml(activity.title) + '</h3>' +
-                        '<p>' + escapeHtml(activity.activity_type) + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + ' | ' + escapeHtml(activity.venue) + '</p>' +
+                        '<p title="' + escapeHtml(activity.activity_type + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + ' | ' + activity.venue) + '">' + escapeHtml(activity.activity_type) + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + ' | ' + escapeHtml(activity.venue) + '</p>' +
                     '</div>' +
                 '</article>';
             }).join('');

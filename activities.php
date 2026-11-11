@@ -275,10 +275,10 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
             <span><i class="legend-dot defense"></i> Project Defense</span>
         </div>
 
-        <div class="panel-heading upcoming-heading"><h2>Upcoming</h2><span>Next 6</span></div>
+        <div class="panel-heading upcoming-heading"><h2>Upcoming</h2><span><?php echo count($upcomingActivities); ?> upcoming</span></div>
         <div class="upcoming-list">
             <?php foreach ($upcomingActivities as $activity): ?>
-                <article>
+                <article style="cursor: pointer;" onclick="if(window.activityCalendarInstance){ window.activityCalendarInstance.gotoDate('<?php echo h($activity['date']); ?>'); }" title="Click to view on calendar">
                     <div class="upcoming-date"><strong><?php echo h(date('d', strtotime($activity['date']))); ?></strong><span><?php echo h(date('M', strtotime($activity['date']))); ?></span></div>
                     <div>
                         <h3><?php echo h($activity['title']); ?></h3>
