@@ -1342,6 +1342,7 @@ if (activityCalendarEl && window.FullCalendar) {
         }
     });
     calendar.render();
+    window.activityCalendarInstance = calendar;
 
     document.querySelectorAll('[data-edit-activity]').forEach((button) => {
         button.addEventListener('click', () => {

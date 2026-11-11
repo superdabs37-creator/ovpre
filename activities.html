@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activities &amp; University Calendar | I-Record</title>
+    <title>Calendar of Activities | I-Record</title>
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
     <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
@@ -37,13 +38,14 @@
                 <span>Executive Administration</span>
             </div>
         </aside>
+
         <div class="page-wrap">
             <header class="topbar">
                 <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="topbar-title">
-                    <h1>Activities & Calendar</h1>
+                    <h1 id="topbarPageTitle">Calendar of Activities</h1>
                 </div>
                 <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
                     <i class="ri-search-line"></i>
@@ -77,477 +79,733 @@
 
             <main class="content-area">
                 <!-- =========================================================
-                     MODULE HEADER
+                     MODULE HEADER (Matching activities.php)
                 ========================================================= -->
-                <section class="module-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
-                    <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #ede9fe; color: #7c3aed; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
-                        <i class="ri-calendar-event-line"></i>
-                    </div>
+                <section class="module-header">
+                    <div class="module-icon"><i class="ri-calendar-event-line"></i></div>
                     <div>
-                        <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #7c3aed;">University Schedules</p>
-                        <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Activities &amp; Academic Calendar</h2>
-                        <span style="font-size: 0.84rem; color: #64748b;">Schedule of research conferences, extension missions, workshops, and compliance milestones.</span>
+                        <p>Schedule Tracking</p>
+                        <h2 id="moduleHeaderTitle">Calendar of Activities</h2>
+                        <span>View activities by month, week, day, or list. Click an event to edit it, or drag it to reschedule.</span>
                     </div>
                 </section>
 
-                <div id="actionToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px;"></div>
+                <div class="notice success" id="activityNotice" style="display: none;"></div>
 
                 <!-- =========================================================
-                     UPCOMING EVENTS & INTERACTIVE CALENDAR
+                     CALENDAR & UPCOMING PANEL (Matching activities.php)
                 ========================================================= -->
-                <div style="display: grid; grid-template-columns: minmax(300px, 340px) 1fr; gap: 20px; margin-bottom: 24px;">
-                    <!-- Left: Next Upcoming Activities -->
-                    <article class="panel" style="margin: 0; padding: 20px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">Upcoming Events</h3>
-                            <span class="badge" style="background: #ede9fe; color: #7c3aed; font-weight: 700; font-size: 0.75rem; padding: 3px 8px; border-radius: 999px;">Next 6</span>
-                        </div>
-                        <div id="upcomingEventsList" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
-                            <!-- Populated by JS -->
-                        </div>
-                    </article>
-
-                    <!-- Right: Interactive Calendar Grid -->
-                    <article class="panel" style="margin: 0; padding: 20px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <h3 id="calMonthYearTitle" style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a;">March 2026</h3>
-                                <button type="button" onclick="goToToday()" style="padding: 4px 10px; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Today</button>
-                            </div>
-                            <div style="display: flex; gap: 6px;">
-                                <button type="button" onclick="changeCalMonth(-1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="ri-arrow-left-s-line"></i></button>
-                                <button type="button" onclick="changeCalMonth(1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="ri-arrow-right-s-line"></i></button>
-                            </div>
+                <section class="calendar-page-layout" id="calendarPageLayout">
+                    <aside class="calendar-side panel">
+                        <div class="calendar-legend fullcalendar-legend" aria-label="Activity type legend">
+                            <span><i class="legend-dot seminar"></i> Seminar</span>
+                            <span><i class="legend-dot"></i> Training / Workshop</span>
+                            <span><i class="legend-dot outreach"></i> Community Outreach</span>
+                            <span><i class="legend-dot defense"></i> Project Defense</span>
                         </div>
 
-                        <!-- 7-column calendar header -->
-                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.78rem; font-weight: 700; color: #64748b; margin-bottom: 8px;">
-                            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                        <div class="panel-heading upcoming-heading"><h2>Upcoming</h2><span>Next 6</span></div>
+                        <div class="upcoming-list" id="upcomingListContainer">
+                            <!-- Populated dynamically -->
                         </div>
-                        <!-- Calendar Days Grid -->
-                        <div id="calendarDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
-                            <!-- Populated by JS -->
-                        </div>
+                        <button class="primary-btn full-btn calendar-create-btn" type="button" data-create-activity><i class="ri-add-circle-line"></i> Add Activity</button>
+                    </aside>
+
+                    <article class="panel fullcalendar-panel">
+                        <div id="activityCalendar"></div>
                     </article>
-                </div>
+                </section>
 
                 <!-- =========================================================
-                     ACTIVITIES DATA TABLE
+                     ALL ACTIVITIES TABLE PANEL (Matching activities.php)
                 ========================================================= -->
-                <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-                        <div class="portal-table-tabs" style="display: flex; gap: 8px;">
-                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchActivityTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #7c3aed; color: #ffffff; cursor: pointer;">
-                                <i class="ri-calendar-line"></i>
-                                <span>Active Activities</span>
-                            </button>
-                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchActivityTab('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
-                                <i class="ri-archive-line"></i>
-                                <span>Archived</span>
-                            </button>
+                <section class="panel">
+                    <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <h2 id="activitiesTableHeading">All Activities</h2>
+                            <span id="activitiesTableCount">5 total activities</span>
                         </div>
+                        <div class="panel-heading-actions" style="display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-left:auto;">
+                            <div class="portal-table-tabs">
+                                <a class="portal-table-tab active" href="#scheduled" id="tabScheduledBtn" onclick="event.preventDefault(); switchActivitiesTab('scheduled');">
+                                    <i class="ri-calendar-event-line"></i>
+                                    <span>Scheduled</span>
+                                    <span class="tab-count" id="scheduledCountBadge">5</span>
+                                </a>
+                                <a class="portal-table-tab" href="#archived" id="tabArchivedBtn" onclick="event.preventDefault(); switchActivitiesTab('archived');">
+                                    <i class="ri-archive-line"></i>
+                                    <span>Archived</span>
+                                    <span class="tab-count" id="archivedCountBadge">0</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <button type="button" class="primary-btn" onclick="openAddActivityModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #7c3aed; color: #ffffff; font-weight: 700; border: none; cursor: pointer; font-size: 0.85rem;">
-                                <i class="ri-calendar-event-line"></i> Add New Activity
-                            </button>
-                        </div>
+                    <!-- Bulk Selection Toolbar for Activities -->
+                    <div class="table-selection-toolbar" data-selection-toolbar="activitiesTable" id="activitiesSelectionToolbar" hidden>
+                        <span data-selection-count id="activitiesSelectedCount">0 selected</span>
+                        <form id="bulk-activitiesTable" data-bulk-selection-form onsubmit="handleBulkActivitiesSubmit(event)">
+                            <input type="hidden" name="action" value="bulk">
+                            <span id="bulkActionButtonContainer">
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected activities from calendar?');">
+                                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                                </button>
+                            </span>
+                        </form>
                     </div>
 
                     <div class="table-scroll">
-                        <table class="data-table" id="activitiesTable" style="width: 100%; border-collapse: collapse;">
+                        <table class="data-table activities-table" id="activitiesTable">
                             <thead>
-                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
-                                    <th style="padding: 12px 10px;">Activity Title</th>
-                                    <th style="padding: 12px 10px;">Type</th>
-                                    <th style="padding: 12px 10px;">Date &amp; Time</th>
-                                    <th style="padding: 12px 10px;">Venue</th>
-                                    <th style="padding: 12px 10px;">College / Audience</th>
-                                    <th style="padding: 12px 10px;">Status</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Manage / Action</th>
+                                <tr>
+                                    <th class="table-checkbox-col">
+                                        <label class="select-all-control">
+                                            <input form="bulk-activitiesTable" type="checkbox" aria-label="Select all activities" data-select-all="activitiesTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>Type</th>
+                                    <th>Venue</th>
+                                    <th>Created By</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="activitiesTableBody" style="font-size: 0.88rem;">
-                                <!-- Populated by JS -->
+                            <tbody id="activitiesTableBody">
+                                <!-- Populated dynamically -->
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
-                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 6 entries</span>
-                        <div style="display: flex; gap: 6px; align-items: center;">
-                            <button type="button" id="prevPageBtn" onclick="changeActPage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
-                            <span id="paginationNumbers" style="display: flex; gap: 4px;"></span>
-                            <button type="button" id="nextPageBtn" onclick="changeActPage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
-                        </div>
                     </div>
                 </section>
             </main>
         </div>
     </div>
 
-    <!-- MODAL: ADD / EDIT ACTIVITY -->
-    <div class="modal" id="activityEditorModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <!-- =========================================================
+         ACTIVITY EDITOR MODAL (Exact match to activities.php lines 404-481)
+    ========================================================= -->
+    <div class="modal" id="activityEditorModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="activityModalTitle">
         <div class="modal-backdrop" data-close-modal></div>
-        <article class="modal-card">
-
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 id="actModalTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Add New Activity</h3>
-            <button type="button" onclick="closeDialog('activityEditorModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleSaveActivity(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 80px); overflow-y: auto;">
-            <input type="hidden" id="editActId">
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Activity Title</label>
-                <input type="text" id="actTitle" required placeholder="Title of the activity / workshop" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Activity Type</label>
-                    <select id="actType" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="Conference">Conference</option>
-                        <option value="Workshop">Workshop</option>
-                        <option value="Extension Outreach">Extension Outreach</option>
-                        <option value="Seminar">Seminar</option>
-                        <option value="Meeting">Meeting</option>
-                    </select>
+        <article class="modal-card activity-modal-card" style="width: min(100%, 720px); max-height: 90vh; overflow-y: auto;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close activity editor"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="category-badge" id="activityModalMode">Activity</span>
+                    <h2 id="activityModalTitle" style="margin: 0; font-size: 1.3rem; font-weight: 800; color: #0f172a;">Edit Activity</h2>
                 </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Unit</label>
-                    <select id="actCollege" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="All Colleges">All Colleges</option>
-                        <option value="CCST">CCST</option>
-                        <option value="COE">COE</option>
-                        <option value="CONAHS">CONAHS</option>
-                        <option value="CBA">CBA</option>
-                        <option value="CAS">CAS</option>
-                        <option value="CTE">CTE</option>
-                    </select>
+                <span id="activityStatusBadge" style="display: none; align-items: center; gap: 5px; padding: 4px 10px; font-size: 0.78rem; font-weight: 700; border-radius: 999px;"></span>
+            </div>
+            <form class="calendar-form" method="post" id="activityEditorForm" onsubmit="handleActivityFormSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="activityAction" value="update">
+                <input type="hidden" name="id" id="activityId">
+                <input type="hidden" name="approval_status" id="activityApprovalStatus" value="Approved">
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Activity Title</span>
+                    <input name="title" id="activityTitle" placeholder="e.g. Annual Faculty Research Colloquium" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                </label>
+                <div class="form-grid" style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px;">
+                    <label class="field" style="margin: 0;">
+                        <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Type</span>
+                        <select name="activity_type" id="activityType" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem; background: #ffffff;">
+                            <option>Seminar</option>
+                            <option>Training</option>
+                            <option>Workshop</option>
+                            <option>Community Outreach</option>
+                            <option>Project Defense</option>
+                        </select>
+                    </label>
+                    <label class="field" style="margin: 0;">
+                        <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Date From</span>
+                        <input type="date" name="date_from" id="activityDateFrom" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                    </label>
+                    <label class="field" style="margin: 0;">
+                        <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Date To</span>
+                        <input type="date" name="date_to" id="activityDateTo" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                    </label>
                 </div>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Date</label>
-                    <input type="date" id="actDate" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Venue / Location</span>
+                    <input name="venue" id="activityVenue" placeholder="e.g. University Gymnasium / Audio-Visual Room" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                </label>
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Activity Details &amp; Objectives</span>
+                    <textarea name="description" id="activityDescription" rows="4" placeholder="Provide background details, objectives, schedule, or instructions for this activity..." style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px 12px; font-size: 0.88rem; line-height: 1.5; resize: vertical;"></textarea>
+                </label>
+                
+                <div class="activity-modal-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; padding-top: 16px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+                    <div class="activity-modal-destructive" style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="archiveActivityButton" onclick="handleArchiveCurrentActivity()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                            <i class="ri-archive-line"></i><span>Archive</span>
+                        </button>
+                        <button type="button" id="rejectActivityButton" onclick="handleRejectCurrentActivity()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                            <i class="ri-close-line"></i><span>Reject</span>
+                        </button>
+                    </div>
+                    <div class="activity-modal-primary" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                        <button type="button" data-close-modal style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 600; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                            Cancel
+                        </button>
+                        <button type="button" id="approveActivityButton" onclick="handleApproveCurrentActivity()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 600; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
+                            <i class="ri-check-line"></i> Approve
+                        </button>
+                        <button type="submit" id="createActivityButton" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="ri-add-circle-line"></i> Add Activity
+                        </button>
+                        <button type="submit" id="saveActivityButton" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <i class="ri-save-line"></i> Save Changes
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Time</label>
-                    <input type="text" id="actTime" value="09:00 AM" placeholder="e.g. 09:00 AM" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Venue / Location</label>
-                <input type="text" id="actVenue" required placeholder="Room / Building / Hall" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Audience</label>
-                <input type="text" id="actAudience" required placeholder="e.g. Faculty, BHWs, Students" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Description &amp; Objectives</label>
-                <textarea id="actDesc" rows="3" placeholder="Brief outline of activity scope..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" onclick="closeDialog('activityEditorModal')" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancel</button>
-                <button type="submit" style="padding: 9px 20px; border-radius: 8px; border: none; background: #7c3aed; color: #fff; font-weight: 700; cursor: pointer;">Save Activity</button>
-            </div>
-        </form>
-    
+            </form>
         </article>
     </div>
 
+    <!-- =========================================================
+         DATA INITIALIZATION & CLIENT LOGIC (Must precede app.js)
+    ========================================================= -->
     <script>
-        let currentActTab = 'active';
-        let actPage = 1;
-        const actPageSize = 6;
-        let calYear = 2026;
-        let calMonth = 2; // March (0-indexed: Jan=0, Feb=1, Mar=2)
+    (function() {
+        const STORAGE_KEY = 'ovpre_calendar_activities';
+        let currentTab = 'scheduled';
 
-        function getStoredActivities() {
+        function getInitialActivities() {
+            return [
+                {
+                    id: 1,
+                    title: 'Annual University Research Colloquium 2026',
+                    activity_type: 'Seminar',
+                    date: '2026-10-28',
+                    date_to: '2026-12-10',
+                    venue: 'University Gymnasium & Performing Arts Auditorium',
+                    description: 'Multi-college academic colloquium and peer review sessions for approved faculty and graduate research studies.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 2,
+                    title: 'Grant Proposal Writing Workshop for Early-Career Faculty',
+                    activity_type: 'Workshop',
+                    date: '2026-11-15',
+                    date_to: '2026-11-17',
+                    venue: 'Audio-Visual Room (AVR), Main Building',
+                    description: 'Capacity building on crafting CHED- and DOST-compliant funding proposals with RIUH evaluation scoring benchmarks.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 3,
+                    title: 'Barangay Health & Livelihood Community Outreach Caravan',
+                    activity_type: 'Community Outreach',
+                    date: '2026-11-22',
+                    date_to: '2026-11-24',
+                    venue: 'Barangay San Lucas Covered Court',
+                    description: 'Inter-college extension mission combining medical screening, digital literacy tutorials, and micro-business counseling.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 4,
+                    title: 'Regional Extension Impact & Assessment Conference',
+                    activity_type: 'Training',
+                    date: '2026-12-05',
+                    date_to: '2026-12-06',
+                    venue: 'University Function Hall, 3rd Floor',
+                    description: 'Annual assessment of completed community extension initiatives, monitoring deliverables and societal impact ratings.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 5,
+                    title: 'Mid-Year Thesis and Dissertation Defense Colloquium',
+                    activity_type: 'Project Defense',
+                    date: '2026-12-12',
+                    date_to: '2026-12-14',
+                    venue: 'Graduate School Amphitheater',
+                    description: 'Oral examination and panel defenses for candidate masters and doctoral research papers.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                }
+            ];
+        }
+
+        function loadActivities() {
             try {
-                const s = localStorage.getItem('ovpre_activities');
-                if (s) return JSON.parse(s);
-            } catch(e) {}
-            localStorage.setItem('ovpre_activities', JSON.stringify([{"id":1,"title":"Annual University Research Colloquium 2026","type":"Conference","date":"2026-03-24","time":"08:30 AM","venue":"University Main Auditorium","college":"All Colleges","audience":"All Faculty & Students","description":"Annual oral and poster presentations of completed institutional and externally funded research outputs.","status":"Approved","archived":false},{"id":2,"title":"Workshop on Scopus/WoS Journal Manuscript Writing & Indexing","type":"Workshop","date":"2026-03-28","time":"01:00 PM","venue":"CCST Multimedia Laboratory","college":"CCST","audience":"Faculty Researchers","description":"Intensive coaching on bibliometrics, peer review response strategies, and high-impact publishing.","status":"Approved","archived":false},{"id":3,"title":"Barangay Water Quality Assessment & Filtration Outreach","type":"Extension Outreach","date":"2026-04-05","time":"09:00 AM","venue":"Barangay San Lucas II Multi-Purpose Hall","college":"COE","audience":"Local Residents & BHWs","description":"Deployment of testing kits and demonstration of low-cost gravity-fed sand water filtration systems.","status":"Approved","archived":false},{"id":4,"title":"Health Systems Grant Proposal Technical Review Meeting","type":"Meeting","date":"2026-04-12","time":"10:00 AM","venue":"OVPRE Conference Room 2B","college":"CONAHS","audience":"CONAHS Faculty Proponents","description":"Technical screening of proposed neonatal health intervention proposals for DOH submission.","status":"Approved","archived":false},{"id":5,"title":"Financial Literacy & Micro-Savings Seminar for Market Vendors","type":"Seminar","date":"2026-04-18","time":"02:00 PM","venue":"Public Market Cooperative Center","college":"CBA","audience":"Market Stallholders","description":"Hands-on practical ledger bookkeeping and micro-enterprise financial budgeting training.","status":"Approved","archived":false},{"id":6,"title":"Cultural Legends and Oral Narratives Validation Workshop","type":"Workshop","date":"2026-04-25","time":"09:00 AM","venue":"San Pablo City Heritage Museum","college":"CTE","audience":"DepEd Teachers & Historians","description":"Contextualization review of folk narratives for Grade 4-6 regional social studies modules.","status":"Approved","archived":false},{"id":7,"title":"Legacy Online Teaching Methods Webinar 2021","type":"Seminar","date":"2021-09-15","time":"02:00 PM","venue":"Zoom Virtual Hall","college":"CTE","audience":"Faculty","description":"Archived faculty training record.","status":"Approved","archived":true}]));
-            return [{"id":1,"title":"Annual University Research Colloquium 2026","type":"Conference","date":"2026-03-24","time":"08:30 AM","venue":"University Main Auditorium","college":"All Colleges","audience":"All Faculty & Students","description":"Annual oral and poster presentations of completed institutional and externally funded research outputs.","status":"Approved","archived":false},{"id":2,"title":"Workshop on Scopus/WoS Journal Manuscript Writing & Indexing","type":"Workshop","date":"2026-03-28","time":"01:00 PM","venue":"CCST Multimedia Laboratory","college":"CCST","audience":"Faculty Researchers","description":"Intensive coaching on bibliometrics, peer review response strategies, and high-impact publishing.","status":"Approved","archived":false},{"id":3,"title":"Barangay Water Quality Assessment & Filtration Outreach","type":"Extension Outreach","date":"2026-04-05","time":"09:00 AM","venue":"Barangay San Lucas II Multi-Purpose Hall","college":"COE","audience":"Local Residents & BHWs","description":"Deployment of testing kits and demonstration of low-cost gravity-fed sand water filtration systems.","status":"Approved","archived":false},{"id":4,"title":"Health Systems Grant Proposal Technical Review Meeting","type":"Meeting","date":"2026-04-12","time":"10:00 AM","venue":"OVPRE Conference Room 2B","college":"CONAHS","audience":"CONAHS Faculty Proponents","description":"Technical screening of proposed neonatal health intervention proposals for DOH submission.","status":"Approved","archived":false},{"id":5,"title":"Financial Literacy & Micro-Savings Seminar for Market Vendors","type":"Seminar","date":"2026-04-18","time":"02:00 PM","venue":"Public Market Cooperative Center","college":"CBA","audience":"Market Stallholders","description":"Hands-on practical ledger bookkeeping and micro-enterprise financial budgeting training.","status":"Approved","archived":false},{"id":6,"title":"Cultural Legends and Oral Narratives Validation Workshop","type":"Workshop","date":"2026-04-25","time":"09:00 AM","venue":"San Pablo City Heritage Museum","college":"CTE","audience":"DepEd Teachers & Historians","description":"Contextualization review of folk narratives for Grade 4-6 regional social studies modules.","status":"Approved","archived":false},{"id":7,"title":"Legacy Online Teaching Methods Webinar 2021","type":"Seminar","date":"2021-09-15","time":"02:00 PM","venue":"Zoom Virtual Hall","college":"CTE","audience":"Faculty","description":"Archived faculty training record.","status":"Approved","archived":true}];
-        }
-
-        function saveActivities(data) {
-            localStorage.setItem('ovpre_activities', JSON.stringify(data));
-        }
-
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('actionToast');
-            t.style.display = 'flex';
-            t.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
-            t.style.border = `1px solid ${type === 'success' ? '#86efac' : '#fecaca'}`;
-            t.style.color = type === 'success' ? '#166534' : '#b91c1c';
-            t.innerHTML = `<i class="${type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line'}"></i> ${msg}`;
-            setTimeout(() => { t.style.display = 'none'; }, 4000);
-        }
-
-        function switchActivityTab(tab) {
-            currentActTab = tab;
-            actPage = 1;
-            document.getElementById('tabActiveBtn').style.background = tab === 'active' ? '#7c3aed' : '#ffffff';
-            document.getElementById('tabActiveBtn').style.color = tab === 'active' ? '#ffffff' : '#475569';
-            document.getElementById('tabArchivedBtn').style.background = tab === 'archived' ? '#7c3aed' : '#ffffff';
-            document.getElementById('tabArchivedBtn').style.color = tab === 'archived' ? '#ffffff' : '#475569';
-            renderActivities();
-        }
-
-        function renderActivities() {
-            const all = getStoredActivities();
-            const activeList = all.filter(a => !a.archived);
-            const archivedList = all.filter(a => a.archived);
-
-            let filtered = currentActTab === 'active' ? activeList : archivedList;
-
-            const searchVal = (document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
-            if (searchVal) {
-                filtered = filtered.filter(a => 
-                    a.title.toLowerCase().includes(searchVal) ||
-                    a.venue.toLowerCase().includes(searchVal) ||
-                    a.college.toLowerCase().includes(searchVal)
-                );
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {
+                console.warn('Could not read activities from localStorage', e);
             }
-
-            const total = filtered.length;
-            const startIdx = (actPage - 1) * actPageSize;
-            const pageItems = filtered.slice(startIdx, startIdx + actPageSize);
-
-            const tbody = document.getElementById('activitiesTableBody');
-            tbody.replaceChildren();
-
-            if (!pageItems.length) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="7" style="text-align: center; padding: 32px; color: #64748b;">No activities found.</td>`;
-                tbody.appendChild(tr);
-            } else {
-                pageItems.forEach(a => {
-                    const tr = document.createElement('tr');
-                    tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
-                    tr.innerHTML = `
-                        <td style="padding: 12px 10px;">
-                            <strong style="color: #0f172a; line-height: 1.4; display: block;">${a.title}</strong>
-                        </td>
-                        <td style="padding: 12px 10px;"><span class="badge" style="background: #ede9fe; color: #6b21a8; font-size: 0.78rem;">${a.type}</span></td>
-                        <td style="padding: 12px 10px; color: #1e293b; font-size: 0.84rem; white-space: nowrap;">${a.date} <br><small style="color:#64748b;">${a.time}</small></td>
-                        <td style="padding: 12px 10px; color: #334155; font-size: 0.84rem;">${a.venue}</td>
-                        <td style="padding: 12px 10px; color: #475569; font-size: 0.82rem;">${a.college} <br><small>${a.audience}</small></td>
-                        <td style="padding: 12px 10px;">
-                            <span class="status-pill status-approved" style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.76rem;">Approved</span>
-                        </td>
-                        <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
-                            <button type="button" class="btn" onclick="openEditActivityModal(${a.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #ede9fe; border: 1px solid #c4b5fd; color: #7c3aed; border-radius: 6px; cursor: pointer; margin-right: 4px;">Edit</button>
-                            <button type="button" class="btn" onclick="toggleArchiveActivity(${a.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #fff; border: 1px solid #cbd5e1; color: ${a.archived ? '#15803d' : '#b45309'}; border-radius: 6px; cursor: pointer;">${a.archived ? 'Restore' : 'Archive'}</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            // Pagination
-            const pageCount = Math.max(1, Math.ceil(total / actPageSize));
-            document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + actPageSize, total)} of ${total} entries` : 'No records';
-            document.getElementById('prevPageBtn').disabled = actPage <= 1;
-            document.getElementById('nextPageBtn').disabled = actPage >= pageCount;
-
-            const pNumContainer = document.getElementById('paginationNumbers');
-            pNumContainer.replaceChildren();
-            for (let i = 1; i <= pageCount; i++) {
-                const b = document.createElement('button');
-                b.textContent = i;
-                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === actPage ? 'background: #7c3aed; color: #fff;' : 'background: #fff; color: #1e293b;'}`;
-                b.onclick = () => { actPage = i; renderActivities(); };
-                pNumContainer.appendChild(b);
-            }
-
-            renderUpcomingList(activeList);
-            renderCalendarGrid(activeList);
+            const initial = getInitialActivities();
+            saveActivities(initial);
+            return initial;
         }
 
-        function changeActPage(delta) {
-            actPage += delta;
-            renderActivities();
+        function saveActivities(items) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            } catch (e) {
+                console.warn('Could not save activities to localStorage', e);
+            }
+        }
+
+        const eventColors = {
+            'Seminar': '#15803d',
+            'Training': '#2563eb',
+            'Workshop': '#0891b2',
+            'Community Outreach': '#b45309',
+            'Project Defense': '#7c3aed'
+        };
+
+        function toCalendarEvent(activity) {
+            const type = activity.activity_type || 'Seminar';
+            const color = eventColors[type] || '#15803d';
+            const endBase = activity.date_to || activity.date;
+            const endDate = new Date(endBase + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + 1);
+            const endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
+
+            return {
+                id: String(activity.id),
+                title: activity.title,
+                start: activity.date,
+                end: endStr,
+                allDay: true,
+                backgroundColor: color,
+                borderColor: color,
+                textColor: '#ffffff',
+                extendedProps: {
+                    type: type,
+                    approvalStatus: activity.approval_status || 'Approved',
+                    venue: activity.venue || '',
+                    description: activity.description || '',
+                    date: activity.date,
+                    dateTo: activity.date_to || activity.date
+                }
+            };
+        }
+
+        function formatUpcomingDateRange(dateFromStr, dateToStr) {
+            const d1 = new Date(dateFromStr + 'T00:00:00');
+            const d2 = dateToStr ? new Date(dateToStr + 'T00:00:00') : d1;
+            const m1 = d1.toLocaleString('en-US', { month: 'short' });
+            const day1 = String(d1.getDate()).padStart(2, '0');
+            if (!dateToStr || dateFromStr === dateToStr) {
+                return m1 + ' ' + day1;
+            }
+            const m2 = d2.toLocaleString('en-US', { month: 'short' });
+            const day2 = String(d2.getDate()).padStart(2, '0');
+            return m1 + ' ' + day1 + ' – ' + m2 + ' ' + day2 + ', ' + d2.getFullYear();
+        }
+
+        function formatTableDate(dateFromStr, dateToStr) {
+            const d1 = new Date(dateFromStr + 'T00:00:00');
+            const m1 = d1.toLocaleString('en-US', { month: 'short' });
+            const day1 = String(d1.getDate()).padStart(2, '0');
+            const y1 = d1.getFullYear();
+            if (!dateToStr || dateFromStr === dateToStr) {
+                return m1 + ' ' + day1 + ', ' + y1;
+            }
+            const d2 = new Date(dateToStr + 'T00:00:00');
+            const m2 = d2.toLocaleString('en-US', { month: 'short' });
+            const day2 = String(d2.getDate()).padStart(2, '0');
+            const y2 = d2.getFullYear();
+            return m1 + ' ' + day1 + ', ' + y1 + ' – ' + m2 + ' ' + day2 + ', ' + y2;
+        }
+
+        function escapeHtml(text) {
+            return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showNotice(type, msg) {
+            const noticeEl = document.getElementById('activityNotice');
+            if (noticeEl) {
+                noticeEl.className = 'notice ' + type;
+                noticeEl.textContent = msg;
+                noticeEl.style.display = 'block';
+                noticeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                setTimeout(function() {
+                    noticeEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function refreshGlobals(activities) {
+            const activeOnly = activities.filter(function(a) { return !a.archived_at && a.approval_status === 'Approved'; });
+            const allActive = activities.filter(function(a) { return !a.archived_at; });
+            window.activityCalendarEvents = activeOnly.map(toCalendarEvent);
+            window.activityEditorEvents = allActive.map(toCalendarEvent);
+
+            if (window.activityCalendarInstance) {
+                window.activityCalendarInstance.removeAllEvents();
+                window.activityCalendarInstance.addEventSource(window.activityCalendarEvents);
+            }
         }
 
         function renderUpcomingList(activities) {
-            const listContainer = document.getElementById('upcomingEventsList');
-            if (!listContainer) return;
-            listContainer.replaceChildren();
-
-            const sorted = [...activities].sort((a,b) => a.date.localeCompare(b.date)).slice(0, 6);
-            sorted.forEach(a => {
-                const item = document.createElement('div');
-                item.style.cssText = 'padding: 10px 12px; border: 1px solid #f1f5f9; border-radius: 10px; background: #f8fafc; display: flex; gap: 10px; align-items: flex-start;';
-                item.innerHTML = `
-                    <div style="background: #ede9fe; color: #7c3aed; border-radius: 8px; padding: 6px 10px; text-align: center; flex-shrink: 0;">
-                        <span style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">${new Date(a.date).toLocaleString('default', { month: 'short' })}</span>
-                        <strong style="font-size: 1.15rem; line-height: 1;">${a.date.slice(8, 10)}</strong>
-                    </div>
-                    <div style="flex: 1; min-width: 0;">
-                        <h4 style="margin: 0 0 2px; font-size: 0.86rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${a.title}</h4>
-                        <span style="font-size: 0.76rem; color: #64748b;"><i class="ri-map-pin-line"></i> ${a.venue}</span>
-                    </div>
-                `;
-                listContainer.appendChild(item);
+            const container = document.getElementById('upcomingListContainer');
+            if (!container) return;
+            const nowStr = new Date().toISOString().slice(0, 10);
+            const approvedActive = activities.filter(function(a) {
+                return !a.archived_at && a.approval_status === 'Approved' && (a.date_to || a.date) >= nowStr;
             });
-        }
+            approvedActive.sort(function(a, b) { return a.date.localeCompare(b.date); });
+            const next6 = approvedActive.slice(0, 6);
 
-        function renderCalendarGrid(activities) {
-            const grid = document.getElementById('calendarDaysGrid');
-            if (!grid) return;
-            grid.replaceChildren();
-
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            document.getElementById('calMonthYearTitle').textContent = `${monthNames[calMonth]} ${calYear}`;
-
-            const firstDay = new Date(calYear, calMonth, 1).getDay();
-            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-
-            // Blank lead cells
-            for (let i = 0; i < firstDay; i++) {
-                const blank = document.createElement('div');
-                blank.style.cssText = 'height: 48px; border-radius: 8px; background: #f8fafc; border: 1px solid #f1f5f9;';
-                grid.appendChild(blank);
+            if (next6.length === 0) {
+                container.innerHTML = '<p class="muted">No upcoming activities yet.</p>';
+                return;
             }
 
-            for (let d = 1; d <= daysInMonth; d++) {
-                const cell = document.createElement('div');
-                const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const dayActivities = activities.filter(a => a.date === dateStr);
+            container.innerHTML = next6.map(function(activity) {
+                const d = new Date(activity.date + 'T00:00:00');
+                const dayNum = String(d.getDate()).padStart(2, '0');
+                const monthShort = d.toLocaleString('en-US', { month: 'short' });
+                return '<article>' +
+                    '<div class="upcoming-date"><strong>' + dayNum + '</strong><span>' + monthShort + '</span></div>' +
+                    '<div>' +
+                        '<h3>' + escapeHtml(activity.title) + '</h3>' +
+                        '<p>' + escapeHtml(activity.activity_type) + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + ' | ' + escapeHtml(activity.venue) + '</p>' +
+                    '</div>' +
+                '</article>';
+            }).join('');
+        }
 
-                const hasEvents = dayActivities.length > 0;
-                cell.style.cssText = `height: 48px; border-radius: 8px; border: 1px solid ${hasEvents ? '#c4b5fd' : '#e2e8f0'}; background: ${hasEvents ? '#f5f3ff' : '#ffffff'}; padding: 4px 6px; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: #1e293b; cursor: pointer;`;
-                cell.innerHTML = `
-                    <span>${d}</span>
-                    ${hasEvents ? `<span style="width: 8px; height: 8px; border-radius: 50%; background: #7c3aed; align-self: flex-end;"></span>` : ''}
-                `;
+        function renderActivitiesTable(activities) {
+            const tbody = document.getElementById('activitiesTableBody');
+            if (!tbody) return;
 
-                if (hasEvents) {
-                    cell.title = dayActivities.map(a => a.title).join(' | ');
-                    cell.onclick = () => {
-                        showToast(`${dayActivities.length} event(s) on ${dateStr}: ${dayActivities[0].title}`);
-                    };
+            const isArchived = currentTab === 'archived';
+            const filtered = activities.filter(function(a) {
+                return isArchived ? !!a.archived_at : !a.archived_at;
+            });
+            filtered.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+            const activeCount = activities.filter(function(a) { return !a.archived_at; }).length;
+            const archivedCount = activities.filter(function(a) { return !!a.archived_at; }).length;
+
+            const schedBadge = document.getElementById('scheduledCountBadge');
+            const archBadge = document.getElementById('archivedCountBadge');
+            if (schedBadge) schedBadge.textContent = activeCount;
+            if (archBadge) archBadge.textContent = archivedCount;
+
+            const titleEl = document.getElementById('activitiesTableHeading');
+            const countEl = document.getElementById('activitiesTableCount');
+            if (titleEl) titleEl.textContent = isArchived ? 'Archived Activities' : 'All Activities';
+            if (countEl) countEl.textContent = filtered.length + ' total activity' + (filtered.length === 1 ? '' : 'ies');
+
+            const bulkBtnContainer = document.getElementById('bulkActionButtonContainer');
+            if (bulkBtnContainer) {
+                if (isArchived) {
+                    bulkBtnContainer.innerHTML = '<button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit><i class="ri-arrow-go-back-line"></i><span>Restore Selected</span></button>';
+                } else {
+                    bulkBtnContainer.innerHTML = '<button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm(\'Archive selected activities from calendar?\');"><i class="ri-archive-line"></i><span>Archive Selected</span></button>';
                 }
-
-                grid.appendChild(cell);
             }
-        }
 
-        function changeCalMonth(delta) {
-            calMonth += delta;
-            if (calMonth < 0) { calMonth = 11; calYear -= 1; }
-            else if (calMonth > 11) { calMonth = 0; calYear += 1; }
-            renderActivities();
-        }
+            const toolbar = document.getElementById('activitiesSelectionToolbar');
+            if (toolbar) toolbar.hidden = true;
+            const selectAllBox = document.querySelector('[data-select-all="activitiesTable"]');
+            if (selectAllBox) {
+                selectAllBox.checked = false;
+                selectAllBox.indeterminate = false;
+            }
 
-        function goToToday() {
-            calYear = 2026;
-            calMonth = 2; // March
-            renderActivities();
-        }
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8">No ' + (isArchived ? 'archived ' : '') + 'activities recorded.</td></tr>';
+                return;
+            }
 
-        function openDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.showModal();
-        }
+            tbody.innerHTML = filtered.map(function(activity) {
+                const statusLower = (activity.approval_status || 'approved').toLowerCase();
+                const statusPill = '<div class="activity-status-actions"><span class="status-pill status-' + escapeHtml(statusLower) + '">' + escapeHtml(activity.approval_status || 'Approved') + '</span></div>';
+                let actionButtons = '';
 
-        function closeDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.close();
-        }
-
-        function openAddActivityModal() {
-            document.getElementById('editActId').value = '';
-            document.getElementById('actModalTitle').textContent = 'Add New Activity';
-            document.getElementById('actTitle').value = '';
-            document.getElementById('actVenue').value = '';
-            document.getElementById('actAudience').value = '';
-            document.getElementById('actDesc').value = '';
-            document.getElementById('actDate').value = new Date().toISOString().slice(0, 10);
-            openDialog('activityEditorModal');
-        }
-
-        function openEditActivityModal(id) {
-            const all = getStoredActivities();
-            const a = all.find(item => item.id === id);
-            if (!a) return;
-            document.getElementById('editActId').value = a.id;
-            document.getElementById('actModalTitle').textContent = 'Edit Activity';
-            document.getElementById('actTitle').value = a.title;
-            document.getElementById('actType').value = a.type;
-            document.getElementById('actCollege').value = a.college;
-            document.getElementById('actDate').value = a.date;
-            document.getElementById('actTime').value = a.time;
-            document.getElementById('actVenue').value = a.venue;
-            document.getElementById('actAudience').value = a.audience;
-            document.getElementById('actDesc').value = a.description || '';
-            openDialog('activityEditorModal');
-        }
-
-        function handleSaveActivity(e) {
-            e.preventDefault();
-            const all = getStoredActivities();
-            const editId = document.getElementById('editActId').value;
-
-            if (editId) {
-                const a = all.find(item => item.id === parseInt(editId, 10));
-                if (a) {
-                    a.title = document.getElementById('actTitle').value.trim();
-                    a.type = document.getElementById('actType').value;
-                    a.college = document.getElementById('actCollege').value;
-                    a.date = document.getElementById('actDate').value;
-                    a.time = document.getElementById('actTime').value.trim();
-                    a.venue = document.getElementById('actVenue').value.trim();
-                    a.audience = document.getElementById('actAudience').value.trim();
-                    a.description = document.getElementById('actDesc').value.trim();
+                if (isArchived) {
+                    actionButtons = '<div class="archive-record-actions">' +
+                        '<button class="ghost-btn action-btn" type="button" data-retrieve-activity="' + activity.id + '" title="Retrieve Activity"><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button>' +
+                    '</div>';
+                } else {
+                    const isPending = (activity.approval_status === 'Pending');
+                    actionButtons = '<div class="archive-record-actions">' +
+                        '<button class="ghost-btn action-btn" type="button" data-edit-activity="' + activity.id + '" title="Edit Activity"><i class="ri-edit-line"></i><span>Edit</span></button>' +
+                        (isPending ? '<button class="primary-btn action-btn" type="button" data-approve-activity="' + activity.id + '" title="Approve Activity"><i class="ri-check-line"></i><span>Approve</span></button>' : '') +
+                    '</div>';
                 }
+
+                return '<tr>' +
+                    '<td class="table-checkbox-col">' +
+                        '<input form="bulk-activitiesTable" type="checkbox" name="ids[]" aria-label="Select activity ' + activity.id + '" value="' + activity.id + '" data-row-select="activitiesTable">' +
+                    '</td>' +
+                    '<td>' + formatTableDate(activity.date, activity.date_to) + '</td>' +
+                    '<td><strong>' + escapeHtml(activity.title) + '</strong></td>' +
+                    '<td>' + escapeHtml(activity.activity_type) + '</td>' +
+                    '<td>' + escapeHtml(activity.venue) + '</td>' +
+                    '<td>' + escapeHtml(activity.created_by || 'System Administrator') + '</td>' +
+                    '<td>' + statusPill + '</td>' +
+                    '<td>' + actionButtons + '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function renderAll() {
+            const activities = loadActivities();
+            refreshGlobals(activities);
+            renderUpcomingList(activities);
+            renderActivitiesTable(activities);
+        }
+
+        window.switchActivitiesTab = function(tab) {
+            currentTab = tab;
+            const schedBtn = document.getElementById('tabScheduledBtn');
+            const archBtn = document.getElementById('tabArchivedBtn');
+            const calendarLayout = document.getElementById('calendarPageLayout');
+
+            if (tab === 'archived') {
+                if (schedBtn) schedBtn.classList.remove('active');
+                if (archBtn) archBtn.classList.add('active');
+                if (calendarLayout) calendarLayout.style.display = 'none';
+                document.getElementById('topbarPageTitle').textContent = 'Archived Activities';
             } else {
-                const newA = {
-                    id: Date.now(),
-                    title: document.getElementById('actTitle').value.trim(),
-                    type: document.getElementById('actType').value,
-                    college: document.getElementById('actCollege').value,
-                    date: document.getElementById('actDate').value,
-                    time: document.getElementById('actTime').value.trim(),
-                    venue: document.getElementById('actVenue').value.trim(),
-                    audience: document.getElementById('actAudience').value.trim(),
-                    description: document.getElementById('actDesc').value.trim(),
-                    status: 'Approved',
-                    archived: false
-                };
-                all.unshift(newA);
+                if (schedBtn) schedBtn.classList.add('active');
+                if (archBtn) archBtn.classList.remove('active');
+                if (calendarLayout) calendarLayout.style.display = '';
+                document.getElementById('topbarPageTitle').textContent = 'Calendar of Activities';
+            }
+            const activities = loadActivities();
+            renderActivitiesTable(activities);
+        };
+
+        window.handleActivityFormSubmit = function(e) {
+            e.preventDefault();
+            const action = document.getElementById('activityAction').value;
+            const idVal = document.getElementById('activityId').value;
+            const activities = loadActivities();
+
+            const title = (document.getElementById('activityTitle').value || '').trim();
+            const type = document.getElementById('activityType').value;
+            const dateFrom = document.getElementById('activityDateFrom').value;
+            const dateTo = document.getElementById('activityDateTo').value || dateFrom;
+            const venue = (document.getElementById('activityVenue').value || '').trim();
+            const description = (document.getElementById('activityDescription').value || '').trim();
+
+            if (!title || !dateFrom) {
+                alert('Please enter a title and date.');
+                return;
+            }
+            if (dateTo < dateFrom) {
+                alert('Date To must be on or after Date From.');
+                return;
             }
 
-            saveActivities(all);
-            closeDialog('activityEditorModal');
-            showToast('Activity record saved successfully!');
-            renderActivities();
+            if (action === 'create') {
+                const newAct = {
+                    id: Date.now(),
+                    title: title,
+                    activity_type: type,
+                    date: dateFrom,
+                    date_to: dateTo,
+                    venue: venue,
+                    description: description,
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                };
+                activities.unshift(newAct);
+                saveActivities(activities);
+                renderAll();
+                closeActivityModal();
+                showNotice('success', 'Activity saved.');
+            } else {
+                const item = activities.find(function(a) { return String(a.id) === String(idVal); });
+                if (item) {
+                    item.title = title;
+                    item.activity_type = type;
+                    item.date = dateFrom;
+                    item.date_to = dateTo;
+                    item.venue = venue;
+                    item.description = description;
+                    saveActivities(activities);
+                    renderAll();
+                    closeActivityModal();
+                    showNotice('success', 'Activity updated.');
+                }
+            }
+        };
+
+        window.handleArchiveCurrentActivity = function() {
+            if (!confirm('Archive this activity from the calendar?')) return;
+            const idVal = document.getElementById('activityId').value;
+            const activities = loadActivities();
+            const item = activities.find(function(a) { return String(a.id) === String(idVal); });
+            if (item) {
+                item.archived_at = new Date().toISOString();
+                saveActivities(activities);
+                renderAll();
+                closeActivityModal();
+                showNotice('success', 'Activity archived.');
+            }
+        };
+
+        window.handleRejectCurrentActivity = function() {
+            if (!confirm('Reject this activity and remove it from the shared calendar?')) return;
+            const idVal = document.getElementById('activityId').value;
+            const activities = loadActivities();
+            const item = activities.find(function(a) { return String(a.id) === String(idVal); });
+            if (item) {
+                item.approval_status = 'Rejected';
+                saveActivities(activities);
+                renderAll();
+                closeActivityModal();
+                showNotice('success', 'Activity rejected and removed from the shared calendar.');
+            }
+        };
+
+        window.handleApproveCurrentActivity = function() {
+            const idVal = document.getElementById('activityId').value;
+            const activities = loadActivities();
+            const item = activities.find(function(a) { return String(a.id) === String(idVal); });
+            if (item) {
+                item.approval_status = 'Approved';
+                saveActivities(activities);
+                renderAll();
+                closeActivityModal();
+                showNotice('success', 'Activity approved and added to the shared calendar.');
+            }
+        };
+
+        window.handleBulkActivitiesSubmit = function(e) {
+            e.preventDefault();
+            const checkboxes = Array.from(document.querySelectorAll('#activitiesTable [data-row-select]:checked'));
+            const ids = checkboxes.map(function(c) { return c.value; });
+            if (!ids.length) {
+                alert('No activities selected.');
+                return;
+            }
+
+            const submitBtn = e.submitter || document.activeElement;
+            const bulkAction = (submitBtn && submitBtn.value) ? submitBtn.value : (currentTab === 'archived' ? 'restore' : 'archive');
+
+            const activities = loadActivities();
+
+            if (bulkAction === 'archive') {
+                ids.forEach(function(id) {
+                    const item = activities.find(function(a) { return String(a.id) === String(id); });
+                    if (item && !item.archived_at) item.archived_at = new Date().toISOString();
+                });
+                saveActivities(activities);
+                renderAll();
+                showNotice('success', ids.length + ' activity record(s) archived.');
+            } else if (bulkAction === 'restore') {
+                ids.forEach(function(id) {
+                    const item = activities.find(function(a) { return String(a.id) === String(id); });
+                    if (item && item.archived_at) item.archived_at = null;
+                });
+                saveActivities(activities);
+                renderAll();
+                showNotice('success', ids.length + ' activity record(s) restored.');
+            }
+        };
+
+        function closeActivityModal() {
+            const modal = document.getElementById('activityEditorModal');
+            if (modal) {
+                modal.classList.remove('open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
         }
 
-        function toggleArchiveActivity(id) {
-            const all = getStoredActivities();
-            const a = all.find(item => item.id === id);
-            if (!a) return;
-            a.archived = !a.archived;
-            saveActivities(all);
-            showToast(`Activity has been ${a.archived ? 'archived' : 'restored'}.`);
-            renderActivities();
-        }
+        window.OVPRE_activityMove = function(id, newDate) {
+            const activities = loadActivities();
+            const item = activities.find(function(a) { return String(a.id) === String(id); });
+            if (!item) return { ok: false, message: 'Activity not found' };
+            const oldStart = new Date(item.date + 'T00:00:00');
+            const oldEnd = new Date((item.date_to || item.date) + 'T00:00:00');
+            const durationDays = Math.max(0, Math.round((oldEnd - oldStart) / (1000 * 60 * 60 * 24)));
+            const newStart = new Date(newDate + 'T00:00:00');
+            const newEnd = new Date(newStart);
+            newEnd.setDate(newStart.getDate() + durationDays);
+            item.date = newDate;
+            item.date_to = newEnd.getFullYear() + '-' + String(newEnd.getMonth() + 1).padStart(2, '0') + '-' + String(newEnd.getDate()).padStart(2, '0');
+            saveActivities(activities);
+            refreshGlobals(activities);
+            renderUpcomingList(activities);
+            renderActivitiesTable(activities);
+            showNotice('success', 'Moved activity to ' + newDate);
+            return { ok: true };
+        };
 
-        document.getElementById('topbarSearchInput')?.addEventListener('input', () => {
-            actPage = 1;
-            renderActivities();
+        // Table delegation for edit, approve, retrieve buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAll();
+
+            const table = document.getElementById('activitiesTable');
+            if (table) {
+                table.addEventListener('click', function(e) {
+                    const editBtn = e.target.closest('[data-edit-activity]');
+                    if (editBtn) {
+                        const id = editBtn.dataset.editActivity;
+                        if (typeof openActivityEditor === 'function') {
+                            openActivityEditor(activityById(id));
+                        }
+                        return;
+                    }
+
+                    const approveBtn = e.target.closest('[data-approve-activity]');
+                    if (approveBtn) {
+                        const id = approveBtn.dataset.approveActivity;
+                        const activities = loadActivities();
+                        const item = activities.find(function(a) { return String(a.id) === String(id); });
+                        if (item) {
+                            item.approval_status = 'Approved';
+                            saveActivities(activities);
+                            renderAll();
+                            showNotice('success', 'Activity approved and added to the shared calendar.');
+                        }
+                        return;
+                    }
+
+                    const retrieveBtn = e.target.closest('[data-retrieve-activity]');
+                    if (retrieveBtn) {
+                        if (!confirm('Retrieve this activity and put it back on the calendar?')) return;
+                        const id = retrieveBtn.dataset.retrieveActivity;
+                        const activities = loadActivities();
+                        const item = activities.find(function(a) { return String(a.id) === String(id); });
+                        if (item) {
+                            item.archived_at = null;
+                            saveActivities(activities);
+                            renderAll();
+                            showNotice('success', 'Activity retrieved and restored to the calendar.');
+                        }
+                        return;
+                    }
+                });
+            }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderActivities();
-        });
+        // Initial setup before FullCalendar initializes
+        const initialActs = loadActivities();
+        const activeOnly = initialActs.filter(function(a) { return !a.archived_at && a.approval_status === 'Approved'; });
+        const allActive = initialActs.filter(function(a) { return !a.archived_at; });
+        window.activityCalendarEvents = activeOnly.map(toCalendarEvent);
+        window.activityEditorEvents = allActive.map(toCalendarEvent);
+    })();
     </script>
-    <script src="assets/js/app.js"></script>
+
+    <!-- FULLCALENDAR V6 ENGINE -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/app.js?v=20261109-fixed"></script>
     <script src="assets/js/static-bridge.js"></script>
     <script src="assets/js/role-system.js"></script>
 </body>
