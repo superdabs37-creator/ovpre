@@ -1010,7 +1010,7 @@ window.initAdminTablePagination = function(table) {
     }
 
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {
-        if (!header.textContent.trim() || /^(manage|review|actions?|select\s*all)$/i.test(header.textContent.trim()) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
+        if (!header.textContent.trim() || /^(manage|review|actions?|select\s*all|file|files|document|documents)$/i.test(header.textContent.trim()) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
         header.classList.add('data-table-sortable');
         header.tabIndex = 0;
         header.setAttribute('aria-sort', 'none');
