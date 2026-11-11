@@ -139,10 +139,26 @@
                         </span>
                     </div>
 
+                    <!-- BULK SELECTION TOOLBAR -->
+                    <div class="table-selection-toolbar" data-selection-toolbar="archiveTable" id="archiveSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px;">
+                        <span data-selection-count id="archiveSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
+                        <form id="bulk-archiveTable" onsubmit="handleBulkArchiveSubmit(event)" style="margin: 0;">
+                            <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit style="color: #15803d; border: 1.5px solid #bbf7d0; background: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="ri-arrow-go-back-line"></i><span>Unarchive Selected</span>
+                            </button>
+                        </form>
+                    </div>
+
                     <div class="table-scroll">
                         <table class="data-table" id="archiveTable" style="width: 100%; border-collapse: collapse; text-align: left;">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th class="table-checkbox-col" style="width: 44px; text-align: center; padding: 12px 8px;">
+                                        <label class="select-all-control">
+                                            <input form="bulk-archiveTable" type="checkbox" aria-label="Select all archived records" data-select-all="archiveTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
                                     <th style="padding: 12px;">Record Title</th>
                                     <th style="padding: 12px;">Archived Document File</th>
                                     <th style="padding: 12px;">Archived By</th>
@@ -153,6 +169,9 @@
                             </thead>
                             <tbody id="archiveBody">
                                 <tr id="arcRow-1">
+                                    <td class="table-checkbox-col" style="width: 44px; text-align: center; padding: 14px 8px;">
+                                        <input form="bulk-archiveTable" type="checkbox" name="ids[]" value="1" aria-label="Select archived record 1" data-row-select="archiveTable">
+                                    </td>
                                     <td style="padding: 14px 12px;">
                                         <strong>Urban Agroforestry Pilot &amp; Microclimate Study</strong><br>
                                         <small style="color: #64748b;">REC-00042</small>
@@ -168,6 +187,9 @@
                                     </td>
                                 </tr>
                                 <tr id="arcRow-2">
+                                    <td class="table-checkbox-col" style="width: 44px; text-align: center; padding: 14px 8px;">
+                                        <input form="bulk-archiveTable" type="checkbox" name="ids[]" value="2" aria-label="Select archived record 2" data-row-select="archiveTable">
+                                    </td>
                                     <td style="padding: 14px 12px;">
                                         <strong>LGU San Pablo Coastal Waste Profiling Draft</strong><br>
                                         <small style="color: #64748b;">EXT-00031</small>
@@ -183,6 +205,9 @@
                                     </td>
                                 </tr>
                                 <tr id="arcRow-3">
+                                    <td class="table-checkbox-col" style="width: 44px; text-align: center; padding: 14px 8px;">
+                                        <input form="bulk-archiveTable" type="checkbox" name="ids[]" value="3" aria-label="Select archived record 3" data-row-select="archiveTable">
+                                    </td>
                                     <td style="padding: 14px 12px;">
                                         <strong>Faculty Research Ethics Checklist Template (Rev. 2)</strong><br>
                                         <small style="color: #64748b;">DOC-00018</small>
@@ -278,6 +303,29 @@
                 showAlert('success', `<i class="ri-checkbox-circle-line" style="font-size: 1.3rem;"></i> Record "${title}" unarchived and restored to active records.`);
             }
         }
+
+        window.handleBulkArchiveSubmit = function(e) {
+            e.preventDefault();
+            const checkedBoxes = Array.from(document.querySelectorAll('#archiveTable [data-row-select]:checked'));
+            if (!checkedBoxes.length) {
+                showAlert('error', '<i class="ri-error-warning-line" style="font-size: 1.3rem;"></i> Please select at least one record to unarchive.');
+                return;
+            }
+            checkedBoxes.forEach(cb => {
+                const row = cb.closest('tr');
+                if (row) row.remove();
+            });
+            const remaining = document.querySelectorAll('#archiveBody tr').length;
+            document.getElementById('archiveCountBadge').textContent = `${remaining} Archived Records`;
+            const tb = document.querySelector('[data-selection-toolbar="archiveTable"]');
+            if (tb) tb.hidden = true;
+            const selectAll = document.querySelector('[data-select-all="archiveTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            showAlert('success', `<i class="ri-checkbox-circle-line" style="font-size: 1.3rem;"></i> ${checkedBoxes.length} record(s) unarchived and restored to active records.`);
+        };
 
         function showAlert(type, html) {
             const box = document.getElementById('backupAlert');

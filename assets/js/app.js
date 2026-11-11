@@ -634,45 +634,53 @@ document.querySelectorAll('[data-open-modal]').forEach((button) => {
     });
 });
 
-document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
-    const tableId = selectAll.dataset.selectAll;
-    const table = document.getElementById(tableId);
-    const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
-    if (!table || !toolbar) return;
-    const rowCheckboxes = () => Array.from(table.querySelectorAll('[data-row-select]'));
-    const countLabel = toolbar.querySelector('[data-selection-count]');
-    const openSelected = toolbar.querySelector('[data-open-selected-research]');
-    const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
-    const updateSelection = () => {
-        const checkboxes = rowCheckboxes();
-        const selected = checkboxes.filter((checkbox) => checkbox.checked);
-        selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
-        selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
-        toolbar.hidden = selected.length === 0;
-        if (countLabel) countLabel.textContent = `${selected.length} selected`;
-        if (openSelected) openSelected.disabled = selected.length === 0;
-        bulkButtons.forEach((button) => { button.disabled = selected.length === 0; });
-    };
-    selectAll.addEventListener('change', () => {
-        rowCheckboxes().forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+function initTableSelectionEngine() {
+    document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
+        const tableId = selectAll.dataset.selectAll;
+        const table = document.getElementById(tableId);
+        const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
+        if (!table || !toolbar) return;
+        const rowCheckboxes = () => Array.from(table.querySelectorAll('[data-row-select]'));
+        const countLabel = toolbar.querySelector('[data-selection-count]');
+        const openSelected = toolbar.querySelector('[data-open-selected-research]');
+        const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
+        const updateSelection = () => {
+            const checkboxes = rowCheckboxes();
+            const selected = checkboxes.filter((checkbox) => checkbox.checked);
+            selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
+            selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+            toolbar.hidden = selected.length === 0;
+            if (countLabel) countLabel.textContent = `${selected.length} selected`;
+            if (openSelected) openSelected.disabled = selected.length === 0;
+            bulkButtons.forEach((button) => { button.disabled = selected.length === 0; });
+        };
+
+        if (selectAll.dataset.selectionBound !== 'true') {
+            selectAll.dataset.selectionBound = 'true';
+            selectAll.addEventListener('change', () => {
+                rowCheckboxes().forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+                updateSelection();
+            });
+            table.addEventListener('change', (event) => {
+                if (event.target.matches('[data-row-select]')) updateSelection();
+            });
+            if (openSelected) {
+                openSelected.addEventListener('click', () => {
+                    const ids = rowCheckboxes().filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+                    if (ids.length) window.location.href = `research.html?ids=${encodeURIComponent(ids.join(','))}`;
+                });
+            }
+            toolbar.querySelectorAll('[data-confirm-delete]').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    if (!window.confirm('Permanently delete all selected items? This cannot be undone.')) event.preventDefault();
+                });
+            });
+        }
         updateSelection();
     });
-    table.addEventListener('change', (event) => {
-        if (event.target.matches('[data-row-select]')) updateSelection();
-    });
-    if (openSelected) {
-        openSelected.addEventListener('click', () => {
-            const ids = rowCheckboxes().filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
-            if (ids.length) window.location.href = `research.html?ids=${encodeURIComponent(ids.join(','))}`;
-        });
-    }
-    toolbar.querySelectorAll('[data-confirm-delete]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-            if (!window.confirm('Permanently delete all selected items? This cannot be undone.')) event.preventDefault();
-        });
-    });
-    updateSelection();
-});
+}
+window.initTableSelectionEngine = initTableSelectionEngine;
+initTableSelectionEngine();
 
 document.addEventListener('click', (event) => {
     const clickedDropdown = event.target.closest('.user-actions-dropdown');

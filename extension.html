@@ -105,10 +105,26 @@
 
                 <!-- PROJECTS TABLE -->
                 <section class="panel">
+                    <div class="table-selection-toolbar" data-selection-toolbar="extensionProjectsTable" id="extensionSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px;">
+                        <span data-selection-count id="extensionSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
+                        <form id="bulk-extensionProjectsTable" onsubmit="handleBulkExtensionSubmit(event)" style="margin: 0;">
+                            <span id="bulkExtensionBtnContainer">
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected extension projects?');" style="background: #15803d; color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                                </button>
+                            </span>
+                        </form>
+                    </div>
                     <div class="table-scroll">
                         <table class="data-table" id="extensionProjectsTable">
                             <thead>
                                 <tr>
+                                    <th class="table-checkbox-col" style="width: 44px; text-align: center;">
+                                        <label class="select-all-control">
+                                            <input form="bulk-extensionProjectsTable" type="checkbox" aria-label="Select all extension projects" data-select-all="extensionProjectsTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
                                     <th>Project</th>
                                     <th>Partner / Location</th>
                                     <th>College</th>
@@ -712,6 +728,16 @@
                 tabActiveBtn.setAttribute('aria-selected', tab === 'active' ? 'true' : 'false');
                 tabArchivedBtn.setAttribute('aria-selected', tab === 'archived' ? 'true' : 'false');
             }
+
+            const bulkBtnContainer = document.getElementById('bulkExtensionBtnContainer');
+            if (bulkBtnContainer) {
+                if (tab === 'archived') {
+                    bulkBtnContainer.innerHTML = '<button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit style="color: #15803d; border: 1.5px solid #bbf7d0; background: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore Selected</span></button>';
+                } else {
+                    bulkBtnContainer.innerHTML = '<button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm(\'Archive selected extension projects?\');" style="background: #15803d; color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive Selected</span></button>';
+                }
+            }
+
             renderTable();
         }
 
@@ -775,7 +801,7 @@
             if (!list.length) {
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-pagination-empty', 'true');
-                tr.innerHTML = '<td colspan="7" style="text-align: center; padding: 28px; color: #64748b;">No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension projects found.</td>';
+                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension projects found.</td>';
                 tbody.appendChild(tr);
             } else {
                 list.forEach(p => {
@@ -854,6 +880,9 @@
                     }
 
                     tr.innerHTML = `
+                        <td class="table-checkbox-col" style="width: 44px; text-align: center;">
+                            <input form="bulk-extensionProjectsTable" type="checkbox" name="ids[]" value="${p.id}" aria-label="Select extension project ${p.id}" data-row-select="extensionProjectsTable">
+                        </td>
                         <td data-sort-value="${OVPRE.h(p.title)}">
                             <strong>${OVPRE.h(p.title)}</strong>
                             <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -879,12 +908,47 @@
                 });
             }
 
+            const selectAll = document.querySelector('[data-select-all="extensionProjectsTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            const tb = document.querySelector('[data-selection-toolbar="extensionProjectsTable"]');
+            if (tb) {
+                tb.hidden = true;
+                const countBadge = tb.querySelector('[data-selection-count]');
+                if (countBadge) countBadge.textContent = '0 selected';
+            }
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
+            }
+
             if (window.OVPRE && OVPRE.reloadTable) {
                 OVPRE.reloadTable('extensionProjectsTable');
             } else if (typeof window.reloadAdminTablePagination === 'function') {
                 window.reloadAdminTablePagination(document.getElementById('extensionProjectsTable'));
             }
         }
+
+        window.handleBulkExtensionSubmit = function(e) {
+            e.preventDefault();
+            const checkedBoxes = Array.from(document.querySelectorAll('#extensionProjectsTable [data-row-select]:checked'));
+            const ids = checkedBoxes.map(c => Number(c.value));
+            if (!ids.length) {
+                OVPRE.toast('Please select at least one project.', 'error');
+                return;
+            }
+            const submitBtn = e.submitter || document.activeElement;
+            const action = (submitBtn && submitBtn.value) ? submitBtn.value : (currentTab === 'archived' ? 'restore' : 'archive');
+            const all = getProjects();
+            ids.forEach(id => {
+                const item = all.find(p => p.id === id);
+                if (item) item.archived = (action === 'archive');
+            });
+            saveProjects(all);
+            OVPRE.toast(action === 'archive' ? `${ids.length} project(s) archived successfully.` : `${ids.length} project(s) restored to active projects.`, 'success');
+            renderTable();
+        };
 
         // --- SUBMIT EXTENSION PROPOSAL ---
         async function handleCreateExtensionProject(event) {

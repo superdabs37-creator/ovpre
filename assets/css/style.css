@@ -1933,9 +1933,21 @@ button {
 #activitiesTable td:first-child,
 #announcementsTable th:first-child,
 #announcementsTable td:first-child,
+#researchProjectsTable th:first-child,
+#researchProjectsTable td:first-child,
+#extensionProjectsTable th:first-child,
+#extensionProjectsTable td:first-child,
+#submittedFilesTable th:first-child,
+#submittedFilesTable td:first-child,
+#usersTable th:first-child,
+#usersTable td:first-child,
 .table-checkbox-col {
-    width: 60px;
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
     text-align: center;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
 }
 
 .select-all-control {
@@ -1946,18 +1958,29 @@ button {
     white-space: nowrap;
 }
 
+.select-all-control span {
+    display: none;
+}
+
+.table-checkbox-col input[type="checkbox"],
 #researchSubmissionTable input[type="checkbox"],
 #extensionSubmissionTable input[type="checkbox"],
 #activitySubmissionTable input[type="checkbox"],
 #recordsTable input[type="checkbox"],
 #archivedAnnouncementsTable input[type="checkbox"],
 #archivedRecordsTable input[type="checkbox"],
-#activitiesTable input[type="checkbox"] {
+#activitiesTable input[type="checkbox"],
+#announcementsTable input[type="checkbox"],
+#researchProjectsTable input[type="checkbox"],
+#extensionProjectsTable input[type="checkbox"],
+#submittedFilesTable input[type="checkbox"],
+#usersTable input[type="checkbox"] {
     width: 18px;
     height: 18px;
     margin: 0;
-    accent-color: var(--green-700);
+    accent-color: var(--green-700, #15803d);
     cursor: pointer;
+    vertical-align: middle;
 }
 
 .portal-table-tabs {

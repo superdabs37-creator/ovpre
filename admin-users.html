@@ -127,10 +127,28 @@
                 </section>
                 <!-- Users Table -->
                 <article class="panel" style="padding: 22px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <!-- BULK SELECTION TOOLBAR -->
+                    <div class="table-selection-toolbar" data-selection-toolbar="usersTable" id="usersSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px;">
+                        <span data-selection-count id="usersSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
+                        <form id="bulk-usersTable" onsubmit="handleBulkUsersSubmit(event)" style="margin: 0;">
+                            <span id="bulkUsersBtnContainer">
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected user accounts?');" style="background: #15803d; color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                                </button>
+                            </span>
+                        </form>
+                    </div>
+
                     <div class="table-scroll">
                         <table class="data-table" id="usersTable" style="width: 100%; border-collapse: collapse; text-align: left;">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th class="table-checkbox-col" style="width: 44px; text-align: center; padding: 12px 8px;">
+                                        <label class="select-all-control">
+                                            <input form="bulk-usersTable" type="checkbox" aria-label="Select all users" data-select-all="usersTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
                                     <th style="padding: 12px;">ID</th>
                                     <th style="padding: 12px;">Full Name</th>
                                     <th style="padding: 12px;">Email &amp; Username</th>
@@ -268,6 +286,9 @@
                 else if (u.role.includes('Extensionist')) roleBadgeColor = '#ccfbf1; color: #0f766e;';
 
                 tr.innerHTML = `
+                    <td class="table-checkbox-col" style="width: 44px; text-align: center; padding: 14px 8px;">
+                        <input form="bulk-usersTable" type="checkbox" name="ids[]" value="${u.id}" aria-label="Select user ${u.id}" data-row-select="usersTable">
+                    </td>
                     <td style="padding: 14px 12px; font-weight: 700; color: #64748b;">#${u.id}</td>
                     <td style="padding: 14px 12px;"><strong style="color: #0f172a;">${u.fullname}</strong></td>
                     <td style="padding: 14px 12px; font-size: 0.88rem; color: #475569;">${u.email}<br><small style="color: #64748b;">@${u.username}</small></td>
@@ -289,6 +310,21 @@
                 tbody.appendChild(tr);
             });
 
+            const selectAll = document.querySelector('[data-select-all="usersTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            const tb = document.querySelector('[data-selection-toolbar="usersTable"]');
+            if (tb) {
+                tb.hidden = true;
+                const countBadge = tb.querySelector('[data-selection-count]');
+                if (countBadge) countBadge.textContent = '0 selected';
+            }
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
+            }
+
             if (window.OVPRE && OVPRE.reloadTable) {
                 OVPRE.reloadTable('usersTable');
             } else if (typeof window.reloadAdminTablePagination === 'function') {
@@ -297,6 +333,29 @@
 
             document.getElementById('userCountBadge').textContent = `Showing ${users.length} Active Accounts`;
         }
+
+        window.handleBulkUsersSubmit = function(e) {
+            e.preventDefault();
+            const checkedBoxes = Array.from(document.querySelectorAll('#usersTable [data-row-select]:checked'));
+            const ids = checkedBoxes.map(c => Number(c.value));
+            if (!ids.length) {
+                if (window.OVPRE && OVPRE.toast) OVPRE.toast('Please select at least one user account.', 'error');
+                return;
+            }
+            let users = getUsers();
+            ids.forEach(id => {
+                const u = users.find(item => item.id === id);
+                if (u && u.role !== 'Super Admin') {
+                    u.status = (u.status === 'Inactive') ? 'Active' : 'Inactive';
+                    u.archived = (u.status === 'Inactive');
+                }
+            });
+            localStorage.setItem('irecord_registered_users', JSON.stringify(users));
+            if (window.OVPRE && OVPRE.toast) {
+                OVPRE.toast(`${ids.length} account status updated / archived successfully.`, 'success');
+            }
+            renderUsers();
+        };
 
         function filterUserTable() {
             const query = document.getElementById('userSearch').value.toLowerCase();
