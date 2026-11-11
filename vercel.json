@@ -1,6 +1,25 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/uploads/records/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "inline"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
   "routes": [
     {
       "src": "^/$",
