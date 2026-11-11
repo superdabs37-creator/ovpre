@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
@@ -19,50 +20,55 @@
                 <strong>I-Record</strong>
             </a>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
-                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
-                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
-                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
-                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
-                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
-                <a class="active" href="system-backup.html" title="Backup"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
-                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="active" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
             </nav>
-            <div class="sidebar-footer">
+            <div class="sidebar-footer" title="Executive Administration">
                 <i class="ri-shield-keyhole-line"></i>
                 <span>Executive Administration</span>
             </div>
         </aside>
-
         <div class="page-wrap">
             <header class="topbar">
-                <button class="icon-btn menu-toggle" type="button" id="sidebarToggle">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="topbar-title">
                     <h1>Backup &amp; Disaster Recovery</h1>
                 </div>
-                <div class="topbar-search">
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
                     <i class="ri-search-line"></i>
-                    <input type="search" placeholder="Search archived records...">
-                </div>
-                <a class="topbar-icon" href="notifications.html">
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
                     <i class="ri-notification-3-line"></i>
+                    <span></span>
                 </a>
                 <div class="profile-menu">
-                    <button class="profile-button" type="button" id="profileToggle">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
                         <span class="avatar">SA</span>
                         <span id="userNameDisplay">Super Administrator</span>
                         <i class="ri-arrow-down-s-line"></i>
                     </button>
-                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
                         <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
                             <strong id="dropdownUserName">Super Administrator</strong>
-                            <small id="dropdownUserRole">System Administrator</small>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
                         </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
                         <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
@@ -289,26 +295,9 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Sidebar & Profile Toggle
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        if (sidebarToggle && sidebar) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-        }
-        const profileToggle = document.getElementById('profileToggle');
-        const profileDropdown = document.getElementById('profileDropdown');
-        if (profileToggle && profileDropdown) {
-            profileToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
-            });
-            document.addEventListener('click', () => {
-                profileDropdown.style.display = 'none';
-            });
-        }
     </script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/static-bridge.js"></script>
     <script src="assets/js/role-system.js"></script>
 </body>
 </html>

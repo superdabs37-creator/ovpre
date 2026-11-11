@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extension Management | I-Record</title>
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
-    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261030-searchable-select">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
@@ -19,50 +20,53 @@
                 <strong>I-Record</strong>
             </a>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-                <a href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
-                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
                 <a class="active" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
-                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
-                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
-                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
-                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
-                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+                <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
             </nav>
             <div class="sidebar-footer" title="Executive Administration">
                 <i class="ri-shield-keyhole-line"></i>
                 <span>Executive Administration</span>
             </div>
         </aside>
-
         <div class="page-wrap">
             <header class="topbar">
-                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="topbar-title">
                     <h1>Extension Management</h1>
                 </div>
-                <div class="topbar-search" role="search">
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
                     <i class="ri-search-line"></i>
-                    <input type="search" id="quickSearchInput" placeholder="Search this page" oninput="applyFilters()">
-                </div>
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
                 <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
                     <i class="ri-notification-3-line"></i>
-                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                    <span></span>
                 </a>
                 <div class="profile-menu">
-                    <button class="profile-button" type="button" id="profileToggle">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
                         <span class="avatar">SA</span>
                         <span id="userNameDisplay">Super Administrator</span>
                         <i class="ri-arrow-down-s-line"></i>
                     </button>
-                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
                         <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
                             <strong id="dropdownUserName">Super Administrator</strong>
-                            <span id="dropdownUserRole">Executive Administrator</span>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
                         </div>
                         <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
@@ -70,996 +74,766 @@
                     </div>
                 </div>
             </header>
-
             <main class="content-area">
-                <!-- =========================================================
-                     MODULE HEADER
-                ========================================================= -->
-                <section class="module-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
-                    <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #ccfbf1; color: #0d9488; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
-                        <i class="ri-community-line"></i>
-                    </div>
+                <section class="module-header">
+                    <div class="module-icon"><i class="ri-community-line"></i></div>
                     <div>
-                        <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0d9488;">Extension Repository</p>
-                        <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Extension Management</h2>
-                        <span style="font-size: 0.84rem; color: #64748b;">Community Pipeline: Proponent &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval</span>
+                        <p>Community Extension</p>
+                        <h2>Extension Projects &amp; Workflow</h2>
+                        <span>Academic Pipeline: Faculty Extensionist &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval</span>
                     </div>
                 </section>
 
-                <div id="actionToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px;"></div>
+                <div id="ovpreFlash"></div>
 
-                <!-- SUBMIT EXTENSION PROJECT PANEL (LAUNCHER) -->
-                <section class="panel modal-launcher-panel" style="margin-bottom: 20px; padding: 18px 22px; border-radius: 14px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-                    <div>
-                        <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 800; color: #0d9488;">Extension Initiatives</h3>
-                        <span style="font-size: 0.88rem; color: #64748b;">Submit a new community extension initiative or outreach project for screening.</span>
+                <!-- SUBMIT EXTENSION PROJECT PANEL -->
+                <section class="panel modal-launcher-panel" id="submitProposalPanel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #16a34a;">Extension Proposals</h2>
+                            <span style="font-size: 1.1rem; color: #4b5563;">Submit a new community extension proposal for College Coordinator screening.</span>
+                        </div>
+                        <button class="primary-btn" type="button" data-open-modal="createExtensionProjectModal"><i class="ri-add-line"></i> Submit Extension Proposal</button>
                     </div>
-                    <button class="primary-btn" type="button" onclick="openCreateProjectModal()" style="display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; background: #0d9488; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">
-                        <i class="ri-add-line"></i> Submit Extension Project
-                    </button>
                 </section>
 
-                <!-- PROJECTS TABLE PANEL -->
-                <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-                        <div class="portal-table-tabs" style="display: flex; gap: 8px;">
-                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchView('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #0d9488; color: #ffffff; cursor: pointer;">
-                                <i class="ri-community-line"></i>
-                                <span>Active Projects</span>
-                                <span class="tab-count" id="activeBadge" style="background: rgba(255,255,255,0.25); padding: 2px 7px; border-radius: 999px; font-size: 0.75rem;">6</span>
-                            </button>
-                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchView('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
-                                <i class="ri-archive-line"></i>
-                                <span>Archived</span>
-                                <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 7px; border-radius: 999px; font-size: 0.75rem;">1</span>
-                            </button>
-                        </div>
-
-                        <!-- Filters -->
-                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Filter:</label>
-                            <select id="stageFilter" onchange="applyFilters()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.82rem; font-weight: 600; background: #ffffff;">
-                                <option value="all">All Stages &amp; Statuses</option>
-                                <option value="Pending Coordinator Review">Pending Coordinator Review</option>
-                                <option value="Pending Director Review">Pending Director Review</option>
-                                <option value="Pending Executive Approval">Pending Executive Approval</option>
-                                <option value="Approved">Approved</option>
-                                <option value="For Revision">For Revision</option>
-                            </select>
-                            <select id="collegeFilter" onchange="applyFilters()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.82rem; font-weight: 600; background: #ffffff;">
-                                <option value="all">All Colleges</option>
-                                <option value="College of Computer Studies and Technology">CCST</option>
-                                <option value="College of Engineering">COE</option>
-                                <option value="College of Nursing and Allied Health Sciences">CONAHS</option>
-                                <option value="College of Business Administration">CBA</option>
-                                <option value="College of Arts and Sciences">CAS</option>
-                                <option value="College of Teacher Education">CTE</option>
-                            </select>
-                        </div>
+                <!-- ACTIVE / ARCHIVED VIEW SELECTOR -->
+                <section class="tool-panel" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
+                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" onclick="switchExtensionTab('active')">
+                            <i class="ri-folder-line"></i><span>Active Projects (<span id="activeCount">0</span>)</span>
+                        </button>
+                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" onclick="switchExtensionTab('archived')">
+                            <i class="ri-archive-line"></i><span>Archived Projects (<span id="archivedCount">0</span>)</span>
+                        </button>
                     </div>
+                </section>
 
-                    <!-- Bulk Selection Toolbar -->
-                    <div id="bulkToolbar" style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; margin-bottom: 14px;">
-                        <span id="bulkCountText" style="font-size: 0.86rem; font-weight: 700; color: #166534;">0 selected</span>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" id="bulkActionBtn" onclick="handleBulkAction()" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
-                                <i class="ri-archive-line"></i> <span>Archive Selected</span>
-                            </button>
-                        </div>
-                    </div>
-
+                <!-- PROJECTS TABLE -->
+                <section class="panel">
                     <div class="table-scroll">
-                        <table class="data-table" id="extensionTable" style="width: 100%; border-collapse: collapse;">
+                        <table class="data-table" id="extensionProjectsTable">
                             <thead>
-                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
-                                    <th style="padding: 12px 10px; width: 40px;">
-                                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)">
-                                    </th>
-                                    <th style="padding: 12px 10px;">Project &amp; Lead</th>
-                                    <th style="padding: 12px 10px;">Partner / Location</th>
-                                    <th style="padding: 12px 10px;">College</th>
-                                    <th style="padding: 12px 10px;">Budget</th>
-                                    <th style="padding: 12px 10px;">Stage</th>
-                                    <th style="padding: 12px 10px;">Status</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Manage / Action</th>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Partner / Location</th>
+                                    <th>College</th>
+                                    <th>Budget</th>
+                                    <th>Stage</th>
+                                    <th>Status</th>
+                                    <th>File</th>
+                                    <th>Manage / Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="extensionTableBody" style="font-size: 0.88rem;">
-                                <!-- Populated by JS -->
+                            <tbody id="extensionProjectsBody">
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- Table Pagination Footer -->
-                    <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
-                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 6 of 6 entries</span>
-                        <div style="display: flex; gap: 6px; align-items: center;">
-                            <button type="button" id="prevPageBtn" onclick="changePage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
-                            <span id="paginationNumbers" style="display: flex; gap: 4px;"></span>
-                            <button type="button" id="nextPageBtn" onclick="changePage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
-                        </div>
                     </div>
                 </section>
             </main>
         </div>
     </div>
 
-    <!-- =========================================================
-         MODALS
-    ========================================================= -->
+    <!-- CREATE PROPOSAL MODAL -->
+    <div class="modal" id="createExtensionProjectModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createExtensionProjectTitle">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card simple-submit-modal">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head">
+                <span class="category-badge">Extension</span>
+                <h2 id="createExtensionProjectTitle">Submit Extension Project Proposal</h2>
+                <p>Stage 1: Proposal Writing &amp; Submission (Routed to College Coordinator for Initial Screening)</p>
+            </div>
+            <form class="editor-panel" id="createExtensionProjectForm" onsubmit="handleCreateExtensionProject(event)">
+                <div class="form-grid">
+                    <label class="field"><span>Project Title</span><input name="project_title" id="createTitle" required placeholder="e.g. Community Livelihood Training"></label>
+                    <label class="field"><span>Coordinator / Lead</span><input name="coordinator" id="createCoordinator" required placeholder="Faculty Project Lead"></label>
+                    <label class="field"><span>College / Department</span>
+                        <select name="college" id="createCollege" required>
+                            <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                            <option value="College of Business Administration and Accountancy">College of Business Administration and Accountancy</option>
+                            <option value="College of Engineering">College of Engineering</option>
+                            <option value="College of Agriculture">College of Agriculture</option>
+                            <option value="College of Computer Studies">College of Computer Studies</option>
+                            <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                            <option value="College of Teacher Education">College of Teacher Education</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Community Partner / LGU</span><input name="community_partner" id="createPartner" required placeholder="e.g. Barangay Hall / Cooperative"></label>
+                    <label class="field"><span>Location</span><input name="location" id="createLocation" placeholder="e.g. Barangay San Jose" required></label>
+                    <label class="field"><span>Target Beneficiaries</span><input name="target_beneficiaries" id="createBeneficiaries" placeholder="e.g. 50 OSY and women" required></label>
+                    <label class="field"><span>Target Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="createBudget" required placeholder="50000"></label>
+                    <label class="field"><span>Start Date</span><input type="date" name="start_date" id="createStartDate" required></label>
+                    <label class="field"><span>End Date</span><input type="date" name="end_date" id="createEndDate" required></label>
+                </div>
+                <label class="field"><span>Project Description / Objectives</span><textarea rows="3" name="description" id="createDesc" placeholder="Brief summary of activities, targets, and expected community outputs..."></textarea></label>
+                <label class="field"><span>Proposal Document / MOA Draft (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="createFile" accept=".pdf,.doc,.docx,.zip"></label>
+                <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Extension Coordinator</button>
+            </form>
+        </article>
+    </div>
 
-    <!-- 1. CREATE EXTENSION PROJECT MODAL -->
-    <dialog id="createProjectModal" style="width: min(720px, calc(100% - 32px)); max-width: 720px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <div>
-                <span class="badge" style="background: #ccfbf1; color: #0d9488; font-weight: 700; font-size: 0.76rem; padding: 3px 8px; border-radius: 6px;">Extension</span>
-                <h3 style="margin: 4px 0 0; color: #0f172a; font-size: 1.2rem; font-weight: 800;">Submit Extension Project</h3>
-                <small style="color: #64748b;">Community Outreach Initiative Routing &amp; Screening</small>
-            </div>
-            <button type="button" onclick="closeDialog('createProjectModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleCreateProject(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 80px); overflow-y: auto;">
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Project / Program Title</label>
-                <input type="text" id="newTitle" required placeholder="Full extension project title" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Lead Project Coordinator</label>
-                    <input type="text" id="newCoordinator" required placeholder="Lead faculty extensionist" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
-                    <select id="newCollege" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="College of Computer Studies and Technology">College of Computer Studies and Technology</option>
-                        <option value="College of Engineering">College of Engineering</option>
-                        <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
-                        <option value="College of Business Administration">College of Business Administration</option>
-                        <option value="College of Arts and Sciences">College of Arts and Sciences</option>
-                        <option value="College of Teacher Education">College of Teacher Education</option>
-                    </select>
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Community Partner / LGU / NGO</label>
-                    <input type="text" id="newPartner" required placeholder="Partner agency or barangay" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Location / Venue</label>
-                    <input type="text" id="newLocation" required placeholder="Sitio / Barangay, City" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Proposed Budget (PHP)</label>
-                    <input type="number" id="newBudget" value="80000" step="5000" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Start Date</label>
-                    <input type="date" id="newStartDate" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">End Date</label>
-                    <input type="date" id="newEndDate" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Beneficiaries &amp; Estimated Headcount</label>
-                <input type="text" id="newBeneficiaries" required placeholder="e.g. 150 local farmers / senior citizens" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Project Objectives &amp; Action Plan</label>
-                <textarea id="newObjectives" rows="4" required placeholder="Detail specific outreach targets, expected community deliverables, and impact metrics..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Project Proposal / MOA File (.pdf, .docx; up to 15 MB)</label>
-                <input type="file" id="newFile" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #f8fafc;">
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" onclick="closeDialog('createProjectModal')" style="padding: 10px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; font-weight: 600; cursor: pointer;">Cancel</button>
-                <button type="submit" style="padding: 10px 22px; border-radius: 8px; border: none; background: #0d9488; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="ri-send-plane-line"></i> Submit to Coordinator
-                </button>
-            </div>
-        </form>
-    </dialog>
-
-    <!-- 2. DETAILS & AUDIT TRAIL MODAL -->
-    <dialog id="detailsModal" style="width: min(720px, calc(100% - 32px)); max-width: 720px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <div>
-                <h3 style="margin: 0; color: #0f172a; font-size: 1.2rem; font-weight: 800;">Extension Project Details</h3>
-                <small id="detailHeaderSub" style="color: #64748b;"></small>
-            </div>
-            <button type="button" onclick="closeDialog('detailsModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 80px); overflow-y: auto;">
-            <div>
-                <h4 id="detailTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.15rem; font-weight: 800; line-height: 1.4;"></h4>
-                <p id="detailMeta" style="margin: 0; color: #64748b; font-size: 0.85rem;"></p>
-            </div>
-
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
-                <strong style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase;">Objectives &amp; Outreach Scope</strong>
-                <p id="detailObjectives" style="margin: 0; font-size: 0.88rem; color: #334155; line-height: 1.6;"></p>
-                <div id="detailBeneficiariesRow" style="margin-top: 8px; font-size: 0.84rem; color: #0d9488; font-weight: 600;"></div>
-            </div>
-
-            <div id="detailRemarksSection" style="display: flex; flex-direction: column; gap: 10px;"></div>
-
-            <div>
-                <h4 style="margin: 8px 0 6px; font-size: 0.95rem; color: #0d9488; display: flex; align-items: center; gap: 6px;">
-                    <i class="ri-history-line"></i> Audit Trail &amp; Workflow History
-                </h4>
-                <div id="detailTimeline" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 0.82rem; display: flex; flex-direction: column; gap: 8px;"></div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" id="detailPreviewBtn" onclick="openPreviewModal()" class="primary-btn" style="padding: 8px 14px; font-size: 0.82rem; background: #0d9488; color: #ffffff; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
-                        <i class="ri-eye-line"></i> Preview Document
-                    </button>
-                    <a id="detailDownloadBtn" href="#" download class="ghost-btn" style="padding: 8px 14px; font-size: 0.82rem; border: 1px solid #cbd5e1; border-radius: 8px; color: #1e293b; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-                        <i class="ri-download-line"></i> Download
-                    </a>
-                </div>
-                <div id="detailArchiveToggleWrap"></div>
-            </div>
-        </div>
-    </dialog>
-
-    <!-- 3. COORDINATOR ENDORSEMENT MODAL -->
-    <dialog id="coordModal" style="width: min(580px, calc(100% - 32px)); max-width: 580px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #fffbeb;">
-            <h3 style="margin: 0; color: #b45309; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                <i class="ri-shield-check-line"></i> College Extension Coordinator Screening
-            </h3>
-            <button type="button" onclick="closeDialog('coordModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleCoordinatorAction(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
-            <input type="hidden" id="coordPropId">
-            <h4 id="coordTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Endorsement Remarks / Screening Feedback:</label>
-                <textarea id="coordRemarks" rows="3" required placeholder="Enter screening remarks before endorsing to Extension Director..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="submit" name="decision" value="endorse" style="padding: 9px 16px; border-radius: 8px; border: none; background: #0d9488; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+    <!-- COORDINATOR ENDORSEMENT MODAL -->
+    <div class="modal" id="coordModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="coordForm" onsubmit="handleCoordSubmit(event)" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 style="color: #15803d;"><i class="ri-check-double-line"></i> Extension Coordinator Initial Screening</h2>
+            <input type="hidden" id="coordProjId" name="id">
+            <p><strong id="coordProjTitle"></strong></p>
+            <label class="field"><span>Endorsement Remarks / Feedback:</span>
+                <textarea id="coordRemarks" name="remarks" rows="3" required placeholder="Enter initial screening remarks before endorsing to the Extension Director..."></textarea>
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn" type="submit" name="coord_action" value="endorse" style="background: #15803d;">
                     <i class="ri-check-line"></i> Endorse to Director
                 </button>
-                <button type="submit" name="decision" value="revision" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fed7aa; background: #fff7ed; color: #c2410c; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <button class="ghost-btn" type="submit" name="coord_action" value="revision" style="color: #c2410c; border-color: #fed7aa;">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
-                <button type="submit" name="decision" value="decline" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 700; cursor: pointer;">
-                    Decline
-                </button>
+                <button class="ghost-btn danger-btn" type="submit" name="coord_action" value="decline">Decline</button>
             </div>
         </form>
-    </dialog>
+    </div>
 
-    <!-- 4. DIRECTOR EVALUATION MODAL -->
-    <dialog id="dirModal" style="width: min(620px, calc(100% - 32px)); max-width: 620px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #eff6ff;">
-            <h3 style="margin: 0; color: #1d4ed8; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                <i class="ri-award-line"></i> Extension Director Project Evaluation
-            </h3>
-            <button type="button" onclick="closeDialog('dirModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleDirectorAction(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
-            <input type="hidden" id="dirPropId">
-            <h4 id="dirTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Approved Extension Budget (PHP):</label>
-                <input type="number" step="5000" id="dirApprovedBudget" value="80000" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+    <!-- DIRECTOR EVALUATION MODAL -->
+    <div class="modal" id="dirModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="dirForm" onsubmit="handleDirSubmit(event)" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Extension Director Evaluation</h2>
+            <input type="hidden" id="dirProjId" name="id">
+            <p><strong id="dirProjTitle"></strong></p>
+            <div class="form-grid">
+                <label class="field"><span>Evaluation Rating (Score out of 100):</span>
+                    <input type="number" step="0.01" min="0" max="100" id="dirRating" name="evaluation_rating" placeholder="85.00" required>
+                </label>
+                <label class="field"><span>Approved Extension Budget (PHP):</span>
+                    <input type="number" step="0.01" min="0" id="dirApprovedBudget" name="approved_budget" required>
+                </label>
             </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Director Evaluation &amp; Community Impact Remarks:</label>
-                <textarea id="dirRemarks" rows="3" required placeholder="Evaluation regarding beneficiary readiness and partner alignment..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="submit" name="decision" value="endorse" style="padding: 9px 16px; border-radius: 8px; border: none; background: #1d4ed8; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="ri-send-plane-line"></i> Endorse to Executive
+            <label class="field"><span>Evaluation &amp; Recommendation Remarks:</span>
+                <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="Evaluation feedback regarding community partnership, safety protocols, and budget allocation..."></textarea>
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn" type="submit" name="dir_action" value="endorse" style="background: #1d4ed8;">
+                    <i class="ri-send-plane-line"></i> Endorse to VP / Executive
                 </button>
-                <button type="submit" name="decision" value="revision" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fed7aa; background: #fff7ed; color: #c2410c; font-weight: 700; cursor: pointer;">
-                    Return for Revision
+                <button class="ghost-btn" type="submit" name="dir_action" value="revision" style="color: #c2410c; border-color: #fed7aa;">
+                    <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
-                <button type="submit" name="decision" value="decline" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 700; cursor: pointer;">
-                    Decline
-                </button>
+                <button class="ghost-btn danger-btn" type="submit" name="dir_action" value="decline">Decline</button>
             </div>
         </form>
-    </dialog>
+    </div>
 
-    <!-- 5. EXECUTIVE APPROVAL MODAL -->
-    <dialog id="execModal" style="width: min(600px, calc(100% - 32px)); max-width: 600px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f3e8ff;">
-            <h3 style="margin: 0; color: #7e22ce; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                <i class="ri-checkbox-circle-line"></i> OVPRE Executive Final Approval
-            </h3>
-            <button type="button" onclick="closeDialog('execModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleExecutiveAction(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
-            <input type="hidden" id="execPropId">
-            <h4 id="execTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Executive Resolution &amp; Grant Release Directives:</label>
-                <textarea id="execRemarks" rows="4" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">Approved for field execution under the University Community Extension Program. Funds authorized for release.</textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="submit" name="decision" value="approve" style="padding: 10px 20px; border-radius: 8px; border: none; background: #16a34a; color: #ffffff; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+    <!-- EXECUTIVE APPROVAL MODAL -->
+    <div class="modal" id="execModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="execForm" onsubmit="handleExecSubmit(event)" style="max-width: 600px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 style="color: #7e22ce;"><i class="ri-checkbox-circle-line"></i> OVPRE Executive Final Approval</h2>
+            <input type="hidden" id="execProjId" name="id">
+            <p><strong id="execProjTitle"></strong></p>
+            <label class="field"><span>Executive Resolution &amp; Directives:</span>
+                <textarea id="execRemarks" name="remarks" rows="4" required>Approved for implementation under the Institutional Extension Program. Notice to Implement issued.</textarea>
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn" type="submit" name="exec_action" value="approve" style="background: #16a34a;">
                     <i class="ri-check-double-line"></i> Grant Final Approval
                 </button>
-                <button type="submit" name="decision" value="disapprove" style="padding: 10px 18px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 700; cursor: pointer;">
-                    Disapprove
-                </button>
+                <button class="ghost-btn danger-btn" type="submit" name="exec_action" value="decline">Disapprove</button>
             </div>
         </form>
-    </dialog>
+    </div>
 
-    <!-- 6. DOCUMENT PREVIEW MODAL -->
-    <dialog id="previewModal" style="width: min(840px, calc(100% - 32px)); max-width: 840px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 id="previewTitle" style="margin: 0; color: #0f172a; font-size: 1.1rem; font-weight: 800;"></h3>
-            <button type="button" onclick="closeDialog('previewModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <div style="padding: 24px; text-align: center; background: #f1f5f9; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;">
-            <i class="ri-file-pdf-2-line" style="font-size: 4rem; color: #0d9488;"></i>
-            <div>
-                <h4 id="previewFilename" style="margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; color: #0f172a;">Extension_Document.pdf</h4>
-                <p style="margin: 0; color: #64748b; font-size: 0.85rem;">Simulated Institutional Extension Document Preview</p>
+    <!-- DETAILS MODAL -->
+    <div class="modal" id="detailsModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 660px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head" style="margin-bottom: 12px;">
+                <span class="category-badge" id="detailStage">Extension</span>
+                <h2 id="detailTitle" style="margin: 6px 0;">Extension Project Details</h2>
+                <p id="detailSubtitle" style="color: #64748b; font-size: 0.9rem;"></p>
             </div>
-            <a href="#" download id="previewDownloadLink" class="primary-btn" style="padding: 9px 18px; border-radius: 8px; background: #0d9488; color: #ffffff; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="ri-download-cloud-line"></i> Download Document
-            </a>
-        </div>
-    </dialog>
+            <div style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 14px; border: 1px solid #e2e8f0;">
+                <div><strong>Location:</strong> <span id="detailLocation"></span></div>
+                <div style="margin-top: 6px;"><strong>Target Beneficiaries:</strong> <span id="detailBeneficiaries"></span></div>
+                <div style="margin-top: 6px;"><strong>Budget:</strong> <span id="detailBudget"></span></div>
+                <div style="margin-top: 6px;"><strong>Project Schedule:</strong> <span id="detailSchedule"></span></div>
+                <div style="margin-top: 6px;" id="detailDescWrap"><strong>Description:</strong> <span id="detailDesc"></span></div>
+            </div>
+            <div id="detailWorkflowTrail" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;"></div>
+            <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="button" class="ghost-btn action-btn" id="detailArchiveBtn" onclick="toggleArchiveFromDetails()"><i class="ri-archive-line"></i> <span>Archive Project</span></button>
+                <button type="button" class="primary-btn mini-btn" data-close-modal>Close</button>
+            </div>
+        </article>
+    </div>
 
-    <!-- =========================================================
-         SCRIPT LOGIC
-    ========================================================= -->
+    <!-- PREVIEW MODAL -->
+    <div class="modal preview-modal" id="previewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 780px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 id="previewModalTitle"><i class="ri-file-text-line"></i> Document Preview</h2>
+            <div id="previewModalBody" style="background: #f8fafc; padding: 32px 20px; border-radius: 12px; text-align: center; border: 1px dashed #cbd5e1; margin: 12px 0;">
+                <i class="ri-file-pdf-2-line" style="font-size: 3rem; color: #dc2626; display: block; margin-bottom: 8px;"></i>
+                <strong id="previewFileName" style="font-size: 1.1rem; color: #0f172a; display: block;">proposal.pdf</strong>
+                <p style="color: #64748b; margin-top: 6px;">Official Proposal Document filed with OVPRE Institutional Extension Office.</p>
+                <div style="margin-top: 18px;">
+                    <a href="#" id="previewDownloadBtn" class="primary-btn mini-btn" download style="display: inline-flex;"><i class="ri-download-2-line"></i> Download Document</a>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="button" class="ghost-btn mini-btn" data-close-modal>Close</button>
+            </div>
+        </article>
+    </div>
+
+    <!-- SCRIPTS -->
     <script>
+        const initialSeed = [
+  {
+    "id": 1,
+    "title": "Barangay San Gabriel Community Health and Hypertension Teleconsultation",
+    "coordinator": "Prof. Maria Bautista",
+    "college": "College of Nursing and Allied Health Sciences",
+    "partner": "Barangay San Gabriel Health Center & LGU San Pablo",
+    "location": "Brgy. San Gabriel, San Pablo City",
+    "beneficiaries": "120 Senior Citizens & Hypertensive Patients",
+    "budget": 85000,
+    "approved_budget": 80000,
+    "stage": "Completed",
+    "status": "Approved",
+    "progress_status": "Completed",
+    "created_at": "2026-01-20",
+    "start_date": "2026-01-20",
+    "end_date": "2026-04-20",
+    "description": "Community nursing outreach providing regular blood pressure monitoring, telehealth education, and maintenance medication guidance.",
+    "coordinator_remarks": "Screened and fully endorsed. Solid community partner agreement and clear health targets.",
+    "coordinator_name": "Prof. CONAHS Coordinator",
+    "director_remarks": "Approved with rating 95.00. High community impact and clear barangay integration.",
+    "director_name": "Dr. Maricel Gomez",
+    "evaluation_rating": "95.00",
+    "executive_remarks": "Final executive approval granted. Fund release authorized under University Extension Support.",
+    "executive_name": "Executive VP / Director",
+    "document_filename": "San_Gabriel_Health_Extension.pdf",
+    "archived": false
+  },
+  {
+    "id": 2,
+    "title": "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
+    "coordinator": "Prof. Elena Cruz",
+    "college": "College of Business Administration and Accountancy",
+    "partner": "San Pablo City Public Market Vendors Association",
+    "location": "San Pablo Public Market",
+    "beneficiaries": "80 Micro-retailers and Vendors",
+    "budget": 65000,
+    "approved_budget": 65000,
+    "stage": "Ongoing",
+    "status": "Approved",
+    "progress_status": "Ongoing",
+    "created_at": "2026-02-10",
+    "start_date": "2026-02-10",
+    "end_date": "2026-05-10",
+    "description": "Hands-on training using smartphone accounting apps, GCash/Maya QR payments, and basic inventory tracking.",
+    "coordinator_remarks": "Endorsed with priority endorsement. High relevance to local vendor sustainability.",
+    "coordinator_name": "Prof. CBAA Coordinator",
+    "director_remarks": "Director evaluated and approved with rating 92.50.",
+    "director_name": "Dr. Maricel Gomez",
+    "evaluation_rating": "92.50",
+    "executive_remarks": "Executive approval granted.",
+    "executive_name": "OVPRE Executive Office",
+    "document_filename": "Vendor_Financial_Literacy_MOA.pdf",
+    "archived": false
+  },
+  {
+    "id": 3,
+    "title": "Community IoT Flood Early Warning System & SMS Evacuation Alert",
+    "coordinator": "Engr. Roberto Dimaano",
+    "college": "College of Engineering",
+    "partner": "MDRRMO San Pablo & Brgy. Sampaloc Lake Council",
+    "location": "Lake Sampaloc Shoreline",
+    "beneficiaries": "350 Coastal & Lakeside Households",
+    "budget": 140000,
+    "approved_budget": 135000,
+    "stage": "Ongoing",
+    "status": "Pending Executive Approval",
+    "progress_status": "Planning",
+    "created_at": "2026-02-28",
+    "start_date": "2026-03-01",
+    "end_date": "2026-06-30",
+    "description": "Deployment of solar-powered ultrasonic water level sensors linked to an automated SMS alert gateway.",
+    "coordinator_remarks": "Complete technical drawings, risk assessment, and barangay clearance submitted.",
+    "coordinator_name": "Engr. COE Coordinator",
+    "director_remarks": "Director evaluation rating: 94.00. Recommend immediate executive release.",
+    "director_name": "Dr. Maricel Gomez",
+    "evaluation_rating": "94.00",
+    "document_filename": "IoT_Flood_Sensor_Proposal.pdf",
+    "archived": false
+  },
+  {
+    "id": 4,
+    "title": "Modern Organic Backyard Aquaculture and Tilapia Pond Management",
+    "coordinator": "Dr. Fernando Morales",
+    "college": "College of Agriculture",
+    "partner": "Seven Lakes Fisherfolk Cooperative",
+    "location": "Brgy. San Buenaventura",
+    "beneficiaries": "45 Small-Scale Fisherfolk",
+    "budget": 95000,
+    "approved_budget": 90000,
+    "stage": "Planning",
+    "status": "Pending Director Review",
+    "progress_status": "Planning",
+    "created_at": "2026-03-05",
+    "start_date": "2026-03-15",
+    "end_date": "2026-07-15",
+    "description": "Transfer of low-cost organic feeding technologies and water bio-filter management to boost fingerling survival.",
+    "coordinator_remarks": "Screened and validated. Cooperative has provided counterpart pond space.",
+    "coordinator_name": "Dr. CA Coordinator",
+    "document_filename": "Tilapia_Aquaculture_Extension.docx",
+    "archived": false
+  },
+  {
+    "id": 5,
+    "title": "STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)",
+    "coordinator": "Prof. Arnel Santos",
+    "college": "College of Computer Studies",
+    "partner": "Sangguniang Kabataan Federation of San Pablo City",
+    "location": "San Pablo City Youth Center",
+    "beneficiaries": "60 Out-of-School Youth (Ages 16-24)",
+    "budget": 110000,
+    "approved_budget": 110000,
+    "stage": "Proposal",
+    "status": "Pending Coordinator Review",
+    "progress_status": "Planning",
+    "created_at": "2026-03-12",
+    "start_date": "2026-04-01",
+    "end_date": "2026-06-30",
+    "description": "6-week crash course on basic electronics, microcontrollers, and web development fundamentals.",
+    "document_filename": "OSY_STEM_Bootcamp_Plan.pdf",
+    "archived": false
+  },
+  {
+    "id": 6,
+    "title": "Maternal Nutrition & First 1,000 Days Cooking Demonstrations",
+    "coordinator": "Prof. Clara De Jesus",
+    "college": "College of Nursing and Allied Health Sciences",
+    "partner": "Barangay Del Remedio Rural Health Unit",
+    "location": "Brgy. Del Remedio Multi-Purpose Hall",
+    "beneficiaries": "75 Pregnant & Lactating Mothers",
+    "budget": 45000,
+    "approved_budget": 45000,
+    "stage": "Proposal",
+    "status": "Needs Revision",
+    "progress_status": "Planning",
+    "created_at": "2026-03-14",
+    "start_date": "2026-04-01",
+    "end_date": "2026-05-30",
+    "description": "Demonstration workshops preparing nutrient-dense baby weaning food using indigenous vegetables.",
+    "coordinator_remarks": "Please attach the signed memorandum of understanding with the City Health Office before resubmitting.",
+    "coordinator_name": "Prof. CONAHS Coordinator",
+    "document_filename": "Maternal_Nutrition_Proposal.pdf",
+    "archived": false
+  },
+  {
+    "id": 7,
+    "title": "Community Heritage Eco-Tourism Storytelling and Tour Guide Certification",
+    "coordinator": "Prof. Manuel Valenzuela",
+    "college": "College of Arts and Sciences",
+    "partner": "San Pablo Historical & Cultural Society",
+    "location": "City Plaza & Seven Lakes Circuit",
+    "beneficiaries": "30 Local Tour Guides and Youth Volunteers",
+    "budget": 55000,
+    "approved_budget": 55000,
+    "stage": "Completed",
+    "status": "Approved",
+    "progress_status": "Completed",
+    "created_at": "2025-10-15",
+    "start_date": "2025-10-15",
+    "end_date": "2025-12-15",
+    "description": "Specialized workshops on storytelling local folklore, ecological preservation guidelines, and first aid.",
+    "coordinator_remarks": "Completed project. Archived for institutional records.",
+    "archived": true
+  }
+];
         let currentTab = 'active';
-        let currentPage = 1;
-        const pageSize = 10;
-        let selectedIds = new Set();
-        let currentPreviewProject = null;
+        let activeDetailId = null;
 
-        const initialExtensionData = [
-            {
-                id: 1,
-                title: "Barangay San Gabriel Community Health and Hypertension Teleconsultation",
-                coordinator: "Prof. Maria Bautista",
-                college: "College of Nursing and Allied Health Sciences",
-                partner: "Barangay San Gabriel Health Center & LGU San Pablo",
-                location: "Brgy. San Gabriel, San Pablo City",
-                beneficiaries: "120 Senior Citizens & Hypertensive Patients",
-                budget: 85000,
-                approved_budget: 80000,
-                stage: "Completed",
-                status: "Approved",
-                progress_status: "Completed",
-                created_at: "2026-01-20",
-                description: "Community nursing outreach providing regular blood pressure monitoring, telehealth education, and maintenance medication guidance.",
-                coordinator_remarks: "Screened and fully endorsed. Solid community partner agreement and clear health targets.",
-                coordinator_name: "Prof. CONAHS Coordinator",
-                director_remarks: "Approved with rating 95.00. High community impact and clear barangay integration.",
-                director_name: "Dr. Maricel Gomez",
-                evaluation_rating: "95.00",
-                executive_remarks: "Final executive approval granted. Fund release authorized under University Extension Support.",
-                executive_name: "Executive VP / Director",
-                document_filename: "San_Gabriel_Health_Extension.pdf",
-                archived: false
-            },
-            {
-                id: 2,
-                title: "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
-                coordinator: "Prof. Elena Cruz",
-                college: "College of Business Administration",
-                partner: "San Pablo City Public Market Cooperative",
-                location: "San Pablo City Public Market",
-                beneficiaries: "85 Micro-Retailers and Market Vendors",
-                budget: 65000,
-                approved_budget: 65000,
-                stage: "Stage 1: Coordinator Screening",
-                status: "Pending Coordinator Review",
-                progress_status: "Planning",
-                created_at: "2026-02-05",
-                description: "Hands-on workshops teaching cashless payment platforms (GCash, Maya), mobile inventory tracking, and basic cash flow management.",
-                coordinator_remarks: "",
-                coordinator_name: "",
-                director_remarks: "",
-                director_name: "",
-                evaluation_rating: "",
-                executive_remarks: "",
-                executive_name: "",
-                document_filename: "Market_Vendors_Financial_Literacy.pdf",
-                archived: false
-            },
-            {
-                id: 3,
-                title: "Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation",
-                coordinator: "Prof. Engr. Mark Santos",
-                college: "College of Engineering",
-                partner: "Brgy. Concepcion Urban Farmers Association",
-                location: "Brgy. Concepcion, San Pablo City",
-                beneficiaries: "60 Urban Farming Families",
-                budget: 120000,
-                approved_budget: 110000,
-                stage: "Stage 2: Director Evaluation",
-                status: "Pending Director Review",
-                progress_status: "Planning",
-                created_at: "2026-02-14",
-                description: "Installation of modular solar-assisted nutrient circulating hydroponic growing beds for household food security.",
-                coordinator_remarks: "Screened and verified feasible. Prototype design compliant with low-cost criteria.",
-                coordinator_name: "Engr. COE Coordinator",
-                director_remarks: "",
-                director_name: "",
-                evaluation_rating: "91.50",
-                executive_remarks: "",
-                executive_name: "",
-                document_filename: "Urban_Hydroponics_Extension.pdf",
-                archived: false
-            },
-            {
-                id: 4,
-                title: "Basic Python Programming and Cybersecurity Awareness for Public High Schools",
-                coordinator: "Prof. Juan Dela Cruz",
-                college: "College of Computer Studies and Technology",
-                partner: "San Pablo City National High School",
-                location: "San Pablo City",
-                beneficiaries: "140 Senior High School STEM Students",
-                budget: 70000,
-                approved_budget: 70000,
-                stage: "Stage 3: Executive Approval",
-                status: "Pending Executive Approval",
-                progress_status: "Planning",
-                created_at: "2026-02-22",
-                description: "Weekend coding bootcamps and anti-phishing/scam awareness modules facilitated by university IT faculty and student mentors.",
-                coordinator_remarks: "Endorsed. Meets university mission for STEM community empowerment.",
-                coordinator_name: "Prof. CCST Coordinator",
-                director_remarks: "Recommended for executive release with 93.00 evaluation rating.",
-                director_name: "Dr. Maricel Gomez",
-                evaluation_rating: "93.00",
-                executive_remarks: "",
-                executive_name: "",
-                document_filename: "Python_Highschool_Extension.pdf",
-                archived: false
-            },
-            {
-                id: 5,
-                title: "Community Disaster Preparedness and First Aid Emergency Response Training",
-                coordinator: "Prof. Arthur Lim",
-                college: "College of Criminal Justice Education",
-                partner: "San Pablo City CDRRMO & Red Cross",
-                location: "Brgy. San Nicolas, San Pablo City",
-                beneficiaries: "95 Barangay Tanods & Volunteer Responders",
-                budget: 95000,
-                approved_budget: 90000,
-                stage: "Completed",
-                status: "Approved",
-                progress_status: "Completed",
-                created_at: "2026-01-10",
-                description: "Emergency rescue simulation drills, basic life support certification, and evacuation protocol mapping for lakeside communities.",
-                coordinator_remarks: "Endorsed. Solid coordination with local CDRRMO.",
-                coordinator_name: "Prof. CCJE Coordinator",
-                director_remarks: "Rating: 94.00. Completed successfully with certification issued.",
-                director_name: "Dr. Maricel Gomez",
-                evaluation_rating: "94.00",
-                executive_remarks: "Approved and liquidated. Accomplishment report filed.",
-                executive_name: "Executive VP / Director",
-                document_filename: "Disaster_FirstAid_Training.pdf",
-                archived: false
-            },
-            {
-                id: 6,
-                title: "Barangay Homestay Hospitality and Sanitation Standards Workshop",
-                coordinator: "Prof. Janice Aquino",
-                college: "College of Tourism and Hospitality Management",
-                partner: "Seven Lakes Ecotourism Association",
-                location: "Sampaloc Lake & Pandin Lake, San Pablo City",
-                beneficiaries: "50 Homestay Operators & Ecotourism Guides",
-                budget: 55000,
-                approved_budget: 50000,
-                stage: "Stage 1: Coordinator Screening",
-                status: "Needs Revision",
-                progress_status: "Planning",
-                created_at: "2026-02-28",
-                description: "Food safety, hygiene protocols, and guest service excellence workshops for eco-tourism homestay operators.",
-                coordinator_remarks: "Returned for revision. Please clarify venue permits and partner counterpart contribution.",
-                coordinator_name: "Prof. CTHM Coordinator",
-                director_remarks: "",
-                director_name: "",
-                evaluation_rating: "",
-                executive_remarks: "",
-                executive_name: "",
-                document_filename: "Homestay_Hospitality_Workshop.pdf",
-                archived: false
-            },
-            {
-                id: 7,
-                title: "Lakeside Solid Waste Segregation & Bio-Enzyme Composting Initiative",
-                coordinator: "Prof. Roberto Dizon",
-                college: "College of Arts and Sciences",
-                partner: "Lakeside Cleanliness Task Force",
-                location: "Palakpakin Lake, San Pablo City",
-                beneficiaries: "75 Lakeshore Household Residents",
-                budget: 60000,
-                approved_budget: 60000,
-                stage: "Archived",
-                status: "Approved",
-                progress_status: "Completed",
-                created_at: "2025-11-15",
-                description: "Biochemical organic composting drive using indigenous microorganisms to treat household kitchen waste near lake waters.",
-                coordinator_remarks: "Archived post-completion.",
-                coordinator_name: "Dr. CAS Coordinator",
-                director_remarks: "Project closed successfully.",
-                director_name: "Dr. Maricel Gomez",
-                evaluation_rating: "92.00",
-                executive_remarks: "Certified completed.",
-                executive_name: "Executive VP / Director",
-                document_filename: "BioEnzyme_Composting_Report.pdf",
-                archived: true
-            }
-        ];
-
-        function getStoredProjects() {
+        function getProjects() {
             try {
-                const s = localStorage.getItem('ovpre_extension_projects');
-                if (s) return JSON.parse(s);
-            } catch(e) {}
-            localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialExtensionData));
-            return initialExtensionData;
+                const raw = localStorage.getItem('ovpre_extension_projects');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
+            return initialSeed;
         }
 
-        function saveProjects(data) {
-            localStorage.setItem('ovpre_extension_projects', JSON.stringify(data));
-        }
-
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('actionToast');
-            t.style.display = 'flex';
-            t.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
-            t.style.border = `1px solid ${type === 'success' ? '#86efac' : '#fecaca'}`;
-            t.style.color = type === 'success' ? '#166534' : '#b91c1c';
-            t.innerHTML = `<i class="${type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line'}"></i> ${msg}`;
-            setTimeout(() => { t.style.display = 'none'; }, 4000);
-        }
-
-        function getUserRole() {
+        function saveProjects(list) {
             try {
-                const u = JSON.parse(sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user') || '{}');
-                return u.role || 'Super Admin';
-            } catch(e) { return 'Super Admin'; }
+                localStorage.setItem('ovpre_extension_projects', JSON.stringify(list));
+            } catch (e) {}
         }
 
-        function switchView(tab) {
+        function switchExtensionTab(tab) {
             currentTab = tab;
-            currentPage = 1;
-            selectedIds.clear();
-            document.getElementById('tabActiveBtn').style.background = tab === 'active' ? '#0d9488' : '#ffffff';
-            document.getElementById('tabActiveBtn').style.color = tab === 'active' ? '#ffffff' : '#475569';
-            document.getElementById('tabArchivedBtn').style.background = tab === 'archived' ? '#0d9488' : '#ffffff';
-            document.getElementById('tabArchivedBtn').style.color = tab === 'archived' ? '#ffffff' : '#475569';
-            document.getElementById('bulkActionBtn').querySelector('span').textContent = tab === 'active' ? 'Archive Selected' : 'Restore Selected';
-            document.getElementById('selectAllCheckbox').checked = false;
-            updateBulkToolbar();
-            renderTable();
-        }
-
-        function applyFilters() {
-            currentPage = 1;
+            document.getElementById('tabActiveBtn').classList.toggle('is-active', tab === 'active');
+            document.getElementById('tabArchivedBtn').classList.toggle('is-active', tab === 'archived');
             renderTable();
         }
 
         function renderTable() {
-            const all = getStoredProjects();
-            const role = getUserRole();
-            const isCoord = role.includes('Coordinator') || role === 'Super Admin';
-            const isDir = role.includes('Director') || role === 'Super Admin';
-            const isExec = role === 'Super Admin' || role === 'OVPRE Admin';
+            const all = getProjects();
+            const flags = (window.OVPRE && OVPRE.roleFlags) ? OVPRE.roleFlags() : { isAdmin: true, isCoordinator: true, isDirector: true, isExecutive: true };
+            const isCoordinator = flags.isCoordinator || flags.isAdmin;
+            const isDirector = flags.isDirector || flags.isAdmin;
+            const isExecutive = flags.isExecutive;
 
             const activeList = all.filter(p => !p.archived);
             const archivedList = all.filter(p => p.archived);
-            document.getElementById('activeBadge').textContent = activeList.length;
-            document.getElementById('archivedBadge').textContent = archivedList.length;
+            document.getElementById('activeCount').textContent = activeList.length;
+            document.getElementById('archivedCount').textContent = archivedList.length;
 
-            let filtered = currentTab === 'active' ? activeList : archivedList;
+            const list = currentTab === 'active' ? activeList : archivedList;
+            const tbody = document.getElementById('extensionProjectsBody');
+            tbody.innerHTML = '';
 
-            const stageVal = document.getElementById('stageFilter').value;
-            if (stageVal !== 'all') {
-                filtered = filtered.filter(p => p.status === stageVal || p.stage === stageVal);
-            }
-
-            const colVal = document.getElementById('collegeFilter').value;
-            if (colVal !== 'all') {
-                filtered = filtered.filter(p => p.college === colVal);
-            }
-
-            const searchVal = (document.getElementById('quickSearchInput')?.value || document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
-            if (searchVal) {
-                filtered = filtered.filter(p => 
-                    p.title.toLowerCase().includes(searchVal) ||
-                    p.coordinator.toLowerCase().includes(searchVal) ||
-                    p.community_partner.toLowerCase().includes(searchVal)
-                );
-            }
-
-            const total = filtered.length;
-            const startIdx = (currentPage - 1) * pageSize;
-            const pageItems = filtered.slice(startIdx, startIdx + pageSize);
-
-            const tbody = document.getElementById('extensionTableBody');
-            tbody.replaceChildren();
-
-            if (!pageItems.length) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = `<td colspan="8" style="text-align: center; padding: 32px; color: #64748b;">No ${currentTab} extension projects found.</td>`;
-                tbody.appendChild(emptyRow);
+            if (!list.length) {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-pagination-empty', 'true');
+                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension projects found.</td>';
+                tbody.appendChild(tr);
             } else {
-                pageItems.forEach(p => {
-                    const row = document.createElement('tr');
-                    row.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+                list.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.id = 'ext-project-' + p.id;
+                    const pStatus = p.status || 'Pending Coordinator Review';
+                    const lead = p.coordinator || 'Faculty Lead';
+                    const sDate = p.start_date || p.created_at || '2026-01-20';
+                    const eDate = p.end_date || '2026-04-20';
+                    const partner = p.partner || p.community_partner || 'Local Community Partner';
+                    const loc = p.location || '';
+                    const col = p.college || 'College of Extension';
+                    const bgt = Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const stg = p.stage || 'Proposal';
+                    const docName = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
 
-                    let statusBg = '#dcfce7', statusColor = '#166534';
-                    if (p.status === 'Pending Coordinator Review' || p.status === 'Pending') {
-                        statusBg = '#fef3c7'; statusColor = '#92400e';
-                    } else if (p.status === 'Pending Director Review' || p.status === 'Under Review') {
-                        statusBg = '#e0f2fe'; statusColor = '#0369a1';
-                    } else if (p.status === 'Pending Executive Approval') {
-                        statusBg = '#f3e8ff'; statusColor = '#7e22ce';
-                    } else if (p.status === 'For Revision') {
-                        statusBg = '#fff7ed'; statusColor = '#c2410c';
-                    }
+                    let actionsHtml = '<div style="display: flex; gap: 6px; flex-wrap: wrap;">';
 
-                    // Build actions based on user role and project status
-                    let actionButtons = '';
                     if (currentTab === 'active') {
-                        if (isCoord && (p.status === 'Pending Coordinator Review' || p.status === 'Pending')) {
-                            actionButtons += `<button type="button" class="btn" onclick="openCoordModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #0d9488; color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-right: 4px;"><i class="ri-check-line"></i> Endorse</button>`;
-                        }
-                        if (isDir && (p.status === 'Pending Director Review' || p.status === 'Under Review')) {
-                            actionButtons += `<button type="button" class="btn" onclick="openDirModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #1d4ed8; color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-right: 4px;"><i class="ri-award-line"></i> Evaluate</button>`;
-                        }
-                        if (isExec && p.status === 'Pending Executive Approval') {
-                            actionButtons += `<button type="button" class="btn" onclick="openExecModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #7e22ce; color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-right: 4px;"><i class="ri-shield-check-line"></i> Approve</button>`;
+                        if (isCoordinator && (pStatus === 'Pending Coordinator Review' || pStatus === 'Pending' || pStatus === 'Under Review')) {
+                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openCoordModal(' + p.id + ')" style="background: #15803d;" title="Endorse project to Extension Director"><i class="ri-check-double-line"></i> Endorse</button>';
+                            actionsHtml += '<button class="ghost-btn mini-btn" type="button" onclick="openCoordModal(' + p.id + ', true)" style="color: #c2410c; border-color: #fed7aa;" title="Return to faculty for revision"><i class="ri-arrow-go-back-line"></i> Revision</button>';
+                        } else if (isDirector && (pStatus === 'Pending Director Review' || pStatus === 'Under Review')) {
+                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openDirModal(' + p.id + ')" style="background: #1d4ed8;" title="Director Evaluation"><i class="ri-award-line"></i> Evaluate</button>';
+                        } else if (isExecutive && pStatus === 'Pending Executive Approval') {
+                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openExecModal(' + p.id + ')" style="background: #7e22ce;" title="Executive Final Approval"><i class="ri-shield-check-line"></i> Approve</button>';
                         }
                     }
 
-                    actionButtons += `<button type="button" class="btn" onclick="openDetailsModal(${p.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #f1f5f9; color: #1e293b; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;"><i class="ri-eye-line"></i> Details</button>`;
+                    actionsHtml += '<button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(' + p.id + ')"><i class="ri-eye-line"></i><span>Details</span></button>';
+                    actionsHtml += '</div>';
 
-                    row.innerHTML = `
-                        <td style="padding: 12px 10px;">
-                            <input type="checkbox" class="row-checkbox" value="${p.id}" ${selectedIds.has(p.id) ? 'checked' : ''} onchange="toggleRowSelect(${p.id}, this)">
-                        </td>
-                        <td style="padding: 12px 10px;">
-                            <strong style="color: #0f172a; line-height: 1.4; display: block;">${p.title}</strong>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
-                                <i class="ri-user-line"></i> Lead: ${p.coordinator} | <i class="ri-calendar-line"></i> ${p.start_date} to ${p.end_date}
+                    tr.innerHTML = `
+                        <td>
+                            <strong>${OVPRE.h(p.title)}</strong>
+                            <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                                <i class="ri-user-line"></i> Lead: ${OVPRE.h(lead)} | 
+                                <i class="ri-calendar-line"></i> ${OVPRE.date(sDate)} to ${OVPRE.date(eDate)}
                             </div>
                         </td>
-                        <td style="padding: 12px 10px;">
-                            <strong>${p.community_partner}</strong>
-                            <div style="font-size: 0.78rem; color: #64748b;"><i class="ri-map-pin-line"></i> ${p.location}</div>
+                        <td>
+                            <strong>${OVPRE.h(partner)}</strong>
+                            ${loc ? '<br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> ' + OVPRE.h(loc) + '</small>' : ''}
                         </td>
-                        <td style="padding: 12px 10px;"><span class="dept-pill" style="font-size: 0.78rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 3px 8px; border-radius: 6px; color: #475569;">${p.college.replace('College of ', '')}</span></td>
-                        <td style="padding: 12px 10px; font-weight: 700; color: #0d9488;">PHP ${Number(p.approved_budget || p.budget).toLocaleString()}</td>
-                        <td style="padding: 12px 10px; font-weight: 600; color: #0d9488; font-size: 0.82rem;">${p.stage}</td>
-                        <td style="padding: 12px 10px;">
-                            <span class="status-pill" style="background: ${statusBg}; color: ${statusColor}; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.76rem; display: inline-block;">${p.status}</span>
+                        <td data-sort-value="${OVPRE.h(col)}"><span class="dept-pill">${OVPRE.h(col)}</span></td>
+                        <td><strong>PHP ${bgt}</strong></td>
+                        <td><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
+                        <td>
+                            <span class="status-pill status-${OVPRE.statusClass(pStatus)}">
+                                ${OVPRE.h(pStatus)}
+                            </span>
                         </td>
-                        <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
-                            ${actionButtons}
+                        <td>
+                            <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('${OVPRE.h(p.title)}', '${OVPRE.h(docName)}')" title="Preview Document">
+                                <i class="ri-file-text-line"></i>
+                            </button>
                         </td>
+                        <td>${actionsHtml}</td>
                     `;
-                    tbody.appendChild(row);
+                    tbody.appendChild(tr);
                 });
             }
 
-            // Update Pagination
-            const pageCount = Math.max(1, Math.ceil(total / pageSize));
-            document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + pageSize, total)} of ${total} entries` : 'No records';
-            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
-            document.getElementById('nextPageBtn').disabled = currentPage >= pageCount;
-
-            const pNumContainer = document.getElementById('paginationNumbers');
-            pNumContainer.replaceChildren();
-            for (let i = 1; i <= pageCount; i++) {
-                const b = document.createElement('button');
-                b.textContent = i;
-                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === currentPage ? 'background: #0d9488; color: #fff;' : 'background: #fff; color: #1e293b;'}`;
-                b.onclick = () => { currentPage = i; renderTable(); };
-                pNumContainer.appendChild(b);
+            // Tell app.js to reload data-table toolbar and pagination
+            if (window.OVPRE && OVPRE.reloadTable) {
+                OVPRE.reloadTable('extensionProjectsTable');
+            } else if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('extensionProjectsTable'));
             }
         }
 
-        function changePage(delta) {
-            currentPage += delta;
-            renderTable();
-        }
+        // --- Create Proposal ---
+        function handleCreateExtensionProject(event) {
+            event.preventDefault();
+            const title = document.getElementById('createTitle').value.trim();
+            const coord = document.getElementById('createCoordinator').value.trim();
+            const college = document.getElementById('createCollege').value;
+            const partner = document.getElementById('createPartner').value.trim();
+            const loc = document.getElementById('createLocation').value.trim();
+            const ben = document.getElementById('createBeneficiaries').value.trim();
+            const budget = parseFloat(document.getElementById('createBudget').value) || 0;
+            const sDate = document.getElementById('createStartDate').value;
+            const eDate = document.getElementById('createEndDate').value;
+            const desc = document.getElementById('createDesc').value.trim();
 
-        function toggleSelectAll(master) {
-            const rows = document.querySelectorAll('.row-checkbox');
-            rows.forEach(r => {
-                const id = parseInt(r.value, 10);
-                r.checked = master.checked;
-                if (master.checked) selectedIds.add(id);
-                else selectedIds.delete(id);
-            });
-            updateBulkToolbar();
-        }
-
-        function toggleRowSelect(id, box) {
-            if (box.checked) selectedIds.add(id);
-            else selectedIds.delete(id);
-            updateBulkToolbar();
-        }
-
-        function updateBulkToolbar() {
-            const tb = document.getElementById('bulkToolbar');
-            if (selectedIds.size > 0) {
-                tb.style.display = 'flex';
-                document.getElementById('bulkCountText').textContent = `${selectedIds.size} project${selectedIds.size > 1 ? 's' : ''} selected`;
-            } else {
-                tb.style.display = 'none';
-            }
-        }
-
-        function handleBulkAction() {
-            const all = getStoredProjects();
-            const shouldArchive = currentTab === 'active';
-            all.forEach(p => {
-                if (selectedIds.has(p.id)) {
-                    p.archived = shouldArchive;
-                }
-            });
-            saveProjects(all);
-            selectedIds.clear();
-            showToast(`Selected projects have been ${shouldArchive ? 'archived' : 'restored'}.`);
-            switchView(currentTab);
-        }
-
-        function openDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.showModal();
-        }
-
-        function closeDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.close();
-        }
-
-        function openCreateProjectModal() {
-            openDialog('createProjectModal');
-        }
-
-        function handleCreateProject(e) {
-            e.preventDefault();
-            const all = getStoredProjects();
-            const newP = {
-                id: Date.now(),
-                title: document.getElementById('newTitle').value.trim(),
-                coordinator: document.getElementById('newCoordinator').value.trim(),
-                community_partner: document.getElementById('newPartner').value.trim(),
-                location: document.getElementById('newLocation').value.trim(),
-                college: document.getElementById('newCollege').value,
-                budget: parseFloat(document.getElementById('newBudget').value) || 0,
-                approved_budget: parseFloat(document.getElementById('newBudget').value) || 0,
-                start_date: document.getElementById('newStartDate').value,
-                end_date: document.getElementById('newEndDate').value,
-                beneficiaries: document.getElementById('newBeneficiaries').value.trim(),
-                objectives: document.getElementById('newObjectives').value.trim(),
-                stage: 'Stage 1: Coordinator Screening',
+            const all = getProjects();
+            const newId = (all.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0)) + 1;
+            const newProj = {
+                id: newId,
+                title,
+                coordinator: coord,
+                college,
+                partner,
+                location: loc,
+                beneficiaries: ben,
+                budget,
+                approved_budget: budget,
+                stage: 'Proposal',
                 status: 'Pending Coordinator Review',
+                progress_status: 'Planning',
                 created_at: new Date().toISOString().slice(0, 10),
-                coordinator_remarks: '',
-                director_remarks: '',
-                executive_remarks: '',
-                document_filename: document.getElementById('newFile').files[0]?.name || 'Extension_Project_Proposal.pdf',
-                archived: false
+                start_date: sDate,
+                end_date: eDate,
+                description: desc,
+                archived: false,
+                document_filename: title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Proposal.pdf'
             };
-            all.unshift(newP);
+
+            all.unshift(newProj);
             saveProjects(all);
-            closeDialog('createProjectModal');
-            showToast('Extension project submitted successfully! Routed to College Coordinator.');
+
+            OVPRE.closeModal('createExtensionProjectModal');
+            document.getElementById('createExtensionProjectForm').reset();
+            OVPRE.toast('Extension proposal successfully submitted for College Coordinator review!', 'success');
             renderTable();
         }
 
-        function openDetailsModal(id) {
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
+        // --- Coordinator Action ---
+        let coordCurrentAction = 'endorse';
+        function openCoordModal(id, isRevision) {
+            const p = getProjects().find(item => item.id == id);
             if (!p) return;
-            currentPreviewProject = p;
+            document.getElementById('coordProjId').value = p.id;
+            document.getElementById('coordProjTitle').textContent = p.title;
+            document.getElementById('coordRemarks').value = isRevision
+                ? 'Please attach the signed memorandum of understanding with the community partner.'
+                : 'Project proposal documents and community partner clearance validated. Fully endorsed to Extension Director.';
+            OVPRE.openModal('coordModal');
+        }
 
-            document.getElementById('detailHeaderSub').textContent = `Lead: ${p.coordinator} | ${p.college}`;
+        function handleCoordSubmit(event) {
+            event.preventDefault();
+            const id = document.getElementById('coordProjId').value;
+            const remarks = document.getElementById('coordRemarks').value.trim();
+            const submitter = event.submitter ? event.submitter.value : 'endorse';
+
+            const all = getProjects();
+            const p = all.find(item => item.id == id);
+            if (!p) return;
+
+            if (submitter === 'endorse') {
+                p.status = 'Pending Director Review';
+                p.coordinator_remarks = remarks;
+                p.coordinator_name = OVPRE.user().fullname || 'Extension Coordinator';
+                p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
+                OVPRE.toast('Extension project successfully endorsed to Director!', 'success');
+            } else if (submitter === 'revision') {
+                p.status = 'Needs Revision';
+                p.coordinator_remarks = remarks;
+                p.coordinator_name = OVPRE.user().fullname || 'Extension Coordinator';
+                OVPRE.toast('Project returned to faculty proponent for revision.', 'success');
+            } else {
+                p.status = 'Declined';
+                p.coordinator_remarks = remarks;
+                OVPRE.toast('Project declined.', 'success');
+            }
+
+            saveProjects(all);
+            OVPRE.closeModal('coordModal');
+            renderTable();
+        }
+
+        // --- Director Action ---
+        function openDirModal(id) {
+            const p = getProjects().find(item => item.id == id);
+            if (!p) return;
+            document.getElementById('dirProjId').value = p.id;
+            document.getElementById('dirProjTitle').textContent = p.title;
+            document.getElementById('dirRating').value = p.evaluation_rating || '92.00';
+            document.getElementById('dirApprovedBudget').value = p.approved_budget || p.budget;
+            document.getElementById('dirRemarks').value = 'Extension evaluation completed with institutional rating ' + (p.evaluation_rating || '92.00') + '/100. Community integration and budget allocation approved and recommended to Executive Office.';
+            OVPRE.openModal('dirModal');
+        }
+
+        function handleDirSubmit(event) {
+            event.preventDefault();
+            const id = document.getElementById('dirProjId').value;
+            const rating = document.getElementById('dirRating').value;
+            const budget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
+            const remarks = document.getElementById('dirRemarks').value.trim();
+            const submitter = event.submitter ? event.submitter.value : 'endorse';
+
+            const all = getProjects();
+            const p = all.find(item => item.id == id);
+            if (!p) return;
+
+            if (submitter === 'endorse') {
+                p.status = 'Pending Executive Approval';
+                p.evaluation_rating = rating;
+                p.approved_budget = budget;
+                p.director_remarks = remarks;
+                p.director_name = OVPRE.user().fullname || 'Extension Director';
+                p.director_reviewed_at = new Date().toISOString().slice(0, 10);
+                OVPRE.toast('Extension project evaluated and forwarded for Executive Final Approval!', 'success');
+            } else if (submitter === 'revision') {
+                p.status = 'Needs Revision';
+                p.director_remarks = remarks;
+                p.director_name = OVPRE.user().fullname || 'Extension Director';
+                OVPRE.toast('Project returned for revision.', 'success');
+            } else {
+                p.status = 'Declined';
+                p.director_remarks = remarks;
+                OVPRE.toast('Project declined.', 'success');
+            }
+
+            saveProjects(all);
+            OVPRE.closeModal('dirModal');
+            renderTable();
+        }
+
+        // --- Executive Action ---
+        function openExecModal(id) {
+            const p = getProjects().find(item => item.id == id);
+            if (!p) return;
+            document.getElementById('execProjId').value = p.id;
+            document.getElementById('execProjTitle').textContent = p.title;
+            document.getElementById('execRemarks').value = 'Approved for implementation under University Extension Program. Notice to Proceed and budgetary allocation granted.';
+            OVPRE.openModal('execModal');
+        }
+
+        function handleExecSubmit(event) {
+            event.preventDefault();
+            const id = document.getElementById('execProjId').value;
+            const remarks = document.getElementById('execRemarks').value.trim();
+            const submitter = event.submitter ? event.submitter.value : 'approve';
+
+            const all = getProjects();
+            const p = all.find(item => item.id == id);
+            if (!p) return;
+
+            if (submitter === 'approve') {
+                p.status = 'Approved';
+                p.stage = 'Ongoing';
+                p.progress_status = 'Ongoing';
+                p.executive_remarks = remarks;
+                p.executive_name = OVPRE.user().fullname || 'Executive VP / Director';
+                p.executive_approved_at = new Date().toISOString().slice(0, 10);
+                OVPRE.toast('🎉 Final Institutional Approval successfully granted for extension project!', 'success');
+            } else {
+                p.status = 'Declined';
+                p.executive_remarks = remarks;
+                OVPRE.toast('Project declined by executive resolution.', 'success');
+            }
+
+            saveProjects(all);
+            OVPRE.closeModal('execModal');
+            renderTable();
+        }
+
+        // --- Details Modal ---
+        function openDetailsModal(id) {
+            const p = getProjects().find(item => item.id == id);
+            if (!p) return;
+            activeDetailId = p.id;
+            document.getElementById('detailStage').textContent = p.stage || 'Proposal';
             document.getElementById('detailTitle').textContent = p.title;
-            document.getElementById('detailMeta').textContent = `Partner: ${p.community_partner} (${p.location}) | Duration: ${p.start_date} to ${p.end_date} | Budget: PHP ${Number(p.approved_budget || p.budget).toLocaleString()}`;
-            document.getElementById('detailObjectives').textContent = p.objectives || 'No detailed scope provided.';
-            document.getElementById('detailBeneficiariesRow').textContent = `Target Beneficiaries: ${p.beneficiaries || 'Not specified'}`;
+            document.getElementById('detailSubtitle').textContent = 'Lead: ' + (p.coordinator || 'Faculty Lead') + ' | Partner: ' + (p.partner || p.community_partner || 'Partner');
+            document.getElementById('detailLocation').textContent = p.location || 'N/A';
+            document.getElementById('detailBeneficiaries').textContent = p.beneficiaries || 'N/A';
+            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('detailSchedule').textContent = (p.start_date || p.created_at) + ' to ' + (p.end_date || 'N/A');
+            document.getElementById('detailDesc').textContent = p.description || 'No detailed description provided.';
 
-            const remSec = document.getElementById('detailRemarksSection');
-            remSec.replaceChildren();
+            const trail = document.getElementById('detailWorkflowTrail');
+            trail.innerHTML = '';
 
             if (p.coordinator_remarks) {
-                const b = document.createElement('div');
-                b.style.cssText = 'border-left: 3px solid #b45309; padding-left: 10px; font-size: 0.85rem;';
-                b.innerHTML = `<strong style="color: #b45309;">Coordinator Endorsement:</strong><p style="margin: 2px 0;">${p.coordinator_remarks}</p><small style="color: #64748b;">By: ${p.coordinator_name || 'College Extension Coordinator'}</small>`;
-                remSec.appendChild(b);
+                const box = document.createElement('div');
+                box.style.cssText = 'border-left: 3px solid #15803d; padding-left: 10px; font-size: 0.88rem;';
+                box.innerHTML = '<strong style="color: #15803d;"><i class="ri-check-double-line"></i> Coordinator Endorsement:</strong><div>' + OVPRE.h(p.coordinator_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.coordinator_name || 'Coordinator') + (p.coordinator_reviewed_at ? ' (' + p.coordinator_reviewed_at + ')' : '') + '</small>';
+                trail.appendChild(box);
             }
 
             if (p.director_remarks) {
-                const b = document.createElement('div');
-                b.style.cssText = 'border-left: 3px solid #1d4ed8; padding-left: 10px; font-size: 0.85rem;';
-                b.innerHTML = `<strong style="color: #1d4ed8;">Director Evaluation:</strong><p style="margin: 2px 0;">${p.director_remarks}</p><small style="color: #64748b;">By: ${p.director_name || 'Extension Director'}</small>`;
-                remSec.appendChild(b);
+                const box = document.createElement('div');
+                box.style.cssText = 'border-left: 3px solid #1d4ed8; padding-left: 10px; font-size: 0.88rem;';
+                box.innerHTML = '<strong style="color: #1d4ed8;"><i class="ri-award-line"></i> Director Evaluation (Rating: ' + OVPRE.h(p.evaluation_rating || 'N/A') + '/100):</strong><div>' + OVPRE.h(p.director_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.director_name || 'Extension Director') + (p.director_reviewed_at ? ' (' + p.director_reviewed_at + ')' : '') + '</small>';
+                trail.appendChild(box);
             }
 
             if (p.executive_remarks) {
-                const b = document.createElement('div');
-                b.style.cssText = 'border-left: 3px solid #7e22ce; padding-left: 10px; font-size: 0.85rem;';
-                b.innerHTML = `<strong style="color: #7e22ce;">Executive Final Approval:</strong><p style="margin: 2px 0;">${p.executive_remarks}</p><small style="color: #64748b;">By: ${p.executive_name || 'Executive VP'}</small>`;
-                remSec.appendChild(b);
+                const box = document.createElement('div');
+                box.style.cssText = 'border-left: 3px solid #7e22ce; padding-left: 10px; font-size: 0.88rem;';
+                box.innerHTML = '<strong style="color: #7e22ce;"><i class="ri-shield-check-line"></i> Executive Final Approval:</strong><div>' + OVPRE.h(p.executive_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.executive_name || 'Executive VP') + (p.executive_approved_at ? ' (' + p.executive_approved_at + ')' : '') + '</small>';
+                trail.appendChild(box);
             }
 
-            const tline = document.getElementById('detailTimeline');
-            tline.innerHTML = `
-                <div><strong>Project Submitted:</strong> ${p.created_at} by ${p.coordinator}</div>
-                ${p.coordinator_remarks ? `<div><strong>Screened & Endorsed:</strong> by ${p.coordinator_name || 'Coordinator'}</div>` : ''}
-                ${p.director_remarks ? `<div><strong>Director Evaluation:</strong> Approved grant PHP ${Number(p.approved_budget).toLocaleString()}</div>` : ''}
-                ${p.executive_remarks ? `<div><strong>Executive Approval:</strong> Final grant authorized</div>` : ''}
-            `;
+            const archiveBtn = document.getElementById('detailArchiveBtn');
+            archiveBtn.innerHTML = p.archived ? '<i class="ri-arrow-go-back-line"></i> <span>Restore Project</span>' : '<i class="ri-archive-line"></i> <span>Archive Project</span>';
 
-            const wrap = document.getElementById('detailArchiveToggleWrap');
-            wrap.innerHTML = `
-                <button type="button" onclick="toggleArchiveSingle(${p.id})" style="padding: 8px 14px; font-size: 0.82rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer; color: ${p.archived ? '#15803d' : '#b45309'};">
-                    <i class="${p.archived ? 'ri-arrow-go-back-line' : 'ri-archive-line'}"></i> ${p.archived ? 'Restore Project' : 'Archive Project'}
-                </button>
-            `;
-
-            openDialog('detailsModal');
+            OVPRE.openModal('detailsModal');
         }
 
-        function toggleArchiveSingle(id) {
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
+        function toggleArchiveFromDetails() {
+            if (!activeDetailId) return;
+            const all = getProjects();
+            const p = all.find(item => item.id == activeDetailId);
             if (!p) return;
             p.archived = !p.archived;
             saveProjects(all);
-            closeDialog('detailsModal');
-            showToast(`Project has been ${p.archived ? 'archived' : 'restored'}.`);
-            switchView(currentTab);
-        }
-
-        function openCoordModal(id) {
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
-            if (!p) return;
-            document.getElementById('coordPropId').value = p.id;
-            document.getElementById('coordTitle').textContent = p.title;
-            document.getElementById('coordRemarks').value = 'Endorsed. Community partnership, beneficiary readiness, and budget verified.';
-            openDialog('coordModal');
-        }
-
-        function handleCoordinatorAction(e) {
-            e.preventDefault();
-            const decision = e.submitter.value;
-            const id = parseInt(document.getElementById('coordPropId').value, 10);
-            const remarks = document.getElementById('coordRemarks').value.trim();
-
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
-            if (p) {
-                p.coordinator_remarks = remarks;
-                p.coordinator_name = 'College Extension Coordinator';
-                if (decision === 'endorse') {
-                    p.stage = 'Stage 2: Director Evaluation';
-                    p.status = 'Pending Director Review';
-                } else if (decision === 'revision') {
-                    p.stage = 'Revisions';
-                    p.status = 'For Revision';
-                } else {
-                    p.stage = 'Declined';
-                    p.status = 'Declined';
-                }
-                saveProjects(all);
-                closeDialog('coordModal');
-                showToast(`Coordinator action recorded: ${decision.toUpperCase()}.`);
-                renderTable();
-            }
-        }
-
-        function openDirModal(id) {
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
-            if (!p) return;
-            document.getElementById('dirPropId').value = p.id;
-            document.getElementById('dirTitle').textContent = p.title;
-            document.getElementById('dirApprovedBudget').value = p.budget || 80000;
-            document.getElementById('dirRemarks').value = 'Evaluated and approved. High community merit and tangible impact.';
-            openDialog('dirModal');
-        }
-
-        function handleDirectorAction(e) {
-            e.preventDefault();
-            const decision = e.submitter.value;
-            const id = parseInt(document.getElementById('dirPropId').value, 10);
-            const budget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
-            const remarks = document.getElementById('dirRemarks').value.trim();
-
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
-            if (p) {
-                p.approved_budget = budget;
-                p.director_remarks = remarks;
-                p.director_name = 'Prof. Extension Director';
-                if (decision === 'endorse') {
-                    p.stage = 'Stage 3: Executive Approval';
-                    p.status = 'Pending Executive Approval';
-                } else if (decision === 'revision') {
-                    p.stage = 'Revisions';
-                    p.status = 'For Revision';
-                } else {
-                    p.stage = 'Declined';
-                    p.status = 'Declined';
-                }
-                saveProjects(all);
-                closeDialog('dirModal');
-                showToast(`Director evaluation saved: ${decision.toUpperCase()}.`);
-                renderTable();
-            }
-        }
-
-        function openExecModal(id) {
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
-            if (!p) return;
-            document.getElementById('execPropId').value = p.id;
-            document.getElementById('execTitle').textContent = p.title;
-            openDialog('execModal');
-        }
-
-        function handleExecutiveAction(e) {
-            e.preventDefault();
-            const decision = e.submitter.value;
-            const id = parseInt(document.getElementById('execPropId').value, 10);
-            const remarks = document.getElementById('execRemarks').value.trim();
-
-            const all = getStoredProjects();
-            const p = all.find(item => item.id === id);
-            if (p) {
-                p.executive_remarks = remarks;
-                p.executive_name = 'Executive Vice President';
-                if (decision === 'approve') {
-                    p.stage = 'Completed';
-                    p.status = 'Approved';
-                } else {
-                    p.stage = 'Declined';
-                    p.status = 'Declined';
-                }
-                saveProjects(all);
-                closeDialog('execModal');
-                showToast('Executive grant decision recorded successfully!');
-                renderTable();
-            }
-        }
-
-        function openPreviewModal() {
-            if (!currentPreviewProject) return;
-            document.getElementById('previewTitle').textContent = currentPreviewProject.title;
-            document.getElementById('previewFilename').textContent = currentPreviewProject.document_filename || 'Extension_Project.pdf';
-            openDialog('previewModal');
-        }
-
-        document.getElementById('topbarSearchInput')?.addEventListener('input', () => {
-            currentPage = 1;
+            OVPRE.closeModal('detailsModal');
+            OVPRE.toast('Project ' + (p.archived ? 'archived.' : 'restored.'), 'success');
             renderTable();
-        });
+        }
 
-        // Initialize table
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- Document Preview Modal ---
+        function openDocPreview(title, docName) {
+            document.getElementById('previewModalTitle').innerHTML = '<i class="ri-file-text-line"></i> ' + OVPRE.h(title);
+            document.getElementById('previewFileName').textContent = docName;
+            const dl = document.getElementById('previewDownloadBtn');
+            dl.setAttribute('download', docName);
+            dl.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('OVPRE Document: ' + title + '\nFile: ' + docName));
+            OVPRE.openModal('previewModal');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set default dates in create form
+            const now = new Date();
+            const future = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+            const sEl = document.getElementById('createStartDate');
+            const eEl = document.getElementById('createEndDate');
+            if (sEl) sEl.value = now.toISOString().slice(0, 10);
+            if (eEl) eEl.value = future.toISOString().slice(0, 10);
+
             renderTable();
         });
     </script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/static-bridge.js"></script>
     <script src="assets/js/role-system.js"></script>
 </body>
 </html>

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Records Management | I-Record</title>
+    <title>Record Management | I-Record</title>
     <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
-    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261030-searchable-select">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
@@ -19,110 +20,94 @@
                 <strong>I-Record</strong>
             </a>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                 <a class="active" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
-                <a href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
-                <a href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
-                <a href="admin-reports.html" title="Reports"><i class="ri-line-chart-line"></i><span>Reports</span></a>
-                <a href="admin-users.html" title="Users"><i class="ri-team-line"></i><span>Users</span></a>
-                <a href="system-activity.html" title="Activity"><i class="ri-history-line"></i><span>Activity</span></a>
-                <a href="system-backup.html" title="Backup & Recovery"><i class="ri-database-2-line"></i><span>Backup & Recovery</span></a>
-                <a href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
-                <a href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                <a href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
             </nav>
             <div class="sidebar-footer" title="Executive Administration">
                 <i class="ri-shield-keyhole-line"></i>
                 <span>Executive Administration</span>
             </div>
         </aside>
-
         <div class="page-wrap">
             <header class="topbar">
-                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" id="sidebarToggle">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="topbar-title">
                     <h1>Records Management</h1>
                 </div>
-                <div class="topbar-search" role="search">
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
                     <i class="ri-search-line"></i>
-                    <input type="search" id="topbarSearchInput" placeholder="Search this page" aria-label="Search across accessible records">
-                </div>
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
                 <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
                     <i class="ri-notification-3-line"></i>
-                    <span style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                    <span></span>
                 </a>
                 <div class="profile-menu">
-                    <button class="profile-button" type="button" id="profileToggle">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
                         <span class="avatar">SA</span>
                         <span id="userNameDisplay">Super Administrator</span>
                         <i class="ri-arrow-down-s-line"></i>
                     </button>
-                    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
                         <div class="profile-dropdown-identity">
                             <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
                             <strong id="dropdownUserName">Super Administrator</strong>
-                            <small style="color: #202729;" id="dropdownUserRole">System Administrator</small>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
                         </div>
-                        <a href="profile.html"><i class="ri-user-line"></i> My Profile</a>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
                         <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
                         <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
                     </div>
                 </div>
             </header>
-
             <main class="content-area">
-                <!-- =========================================================
-                     MODULE HEADER
-                ========================================================= -->
-                <section class="module-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
-                    <div style="display: flex; align-items: center; gap: 16px;">
-                        <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #dbeafe; color: #1d4ed8; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
-                            <i class="ri-file-search-line"></i>
-                        </div>
-                        <div>
-                            <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #1d4ed8;">Document Repository</p>
-                            <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Records Management</h2>
-                            <span style="font-size: 0.84rem; color: #64748b;">Access and manage uploaded records, policies, research proposals, extension projects, and institutional files.</span>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <a href="submitted-files.html" class="ghost-btn" style="padding: 9px 16px; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #334155; text-decoration: none; font-weight: 700; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 6px;">
-                            <i class="ri-folder-open-line"></i> Submitted Files
-                        </a>
-                        <a href="upload-document.html" class="primary-btn" style="padding: 9px 16px; border-radius: 8px; background: #15803d; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);">
-                            <i class="ri-upload-cloud-line"></i> Upload Document
-                        </a>
+                <section class="module-header">
+                    <div class="module-icon"><i class="ri-file-search-line"></i></div>
+                    <div>
+                        <p>I-Record</p>
+                        <h2>Record Management</h2>
+                        <span>Review records with remarks, preview files, assign reviewers, archive with reasons, and track timelines.</span>
                     </div>
                 </section>
 
-                <div id="actionToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px;"></div>
+                <div id="ovpreFlash"></div>
 
-                <!-- =========================================================
-                     SUBMISSION FOLDERS (TABBED OVERVIEW)
-                ========================================================= -->
-                <section class="panel submission-folders" style="margin-bottom: 24px; padding: 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
-                    <div class="panel-heading" style="margin-bottom: 16px;">
-                        <h2 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Submission Folders</h2>
-                        <span style="font-size: 0.84rem; color: #64748b;">Direct tracking across primary university submission streams.</span>
+                <!-- SUBMISSION FOLDERS -->
+                <section class="panel submission-folders" style="margin-bottom: 22px;">
+                    <div class="panel-heading">
+                        <h2>Submission Streams &amp; Active Portals</h2>
+                        <span>Direct tracking across primary university submission streams.</span>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
-                        <a href="research.html" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b; transition: all 0.15s;" onmouseover="this.style.borderColor='#15803d';this.style.background='#f0fdf4';" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';">
+                        <a href="research.html" class="folder-card" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b;">
                             <span style="width: 42px; height: 42px; border-radius: 10px; background: #dcfce7; color: #15803d; display: inline-grid; place-items: center; font-size: 1.3rem;"><i class="ri-flask-line"></i></span>
                             <div>
                                 <h4 style="margin: 0 0 2px; font-size: 0.98rem; font-weight: 800;">Research Submissions</h4>
                                 <span style="font-size: 0.8rem; color: #64748b;">6 Active Proposals</span>
                             </div>
                         </a>
-                        <a href="extension.html" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b; transition: all 0.15s;" onmouseover="this.style.borderColor='#0d9488';this.style.background='#f0fdfa';" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';">
+                        <a href="extension.html" class="folder-card" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b;">
                             <span style="width: 42px; height: 42px; border-radius: 10px; background: #ccfbf1; color: #0d9488; display: inline-grid; place-items: center; font-size: 1.3rem;"><i class="ri-community-line"></i></span>
                             <div>
                                 <h4 style="margin: 0 0 2px; font-size: 0.98rem; font-weight: 800;">Extension Submissions</h4>
                                 <span style="font-size: 0.8rem; color: #64748b;">6 Active Outreach Projects</span>
                             </div>
                         </a>
-                        <a href="activities.html" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b; transition: all 0.15s;" onmouseover="this.style.borderColor='#7c3aed';this.style.background='#f5f3ff';" onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';">
+                        <a href="activities.html" class="folder-card" style="display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; text-decoration: none; color: #1e293b;">
                             <span style="width: 42px; height: 42px; border-radius: 10px; background: #ede9fe; color: #7c3aed; display: inline-grid; place-items: center; font-size: 1.3rem;"><i class="ri-calendar-event-line"></i></span>
                             <div>
                                 <h4 style="margin: 0 0 2px; font-size: 0.98rem; font-weight: 800;">Activity Submissions</h4>
@@ -132,435 +117,534 @@
                     </div>
                 </section>
 
-                <!-- =========================================================
-                     CATEGORY ANALYTICS FILTER CARDS
-                ========================================================= -->
+                <!-- CATEGORY ANALYTICS FILTER CARDS -->
                 <section class="summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px;">
-                    <div class="summary-card category-card active" data-cat="all" onclick="filterCategory('all', this)" style="padding: 14px 16px; border-radius: 12px; background: #15803d; color: #ffffff; cursor: pointer; border: 1px solid #15803d; transition: all 0.15s;">
-                        <i class="ri-folder-open-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block;"></i>
-                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">All Records</h4>
-                        <span style="font-size: 1.25rem; font-weight: 800;" id="countAll">9</span>
-                    </div>
-                    <div class="summary-card category-card" data-cat="Research" onclick="filterCategory('Research', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
-                        <i class="ri-flask-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #15803d;"></i>
-                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Research</h4>
-                        <span style="font-size: 1.25rem; font-weight: 800;" id="countRes">3</span>
-                    </div>
-                    <div class="summary-card category-card" data-cat="Extension" onclick="filterCategory('Extension', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
-                        <i class="ri-community-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #0d9488;"></i>
-                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Extension</h4>
-                        <span style="font-size: 1.25rem; font-weight: 800;" id="countExt">2</span>
-                    </div>
-                    <div class="summary-card category-card" data-cat="Policies & Guidelines" onclick="filterCategory('Policies & Guidelines', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
-                        <i class="ri-book-read-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #0284c7;"></i>
-                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Policies</h4>
-                        <span style="font-size: 1.25rem; font-weight: 800;" id="countPol">2</span>
-                    </div>
-                    <div class="summary-card category-card" data-cat="Official Forms" onclick="filterCategory('Official Forms', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
-                        <i class="ri-file-text-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #7c3aed;"></i>
-                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Official Forms</h4>
-                        <span style="font-size: 1.25rem; font-weight: 800;" id="countForms">1</span>
-                    </div>
-                    <div class="summary-card category-card" data-cat="Minutes & Reports" onclick="filterCategory('Minutes & Reports', this)" style="padding: 14px 16px; border-radius: 12px; background: #ffffff; color: #1e293b; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s;">
-                        <i class="ri-file-list-3-line" style="font-size: 1.3rem; margin-bottom: 6px; display: block; color: #ea580c;"></i>
-                        <h4 style="margin: 0 0 2px; font-size: 0.88rem; font-weight: 800;">Minutes</h4>
-                        <span style="font-size: 1.25rem; font-weight: 800;" id="countMin">1</span>
-                    </div>
+                    <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All" onclick="setCategoryFilter('All', this)">
+                        <div class="summary-icon"><i class="ri-folder-open-line"></i></div>
+                        <div>
+                            <p>All Records</p>
+                            <h3 id="countAll">8</h3>
+                            <span>Open all records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Research Paper" onclick="setCategoryFilter('Research Paper', this)">
+                        <div class="summary-icon"><i class="ri-flask-line"></i></div>
+                        <div>
+                            <p>Research Paper</p>
+                            <h3 id="countRes">1</h3>
+                            <span>Open category</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Extension Project" onclick="setCategoryFilter('Extension Project', this)">
+                        <div class="summary-icon"><i class="ri-community-line"></i></div>
+                        <div>
+                            <p>Extension Project</p>
+                            <h3 id="countExt">2</h3>
+                            <span>Open category</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Institutional Report" onclick="setCategoryFilter('Institutional Report', this)">
+                        <div class="summary-icon"><i class="ri-file-chart-line"></i></div>
+                        <div>
+                            <p>Institutional Report</p>
+                            <h3 id="countRep">2</h3>
+                            <span>Open category</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Special Order / Policy" onclick="setCategoryFilter('Special Order / Policy', this)">
+                        <div class="summary-icon"><i class="ri-file-shield-line"></i></div>
+                        <div>
+                            <p>Special Order / Policy</p>
+                            <h3 id="countPol">1</h3>
+                            <span>Open category</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Minutes of Meeting" onclick="setCategoryFilter('Minutes of Meeting', this)">
+                        <div class="summary-icon"><i class="ri-draft-line"></i></div>
+                        <div>
+                            <p>Minutes of Meeting</p>
+                            <h3 id="countMin">1</h3>
+                            <span>Open category</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Technical Report" onclick="setCategoryFilter('Technical Report', this)">
+                        <div class="summary-icon"><i class="ri-tools-line"></i></div>
+                        <div>
+                            <p>Technical Report</p>
+                            <h3 id="countTech">1</h3>
+                            <span>Open category</span>
+                        </div>
+                    </article>
                 </section>
 
-                <!-- =========================================================
-                     MAIN RECORDS DATA TABLE
-                ========================================================= -->
-                <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-                        <div class="portal-table-tabs" style="display: flex; gap: 8px;">
-                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchRecordView('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #15803d; color: #ffffff; cursor: pointer;">
-                                <i class="ri-folder-line"></i>
-                                <span>Active Records</span>
-                            </button>
-                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchRecordView('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
-                                <i class="ri-archive-line"></i>
-                                <span>Archived Records</span>
-                            </button>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <button type="button" class="primary-btn" onclick="openUploadModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #15803d; color: #ffffff; font-weight: 700; border: none; cursor: pointer; font-size: 0.85rem;">
-                                <i class="ri-upload-cloud-line"></i> Upload Document
-                            </button>
-                        </div>
+                <!-- TOOL PANEL: ACTIVE / ARCHIVED & UPLOAD -->
+                <section class="tool-panel" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div class="record-segmented-control" role="tablist" aria-label="Record view mode">
+                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" onclick="switchRecordView('active')">
+                            <i class="ri-folder-line"></i><span>Active Records (<span id="activeCount">0</span>)</span>
+                        </button>
+                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" onclick="switchRecordView('archived')">
+                            <i class="ri-archive-line"></i><span>Archived Records (<span id="archivedCount">0</span>)</span>
+                        </button>
                     </div>
+                    <button class="primary-btn" type="button" data-open-modal="uploadModal">
+                        <i class="ri-upload-cloud-line"></i> Upload Record
+                    </button>
+                </section>
 
+                <!-- MAIN RECORDS TABLE -->
+                <section class="panel">
+                    <div class="panel-heading">
+                        <h2 id="recordsPanelTitle">All Records</h2>
+                        <span id="recordsPanelSubtitle">Showing records filed under all categories.</span>
+                    </div>
                     <div class="table-scroll">
-                        <table class="data-table" id="recordsTable" style="width: 100%; border-collapse: collapse;">
+                        <table class="data-table portal-table" id="recordsTable">
                             <thead>
-                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
-                                    <th style="padding: 12px 10px;">Document Title</th>
-                                    <th style="padding: 12px 10px;">Category</th>
-                                    <th style="padding: 12px 10px;">File &amp; Size</th>
-                                    <th style="padding: 12px 10px;">Author / College</th>
-                                    <th style="padding: 12px 10px;">Date</th>
-                                    <th style="padding: 12px 10px;">Status</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Manage / Action</th>
+                                <tr>
+                                    <th>Document Title</th>
+                                    <th>Category</th>
+                                    <th>College / Department</th>
+                                    <th>Author</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Manage / Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="recordsTableBody" style="font-size: 0.88rem;">
-                                <!-- Populated by JS -->
+                            <tbody id="recordsTableBody">
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
-                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 8 of 8 entries</span>
-                        <div style="display: flex; gap: 6px; align-items: center;">
-                            <button type="button" id="prevPageBtn" onclick="changeRecordPage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
-                            <span id="paginationNumbers" style="display: flex; gap: 4px;"></span>
-                            <button type="button" id="nextPageBtn" onclick="changeRecordPage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
-                        </div>
                     </div>
                 </section>
             </main>
         </div>
     </div>
 
-    <!-- MODALS -->
-
-    <!-- 1. UPLOAD DOCUMENT MODAL -->
-    <dialog id="uploadModal" style="width: min(600px, calc(100% - 32px)); max-width: 600px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Upload Institutional Document</h3>
-            <button type="button" onclick="closeDialog('uploadModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleUpload(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Document Title</label>
-                <input type="text" id="upTitle" required placeholder="Official title of the document" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Category</label>
-                    <select id="upCategory" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="Research">Research</option>
-                        <option value="Extension">Extension</option>
-                        <option value="Activities">Activities</option>
-                        <option value="Policies & Guidelines">Policies &amp; Guidelines</option>
-                        <option value="Official Forms">Official Forms</option>
-                        <option value="Minutes & Reports">Minutes &amp; Reports</option>
-                    </select>
+    <!-- UPLOAD MODAL -->
+    <div class="modal" id="uploadModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 600px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2><i class="ri-upload-cloud-line" style="color: #15803d;"></i> Upload New Record</h2>
+            <form id="uploadDocForm" onsubmit="handleUploadDoc(event)" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                <label class="field"><span>Document Title</span>
+                    <input type="text" id="upTitle" required placeholder="Full document title">
+                </label>
+                <div class="form-grid">
+                    <label class="field"><span>Category</span>
+                        <select id="upCategory" required>
+                            <option value="Research Paper">Research Paper</option>
+                            <option value="Extension Project">Extension Project</option>
+                            <option value="Institutional Report">Institutional Report</option>
+                            <option value="Special Order / Policy">Special Order / Policy</option>
+                            <option value="Minutes of Meeting">Minutes of Meeting</option>
+                            <option value="Technical Report">Technical Report</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Author / Lead</span>
+                        <input type="text" id="upAuthor" required placeholder="Author or Submitting Unit">
+                    </label>
                 </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
-                    <select id="upCollege" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="CCST">CCST</option>
-                        <option value="COE">COE</option>
-                        <option value="CONAHS">CONAHS</option>
-                        <option value="CBA">CBA</option>
-                        <option value="CAS">CAS</option>
-                        <option value="CTE">CTE</option>
-                        <option value="Administration">Administration</option>
+                <label class="field"><span>College / Office</span>
+                    <select id="upCollege" required>
+                        <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
+                        <option value="College of Computer Studies">College of Computer Studies</option>
+                        <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                        <option value="College of Business Administration and Accountancy">College of Business Administration and Accountancy</option>
+                        <option value="College of Engineering">College of Engineering</option>
+                        <option value="College of Agriculture">College of Agriculture</option>
+                        <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                        <option value="College of Teacher Education">College of Teacher Education</option>
                     </select>
+                </label>
+                <label class="field"><span>Select File (PDF, DOCX up to 15 MB)</span>
+                    <input type="file" id="upFile" accept=".pdf,.doc,.docx,.zip">
+                </label>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
+                    <button type="submit" class="primary-btn mini-btn"><i class="ri-upload-cloud-line"></i> Upload</button>
                 </div>
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Select File (.pdf, .docx, .xlsx; up to 15 MB)</label>
-                <input type="file" id="upFile" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #f8fafc;">
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" onclick="closeDialog('uploadModal')" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancel</button>
-                <button type="submit" style="padding: 9px 20px; border-radius: 8px; border: none; background: #15803d; color: #fff; font-weight: 700; cursor: pointer;">Upload Record</button>
-            </div>
-        </form>
-    </dialog>
+            </form>
+        </article>
+    </div>
 
-    <!-- 2. REVIEW RECORD MODAL -->
-    <dialog id="reviewModal" style="width: min(580px, calc(100% - 32px)); max-width: 580px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Review Record</h3>
-            <button type="button" onclick="closeDialog('reviewModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleSaveReview(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+    <!-- REVIEW / STATUS MODAL -->
+    <div class="modal" id="reviewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="reviewDocForm" onsubmit="handleReviewDoc(event)" style="max-width: 580px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2><i class="ri-shield-check-line" style="color: #15803d;"></i> Document Review &amp; Status</h2>
             <input type="hidden" id="revDocId">
-            <h4 id="revDocTitle" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;"></h4>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Status</label>
-                <select id="revStatus" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                    <option value="Approved">Approved</option>
-                    <option value="Under Review">Under Review</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Declined">Declined</option>
-                </select>
+            <p><strong id="revDocTitle"></strong></p>
+            <div class="form-grid">
+                <label class="field"><span>Review Status:</span>
+                    <select id="revStatus" required>
+                        <option value="Approved">Approved</option>
+                        <option value="Under Review">Under Review</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Declined">Declined</option>
+                    </select>
+                </label>
             </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Approval / Rejection Remarks</label>
-                <textarea id="revRemarks" rows="3" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" onclick="closeDialog('reviewModal')" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancel</button>
-                <button type="submit" style="padding: 9px 20px; border-radius: 8px; border: none; background: #15803d; color: #fff; font-weight: 700; cursor: pointer;">Save Review</button>
+            <label class="field"><span>Review Remarks:</span>
+                <textarea id="revRemarks" rows="3" required placeholder="Enter review remarks or resolution directives..."></textarea>
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
+                <button type="submit" class="primary-btn mini-btn"><i class="ri-check-line"></i> Save Status</button>
             </div>
         </form>
-    </dialog>
+    </div>
 
-    <!-- 3. PREVIEW MODAL -->
-    <dialog id="previewModal" style="width: min(840px, calc(100% - 32px)); max-width: 840px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 25px 70px rgba(15, 23, 42, 0.4); overflow: hidden; background: #ffffff;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 id="prevTitle" style="margin: 0; color: #0f172a; font-size: 1.1rem; font-weight: 800;"></h3>
-            <button type="button" onclick="closeDialog('previewModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <div style="padding: 24px; text-align: center; background: #f1f5f9; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;">
-            <i class="ri-file-search-line" style="font-size: 4rem; color: #1d4ed8;"></i>
-            <div>
-                <h4 id="prevFilename" style="margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; color: #0f172a;">Document.pdf</h4>
-                <p id="prevMeta" style="margin: 0; color: #64748b; font-size: 0.85rem;"></p>
+    <!-- PREVIEW MODAL -->
+    <div class="modal preview-modal" id="previewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 780px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 id="prevDocTitle"><i class="ri-file-text-line"></i> Document Preview</h2>
+            <div style="background: #f8fafc; padding: 32px 20px; border-radius: 12px; text-align: center; border: 1px dashed #cbd5e1; margin: 12px 0;">
+                <i class="ri-file-pdf-2-line" style="font-size: 3rem; color: #dc2626; display: block; margin-bottom: 8px;"></i>
+                <strong id="prevFileName" style="font-size: 1.1rem; color: #0f172a; display: block;">file.pdf</strong>
+                <p id="prevDocMeta" style="color: #64748b; margin-top: 6px;">Size: 3.2 MB | Registered under OVPRE Repository</p>
+                <div style="margin-top: 18px;">
+                    <a href="#" id="prevDownloadBtn" class="primary-btn mini-btn" download style="display: inline-flex;"><i class="ri-download-2-line"></i> Download Record</a>
+                </div>
             </div>
-            <a href="#" download id="prevDownloadBtn" class="primary-btn" style="padding: 9px 18px; border-radius: 8px; background: #15803d; color: #ffffff; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="ri-download-cloud-line"></i> Download Record File
-            </a>
-        </div>
-    </dialog>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="button" class="ghost-btn mini-btn" data-close-modal>Close</button>
+            </div>
+        </article>
+    </div>
 
+    <!-- SCRIPTS -->
     <script>
-        let currentRecordTab = 'active';
-        let currentCategory = 'all';
-        let recordPage = 1;
-        const recordPageSize = 8;
+        const initialSeed = [
+  {
+    "id": 1,
+    "title": "Institutional Research Agenda and Ethics Protocol 2026-2028",
+    "category": "Institutional Report",
+    "filename": "OVPRE_Research_Agenda_2026.pdf",
+    "size": "4.8 MB",
+    "author": "Dr. Aris Thorne",
+    "college": "Office of the Vice President for Research and Extension",
+    "date": "2026-01-10",
+    "status": "Approved",
+    "remarks": "Adopted by Academic Council under Resolution No. 04-2026.",
+    "archived": false
+  },
+  {
+    "id": 2,
+    "title": "University Extension Manual and Barangay Partnership Framework",
+    "category": "Special Order / Policy",
+    "filename": "Extension_Partnership_Manual_v2.pdf",
+    "size": "3.2 MB",
+    "author": "Dr. Maricel Gomez",
+    "college": "Extension Directorate",
+    "date": "2026-01-18",
+    "status": "Approved",
+    "remarks": "Institutional guidelines approved for implementation.",
+    "archived": false
+  },
+  {
+    "id": 3,
+    "title": "AI-Powered Early Blight Detection in Solanaceous Crops - Full Study",
+    "category": "Research Paper",
+    "filename": "AI_Early_Blight_Detection_Study.pdf",
+    "size": "8.5 MB",
+    "author": "Dr. Alicia Santos, Engr. Mark Ramos",
+    "college": "College of Computer Studies",
+    "date": "2026-02-02",
+    "status": "Approved",
+    "remarks": "Recommended for journal publication.",
+    "archived": false
+  },
+  {
+    "id": 4,
+    "title": "Digital Financial Literacy & Cloud Bookkeeping for Market Vendors",
+    "category": "Extension Project",
+    "filename": "Vendor_Cloud_Bookkeeping_Module.pdf",
+    "size": "5.1 MB",
+    "author": "Prof. Elena Cruz",
+    "college": "College of Business Administration and Accountancy",
+    "date": "2026-02-14",
+    "status": "Approved",
+    "remarks": "Outreach training materials approved.",
+    "archived": false
+  },
+  {
+    "id": 5,
+    "title": "Minutes of the 1st Regular OVPRE Research Directorate Council 2026",
+    "category": "Minutes of Meeting",
+    "filename": "Minutes_OVPRE_Council_Jan2026.pdf",
+    "size": "1.4 MB",
+    "author": "Administrative Office",
+    "college": "Office of the Vice President for Research and Extension",
+    "date": "2026-02-20",
+    "status": "Approved",
+    "remarks": "Duly signed and ratified.",
+    "archived": false
+  },
+  {
+    "id": 6,
+    "title": "Community IoT Flood Early Warning System Technical Blueprints",
+    "category": "Technical Report",
+    "filename": "IoT_Flood_Sensor_Blueprints.pdf",
+    "size": "12.3 MB",
+    "author": "Engr. Roberto Dimaano",
+    "college": "College of Engineering",
+    "date": "2026-02-28",
+    "status": "Under Review",
+    "remarks": "Under review by engineering technical evaluation committee.",
+    "archived": false
+  },
+  {
+    "id": 7,
+    "title": "Modern Organic Backyard Aquaculture Field Manual",
+    "category": "Extension Project",
+    "filename": "Organic_Tilapia_Aquaculture_Guide.docx",
+    "size": "6.7 MB",
+    "author": "Dr. Fernando Morales",
+    "college": "College of Agriculture",
+    "date": "2026-03-05",
+    "status": "Pending",
+    "remarks": "Awaiting final college coordinator endorsement.",
+    "archived": false
+  },
+  {
+    "id": 8,
+    "title": "Maternal Nutrition & First 1000 Days Recipe Compilation",
+    "category": "Institutional Report",
+    "filename": "Maternal_Nutrition_Recipes.pdf",
+    "size": "2.9 MB",
+    "author": "Prof. Clara De Jesus",
+    "college": "College of Nursing and Allied Health Sciences",
+    "date": "2026-03-14",
+    "status": "Under Review",
+    "remarks": "Review in progress with RHU nutritionists.",
+    "archived": false
+  },
+  {
+    "id": 9,
+    "title": "Historical Tour Guide Training Handbook 2025 Edition",
+    "category": "Special Order / Policy",
+    "filename": "Tour_Guide_Handbook_2025.pdf",
+    "size": "3.8 MB",
+    "author": "Prof. Manuel Valenzuela",
+    "college": "College of Arts and Sciences",
+    "date": "2025-10-15",
+    "status": "Approved",
+    "remarks": "Archived following completion of outreach series.",
+    "archived": true
+  }
+];
+        let currentTab = 'active';
+        let activeCategory = 'All';
 
-        function getStoredDocs() {
+        function getDocs() {
             try {
-                const s = localStorage.getItem('ovpre_admin_documents');
-                if (s) return JSON.parse(s);
-            } catch(e) {}
-            localStorage.setItem('ovpre_admin_documents', JSON.stringify([{"id":101,"title":"AI-Driven Early Crop Disease Detection Final Research Paper","category":"Research","filename":"AI_Crop_Disease_Final_Paper.pdf","size":"3.4 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-01-15","status":"Approved","remarks":"Official approved copy archived in university repository.","archived":false},{"id":102,"title":"Community Water Filtration System Terminal Accomplishment Report","category":"Extension","filename":"Water_Filtration_Terminal_Report.pdf","size":"4.8 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-01-30","status":"Approved","remarks":"Final completion certificate transmitted.","archived":false},{"id":103,"title":"University Research Agenda & Guidelines 2024-2028","category":"Policies & Guidelines","filename":"OVPRE_Research_Agenda_2024_2028.pdf","size":"1.8 MB","author":"OVPRE Executive Committee","college":"Administration","date":"2025-11-10","status":"Approved","remarks":"Governing board approved policy document.","archived":false},{"id":104,"title":"Standard Research Grant Proposal Application Form (Form 1A)","category":"Official Forms","filename":"OVPRE_Form_1A_Proposal.docx","size":"540 KB","author":"OVPRE Secretariat","college":"Administration","date":"2026-01-05","status":"Approved","remarks":"Standard downloadable form for proponents.","archived":false},{"id":105,"title":"Minutes of the 14th Academic Research & Extension Council Meeting","category":"Minutes & Reports","filename":"AREC_Minutes_14th_Session.pdf","size":"920 KB","author":"Atty. Legal Secretariat","college":"Administration","date":"2026-02-02","status":"Approved","remarks":"Signed and confirmed minutes.","archived":false},{"id":106,"title":"Oplan Kalusugan Barangay Healthcare Mission Terminal Report","category":"Activities","filename":"Oplan_Kalusugan_Activity_Summary.pdf","size":"2.1 MB","author":"Prof. Lorna Bautista","college":"CONAHS","date":"2026-02-14","status":"Approved","remarks":"Beneficiary reach verified at 420 families.","archived":false},{"id":107,"title":"Solar Rainwater Harvesting Blueprint and Schematics","category":"Research","filename":"Rainwater_Harvesting_Schematic.pdf","size":"6.2 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-02-12","status":"Under Review","remarks":"Technical review underway.","archived":false},{"id":108,"title":"Senior Citizens Digital Inclusion Program Assessment","category":"Extension","filename":"Digital_Literacy_Impact_Study.pdf","size":"1.5 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-02-10","status":"Pending","remarks":"Awaiting coordinator endorsement.","archived":false},{"id":109,"title":"Archived Campus COVID Safety Guidelines 2021","category":"Policies & Guidelines","filename":"Campus_Safety_Protocol_2021.pdf","size":"890 KB","author":"Health Committee","college":"CONAHS","date":"2021-08-10","status":"Approved","remarks":"Archived legacy guidelines.","archived":true}]));
-            return [{"id":101,"title":"AI-Driven Early Crop Disease Detection Final Research Paper","category":"Research","filename":"AI_Crop_Disease_Final_Paper.pdf","size":"3.4 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-01-15","status":"Approved","remarks":"Official approved copy archived in university repository.","archived":false},{"id":102,"title":"Community Water Filtration System Terminal Accomplishment Report","category":"Extension","filename":"Water_Filtration_Terminal_Report.pdf","size":"4.8 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-01-30","status":"Approved","remarks":"Final completion certificate transmitted.","archived":false},{"id":103,"title":"University Research Agenda & Guidelines 2024-2028","category":"Policies & Guidelines","filename":"OVPRE_Research_Agenda_2024_2028.pdf","size":"1.8 MB","author":"OVPRE Executive Committee","college":"Administration","date":"2025-11-10","status":"Approved","remarks":"Governing board approved policy document.","archived":false},{"id":104,"title":"Standard Research Grant Proposal Application Form (Form 1A)","category":"Official Forms","filename":"OVPRE_Form_1A_Proposal.docx","size":"540 KB","author":"OVPRE Secretariat","college":"Administration","date":"2026-01-05","status":"Approved","remarks":"Standard downloadable form for proponents.","archived":false},{"id":105,"title":"Minutes of the 14th Academic Research & Extension Council Meeting","category":"Minutes & Reports","filename":"AREC_Minutes_14th_Session.pdf","size":"920 KB","author":"Atty. Legal Secretariat","college":"Administration","date":"2026-02-02","status":"Approved","remarks":"Signed and confirmed minutes.","archived":false},{"id":106,"title":"Oplan Kalusugan Barangay Healthcare Mission Terminal Report","category":"Activities","filename":"Oplan_Kalusugan_Activity_Summary.pdf","size":"2.1 MB","author":"Prof. Lorna Bautista","college":"CONAHS","date":"2026-02-14","status":"Approved","remarks":"Beneficiary reach verified at 420 families.","archived":false},{"id":107,"title":"Solar Rainwater Harvesting Blueprint and Schematics","category":"Research","filename":"Rainwater_Harvesting_Schematic.pdf","size":"6.2 MB","author":"Engr. Katrina Valdez","college":"COE","date":"2026-02-12","status":"Under Review","remarks":"Technical review underway.","archived":false},{"id":108,"title":"Senior Citizens Digital Inclusion Program Assessment","category":"Extension","filename":"Digital_Literacy_Impact_Study.pdf","size":"1.5 MB","author":"Dr. Aris Thorne","college":"CCST","date":"2026-02-10","status":"Pending","remarks":"Awaiting coordinator endorsement.","archived":false},{"id":109,"title":"Archived Campus COVID Safety Guidelines 2021","category":"Policies & Guidelines","filename":"Campus_Safety_Protocol_2021.pdf","size":"890 KB","author":"Health Committee","college":"CONAHS","date":"2021-08-10","status":"Approved","remarks":"Archived legacy guidelines.","archived":true}];
+                const raw = localStorage.getItem('ovpre_admin_documents');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            localStorage.setItem('ovpre_admin_documents', JSON.stringify(initialSeed));
+            return initialSeed;
         }
 
-        function saveDocs(data) {
-            localStorage.setItem('ovpre_admin_documents', JSON.stringify(data));
+        function saveDocs(list) {
+            try {
+                localStorage.setItem('ovpre_admin_documents', JSON.stringify(list));
+            } catch (e) {}
         }
 
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('actionToast');
-            t.style.display = 'flex';
-            t.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
-            t.style.border = `1px solid ${type === 'success' ? '#86efac' : '#fecaca'}`;
-            t.style.color = type === 'success' ? '#166534' : '#b91c1c';
-            t.innerHTML = `<i class="${type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line'}"></i> ${msg}`;
-            setTimeout(() => { t.style.display = 'none'; }, 4000);
+        function setCategoryFilter(cat, card) {
+            activeCategory = cat;
+            document.querySelectorAll('.category-filter-card').forEach(c => {
+                c.classList.toggle('active', c === card || (cat === 'All' && c.dataset.categoryFilter === 'All'));
+            });
+            document.getElementById('recordsPanelTitle').textContent = cat === 'All' ? 'All Records' : cat + ' Records';
+            document.getElementById('recordsPanelSubtitle').textContent = cat === 'All' ? 'Showing records filed under all categories.' : 'Showing records filed under ' + cat + '.';
+            renderRecordsTable();
         }
 
         function switchRecordView(tab) {
-            currentRecordTab = tab;
-            recordPage = 1;
-            document.getElementById('tabActiveBtn').style.background = tab === 'active' ? '#15803d' : '#ffffff';
-            document.getElementById('tabActiveBtn').style.color = tab === 'active' ? '#ffffff' : '#475569';
-            document.getElementById('tabArchivedBtn').style.background = tab === 'archived' ? '#15803d' : '#ffffff';
-            document.getElementById('tabArchivedBtn').style.color = tab === 'archived' ? '#ffffff' : '#475569';
-            renderRecords();
+            currentTab = tab;
+            document.getElementById('tabActiveBtn').classList.toggle('is-active', tab === 'active');
+            document.getElementById('tabArchivedBtn').classList.toggle('is-active', tab === 'archived');
+            renderRecordsTable();
         }
 
-        function filterCategory(cat, el) {
-            currentCategory = cat;
-            recordPage = 1;
-            document.querySelectorAll('.category-card').forEach(c => {
-                c.style.background = '#ffffff';
-                c.style.color = '#1e293b';
-                c.style.borderColor = '#e2e8f0';
-            });
-            el.style.background = '#15803d';
-            el.style.color = '#ffffff';
-            el.style.borderColor = '#15803d';
-            renderRecords();
+        function updateCategoryCounts(all) {
+            const activeList = all.filter(d => !d.archived);
+            const countByCat = (cat) => activeList.filter(d => d.category === cat).length;
+            document.getElementById('countAll').textContent = activeList.length;
+            document.getElementById('countRes').textContent = countByCat('Research Paper');
+            document.getElementById('countExt').textContent = countByCat('Extension Project');
+            document.getElementById('countRep').textContent = countByCat('Institutional Report');
+            document.getElementById('countPol').textContent = countByCat('Special Order / Policy');
+            document.getElementById('countMin').textContent = countByCat('Minutes of Meeting');
+            document.getElementById('countTech').textContent = countByCat('Technical Report');
         }
 
-        function renderRecords() {
-            const all = getStoredDocs();
+        function renderRecordsTable() {
+            const all = getDocs();
+            updateCategoryCounts(all);
+
             const activeList = all.filter(d => !d.archived);
             const archivedList = all.filter(d => d.archived);
+            document.getElementById('activeCount').textContent = activeList.length;
+            document.getElementById('archivedCount').textContent = archivedList.length;
 
-            // Update category count numbers
-            document.getElementById('countAll').textContent = activeList.length;
-            document.getElementById('countRes').textContent = activeList.filter(d => d.category === 'Research').length;
-            document.getElementById('countExt').textContent = activeList.filter(d => d.category === 'Extension').length;
-            document.getElementById('countPol').textContent = activeList.filter(d => d.category === 'Policies & Guidelines').length;
-            document.getElementById('countForms').textContent = activeList.filter(d => d.category === 'Official Forms').length;
-            document.getElementById('countMin').textContent = activeList.filter(d => d.category === 'Minutes & Reports').length;
-
-            let filtered = currentRecordTab === 'active' ? activeList : archivedList;
-
-            if (currentCategory !== 'all') {
-                filtered = filtered.filter(d => d.category === currentCategory);
+            let list = currentTab === 'active' ? activeList : archivedList;
+            if (activeCategory !== 'All') {
+                list = list.filter(d => d.category === activeCategory);
             }
-
-            const searchVal = (document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
-            if (searchVal) {
-                filtered = filtered.filter(d => 
-                    d.title.toLowerCase().includes(searchVal) ||
-                    d.author.toLowerCase().includes(searchVal) ||
-                    d.filename.toLowerCase().includes(searchVal)
-                );
-            }
-
-            const total = filtered.length;
-            const startIdx = (recordPage - 1) * recordPageSize;
-            const pageItems = filtered.slice(startIdx, startIdx + recordPageSize);
 
             const tbody = document.getElementById('recordsTableBody');
-            tbody.replaceChildren();
+            tbody.innerHTML = '';
 
-            if (!pageItems.length) {
+            if (!list.length) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="7" style="text-align: center; padding: 32px; color: #64748b;">No records found.</td>`;
+                tr.setAttribute('data-pagination-empty', 'true');
+                tr.innerHTML = '<td colspan="7" style="text-align: center; padding: 28px; color: #64748b;">No ' + (currentTab === 'active' ? 'active' : 'archived') + ' records found for this category.</td>';
                 tbody.appendChild(tr);
             } else {
-                pageItems.forEach(d => {
+                list.forEach(d => {
                     const tr = document.createElement('tr');
-                    tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
-
-                    let statusBg = '#dcfce7', statusColor = '#166534';
-                    if (d.status === 'Pending') {
-                        statusBg = '#fef3c7'; statusColor = '#92400e';
-                    } else if (d.status === 'Under Review') {
-                        statusBg = '#e0f2fe'; statusColor = '#0369a1';
-                    } else if (d.status === 'Declined') {
-                        statusBg = '#fef2f2'; statusColor = '#dc2626';
-                    }
+                    tr.id = 'doc-' + d.id;
+                    const dStatus = d.status || 'Approved';
+                    const fileText = d.filename + (d.size ? ' (' + d.size + ')' : '');
 
                     tr.innerHTML = `
-                        <td style="padding: 12px 10px;">
-                            <strong style="color: #0f172a; line-height: 1.4; display: block;">${d.title}</strong>
+                        <td>
+                            <strong>${OVPRE.h(d.title)}</strong>
+                            <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">
+                                <i class="ri-file-line"></i> ${OVPRE.h(fileText)}
+                            </div>
                         </td>
-                        <td style="padding: 12px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.78rem;">${d.category}</span></td>
-                        <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem;">${d.filename} <br><small>(${d.size})</small></td>
-                        <td style="padding: 12px 10px;">${d.author} <br><small style="color: #64748b;">${d.college}</small></td>
-                        <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem; white-space: nowrap;">${d.date}</td>
-                        <td style="padding: 12px 10px;">
-                            <span class="status-pill" style="background: ${statusBg}; color: ${statusColor}; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.76rem;">${d.status}</span>
+                        <td data-sort-value="${OVPRE.h(d.category)}"><span class="category-badge">${OVPRE.h(d.category)}</span></td>
+                        <td data-sort-value="${OVPRE.h(d.college)}"><span class="dept-pill">${OVPRE.h(d.college)}</span></td>
+                        <td>${OVPRE.h(d.author)}</td>
+                        <td data-sort-value="${d.date}">${OVPRE.date(d.date)}</td>
+                        <td>
+                            <span class="status-pill status-${OVPRE.statusClass(dStatus)}">
+                                ${OVPRE.h(dStatus)}
+                            </span>
                         </td>
-                        <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
-                            <button type="button" class="btn" onclick="openReviewModal(${d.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 6px; cursor: pointer; margin-right: 4px;">Review</button>
-                            <button type="button" class="btn" onclick="openPreviewDocModal(${d.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; border-radius: 6px; cursor: pointer; margin-right: 4px;">Preview</button>
-                            <button type="button" class="btn" onclick="toggleArchiveDoc(${d.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #fff; border: 1px solid #cbd5e1; color: ${d.archived ? '#15803d' : '#b45309'}; border-radius: 6px; cursor: pointer;">${d.archived ? 'Restore' : 'Archive'}</button>
+                        <td>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button type="button" class="ghost-btn mini-btn" onclick="openDocPreview('${d.id}')" title="Preview Document"><i class="ri-eye-line"></i></button>
+                                <button type="button" class="primary-btn mini-btn" onclick="openReviewModal('${d.id}')" title="Review Document"><i class="ri-edit-line"></i> Review</button>
+                                <button type="button" class="ghost-btn mini-btn" onclick="toggleArchiveDoc('${d.id}')" title="${d.archived ? 'Restore' : 'Archive'}">
+                                    <i class="${d.archived ? 'ri-arrow-go-back-line' : 'ri-archive-line'}"></i>
+                                </button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
 
-            // Pagination
-            const pageCount = Math.max(1, Math.ceil(total / recordPageSize));
-            document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + recordPageSize, total)} of ${total} entries` : 'No records';
-            document.getElementById('prevPageBtn').disabled = recordPage <= 1;
-            document.getElementById('nextPageBtn').disabled = recordPage >= pageCount;
-
-            const pNumContainer = document.getElementById('paginationNumbers');
-            pNumContainer.replaceChildren();
-            for (let i = 1; i <= pageCount; i++) {
-                const b = document.createElement('button');
-                b.textContent = i;
-                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === recordPage ? 'background: #15803d; color: #fff;' : 'background: #fff; color: #1e293b;'}`;
-                b.onclick = () => { recordPage = i; renderRecords(); };
-                pNumContainer.appendChild(b);
+            if (window.OVPRE && OVPRE.reloadTable) {
+                OVPRE.reloadTable('recordsTable');
+            } else if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('recordsTable'));
             }
         }
 
-        function changeRecordPage(delta) {
-            recordPage += delta;
-            renderRecords();
-        }
+        // --- Upload Record ---
+        function handleUploadDoc(event) {
+            event.preventDefault();
+            const title = document.getElementById('upTitle').value.trim();
+            const category = document.getElementById('upCategory').value;
+            const author = document.getElementById('upAuthor').value.trim();
+            const college = document.getElementById('upCollege').value;
 
-        function openDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.showModal();
-        }
+            const all = getDocs();
+            const newId = (all.reduce((max, d) => Math.max(max, Number(d.id) || 0), 0)) + 1;
+            const filename = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Record.pdf';
 
-        function closeDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.close();
-        }
-
-        function openUploadModal() {
-            openDialog('uploadModal');
-        }
-
-        function handleUpload(e) {
-            e.preventDefault();
-            const all = getStoredDocs();
             const newDoc = {
-                id: Date.now(),
-                title: document.getElementById('upTitle').value.trim(),
-                category: document.getElementById('upCategory').value,
-                college: document.getElementById('upCollege').value,
-                filename: document.getElementById('upFile').files[0]?.name || 'Uploaded_Document.pdf',
-                size: '2.4 MB',
-                author: 'System User',
+                id: newId,
+                title,
+                category,
+                filename,
+                size: '2.5 MB',
+                author,
+                college,
                 date: new Date().toISOString().slice(0, 10),
                 status: 'Under Review',
-                remarks: 'Uploaded by proponent.',
+                remarks: 'Uploaded by administrator.',
                 archived: false
             };
+
             all.unshift(newDoc);
             saveDocs(all);
-            closeDialog('uploadModal');
-            showToast('Document uploaded successfully!');
-            renderRecords();
+
+            OVPRE.closeModal('uploadModal');
+            document.getElementById('uploadDocForm').reset();
+            OVPRE.toast('Record successfully uploaded and logged!', 'success');
+            renderRecordsTable();
         }
 
+        // --- Review Record ---
         function openReviewModal(id) {
-            const all = getStoredDocs();
-            const d = all.find(item => item.id === id);
+            const d = getDocs().find(item => item.id == id);
             if (!d) return;
             document.getElementById('revDocId').value = d.id;
             document.getElementById('revDocTitle').textContent = d.title;
-            document.getElementById('revStatus').value = d.status;
-            document.getElementById('revRemarks').value = d.remarks || '';
-            openDialog('reviewModal');
+            document.getElementById('revStatus').value = d.status || 'Approved';
+            document.getElementById('revRemarks').value = d.remarks || 'Document verified and institutional filing completed.';
+            OVPRE.openModal('reviewModal');
         }
 
-        function handleSaveReview(e) {
-            e.preventDefault();
-            const id = parseInt(document.getElementById('revDocId').value, 10);
-            const all = getStoredDocs();
-            const d = all.find(item => item.id === id);
-            if (d) {
-                d.status = document.getElementById('revStatus').value;
-                d.remarks = document.getElementById('revRemarks').value.trim();
-                saveDocs(all);
-                closeDialog('reviewModal');
-                showToast('Review decision saved successfully!');
-                renderRecords();
-            }
-        }
+        function handleReviewDoc(event) {
+            event.preventDefault();
+            const id = document.getElementById('revDocId').value;
+            const status = document.getElementById('revStatus').value;
+            const remarks = document.getElementById('revRemarks').value.trim();
 
-        function openPreviewDocModal(id) {
-            const all = getStoredDocs();
-            const d = all.find(item => item.id === id);
+            const all = getDocs();
+            const d = all.find(item => item.id == id);
             if (!d) return;
-            document.getElementById('prevTitle').textContent = d.title;
-            document.getElementById('prevFilename').textContent = d.filename;
-            document.getElementById('prevMeta').textContent = `Category: ${d.category} | Author: ${d.author} (${d.college}) | Size: ${d.size}`;
-            openDialog('previewModal');
+
+            d.status = status;
+            d.remarks = remarks;
+            saveDocs(all);
+
+            OVPRE.closeModal('reviewModal');
+            OVPRE.toast('Record status updated to ' + status + '!', 'success');
+            renderRecordsTable();
         }
 
+        // --- Toggle Archive ---
         function toggleArchiveDoc(id) {
-            const all = getStoredDocs();
-            const d = all.find(item => item.id === id);
+            const all = getDocs();
+            const d = all.find(item => item.id == id);
             if (!d) return;
             d.archived = !d.archived;
             saveDocs(all);
-            showToast(`Record has been ${d.archived ? 'archived' : 'restored'}.`);
-            renderRecords();
+            OVPRE.toast('Record ' + (d.archived ? 'archived.' : 'restored.'), 'success');
+            renderRecordsTable();
         }
 
-        document.getElementById('topbarSearchInput')?.addEventListener('input', () => {
-            recordPage = 1;
-            renderRecords();
-        });
+        // --- Preview Document ---
+        function openDocPreview(id) {
+            const d = getDocs().find(item => item.id == id);
+            if (!d) return;
+            document.getElementById('prevDocTitle').innerHTML = '<i class="ri-file-text-line"></i> ' + OVPRE.h(d.title);
+            document.getElementById('prevFileName').textContent = d.filename;
+            document.getElementById('prevDocMeta').textContent = 'Size: ' + (d.size || '2.5 MB') + ' | Category: ' + d.category + ' | Author: ' + d.author;
+            const dl = document.getElementById('prevDownloadBtn');
+            dl.setAttribute('download', d.filename);
+            dl.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('OVPRE Document: ' + d.title + '\nFile: ' + d.filename));
+            OVPRE.openModal('previewModal');
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderRecords();
+        document.addEventListener('DOMContentLoaded', function () {
+            renderRecordsTable();
         });
     </script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/static-bridge.js"></script>
     <script src="assets/js/role-system.js"></script>
 </body>
 </html>

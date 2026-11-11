@@ -147,7 +147,7 @@ if (globalSearchForm && topbarSearch) {
     globalSearchForm.addEventListener('submit', (event) => {
         event.preventDefault();
         const query = topbarSearch.value.trim();
-        if (query) window.location.href = `search.php?q=${encodeURIComponent(query)}`;
+        if (query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
     });
 
     if (topbarSearchClear) {
@@ -608,7 +608,7 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
         const profileModal = document.getElementById('profileEditorModal');
         if (profileModal && profileModal.classList.contains('open')) {
-            window.location.href = profileModal.dataset.returnUrl || 'dashboard.php';
+            window.location.href = profileModal.dataset.returnUrl || 'dashboard.html';
             return;
         }
         document.querySelectorAll('.modal.open').forEach(closeModal);
@@ -663,7 +663,7 @@ document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
     if (openSelected) {
         openSelected.addEventListener('click', () => {
             const ids = rowCheckboxes().filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
-            if (ids.length) window.location.href = `research.php?ids=${encodeURIComponent(ids.join(','))}`;
+            if (ids.length) window.location.href = `research.html?ids=${encodeURIComponent(ids.join(','))}`;
         });
     }
     toolbar.querySelectorAll('[data-confirm-delete]').forEach((button) => {
@@ -718,10 +718,65 @@ if (statusFilter) statusFilter.addEventListener('change', filterRows);
 
 const adminTablePages = new Map();
 
+function populateAdminColumnFilters(state, table) {
+    if (!state || !table || !state.toolbar) return;
+    const toolbar = state.toolbar;
+    const exportButton = state.exportButton;
+    // Remove existing filter dropdowns
+    toolbar.querySelectorAll('.data-table-filter').forEach((el) => el.remove());
+    state.filterSelects = {};
+
+    table.querySelectorAll('thead th').forEach((header, columnIndex) => {
+        if (!/status|category|department|college|role|stage/i.test(header.textContent)) return;
+        let presetOptions = null;
+        try { presetOptions = JSON.parse(table.dataset.filterOptions || '{}')[header.textContent.trim()] || null; } catch (e) { presetOptions = null; }
+        const values = presetOptions
+            ? [...new Set(presetOptions.map((value) => String(value).trim()).filter(Boolean))]
+            : [...new Set(state.rows.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
+        if (!presetOptions && (values.length < 1 || values.length > 40)) return;
+        const label = document.createElement('label');
+        label.className = 'data-table-filter';
+        label.append(document.createTextNode(`${header.textContent.trim()}: `));
+        const select = document.createElement('select');
+        select.setAttribute('aria-label', `Filter by ${header.textContent.trim()}`);
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = 'All';
+        select.append(allOption);
+        values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).forEach((value) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.append(option);
+        });
+        if (state.columnFilters[columnIndex]) {
+            select.value = state.columnFilters[columnIndex];
+        }
+        select.addEventListener('change', () => {
+            state.columnFilters[columnIndex] = select.value;
+            state.page = 1;
+            refreshAdminTablePagination();
+        });
+        label.append(select);
+        state.filterSelects[columnIndex] = select;
+        if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(label, exportButton);
+        } else {
+            toolbar.append(label);
+        }
+    });
+}
+
 window.reloadAdminTablePagination = function(targetTable) {
     const table = targetTable || document.querySelector('.content-area table.data-table');
     if (!table) return;
-    const state = adminTablePages.get(table);
+    let state = adminTablePages.get(table);
+    if (!state) {
+        if (typeof window.initAdminTablePagination === 'function') {
+            window.initAdminTablePagination(table);
+            state = adminTablePages.get(table);
+        }
+    }
     if (!state) return;
     const body = table.tBodies[0];
     if (!body) return;
@@ -730,6 +785,7 @@ window.reloadAdminTablePagination = function(targetTable) {
     state.rows = children.filter((row) => !emptyRows.includes(row));
     state.emptyRows = emptyRows;
     state.rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
+    populateAdminColumnFilters(state, table);
     state.page = 1;
     refreshAdminTablePagination();
 };
@@ -785,16 +841,34 @@ function refreshAdminTablePagination() {
     });
 }
 
-document.querySelectorAll('.content-area table.data-table').forEach((table) => {
+window.initAdminTablePagination = function(table) {
+    if (!table) return;
     const body = table.tBodies[0];
     if (!body) return;
+
+    // If already initialized and elements exist in DOM, just reload
+    const existingState = adminTablePages.get(table);
+    const wrapper = table.closest('.table-scroll') || table;
+    const prevToolbar = wrapper.previousElementSibling;
+    if (existingState && prevToolbar && prevToolbar.classList.contains('data-table-toolbar')) {
+        window.reloadAdminTablePagination(table);
+        return;
+    }
+
+    // Clean up any stale toolbar or pagination next to wrapper
+    if (wrapper.previousElementSibling && wrapper.previousElementSibling.classList.contains('data-table-toolbar')) {
+        wrapper.previousElementSibling.remove();
+    }
+    if (wrapper.nextElementSibling && wrapper.nextElementSibling.classList.contains('admin-table-pagination')) {
+        wrapper.nextElementSibling.remove();
+    }
+
     const children = [...body.rows];
     const emptyRows = children.filter((row) => row.hasAttribute('data-pagination-empty') || (row.cells.length === 1 && row.cells[0].colSpan > 1));
     const rows = children.filter((row) => !emptyRows.includes(row));
     rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
     emptyRows.forEach((row) => { row.dataset.emptyMessage = row.cells[0]?.textContent || ''; });
 
-    const wrapper = table.closest('.table-scroll') || table;
     const toolbar = document.createElement('div');
     toolbar.className = 'data-table-toolbar';
     const columnFilters = {};
@@ -900,6 +974,9 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
         next: controls.querySelector('[data-table-page-next]'),
         pageButtons: controls.querySelector('[data-table-page-buttons]'),
         columnFilters,
+        filterSelects: {},
+        toolbar,
+        exportButton,
         searchInput: tableSearchInput,
         query: (table.id === 'recordsTable' && tableSearch) ? tableSearch.value : (tableSearchInput ? tableSearchInput.value : (tableSearch ? tableSearch.value : '')),
         pageSize: 10,
@@ -920,42 +997,7 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
         refreshAdminTablePagination();
     });
 
-    table.querySelectorAll('thead th').forEach((header, columnIndex) => {
-        if (!/status|category|department|college|role/i.test(header.textContent)) return;
-        let presetOptions = null;
-        try { presetOptions = JSON.parse(table.dataset.filterOptions || '{}')[header.textContent.trim()] || null; } catch (e) { presetOptions = null; }
-        const values = presetOptions
-            ? [...new Set(presetOptions.map((value) => String(value).trim()).filter(Boolean))]
-            : [...new Set(rows.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
-        if (!presetOptions && (values.length < 2 || values.length > 12)) return;
-        if (!values.length) return;
-        const label = document.createElement('label');
-        label.className = 'data-table-filter';
-        label.append(document.createTextNode(`${header.textContent.trim()}: `));
-        const select = document.createElement('select');
-        select.setAttribute('aria-label', `Filter by ${header.textContent.trim()}`);
-        const allOption = document.createElement('option');
-        allOption.value = '';
-        allOption.textContent = 'All';
-        select.append(allOption);
-        values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).forEach((value) => {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = value;
-            select.append(option);
-        });
-        select.addEventListener('change', () => {
-            state.columnFilters[columnIndex] = select.value;
-            state.page = 1;
-            refreshAdminTablePagination();
-        });
-        label.append(select);
-        if (exportButton && toolbar.contains(exportButton)) {
-            toolbar.insertBefore(label, exportButton);
-        } else {
-            toolbar.append(label);
-        }
-    });
+    populateAdminColumnFilters(state, table);
 
     const extraFiltersSelector = table.dataset.extraFilters;
     const extraFilters = extraFiltersSelector ? document.querySelector(extraFiltersSelector) : null;
@@ -1017,7 +1059,8 @@ document.querySelectorAll('.content-area table.data-table').forEach((table) => {
             }
         });
     });
-});
+};
+document.querySelectorAll('.content-area table.data-table').forEach(window.initAdminTablePagination);
 refreshAdminTablePagination();
 
 function setRecordsCategoryFilter(card) {
@@ -1286,21 +1329,12 @@ if (activityCalendarEl && window.FullCalendar) {
             openActivityEditor(info.event);
         },
         eventDrop(info) {
-            const formData = new FormData();
-            formData.append('csrf_token', window.activityCalendarCsrf || '');
-            formData.append('action', 'move');
-            formData.append('id', info.event.id);
-            formData.append('date', info.event.startStr.slice(0, 10));
-
-            fetch('activities.php', {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            }).then((response) => {
-                if (!response.ok) throw new Error('Move failed');
-                return response.json();
-            }).then((data) => {
-                if (!data.ok) throw new Error(data.message || 'Move failed');
+            // Static build: no PHP endpoint. Persist the move through the page hook (localStorage) instead.
+            const moveRequest = (typeof window.OVPRE_activityMove === 'function')
+                ? Promise.resolve(window.OVPRE_activityMove(info.event.id, info.event.startStr.slice(0, 10)))
+                : Promise.resolve({ ok: true });
+            moveRequest.then((data) => {
+                if (data && data.ok === false) throw new Error(data.message || 'Move failed');
             }).catch(() => {
                 info.revert();
                 alert('The activity could not be moved. Please try again.');
