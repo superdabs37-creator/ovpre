@@ -857,6 +857,9 @@
             ids.forEach(id => {
                 const item = all.find(p => p.id === id);
                 if (item) item.archived = (action === 'archive');
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    OVPRE_SUPABASE.archiveResearchProject(id, action === 'archive');
+                }
             });
             saveProjects(all);
             OVPRE.toast(action === 'archive' ? `${ids.length} proposal(s) archived successfully.` : `${ids.length} proposal(s) restored to active proposals.`, 'success');
@@ -1450,7 +1453,7 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/js/supabase-client.js?v=20261111"></script>
+    <script src="assets/js/supabase-client.js?v=20261111-realtime"></script>
     <script src="assets/js/app.js?v=20261111-nofile"></script>
     <script src="assets/js/static-bridge.js?v=20261111-nofile"></script>
     <script src="assets/js/role-system.js?v=20261111-nofile"></script>

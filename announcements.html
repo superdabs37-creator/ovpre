@@ -594,6 +594,9 @@
             ids.forEach(id => {
                 const item = all.find(a => a.id === id);
                 if (item) item.archived = (action === 'archive');
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    OVPRE_SUPABASE.archiveAnnouncement(id, action === 'archive');
+                }
             });
             saveAnnouncements(all);
             OVPRE.toast(action === 'archive' ? `${ids.length} announcement(s) archived successfully.` : `${ids.length} announcement(s) restored successfully.`, 'success');
@@ -669,6 +672,9 @@
                     item.expiry = expiry;
                     item.content = content;
                     saveAnnouncements(all);
+                    if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                        OVPRE_SUPABASE.updateAnnouncement(item.id, { title, content, audience });
+                    }
                     OVPRE.toast('Announcement updated successfully.', 'success');
                 }
             } else {
@@ -677,7 +683,7 @@
                 const now = new Date();
                 const dateStr = months[now.getMonth()] + ' ' + String(now.getDate()).padStart(2, '0') + ', ' + now.getFullYear();
 
-                all.unshift({
+                const newAnn = {
                     id: newId,
                     title,
                     content,
@@ -687,8 +693,12 @@
                     date: dateStr,
                     expiry: expiry || 'Dec 31, 2026',
                     archived: false
-                });
+                };
+                all.unshift(newAnn);
                 saveAnnouncements(all);
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    OVPRE_SUPABASE.createAnnouncement(newAnn);
+                }
                 OVPRE.toast('Announcement published successfully.', 'success');
             }
 
@@ -702,6 +712,9 @@
             if (!a) return;
             a.archived = !a.archived;
             saveAnnouncements(all);
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                OVPRE_SUPABASE.archiveAnnouncement(a.id, a.archived);
+            }
             OVPRE.toast(a.archived ? 'Announcement archived.' : 'Announcement restored to published feed.', 'success');
             renderAnnouncements();
         }
@@ -746,7 +759,7 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/js/supabase-client.js?v=20261111"></script>
+    <script src="assets/js/supabase-client.js?v=20261111-realtime"></script>
     <script src="assets/js/app.js?v=20261111-btncolor"></script>
     <script src="assets/js/static-bridge.js?v=20261111-btncolor"></script>
     <script src="assets/js/role-system.js?v=20261111-btncolor"></script>
