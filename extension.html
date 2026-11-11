@@ -86,25 +86,25 @@
 
                 <div id="ovpreFlash"></div>
 
-                <!-- SUBMIT EXTENSION PROJECT PANEL -->
+                <!-- SUBMIT EXTENSION PROPOSAL PANEL (MATCHING SCREENSHOT) -->
                 <section class="panel modal-launcher-panel" id="submitProposalPanel">
-                    <div class="panel-heading">
+                    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #16a34a;">Extension Proposals</h2>
-                            <span style="font-size: 1.1rem; color: #4b5563;">Submit a new community extension proposal for College Coordinator screening.</span>
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #16a34a; margin: 0 0 4px 0;">Extension Proposals</h2>
+                            <span style="font-size: 1.05rem; color: #4b5563;">Submit a new community extension proposal for College Coordinator screening.</span>
                         </div>
                         <button class="primary-btn" type="button" data-open-modal="createExtensionProjectModal"><i class="ri-add-line"></i> Submit Extension Proposal</button>
                     </div>
                 </section>
 
-                <!-- ACTIVE / ARCHIVED VIEW SELECTOR -->
-                <section class="tool-panel" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <!-- ACTIVE / ARCHIVED VIEW SELECTOR (IN WHITE CONTAINER MATCHING SCREENSHOT) -->
+                <section class="panel" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 12px; background: #fff;">
                     <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
-                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" onclick="switchExtensionTab('active')">
-                            <i class="ri-folder-line"></i><span>Active Projects (<span id="activeCount">0</span>)</span>
+                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchExtensionTab('active')">
+                            <i class="ri-folder-line"></i><span>Active Projects (<span id="activeCount">6</span>)</span>
                         </button>
-                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" onclick="switchExtensionTab('archived')">
-                            <i class="ri-archive-line"></i><span>Archived Projects (<span id="archivedCount">0</span>)</span>
+                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchExtensionTab('archived')">
+                            <i class="ri-archive-line"></i><span>Archived Projects (<span id="archivedCount">1</span>)</span>
                         </button>
                     </div>
                 </section>
@@ -126,6 +126,244 @@
                                 </tr>
                             </thead>
                             <tbody id="extensionProjectsBody">
+
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Nursing and Allied Health Sciences" id="ext-project-1">
+            <td data-sort-value="Barangay San Gabriel Community Health and Hypertension Teleconsultation">
+                <strong>Barangay San Gabriel Community Health and Hypertension Teleconsultation</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Maria Bautista | 
+                    <i class="ri-calendar-line"></i> Jan 20, 2026 to Apr 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="Barangay San Gabriel Health Center & LGU San Pablo">
+                <strong>Barangay San Gabriel Health Center & LGU San Pablo</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Brgy. San Gabriel, San Pablo City</small>
+            </td>
+            <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+            <td data-sort-value="80000"><strong>PHP 80,000.00</strong></td>
+            <td data-sort-value="Completed"><span style="font-weight: 600; color: #166534;">Completed</span></td>
+            <td data-sort-value="Approved">
+                <span class="status-pill status-approved">
+                    Approved
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Barangay San Gabriel Community Health and Hypertension Teleconsultation', 'San_Gabriel_Health_Extension.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td>
+            <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                <i class="ri-eye-line"></i><span>Details</span>
+            </button>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="ext-project-2">
+            <td data-sort-value="Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors">
+                <strong>Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Elena Cruz | 
+                    <i class="ri-calendar-line"></i> Feb 05, 2026 to Apr 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="San Pablo City Public Market Cooperative">
+                <strong>San Pablo City Public Market Cooperative</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> San Pablo City Public Market</small>
+            </td>
+            <td data-sort-value="College of Business Administration"><span class="dept-pill">College of Business Administration</span></td>
+            <td data-sort-value="65000"><strong>PHP 65,000.00</strong></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors', 'Vendor_Financial_Literacy_MOA.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                    </button>
+                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="ext-project-3">
+            <td data-sort-value="Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation">
+                <strong>Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Engr. Mark Santos | 
+                    <i class="ri-calendar-line"></i> Feb 14, 2026 to Apr 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="Brgy. Concepcion Urban Farmers Association">
+                <strong>Brgy. Concepcion Urban Farmers Association</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Brgy. Concepcion, San Pablo City</small>
+            </td>
+            <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+            <td data-sort-value="110000"><strong>PHP 110,000.00</strong></td>
+            <td data-sort-value="Stage 2: Director Evaluation"><span style="font-weight: 600; color: #166534;">Stage 2: Director Evaluation</span></td>
+            <td data-sort-value="Pending Director Review">
+                <span class="status-pill status-pending-director-review">
+                    Pending Director Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation', 'Urban_Hydroponics_Manual.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-award-line"></i><span>Evaluate</span>
+                </button>
+                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <i class="ri-eye-line"></i><span>Details</span>
+                </button>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Engineering" id="ext-project-4">
+            <td data-sort-value="Community IoT Flood Early Warning System & SMS Evacuation Alert">
+                <strong>Community IoT Flood Early Warning System & SMS Evacuation Alert</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Engr. Roberto Dimaano | 
+                    <i class="ri-calendar-line"></i> Mar 01, 2026 to Jun 30, 2026
+                </div>
+            </td>
+            <td data-sort-value="MDRRMO San Pablo & Brgy. Sampaloc Lake Council">
+                <strong>MDRRMO San Pablo & Brgy. Sampaloc Lake Council</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Lake Sampaloc Shoreline</small>
+            </td>
+            <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+            <td data-sort-value="135000"><strong>PHP 135,000.00</strong></td>
+            <td data-sort-value="Stage 3: Executive Approval"><span style="font-weight: 600; color: #166534;">Stage 3: Executive Approval</span></td>
+            <td data-sort-value="Pending Executive Approval">
+                <span class="status-pill status-pending-executive-approval">
+                    Pending Executive Approval
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Community IoT Flood Early Warning System & SMS Evacuation Alert', 'IoT_Flood_Sensor_Proposal.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-shield-check-line"></i><span>Approve</span>
+                </button>
+                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <i class="ri-eye-line"></i><span>Details</span>
+                </button>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Agriculture" id="ext-project-5">
+            <td data-sort-value="Modern Organic Backyard Aquaculture and Tilapia Pond Management">
+                <strong>Modern Organic Backyard Aquaculture and Tilapia Pond Management</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Dr. Fernando Morales | 
+                    <i class="ri-calendar-line"></i> Mar 15, 2026 to Jul 15, 2026
+                </div>
+            </td>
+            <td data-sort-value="Seven Lakes Fisherfolk Cooperative">
+                <strong>Seven Lakes Fisherfolk Cooperative</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Brgy. San Buenaventura</small>
+            </td>
+            <td data-sort-value="College of Agriculture"><span class="dept-pill">College of Agriculture</span></td>
+            <td data-sort-value="90000"><strong>PHP 90,000.00</strong></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Modern Organic Backyard Aquaculture and Tilapia Pond Management', 'Tilapia_Aquaculture_Extension.docx')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                    </button>
+                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Computer Studies" id="ext-project-6">
+            <td data-sort-value="STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)">
+                <strong>STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Arnel Santos | 
+                    <i class="ri-calendar-line"></i> Mar 20, 2026 to May 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="Sangguniang Kabataan Federation of San Pablo City">
+                <strong>Sangguniang Kabataan Federation of San Pablo City</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> San Pablo City Youth Center</small>
+            </td>
+            <td data-sort-value="College of Computer Studies"><span class="dept-pill">College of Computer Studies</span></td>
+            <td data-sort-value="110000"><strong>PHP 110,000.00</strong></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)', 'STEM_Youth_Bootcamp_Plan.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                    </button>
+                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+        </tr>
+    
                             </tbody>
                         </table>
                     </div>
@@ -137,7 +375,7 @@
     <!-- CREATE PROPOSAL MODAL -->
     <div class="modal" id="createExtensionProjectModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createExtensionProjectTitle">
         <div class="modal-backdrop" data-close-modal></div>
-        <article class="modal-card simple-submit-modal">
+        <article class="modal-card simple-submit-modal" style="max-width: 680px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head">
                 <span class="category-badge">Extension</span>
@@ -146,12 +384,14 @@
             </div>
             <form class="editor-panel" id="createExtensionProjectForm" onsubmit="handleCreateExtensionProject(event)">
                 <div class="form-grid">
-                    <label class="field"><span>Project Title</span><input name="project_title" id="createTitle" required placeholder="e.g. Community Livelihood Training"></label>
-                    <label class="field"><span>Coordinator / Lead</span><input name="coordinator" id="createCoordinator" required placeholder="Faculty Project Lead"></label>
-                    <label class="field"><span>College / Department</span>
+                    <label class="field"><span>Project Title</span><input name="project_title" id="createTitle" required placeholder="Full extension project title"></label>
+                    <label class="field"><span>Coordinator / Lead</span><input name="coordinator" id="createCoordinator" required placeholder="Prof. Elena Cruz"></label>
+                    <label class="field"><span>Community Partner / LGU</span><input name="community_partner" id="createPartner" required placeholder="e.g. San Pablo City Public Market Cooperative"></label>
+                    <label class="field"><span>Location</span><input name="location" id="createLocation" placeholder="e.g. San Pablo City Public Market" required></label>
+                    <label class="field"><span>College / Office</span>
                         <select name="college" id="createCollege" required>
                             <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
-                            <option value="College of Business Administration and Accountancy">College of Business Administration and Accountancy</option>
+                            <option value="College of Business Administration">College of Business Administration</option>
                             <option value="College of Engineering">College of Engineering</option>
                             <option value="College of Agriculture">College of Agriculture</option>
                             <option value="College of Computer Studies">College of Computer Studies</option>
@@ -159,36 +399,36 @@
                             <option value="College of Teacher Education">College of Teacher Education</option>
                         </select>
                     </label>
-                    <label class="field"><span>Community Partner / LGU</span><input name="community_partner" id="createPartner" required placeholder="e.g. Barangay Hall / Cooperative"></label>
-                    <label class="field"><span>Location</span><input name="location" id="createLocation" placeholder="e.g. Barangay San Jose" required></label>
-                    <label class="field"><span>Target Beneficiaries</span><input name="target_beneficiaries" id="createBeneficiaries" placeholder="e.g. 50 OSY and women" required></label>
-                    <label class="field"><span>Target Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="createBudget" required placeholder="50000"></label>
+                    <label class="field"><span>Target Budget (PHP)</span><input type="number" step="0.01" name="budget" id="createBudget" placeholder="75000" required></label>
                     <label class="field"><span>Start Date</span><input type="date" name="start_date" id="createStartDate" required></label>
                     <label class="field"><span>End Date</span><input type="date" name="end_date" id="createEndDate" required></label>
                 </div>
-                <label class="field"><span>Project Description / Objectives</span><textarea rows="3" name="description" id="createDesc" placeholder="Brief summary of activities, targets, and expected community outputs..."></textarea></label>
+                <label class="field"><span>Project Description &amp; Beneficiaries</span><textarea rows="4" name="description" id="createDescription" required placeholder="Detail target beneficiaries, outreach activities, and measurable community outcomes..."></textarea></label>
                 <label class="field"><span>Proposal Document / MOA Draft (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="createFile" accept=".pdf,.doc,.docx,.zip"></label>
-                <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Extension Coordinator</button>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
+                    <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Extension Coordinator</button>
+                </div>
             </form>
         </article>
     </div>
 
-    <!-- COORDINATOR ENDORSEMENT MODAL -->
+    <!-- COORDINATOR SCREENING MODAL -->
     <div class="modal" id="coordModal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-backdrop" data-close-modal></div>
         <form class="modal-card" id="coordForm" onsubmit="handleCoordSubmit(event)" style="max-width: 620px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
-            <h2 style="color: #15803d;"><i class="ri-check-double-line"></i> Extension Coordinator Initial Screening</h2>
+            <h2 style="color: #15803d;"><i class="ri-check-double-line"></i> College Extension Coordinator Screening</h2>
             <input type="hidden" id="coordProjId" name="id">
             <p><strong id="coordProjTitle"></strong></p>
-            <label class="field"><span>Endorsement Remarks / Feedback:</span>
-                <textarea id="coordRemarks" name="remarks" rows="3" required placeholder="Enter initial screening remarks before endorsing to the Extension Director..."></textarea>
+            <label class="field"><span>Screening Remarks &amp; Community Alignment:</span>
+                <textarea id="coordRemarks" name="remarks" rows="3" required placeholder="Screening notes regarding community partner validation, MOA viability, and logistical clearance..."></textarea>
             </label>
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
                 <button class="primary-btn" type="submit" name="coord_action" value="endorse" style="background: #15803d;">
                     <i class="ri-check-line"></i> Endorse to Director
                 </button>
-                <button class="ghost-btn" type="submit" name="coord_action" value="revision" style="color: #c2410c; border-color: #fed7aa;">
+                <button class="ghost-btn" type="submit" name="coord_action" value="revision" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
                 <button class="ghost-btn danger-btn" type="submit" name="coord_action" value="decline">Decline</button>
@@ -206,20 +446,20 @@
             <p><strong id="dirProjTitle"></strong></p>
             <div class="form-grid">
                 <label class="field"><span>Evaluation Rating (Score out of 100):</span>
-                    <input type="number" step="0.01" min="0" max="100" id="dirRating" name="evaluation_rating" placeholder="85.00" required>
+                    <input type="number" step="0.01" min="0" max="100" id="dirRating" name="evaluation_rating" placeholder="90.00" required>
                 </label>
-                <label class="field"><span>Approved Extension Budget (PHP):</span>
+                <label class="field"><span>Approved Funding Allocation (PHP):</span>
                     <input type="number" step="0.01" min="0" id="dirApprovedBudget" name="approved_budget" required>
                 </label>
             </div>
-            <label class="field"><span>Evaluation &amp; Recommendation Remarks:</span>
-                <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="Evaluation feedback regarding community partnership, safety protocols, and budget allocation..."></textarea>
+            <label class="field"><span>Director Recommendation Remarks:</span>
+                <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="Director evaluation remarks, beneficiary metrics, and institutional endorsement..."></textarea>
             </label>
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
                 <button class="primary-btn" type="submit" name="dir_action" value="endorse" style="background: #1d4ed8;">
                     <i class="ri-send-plane-line"></i> Endorse to VP / Executive
                 </button>
-                <button class="ghost-btn" type="submit" name="dir_action" value="revision" style="color: #c2410c; border-color: #fed7aa;">
+                <button class="ghost-btn" type="submit" name="dir_action" value="revision" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
                 <button class="ghost-btn danger-btn" type="submit" name="dir_action" value="decline">Decline</button>
@@ -227,7 +467,7 @@
         </form>
     </div>
 
-    <!-- EXECUTIVE APPROVAL MODAL -->
+    <!-- EXECUTIVE FINAL APPROVAL MODAL -->
     <div class="modal" id="execModal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-backdrop" data-close-modal></div>
         <form class="modal-card" id="execForm" onsubmit="handleExecSubmit(event)" style="max-width: 600px;">
@@ -236,7 +476,7 @@
             <input type="hidden" id="execProjId" name="id">
             <p><strong id="execProjTitle"></strong></p>
             <label class="field"><span>Executive Resolution &amp; Directives:</span>
-                <textarea id="execRemarks" name="remarks" rows="4" required>Approved for implementation under the Institutional Extension Program. Notice to Implement issued.</textarea>
+                <textarea id="execRemarks" name="remarks" rows="4" required>Approved for implementation under University Extension and Community Engagement Program. Fund release and MOA execution authorized.</textarea>
             </label>
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
                 <button class="primary-btn" type="submit" name="exec_action" value="approve" style="background: #16a34a;">
@@ -258,11 +498,11 @@
                 <p id="detailSubtitle" style="color: #64748b; font-size: 0.9rem;"></p>
             </div>
             <div style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 14px; border: 1px solid #e2e8f0;">
-                <div><strong>Location:</strong> <span id="detailLocation"></span></div>
-                <div style="margin-top: 6px;"><strong>Target Beneficiaries:</strong> <span id="detailBeneficiaries"></span></div>
-                <div style="margin-top: 6px;"><strong>Budget:</strong> <span id="detailBudget"></span></div>
-                <div style="margin-top: 6px;"><strong>Project Schedule:</strong> <span id="detailSchedule"></span></div>
-                <div style="margin-top: 6px;" id="detailDescWrap"><strong>Description:</strong> <span id="detailDesc"></span></div>
+                <div><strong>Community Partner:</strong> <span id="detailPartner"></span></div>
+                <div style="margin-top: 6px;"><strong>Location:</strong> <span id="detailLocation"></span></div>
+                <div style="margin-top: 6px;"><strong>Budget Allocation:</strong> <span id="detailBudget"></span></div>
+                <div style="margin-top: 6px;"><strong>Implementation Period:</strong> <span id="detailDates"></span></div>
+                <div style="margin-top: 6px;" id="detailDescWrap"><strong>Description &amp; Beneficiaries:</strong> <div id="detailDescription" style="margin-top: 4px; line-height: 1.5; color: #334155;"></div></div>
             </div>
             <div id="detailWorkflowTrail" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;"></div>
             <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px;">
@@ -280,10 +520,10 @@
             <h2 id="previewModalTitle"><i class="ri-file-text-line"></i> Document Preview</h2>
             <div id="previewModalBody" style="background: #f8fafc; padding: 32px 20px; border-radius: 12px; text-align: center; border: 1px dashed #cbd5e1; margin: 12px 0;">
                 <i class="ri-file-pdf-2-line" style="font-size: 3rem; color: #dc2626; display: block; margin-bottom: 8px;"></i>
-                <strong id="previewFileName" style="font-size: 1.1rem; color: #0f172a; display: block;">proposal.pdf</strong>
-                <p style="color: #64748b; margin-top: 6px;">Official Proposal Document filed with OVPRE Institutional Extension Office.</p>
+                <strong id="previewFileName" style="font-size: 1.1rem; color: #0f172a; display: block;">extension_proposal.pdf</strong>
+                <p style="color: #64748b; margin-top: 6px;">Official Community Extension Project Document filed with OVPRE Directorate.</p>
                 <div style="margin-top: 18px;">
-                    <a href="#" id="previewDownloadBtn" class="primary-btn mini-btn" download style="display: inline-flex;"><i class="ri-download-2-line"></i> Download Document</a>
+                    <a href="#" id="previewDownloadBtn" class="primary-btn mini-btn" download><i class="ri-download-2-line"></i> Download Project Document</a>
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end;">
@@ -292,172 +532,172 @@
         </article>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- JAVASCRIPT LOGIC ENGINE -->
     <script>
         const initialSeed = [
-  {
-    "id": 1,
-    "title": "Barangay San Gabriel Community Health and Hypertension Teleconsultation",
-    "coordinator": "Prof. Maria Bautista",
-    "college": "College of Nursing and Allied Health Sciences",
-    "partner": "Barangay San Gabriel Health Center & LGU San Pablo",
-    "location": "Brgy. San Gabriel, San Pablo City",
-    "beneficiaries": "120 Senior Citizens & Hypertensive Patients",
-    "budget": 85000,
-    "approved_budget": 80000,
-    "stage": "Completed",
-    "status": "Approved",
-    "progress_status": "Completed",
-    "created_at": "2026-01-20",
-    "start_date": "2026-01-20",
-    "end_date": "2026-04-20",
-    "description": "Community nursing outreach providing regular blood pressure monitoring, telehealth education, and maintenance medication guidance.",
-    "coordinator_remarks": "Screened and fully endorsed. Solid community partner agreement and clear health targets.",
-    "coordinator_name": "Prof. CONAHS Coordinator",
-    "director_remarks": "Approved with rating 95.00. High community impact and clear barangay integration.",
-    "director_name": "Dr. Maricel Gomez",
-    "evaluation_rating": "95.00",
-    "executive_remarks": "Final executive approval granted. Fund release authorized under University Extension Support.",
-    "executive_name": "Executive VP / Director",
-    "document_filename": "San_Gabriel_Health_Extension.pdf",
-    "archived": false
-  },
-  {
-    "id": 2,
-    "title": "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
-    "coordinator": "Prof. Elena Cruz",
-    "college": "College of Business Administration and Accountancy",
-    "partner": "San Pablo City Public Market Vendors Association",
-    "location": "San Pablo Public Market",
-    "beneficiaries": "80 Micro-retailers and Vendors",
-    "budget": 65000,
-    "approved_budget": 65000,
-    "stage": "Ongoing",
-    "status": "Approved",
-    "progress_status": "Ongoing",
-    "created_at": "2026-02-10",
-    "start_date": "2026-02-10",
-    "end_date": "2026-05-10",
-    "description": "Hands-on training using smartphone accounting apps, GCash/Maya QR payments, and basic inventory tracking.",
-    "coordinator_remarks": "Endorsed with priority endorsement. High relevance to local vendor sustainability.",
-    "coordinator_name": "Prof. CBAA Coordinator",
-    "director_remarks": "Director evaluated and approved with rating 92.50.",
-    "director_name": "Dr. Maricel Gomez",
-    "evaluation_rating": "92.50",
-    "executive_remarks": "Executive approval granted.",
-    "executive_name": "OVPRE Executive Office",
-    "document_filename": "Vendor_Financial_Literacy_MOA.pdf",
-    "archived": false
-  },
-  {
-    "id": 3,
-    "title": "Community IoT Flood Early Warning System & SMS Evacuation Alert",
-    "coordinator": "Engr. Roberto Dimaano",
-    "college": "College of Engineering",
-    "partner": "MDRRMO San Pablo & Brgy. Sampaloc Lake Council",
-    "location": "Lake Sampaloc Shoreline",
-    "beneficiaries": "350 Coastal & Lakeside Households",
-    "budget": 140000,
-    "approved_budget": 135000,
-    "stage": "Ongoing",
-    "status": "Pending Executive Approval",
-    "progress_status": "Planning",
-    "created_at": "2026-02-28",
-    "start_date": "2026-03-01",
-    "end_date": "2026-06-30",
-    "description": "Deployment of solar-powered ultrasonic water level sensors linked to an automated SMS alert gateway.",
-    "coordinator_remarks": "Complete technical drawings, risk assessment, and barangay clearance submitted.",
-    "coordinator_name": "Engr. COE Coordinator",
-    "director_remarks": "Director evaluation rating: 94.00. Recommend immediate executive release.",
-    "director_name": "Dr. Maricel Gomez",
-    "evaluation_rating": "94.00",
-    "document_filename": "IoT_Flood_Sensor_Proposal.pdf",
-    "archived": false
-  },
-  {
-    "id": 4,
-    "title": "Modern Organic Backyard Aquaculture and Tilapia Pond Management",
-    "coordinator": "Dr. Fernando Morales",
-    "college": "College of Agriculture",
-    "partner": "Seven Lakes Fisherfolk Cooperative",
-    "location": "Brgy. San Buenaventura",
-    "beneficiaries": "45 Small-Scale Fisherfolk",
-    "budget": 95000,
-    "approved_budget": 90000,
-    "stage": "Planning",
-    "status": "Pending Director Review",
-    "progress_status": "Planning",
-    "created_at": "2026-03-05",
-    "start_date": "2026-03-15",
-    "end_date": "2026-07-15",
-    "description": "Transfer of low-cost organic feeding technologies and water bio-filter management to boost fingerling survival.",
-    "coordinator_remarks": "Screened and validated. Cooperative has provided counterpart pond space.",
-    "coordinator_name": "Dr. CA Coordinator",
-    "document_filename": "Tilapia_Aquaculture_Extension.docx",
-    "archived": false
-  },
-  {
-    "id": 5,
-    "title": "STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)",
-    "coordinator": "Prof. Arnel Santos",
-    "college": "College of Computer Studies",
-    "partner": "Sangguniang Kabataan Federation of San Pablo City",
-    "location": "San Pablo City Youth Center",
-    "beneficiaries": "60 Out-of-School Youth (Ages 16-24)",
-    "budget": 110000,
-    "approved_budget": 110000,
-    "stage": "Proposal",
-    "status": "Pending Coordinator Review",
-    "progress_status": "Planning",
-    "created_at": "2026-03-12",
-    "start_date": "2026-04-01",
-    "end_date": "2026-06-30",
-    "description": "6-week crash course on basic electronics, microcontrollers, and web development fundamentals.",
-    "document_filename": "OSY_STEM_Bootcamp_Plan.pdf",
-    "archived": false
-  },
-  {
-    "id": 6,
-    "title": "Maternal Nutrition & First 1,000 Days Cooking Demonstrations",
-    "coordinator": "Prof. Clara De Jesus",
-    "college": "College of Nursing and Allied Health Sciences",
-    "partner": "Barangay Del Remedio Rural Health Unit",
-    "location": "Brgy. Del Remedio Multi-Purpose Hall",
-    "beneficiaries": "75 Pregnant & Lactating Mothers",
-    "budget": 45000,
-    "approved_budget": 45000,
-    "stage": "Proposal",
-    "status": "Needs Revision",
-    "progress_status": "Planning",
-    "created_at": "2026-03-14",
-    "start_date": "2026-04-01",
-    "end_date": "2026-05-30",
-    "description": "Demonstration workshops preparing nutrient-dense baby weaning food using indigenous vegetables.",
-    "coordinator_remarks": "Please attach the signed memorandum of understanding with the City Health Office before resubmitting.",
-    "coordinator_name": "Prof. CONAHS Coordinator",
-    "document_filename": "Maternal_Nutrition_Proposal.pdf",
-    "archived": false
-  },
-  {
-    "id": 7,
-    "title": "Community Heritage Eco-Tourism Storytelling and Tour Guide Certification",
-    "coordinator": "Prof. Manuel Valenzuela",
-    "college": "College of Arts and Sciences",
-    "partner": "San Pablo Historical & Cultural Society",
-    "location": "City Plaza & Seven Lakes Circuit",
-    "beneficiaries": "30 Local Tour Guides and Youth Volunteers",
-    "budget": 55000,
-    "approved_budget": 55000,
-    "stage": "Completed",
-    "status": "Approved",
-    "progress_status": "Completed",
-    "created_at": "2025-10-15",
-    "start_date": "2025-10-15",
-    "end_date": "2025-12-15",
-    "description": "Specialized workshops on storytelling local folklore, ecological preservation guidelines, and first aid.",
-    "coordinator_remarks": "Completed project. Archived for institutional records.",
-    "archived": true
-  }
+        {
+                "id": 1,
+                "title": "Barangay San Gabriel Community Health and Hypertension Teleconsultation",
+                "coordinator": "Prof. Maria Bautista",
+                "college": "College of Nursing and Allied Health Sciences",
+                "partner": "Barangay San Gabriel Health Center & LGU San Pablo",
+                "location": "Brgy. San Gabriel, San Pablo City",
+                "beneficiaries": "120 Hypertensive Senior Citizens",
+                "budget": 80000,
+                "approved_budget": 80000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Completed",
+                "created_at": "2026-01-20",
+                "start_date": "2026-01-20",
+                "end_date": "2026-04-20",
+                "description": "Community nursing outreach providing regular blood pressure monitoring, telehealth education, and maintenance medication guidance.",
+                "coordinator_remarks": "Screened and fully endorsed. Solid community partner agreement and clear health targets.",
+                "coordinator_name": "Prof. CONAHS Coordinator",
+                "director_remarks": "Approved with rating 95.00. High community impact and clear barangay integration.",
+                "director_name": "Dr. Maricel Gomez",
+                "evaluation_rating": "95.00",
+                "executive_remarks": "Final executive approval granted. Fund release authorized under University Extension Support.",
+                "executive_name": "Super Administrator",
+                "document_filename": "San_Gabriel_Health_Extension.pdf",
+                "archived": false
+        },
+        {
+                "id": 2,
+                "title": "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
+                "coordinator": "Prof. Elena Cruz",
+                "college": "College of Business Administration",
+                "partner": "San Pablo City Public Market Cooperative",
+                "location": "San Pablo City Public Market",
+                "beneficiaries": "80 Micro-retailers and Vendors",
+                "budget": 65000,
+                "approved_budget": 65000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-05",
+                "start_date": "2026-02-05",
+                "end_date": "2026-04-20",
+                "description": "Hands-on training using smartphone accounting apps, GCash/Maya QR payments, and basic inventory tracking.",
+                "coordinator_remarks": "Under active screening with College Extension Coordinator.",
+                "coordinator_name": "Prof. CBA Coordinator",
+                "document_filename": "Vendor_Financial_Literacy_MOA.pdf",
+                "archived": false
+        },
+        {
+                "id": 3,
+                "title": "Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation",
+                "coordinator": "Prof. Engr. Mark Santos",
+                "college": "College of Engineering",
+                "partner": "Brgy. Concepcion Urban Farmers Association",
+                "location": "Brgy. Concepcion, San Pablo City",
+                "beneficiaries": "60 Urban Household Beneficiaries",
+                "budget": 110000,
+                "approved_budget": 110000,
+                "stage": "Stage 2: Director Evaluation",
+                "status": "Pending Director Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-14",
+                "start_date": "2026-02-14",
+                "end_date": "2026-04-20",
+                "description": "Fabrication of modular nutrient-film hydroponic units for small backyard plots with solar aerator backup.",
+                "coordinator_remarks": "Endorsed with priority endorsement. High relevance to urban food self-sufficiency.",
+                "coordinator_name": "Engr. COE Coordinator",
+                "coordinator_reviewed_at": "2026-02-18",
+                "document_filename": "Urban_Hydroponics_Manual.pdf",
+                "archived": false
+        },
+        {
+                "id": 4,
+                "title": "Community IoT Flood Early Warning System & SMS Evacuation Alert",
+                "coordinator": "Engr. Roberto Dimaano",
+                "college": "College of Engineering",
+                "partner": "MDRRMO San Pablo & Brgy. Sampaloc Lake Council",
+                "location": "Lake Sampaloc Shoreline",
+                "beneficiaries": "350 Coastal & Lakeside Households",
+                "budget": 135000,
+                "approved_budget": 135000,
+                "stage": "Stage 3: Executive Approval",
+                "status": "Pending Executive Approval",
+                "progress_status": "Planning",
+                "created_at": "2026-03-01",
+                "start_date": "2026-03-01",
+                "end_date": "2026-06-30",
+                "description": "Deployment of solar-powered ultrasonic water level sensors linked to an automated SMS alert gateway.",
+                "coordinator_remarks": "Complete technical drawings, risk assessment, and barangay clearance submitted.",
+                "coordinator_name": "Engr. COE Coordinator",
+                "director_remarks": "Director evaluation rating: 94.00. Recommend immediate executive release.",
+                "director_name": "Dr. Maricel Gomez",
+                "director_reviewed_at": "2026-03-05",
+                "evaluation_rating": "94.00",
+                "document_filename": "IoT_Flood_Sensor_Proposal.pdf",
+                "archived": false
+        },
+        {
+                "id": 5,
+                "title": "Modern Organic Backyard Aquaculture and Tilapia Pond Management",
+                "coordinator": "Dr. Fernando Morales",
+                "college": "College of Agriculture",
+                "partner": "Seven Lakes Fisherfolk Cooperative",
+                "location": "Brgy. San Buenaventura",
+                "beneficiaries": "45 Small-Scale Fisherfolk",
+                "budget": 90000,
+                "approved_budget": 90000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-03-15",
+                "start_date": "2026-03-15",
+                "end_date": "2026-07-15",
+                "description": "Transfer of low-cost organic feeding technologies and water bio-filter management to boost fingerling survival.",
+                "coordinator_remarks": "Screened and validated. Cooperative has provided counterpart pond space.",
+                "coordinator_name": "Dr. CA Coordinator",
+                "document_filename": "Tilapia_Aquaculture_Extension.docx",
+                "archived": false
+        },
+        {
+                "id": 6,
+                "title": "STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)",
+                "coordinator": "Prof. Arnel Santos",
+                "college": "College of Computer Studies",
+                "partner": "Sangguniang Kabataan Federation of San Pablo City",
+                "location": "San Pablo City Youth Center",
+                "beneficiaries": "60 Out-of-School Youth (Ages 16-24)",
+                "budget": 110000,
+                "approved_budget": 110000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-03-20",
+                "start_date": "2026-03-20",
+                "end_date": "2026-05-20",
+                "description": "Introductory Python, micro:bit microcontrollers, and basic electronics workshops aiming at tech apprenticeship pathway.",
+                "coordinator_remarks": "College coordinator reviewing training curriculum modules.",
+                "coordinator_name": "Prof. CCS Coordinator",
+                "document_filename": "STEM_Youth_Bootcamp_Plan.pdf",
+                "archived": false
+        },
+        {
+                "id": 7,
+                "title": "Heritage Tour Guiding & Ecotourism Capacity Mentorship for Youth Volunteers",
+                "coordinator": "Prof. Manuel Valenzuela",
+                "college": "College of Arts and Sciences",
+                "partner": "San Pablo City Tourism Council",
+                "location": "Plaza Rizal Heritage District",
+                "beneficiaries": "40 Student Heritage Docents",
+                "budget": 55000,
+                "approved_budget": 55000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Completed",
+                "created_at": "2025-07-10",
+                "start_date": "2025-07-10",
+                "end_date": "2025-10-10",
+                "description": "Regional heritage training series covering local history, tour commentary delivery, and emergency response.",
+                "coordinator_remarks": "Completed project documentation submitted and archived.",
+                "document_filename": "Heritage_Docent_Manual.pdf",
+                "archived": true
+        }
 ];
         let currentTab = 'active';
         let activeDetailId = null;
@@ -465,7 +705,10 @@
         function getProjects() {
             try {
                 const raw = localStorage.getItem('ovpre_extension_projects');
-                if (raw) return JSON.parse(raw);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length && parsed[0].title === initialSeed[0].title) return parsed;
+                }
             } catch (e) {}
             localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
             return initialSeed;
@@ -479,18 +722,19 @@
 
         function switchExtensionTab(tab) {
             currentTab = tab;
-            document.getElementById('tabActiveBtn').classList.toggle('is-active', tab === 'active');
-            document.getElementById('tabArchivedBtn').classList.toggle('is-active', tab === 'archived');
+            const tabActiveBtn = document.getElementById('tabActiveBtn');
+            const tabArchivedBtn = document.getElementById('tabArchivedBtn');
+            if (tabActiveBtn && tabArchivedBtn) {
+                tabActiveBtn.classList.toggle('is-active', tab === 'active');
+                tabArchivedBtn.classList.toggle('is-active', tab === 'archived');
+                tabActiveBtn.setAttribute('aria-selected', tab === 'active' ? 'true' : 'false');
+                tabArchivedBtn.setAttribute('aria-selected', tab === 'archived' ? 'true' : 'false');
+            }
             renderTable();
         }
 
         function renderTable() {
             const all = getProjects();
-            const flags = (window.OVPRE && OVPRE.roleFlags) ? OVPRE.roleFlags() : { isAdmin: true, isCoordinator: true, isDirector: true, isExecutive: true };
-            const isCoordinator = flags.isCoordinator || flags.isAdmin;
-            const isDirector = flags.isDirector || flags.isAdmin;
-            const isExecutive = flags.isExecutive;
-
             const activeList = all.filter(p => !p.archived);
             const archivedList = all.filter(p => p.archived);
             document.getElementById('activeCount').textContent = activeList.length;
@@ -508,57 +752,112 @@
             } else {
                 list.forEach(p => {
                     const tr = document.createElement('tr');
+                    tr.setAttribute('data-table-row', '');
+                    tr.setAttribute('data-status', p.status);
+                    tr.setAttribute('data-stage', p.stage);
+                    tr.setAttribute('data-college', p.college);
                     tr.id = 'ext-project-' + p.id;
                     const pStatus = p.status || 'Pending Coordinator Review';
                     const lead = p.coordinator || 'Faculty Lead';
-                    const sDate = p.start_date || p.created_at || '2026-01-20';
+                    const sDate = p.start_date || p.created_at;
                     const eDate = p.end_date || '2026-04-20';
-                    const partner = p.partner || p.community_partner || 'Local Community Partner';
+                    const partner = p.partner || 'Local Community Partner';
                     const loc = p.location || '';
-                    const col = p.college || 'College of Extension';
+                    const col = p.college || 'College of Nursing and Allied Health Sciences';
                     const bgt = Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     const stg = p.stage || 'Proposal';
                     const docName = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
 
-                    let actionsHtml = '<div style="display: flex; gap: 6px; flex-wrap: wrap;">';
-
+                    let actionsHtml = '';
                     if (currentTab === 'active') {
-                        if (isCoordinator && (pStatus === 'Pending Coordinator Review' || pStatus === 'Pending' || pStatus === 'Under Review')) {
-                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openCoordModal(' + p.id + ')" style="background: #15803d;" title="Endorse project to Extension Director"><i class="ri-check-double-line"></i> Endorse</button>';
-                            actionsHtml += '<button class="ghost-btn mini-btn" type="button" onclick="openCoordModal(' + p.id + ', true)" style="color: #c2410c; border-color: #fed7aa;" title="Return to faculty for revision"><i class="ri-arrow-go-back-line"></i> Revision</button>';
-                        } else if (isDirector && (pStatus === 'Pending Director Review' || pStatus === 'Under Review')) {
-                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openDirModal(' + p.id + ')" style="background: #1d4ed8;" title="Director Evaluation"><i class="ri-award-line"></i> Evaluate</button>';
-                        } else if (isExecutive && pStatus === 'Pending Executive Approval') {
-                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openExecModal(' + p.id + ')" style="background: #7e22ce;" title="Executive Final Approval"><i class="ri-shield-check-line"></i> Approve</button>';
+                        if (pStatus === 'Pending Coordinator Review') {
+                            actionsHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                    <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                        <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                                    </button>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                                            <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                                        </button>
+                                        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                            <i class="ri-eye-line"></i><span>Details</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        } else if (pStatus === 'Pending Director Review') {
+                            actionsHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                    <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                        <i class="ri-award-line"></i><span>Evaluate</span>
+                                    </button>
+                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <i class="ri-eye-line"></i><span>Details</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else if (pStatus === 'Pending Executive Approval') {
+                            actionsHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                    <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                        <i class="ri-shield-check-line"></i><span>Approve</span>
+                                    </button>
+                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <i class="ri-eye-line"></i><span>Details</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else if (pStatus === 'Needs Revision') {
+                            actionsHtml = `
+                                <div style="display: flex; gap: 6px;">
+                                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                                    </button>
+                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <i class="ri-eye-line"></i><span>Details</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            actionsHtml = `
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <i class="ri-eye-line"></i><span>Details</span>
+                                </button>
+                            `;
                         }
+                    } else {
+                        actionsHtml = `
+                            <div style="display: flex; gap: 6px;">
+                                <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
+                            </div>
+                        `;
                     }
 
-                    actionsHtml += '<button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(' + p.id + ')"><i class="ri-eye-line"></i><span>Details</span></button>';
-                    actionsHtml += '</div>';
-
                     tr.innerHTML = `
-                        <td>
+                        <td data-sort-value="${OVPRE.h(p.title)}">
                             <strong>${OVPRE.h(p.title)}</strong>
                             <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
                                 <i class="ri-user-line"></i> Lead: ${OVPRE.h(lead)} | 
                                 <i class="ri-calendar-line"></i> ${OVPRE.date(sDate)} to ${OVPRE.date(eDate)}
                             </div>
                         </td>
-                        <td>
+                        <td data-sort-value="${OVPRE.h(partner)}">
                             <strong>${OVPRE.h(partner)}</strong>
                             ${loc ? '<br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> ' + OVPRE.h(loc) + '</small>' : ''}
                         </td>
                         <td data-sort-value="${OVPRE.h(col)}"><span class="dept-pill">${OVPRE.h(col)}</span></td>
-                        <td><strong>PHP ${bgt}</strong></td>
-                        <td><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
-                        <td>
+                        <td data-sort-value="${p.approved_budget || p.budget}"><strong>PHP ${bgt}</strong></td>
+                        <td data-sort-value="${OVPRE.h(stg)}"><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
+                        <td data-sort-value="${OVPRE.h(pStatus)}">
                             <span class="status-pill status-${OVPRE.statusClass(pStatus)}">
                                 ${OVPRE.h(pStatus)}
                             </span>
                         </td>
                         <td>
-                            <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('${OVPRE.h(p.title)}', '${OVPRE.h(docName)}')" title="Preview Document">
-                                <i class="ri-file-text-line"></i>
+                            <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('${OVPRE.h(p.title)}', '${OVPRE.h(docName)}')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                                <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
                             </button>
                         </td>
                         <td>${actionsHtml}</td>
@@ -567,7 +866,6 @@
                 });
             }
 
-            // Tell app.js to reload data-table toolbar and pagination
             if (window.OVPRE && OVPRE.reloadTable) {
                 OVPRE.reloadTable('extensionProjectsTable');
             } else if (typeof window.reloadAdminTablePagination === 'function') {
@@ -575,90 +873,90 @@
             }
         }
 
-        // --- Create Proposal ---
+        // --- SUBMIT EXTENSION PROPOSAL ---
         function handleCreateExtensionProject(event) {
             event.preventDefault();
             const title = document.getElementById('createTitle').value.trim();
-            const coord = document.getElementById('createCoordinator').value.trim();
-            const college = document.getElementById('createCollege').value;
+            const coordinator = document.getElementById('createCoordinator').value.trim();
             const partner = document.getElementById('createPartner').value.trim();
-            const loc = document.getElementById('createLocation').value.trim();
-            const ben = document.getElementById('createBeneficiaries').value.trim();
+            const location = document.getElementById('createLocation').value.trim();
+            const college = document.getElementById('createCollege').value;
             const budget = parseFloat(document.getElementById('createBudget').value) || 0;
-            const sDate = document.getElementById('createStartDate').value;
-            const eDate = document.getElementById('createEndDate').value;
-            const desc = document.getElementById('createDesc').value.trim();
+            const startDate = document.getElementById('createStartDate').value;
+            const endDate = document.getElementById('createEndDate').value;
+            const description = document.getElementById('createDescription').value.trim();
 
             const all = getProjects();
             const newId = (all.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0)) + 1;
-            const newProj = {
+            const docFilename = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf';
+
+            const newProject = {
                 id: newId,
                 title,
-                coordinator: coord,
-                college,
+                coordinator,
                 partner,
-                location: loc,
-                beneficiaries: ben,
+                location,
+                college,
                 budget,
                 approved_budget: budget,
-                stage: 'Proposal',
-                status: 'Pending Coordinator Review',
-                progress_status: 'Planning',
+                start_date: startDate || new Date().toISOString().slice(0, 10),
+                end_date: endDate || '2026-06-30',
+                stage: "Stage 1: Coordinator Screening",
+                status: "Pending Coordinator Review",
+                progress_status: "Planning",
                 created_at: new Date().toISOString().slice(0, 10),
-                start_date: sDate,
-                end_date: eDate,
-                description: desc,
-                archived: false,
-                document_filename: title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Proposal.pdf'
+                description,
+                document_filename: docFilename,
+                archived: false
             };
 
-            all.unshift(newProj);
+            all.unshift(newProject);
             saveProjects(all);
 
             OVPRE.closeModal('createExtensionProjectModal');
             document.getElementById('createExtensionProjectForm').reset();
-            OVPRE.toast('Extension proposal successfully submitted for College Coordinator review!', 'success');
+            OVPRE.toast('Extension proposal submitted successfully! Routed to College Coordinator.', 'success');
             renderTable();
         }
 
-        // --- Coordinator Action ---
-        let coordCurrentAction = 'endorse';
-        function openCoordModal(id, isRevision) {
-            const p = getProjects().find(item => item.id == id);
+        // --- COORDINATOR SCREENING ---
+        function openCoordModal(id, isRevisionOnly) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             document.getElementById('coordProjId').value = p.id;
             document.getElementById('coordProjTitle').textContent = p.title;
-            document.getElementById('coordRemarks').value = isRevision
-                ? 'Please attach the signed memorandum of understanding with the community partner.'
-                : 'Project proposal documents and community partner clearance validated. Fully endorsed to Extension Director.';
+            document.getElementById('coordRemarks').value = p.coordinator_remarks || '';
             OVPRE.openModal('coordModal');
         }
 
         function handleCoordSubmit(event) {
             event.preventDefault();
-            const id = document.getElementById('coordProjId').value;
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'endorse';
+            const id = Number(document.getElementById('coordProjId').value);
             const remarks = document.getElementById('coordRemarks').value.trim();
-            const submitter = event.submitter ? event.submitter.value : 'endorse';
 
             const all = getProjects();
-            const p = all.find(item => item.id == id);
+            const p = all.find(item => item.id === id);
             if (!p) return;
 
-            if (submitter === 'endorse') {
+            p.coordinator_remarks = remarks;
+            p.coordinator_name = "College Coordinator";
+            p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            if (action === 'endorse') {
                 p.status = 'Pending Director Review';
-                p.coordinator_remarks = remarks;
-                p.coordinator_name = OVPRE.user().fullname || 'Extension Coordinator';
-                p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
-                OVPRE.toast('Extension project successfully endorsed to Director!', 'success');
-            } else if (submitter === 'revision') {
+                p.stage = 'Stage 2: Director Evaluation';
+                OVPRE.toast('Project endorsed to Extension Director!', 'success');
+            } else if (action === 'revision') {
                 p.status = 'Needs Revision';
-                p.coordinator_remarks = remarks;
-                p.coordinator_name = OVPRE.user().fullname || 'Extension Coordinator';
-                OVPRE.toast('Project returned to faculty proponent for revision.', 'success');
-            } else {
+                p.stage = 'Stage 1: Coordinator Screening';
+                OVPRE.toast('Project returned to faculty for revision.', 'info');
+            } else if (action === 'decline') {
                 p.status = 'Declined';
-                p.coordinator_remarks = remarks;
-                OVPRE.toast('Project declined.', 'success');
+                p.stage = 'Terminated';
+                OVPRE.toast('Project declined at college screening stage.', 'error');
             }
 
             saveProjects(all);
@@ -666,47 +964,50 @@
             renderTable();
         }
 
-        // --- Director Action ---
+        // --- DIRECTOR EVALUATION ---
         function openDirModal(id) {
-            const p = getProjects().find(item => item.id == id);
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             document.getElementById('dirProjId').value = p.id;
             document.getElementById('dirProjTitle').textContent = p.title;
-            document.getElementById('dirRating').value = p.evaluation_rating || '92.00';
+            document.getElementById('dirRating').value = p.evaluation_rating || '90.00';
             document.getElementById('dirApprovedBudget').value = p.approved_budget || p.budget;
-            document.getElementById('dirRemarks').value = 'Extension evaluation completed with institutional rating ' + (p.evaluation_rating || '92.00') + '/100. Community integration and budget allocation approved and recommended to Executive Office.';
+            document.getElementById('dirRemarks').value = p.director_remarks || '';
             OVPRE.openModal('dirModal');
         }
 
         function handleDirSubmit(event) {
             event.preventDefault();
-            const id = document.getElementById('dirProjId').value;
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'endorse';
+            const id = Number(document.getElementById('dirProjId').value);
             const rating = document.getElementById('dirRating').value;
-            const budget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
+            const appBudget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
             const remarks = document.getElementById('dirRemarks').value.trim();
-            const submitter = event.submitter ? event.submitter.value : 'endorse';
 
             const all = getProjects();
-            const p = all.find(item => item.id == id);
+            const p = all.find(item => item.id === id);
             if (!p) return;
 
-            if (submitter === 'endorse') {
+            p.evaluation_rating = rating;
+            p.approved_budget = appBudget;
+            p.director_remarks = remarks;
+            p.director_name = "Dr. Maricel Gomez";
+            p.director_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            if (action === 'endorse') {
                 p.status = 'Pending Executive Approval';
-                p.evaluation_rating = rating;
-                p.approved_budget = budget;
-                p.director_remarks = remarks;
-                p.director_name = OVPRE.user().fullname || 'Extension Director';
-                p.director_reviewed_at = new Date().toISOString().slice(0, 10);
-                OVPRE.toast('Extension project evaluated and forwarded for Executive Final Approval!', 'success');
-            } else if (submitter === 'revision') {
+                p.stage = 'Stage 3: Executive Approval';
+                OVPRE.toast('Extension Director evaluation completed. Endorsed to Executive VP!', 'success');
+            } else if (action === 'revision') {
                 p.status = 'Needs Revision';
-                p.director_remarks = remarks;
-                p.director_name = OVPRE.user().fullname || 'Extension Director';
-                OVPRE.toast('Project returned for revision.', 'success');
-            } else {
+                p.stage = 'Stage 1: Coordinator Screening';
+                OVPRE.toast('Project returned for revision by Director.', 'info');
+            } else if (action === 'decline') {
                 p.status = 'Declined';
-                p.director_remarks = remarks;
-                OVPRE.toast('Project declined.', 'success');
+                p.stage = 'Terminated';
+                OVPRE.toast('Project declined by Extension Director.', 'error');
             }
 
             saveProjects(all);
@@ -714,38 +1015,41 @@
             renderTable();
         }
 
-        // --- Executive Action ---
+        // --- EXECUTIVE FINAL APPROVAL ---
         function openExecModal(id) {
-            const p = getProjects().find(item => item.id == id);
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             document.getElementById('execProjId').value = p.id;
             document.getElementById('execProjTitle').textContent = p.title;
-            document.getElementById('execRemarks').value = 'Approved for implementation under University Extension Program. Notice to Proceed and budgetary allocation granted.';
+            document.getElementById('execRemarks').value = p.executive_remarks || 'Approved for implementation under University Extension and Community Engagement Program. Fund release and MOA execution authorized.';
             OVPRE.openModal('execModal');
         }
 
         function handleExecSubmit(event) {
             event.preventDefault();
-            const id = document.getElementById('execProjId').value;
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'approve';
+            const id = Number(document.getElementById('execProjId').value);
             const remarks = document.getElementById('execRemarks').value.trim();
-            const submitter = event.submitter ? event.submitter.value : 'approve';
 
             const all = getProjects();
-            const p = all.find(item => item.id == id);
+            const p = all.find(item => item.id === id);
             if (!p) return;
 
-            if (submitter === 'approve') {
+            p.executive_remarks = remarks;
+            p.executive_name = "Super Administrator";
+            p.executive_approved_at = new Date().toISOString().slice(0, 10);
+
+            if (action === 'approve') {
                 p.status = 'Approved';
-                p.stage = 'Ongoing';
+                p.stage = 'Completed';
                 p.progress_status = 'Ongoing';
-                p.executive_remarks = remarks;
-                p.executive_name = OVPRE.user().fullname || 'Executive VP / Director';
-                p.executive_approved_at = new Date().toISOString().slice(0, 10);
-                OVPRE.toast('🎉 Final Institutional Approval successfully granted for extension project!', 'success');
+                OVPRE.toast('Final Executive Approval granted! Extension project is officially approved.', 'success');
             } else {
                 p.status = 'Declined';
-                p.executive_remarks = remarks;
-                OVPRE.toast('Project declined by executive resolution.', 'success');
+                p.stage = 'Terminated';
+                OVPRE.toast('Project disapproved by Executive Office.', 'error');
             }
 
             saveProjects(all);
@@ -753,46 +1057,59 @@
             renderTable();
         }
 
-        // --- Details Modal ---
+        // --- DETAILS MODAL ---
         function openDetailsModal(id) {
-            const p = getProjects().find(item => item.id == id);
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             activeDetailId = p.id;
+
             document.getElementById('detailStage').textContent = p.stage || 'Proposal';
             document.getElementById('detailTitle').textContent = p.title;
-            document.getElementById('detailSubtitle').textContent = 'Lead: ' + (p.coordinator || 'Faculty Lead') + ' | Partner: ' + (p.partner || p.community_partner || 'Partner');
-            document.getElementById('detailLocation').textContent = p.location || 'N/A';
-            document.getElementById('detailBeneficiaries').textContent = p.beneficiaries || 'N/A';
-            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('detailSchedule').textContent = (p.start_date || p.created_at) + ' to ' + (p.end_date || 'N/A');
-            document.getElementById('detailDesc').textContent = p.description || 'No detailed description provided.';
+            document.getElementById('detailSubtitle').textContent = p.college + ' | Lead: ' + p.coordinator;
+            document.getElementById('detailPartner').textContent = p.partner || 'Community Partner';
+            document.getElementById('detailLocation').textContent = p.location || 'Local Community Site';
+            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('detailDates').textContent = OVPRE.date(p.start_date || p.created_at) + ' to ' + OVPRE.date(p.end_date || '2026-04-20');
+            document.getElementById('detailDescription').textContent = p.description || 'No description provided.';
 
             const trail = document.getElementById('detailWorkflowTrail');
             trail.innerHTML = '';
 
             if (p.coordinator_remarks) {
-                const box = document.createElement('div');
-                box.style.cssText = 'border-left: 3px solid #15803d; padding-left: 10px; font-size: 0.88rem;';
-                box.innerHTML = '<strong style="color: #15803d;"><i class="ri-check-double-line"></i> Coordinator Endorsement:</strong><div>' + OVPRE.h(p.coordinator_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.coordinator_name || 'Coordinator') + (p.coordinator_reviewed_at ? ' (' + p.coordinator_reviewed_at + ')' : '') + '</small>';
-                trail.appendChild(box);
+                trail.innerHTML += `
+                    <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 1: College Coordinator Screening</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.coordinator_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.coordinator_name || 'Coordinator')} | ${OVPRE.date(p.coordinator_reviewed_at || p.created_at)}</small>
+                    </div>
+                `;
             }
-
             if (p.director_remarks) {
-                const box = document.createElement('div');
-                box.style.cssText = 'border-left: 3px solid #1d4ed8; padding-left: 10px; font-size: 0.88rem;';
-                box.innerHTML = '<strong style="color: #1d4ed8;"><i class="ri-award-line"></i> Director Evaluation (Rating: ' + OVPRE.h(p.evaluation_rating || 'N/A') + '/100):</strong><div>' + OVPRE.h(p.director_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.director_name || 'Extension Director') + (p.director_reviewed_at ? ' (' + p.director_reviewed_at + ')' : '') + '</small>';
-                trail.appendChild(box);
+                trail.innerHTML += `
+                    <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 2: Director Evaluation (Rating: ${OVPRE.h(p.evaluation_rating || 'N/A')}/100)</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.director_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.director_name || 'Extension Director')} | ${OVPRE.date(p.director_reviewed_at || p.created_at)}</small>
+                    </div>
+                `;
             }
-
             if (p.executive_remarks) {
-                const box = document.createElement('div');
-                box.style.cssText = 'border-left: 3px solid #7e22ce; padding-left: 10px; font-size: 0.88rem;';
-                box.innerHTML = '<strong style="color: #7e22ce;"><i class="ri-shield-check-line"></i> Executive Final Approval:</strong><div>' + OVPRE.h(p.executive_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.executive_name || 'Executive VP') + (p.executive_approved_at ? ' (' + p.executive_approved_at + ')' : '') + '</small>';
-                trail.appendChild(box);
+                trail.innerHTML += `
+                    <div style="background: #faf5ff; border-left: 4px solid #9333ea; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 3: Executive Final Approval</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.executive_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.executive_name || 'Executive')} | ${OVPRE.date(p.executive_approved_at || p.created_at)}</small>
+                    </div>
+                `;
             }
 
-            const archiveBtn = document.getElementById('detailArchiveBtn');
-            archiveBtn.innerHTML = p.archived ? '<i class="ri-arrow-go-back-line"></i> <span>Restore Project</span>' : '<i class="ri-archive-line"></i> <span>Archive Project</span>';
+            const archBtn = document.getElementById('detailArchiveBtn');
+            if (p.archived) {
+                archBtn.innerHTML = '<i class="ri-arrow-go-back-line"></i> <span>Restore Project</span>';
+            } else {
+                archBtn.innerHTML = '<i class="ri-archive-line"></i> <span>Archive Project</span>';
+            }
 
             OVPRE.openModal('detailsModal');
         }
@@ -800,35 +1117,45 @@
         function toggleArchiveFromDetails() {
             if (!activeDetailId) return;
             const all = getProjects();
-            const p = all.find(item => item.id == activeDetailId);
+            const p = all.find(item => item.id === activeDetailId);
             if (!p) return;
             p.archived = !p.archived;
             saveProjects(all);
             OVPRE.closeModal('detailsModal');
-            OVPRE.toast('Project ' + (p.archived ? 'archived.' : 'restored.'), 'success');
+            OVPRE.toast(p.archived ? 'Project archived successfully.' : 'Project restored to active projects.', 'success');
             renderTable();
         }
 
-        // --- Document Preview Modal ---
-        function openDocPreview(title, docName) {
+        function restoreProject(id) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+            p.archived = false;
+            saveProjects(all);
+            OVPRE.toast('Project restored to active projects.', 'success');
+            renderTable();
+        }
+
+        // --- PREVIEW MODAL ---
+        function openDocPreview(title, filename) {
             document.getElementById('previewModalTitle').innerHTML = '<i class="ri-file-text-line"></i> ' + OVPRE.h(title);
-            document.getElementById('previewFileName').textContent = docName;
+            document.getElementById('previewFileName').textContent = filename;
             const dl = document.getElementById('previewDownloadBtn');
-            dl.setAttribute('download', docName);
-            dl.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('OVPRE Document: ' + title + '\nFile: ' + docName));
+            dl.setAttribute('download', filename);
+            dl.setAttribute('href', 'data:application/pdf;charset=utf-8,' + encodeURIComponent('Extension Document: ' + title));
             OVPRE.openModal('previewModal');
         }
 
-        // Initialize on load
+        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function () {
-            // Set default dates in create form
-            const now = new Date();
-            const future = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
-            const sEl = document.getElementById('createStartDate');
-            const eEl = document.getElementById('createEndDate');
-            if (sEl) sEl.value = now.toISOString().slice(0, 10);
-            if (eEl) eEl.value = future.toISOString().slice(0, 10);
-
+            try {
+                const stored = localStorage.getItem('ovpre_extension_projects');
+                if (!stored || JSON.parse(stored)[0]?.title !== initialSeed[0].title) {
+                    localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
+                }
+            } catch (e) {
+                localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
+            }
             renderTable();
         });
     </script>

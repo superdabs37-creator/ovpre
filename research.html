@@ -86,25 +86,25 @@
 
                 <div id="ovpreFlash"></div>
 
-                <!-- SUBMIT PROPOSAL PANEL -->
+                <!-- SUBMIT PROPOSAL PANEL (MATCHING SCREENSHOT) -->
                 <section class="panel modal-launcher-panel" id="submitProposalPanel">
-                    <div class="panel-heading">
+                    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div>
-                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #16a34a;">Research Proposals</h2>
-                            <span style="font-size: 1.1rem; color: #4b5563;">Submit a new research proposal for College Coordinator screening.</span>
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #16a34a; margin: 0 0 4px 0;">Research Proposals</h2>
+                            <span style="font-size: 1.05rem; color: #4b5563;">Submit a new research proposal for College Coordinator screening.</span>
                         </div>
                         <button class="primary-btn" type="button" data-open-modal="createResearchProposalModal"><i class="ri-add-line"></i> Submit Research Proposal</button>
                     </div>
                 </section>
 
-                <!-- ACTIVE / ARCHIVED VIEW SELECTOR -->
-                <section class="tool-panel" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <!-- ACTIVE / ARCHIVED VIEW SELECTOR (IN WHITE CONTAINER MATCHING SCREENSHOT) -->
+                <section class="panel" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 12px; background: #fff;">
                     <div class="record-segmented-control" role="tablist" aria-label="Research view mode">
-                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" onclick="switchResearchTab('active')">
-                            <i class="ri-folder-line"></i><span>Active Proposals (<span id="activeCount">0</span>)</span>
+                        <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchResearchTab('active')">
+                            <i class="ri-folder-line"></i><span>Active Proposals (<span id="activeCount">6</span>)</span>
                         </button>
-                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" onclick="switchResearchTab('archived')">
-                            <i class="ri-archive-line"></i><span>Archived Proposals (<span id="archivedCount">0</span>)</span>
+                        <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchResearchTab('archived')">
+                            <i class="ri-archive-line"></i><span>Archived Proposals (<span id="archivedCount">1</span>)</span>
                         </button>
                     </div>
                 </section>
@@ -126,6 +126,203 @@
                                 </tr>
                             </thead>
                             <tbody id="researchProjectsBody">
+
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Computer Studies and Technology" id="research-project-1">
+            <td data-sort-value="AI-Driven Early Crop Disease Detection for Calabarzon Farming">
+                <strong>AI-Driven Early Crop Disease Detection for Calabarzon Farming</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DOST-PCIEERD Research Grant</div>
+            </td>
+            <td data-sort-value="Dr. Aris Thorne, Engr. Katrina Valdez">Dr. Aris Thorne, Engr. Katrina Valdez</td>
+            <td data-sort-value="College of Computer Studies and Technology"><span class="dept-pill">College of Computer Studies and Technology</span></td>
+            <td data-sort-value="Completed"><span style="font-weight: 600; color: #166534;">Completed</span></td>
+            <td data-sort-value="Approved">
+                <span class="status-pill status-approved">
+                    Approved
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('AI-Driven Early Crop Disease Detection for Calabarzon Farming', 'AI_Early_Blight_Detection_Study.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td data-sort-value="2026-01-15">Jan 15, 2026</td>
+            <td>
+            <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                <i class="ri-eye-line"></i><span>Details</span>
+            </button>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Nursing and Allied Health Sciences" id="research-project-2">
+            <td data-sort-value="Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households">
+                <strong>Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DOH Health Systems Fund</div>
+            </td>
+            <td data-sort-value="Prof. Lorna Bautista, Dr. Elena Morales">Prof. Lorna Bautista, Dr. Elena Morales</td>
+            <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households', 'Pediatric_Immunization_Study.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td data-sort-value="2026-02-01">Feb 01, 2026</td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                    </button>
+                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="research-project-3">
+            <td data-sort-value="Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station">
+                <strong>Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">Institutional Research Grant</div>
+            </td>
+            <td data-sort-value="Engr. Katrina Valdez, Engr. Mark Santos">Engr. Katrina Valdez, Engr. Mark Santos</td>
+            <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+            <td data-sort-value="Stage 2: Director Evaluation"><span style="font-weight: 600; color: #166534;">Stage 2: Director Evaluation</span></td>
+            <td data-sort-value="Pending Director Review">
+                <span class="status-pill status-pending-director-review">
+                    Pending Director Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station', 'Solar_Rainwater_Harvesting_Proposal.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td data-sort-value="2026-02-12">Feb 12, 2026</td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-award-line"></i><span>Evaluate</span>
+                </button>
+                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <i class="ri-eye-line"></i><span>Details</span>
+                </button>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Business Administration" id="research-project-4">
+            <td data-sort-value="Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency">
+                <strong>Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DTI-University Partnership Grant</div>
+            </td>
+            <td data-sort-value="Prof. Raymond Cruz">Prof. Raymond Cruz</td>
+            <td data-sort-value="College of Business Administration"><span class="dept-pill">College of Business Administration</span></td>
+            <td data-sort-value="Stage 3: Executive Approval"><span style="font-weight: 600; color: #166534;">Stage 3: Executive Approval</span></td>
+            <td data-sort-value="Pending Executive Approval">
+                <span class="status-pill status-pending-executive-approval">
+                    Pending Executive Approval
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency', 'MSME_Ecommerce_Resiliency.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td data-sort-value="2026-02-18">Feb 18, 2026</td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-shield-check-line"></i><span>Approve</span>
+                </button>
+                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <i class="ri-eye-line"></i><span>Details</span>
+                </button>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="research-project-5">
+            <td data-sort-value="Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility">
+                <strong>Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">BSP Research Academy Grant</div>
+            </td>
+            <td data-sort-value="Prof. Vicente Reyes">Prof. Vicente Reyes</td>
+            <td data-sort-value="College of Business Administration"><span class="dept-pill">College of Business Administration</span></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility', 'Rural_Bank_Contagion_Model.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td data-sort-value="2026-03-10">Mar 10, 2026</td>
+            <td>
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                    </button>
+                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Needs Revision" data-stage="Stage 1: Coordinator Screening" data-college="College of Nursing and Allied Health Sciences" id="research-project-6">
+            <td data-sort-value="Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients">
+                <strong>Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DOH-PCHRD Health Research Grant</div>
+            </td>
+            <td data-sort-value="Prof. Melissa Aquino">Prof. Melissa Aquino</td>
+            <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Needs Revision">
+                <span class="status-pill status-needs-revision">
+                    Needs Revision
+                </span>
+            </td>
+            <td>
+                <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients', 'Stroke_TeleRehab_Protocol.pdf')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
+                </button>
+            </td>
+            <td data-sort-value="2026-03-12">Mar 12, 2026</td>
+            <td>
+            <div style="display: flex; gap: 6px;">
+                <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                    <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                </button>
+                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <i class="ri-eye-line"></i><span>Details</span>
+                </button>
+            </div>
+        </td>
+        </tr>
+    
                             </tbody>
                         </table>
                     </div>
@@ -137,7 +334,7 @@
     <!-- CREATE PROPOSAL MODAL -->
     <div class="modal" id="createResearchProposalModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createResearchProposalTitle">
         <div class="modal-backdrop" data-close-modal></div>
-        <article class="modal-card simple-submit-modal">
+        <article class="modal-card simple-submit-modal" style="max-width: 680px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head">
                 <span class="category-badge">Research</span>
@@ -150,9 +347,9 @@
                     <label class="field"><span>Researchers</span><input name="researchers" id="createResearchers" required placeholder="Dr. Juan Dela Cruz, Prof. Maria Santos"></label>
                     <label class="field"><span>College / Department</span>
                         <select name="college" id="createCollege" required>
-                            <option value="College of Computer Studies">College of Computer Studies</option>
+                            <option value="College of Computer Studies and Technology">College of Computer Studies and Technology</option>
                             <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
-                            <option value="College of Business Administration and Accountancy">College of Business Administration and Accountancy</option>
+                            <option value="College of Business Administration">College of Business Administration</option>
                             <option value="College of Engineering">College of Engineering</option>
                             <option value="College of Agriculture">College of Agriculture</option>
                             <option value="College of Arts and Sciences">College of Arts and Sciences</option>
@@ -164,7 +361,10 @@
                 </div>
                 <label class="field"><span>Abstract</span><textarea rows="5" name="abstract" id="createAbstract" required placeholder="State research problem, objectives, methodology, and expected institutional outcomes..."></textarea></label>
                 <label class="field"><span>Research Document (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="createFile" accept=".pdf,.doc,.docx,.zip"></label>
-                <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Research Coordinator</button>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
+                    <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Research Coordinator</button>
+                </div>
             </form>
         </article>
     </div>
@@ -184,7 +384,7 @@
                 <button class="primary-btn" type="submit" name="coord_action" value="endorse" style="background: #15803d;">
                     <i class="ri-check-line"></i> Endorse to Director
                 </button>
-                <button class="ghost-btn" type="submit" name="coord_action" value="revision" style="color: #c2410c; border-color: #fed7aa;">
+                <button class="ghost-btn" type="submit" name="coord_action" value="revision" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
                 <button class="ghost-btn danger-btn" type="submit" name="coord_action" value="decline">Decline</button>
@@ -215,7 +415,7 @@
                 <button class="primary-btn" type="submit" name="dir_action" value="endorse" style="background: #1d4ed8;">
                     <i class="ri-send-plane-line"></i> Endorse to VP / Executive
                 </button>
-                <button class="ghost-btn" type="submit" name="dir_action" value="revision" style="color: #c2410c; border-color: #fed7aa;">
+                <button class="ghost-btn" type="submit" name="dir_action" value="revision" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
                 <button class="ghost-btn danger-btn" type="submit" name="dir_action" value="decline">Decline</button>
@@ -278,7 +478,7 @@
                 <strong id="previewFileName" style="font-size: 1.1rem; color: #0f172a; display: block;">proposal.pdf</strong>
                 <p style="color: #64748b; margin-top: 6px;">Official Proposal Document filed with OVPRE Institutional Research Office.</p>
                 <div style="margin-top: 18px;">
-                    <a href="#" id="previewDownloadBtn" class="primary-btn mini-btn" download style="display: inline-flex;"><i class="ri-download-2-line"></i> Download Document</a>
+                    <a href="#" id="previewDownloadBtn" class="primary-btn mini-btn" download><i class="ri-download-2-line"></i> Download Proposal Document</a>
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end;">
@@ -287,154 +487,148 @@
         </article>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- JAVASCRIPT LOGIC ENGINE -->
     <script>
         const initialSeed = [
-  {
-    "id": 1,
-    "title": "AI-Powered Early Blight Detection in Solanaceous Crops Using Edge Deep Learning Models",
-    "researchers": "Dr. Alicia Santos, Engr. Mark Ramos",
-    "college": "College of Computer Studies",
-    "funding_source": "Institutional Research Grant (DOST-PCAARRD Counterpart)",
-    "budget": 180000,
-    "approved_budget": 180000,
-    "stage": "Ongoing",
-    "status": "Approved",
-    "progress_status": "Ongoing",
-    "created_at": "2026-01-15",
-    "abstract": "Development and lightweight quantization of MobileNetV4 architectures deployed on Raspberry Pi 5 to classify tomato and eggplant leaf fungal blights with 96.4% precision.",
-    "coordinator_remarks": "Proposal screened and verified. Ethical clearance and college computing lab endorsement attached.",
-    "coordinator_name": "Dr. CCS Coordinator",
-    "coordinator_reviewed_at": "2026-01-18",
-    "director_remarks": "Approved under RIUH High-Impact Agricultural Technology program with evaluation rating 96.50/100.",
-    "director_name": "Dr. Aris Thorne",
-    "director_reviewed_at": "2026-01-22",
-    "evaluation_rating": "96.50",
-    "executive_remarks": "Final executive approval and budget release authorized. Phase 1 milestone set for Q2.",
-    "executive_name": "Super Administrator",
-    "executive_approved_at": "2026-01-25",
-    "document_filename": "AI_Early_Blight_Detection_Full_Proposal.pdf",
-    "archived": false
-  },
-  {
-    "id": 2,
-    "title": "Bioactive Flavonoid Extraction and Antimicrobial Profiling of Indigenous Citrus Microcarpa Peel Waste",
-    "researchers": "Prof. Kenneth David, Dr. Sandra Lim",
-    "college": "College of Arts and Sciences",
-    "funding_source": "University Internal Research Fund",
-    "budget": 95000,
-    "approved_budget": 90000,
-    "stage": "Completed",
-    "status": "Approved",
-    "progress_status": "Completed",
-    "created_at": "2025-08-10",
-    "abstract": "Subcritical water extraction of polyphenols from calamansi peels resulting from local processing cooperatives, examining minimum inhibitory concentration against Staphylococcus aureus.",
-    "coordinator_remarks": "Screened and recommended for university publication grant.",
-    "coordinator_name": "Prof. CAS Coordinator",
-    "coordinator_reviewed_at": "2025-08-14",
-    "director_remarks": "Director evaluated with score 93.00. Ready for institutional repository archiving.",
-    "director_name": "Dr. Aris Thorne",
-    "director_reviewed_at": "2025-08-20",
-    "evaluation_rating": "93.00",
-    "executive_remarks": "Executive approval granted.",
-    "executive_name": "Executive VP / Director",
-    "executive_approved_at": "2025-08-25",
-    "document_filename": "Calamansi_Peel_Flavonoids_Study.pdf",
-    "archived": false
-  },
-  {
-    "id": 3,
-    "title": "Stress Coping Mechanisms and Psychological Resilience of Public Tertiary Educators Post-Blended Transition",
-    "researchers": "Dr. Rebecca Hernandez",
-    "college": "College of Teacher Education",
-    "funding_source": "CHED Zonal Research Grant",
-    "budget": 125000,
-    "approved_budget": 120000,
-    "stage": "Ongoing",
-    "status": "Pending Executive Approval",
-    "progress_status": "Planning",
-    "created_at": "2026-02-20",
-    "abstract": "Mixed-methods empirical assessment measuring burnout indices and institutional coping strategies among 320 state university faculty members.",
-    "coordinator_remarks": "Complete psychological assessment tools and institutional survey permissions approved.",
-    "coordinator_name": "Dr. CTE Coordinator",
-    "coordinator_reviewed_at": "2026-02-24",
-    "director_remarks": "RIUH evaluation score: 91.50/100. Strong policy implications for faculty workload guidelines. Endorsed to Executive.",
-    "director_name": "Dr. Aris Thorne",
-    "director_reviewed_at": "2026-03-01",
-    "evaluation_rating": "91.50",
-    "document_filename": "Teacher_Resilience_Proposal_2026.pdf",
-    "archived": false
-  },
-  {
-    "id": 4,
-    "title": "Structural Assessment and Low-Cost Seismic Retrofitting of Heritage Masonry Buildings in Laguna",
-    "researchers": "Engr. Gabriel Mendoza, Engr. Diana Cruz",
-    "college": "College of Engineering",
-    "funding_source": "DOST-PCIEERD Research Grant",
-    "budget": 240000,
-    "approved_budget": 220000,
-    "stage": "Planning",
-    "status": "Pending Director Review",
-    "progress_status": "Planning",
-    "created_at": "2026-03-02",
-    "abstract": "Finite element modeling and carbon-fiber mesh reinforcement simulation on Spanish-era adobe and unreinforced brick structures.",
-    "coordinator_remarks": "Initial screening completed. Site clearances with Provincial Heritage Commission verified.",
-    "coordinator_name": "Engr. COE Coordinator",
-    "coordinator_reviewed_at": "2026-03-06",
-    "document_filename": "Heritage_Masonry_Seismic_Study.docx",
-    "archived": false
-  },
-  {
-    "id": 5,
-    "title": "Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility",
-    "researchers": "Prof. Vicente Reyes",
-    "college": "College of Business Administration and Accountancy",
-    "funding_source": "BSP Research Academy Grant",
-    "budget": 110000,
-    "approved_budget": 110000,
-    "stage": "Proposal",
-    "status": "Pending Coordinator Review",
-    "progress_status": "Planning",
-    "created_at": "2026-03-10",
-    "abstract": "Econometric stress-testing of 45 Calabarzon cooperative and thrift banks using Vector Autoregression (VAR) during policy rate hikes.",
-    "document_filename": "Rural_Bank_Contagion_Model.pdf",
-    "archived": false
-  },
-  {
-    "id": 6,
-    "title": "Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients",
-    "researchers": "Prof. Melissa Aquino",
-    "college": "College of Nursing and Allied Health Sciences",
-    "funding_source": "DOH-PCHRD Health Research Grant",
-    "budget": 150000,
-    "approved_budget": 150000,
-    "stage": "Proposal",
-    "status": "Needs Revision",
-    "progress_status": "Planning",
-    "created_at": "2026-03-12",
-    "abstract": "Randomized control trial evaluating sensor-assisted upper limb exercise routines versus conventional clinic physiotherapy.",
-    "coordinator_remarks": "Please provide the formal Institutional Review Board (IRB) ethical clearance protocol approval before endorsement.",
-    "coordinator_name": "Prof. CONAHS Coordinator",
-    "coordinator_reviewed_at": "2026-03-14",
-    "document_filename": "Stroke_TeleRehab_Protocol.pdf",
-    "archived": false
-  },
-  {
-    "id": 7,
-    "title": "Phytoremediation Capacity of Vetiver Grass on Heavy Metal Leaching in Artisan Mining Sediments",
-    "researchers": "Dr. Samuel Tan",
-    "college": "College of Agriculture",
-    "funding_source": "DENR-ERDB Collaborative Grant",
-    "budget": 98000,
-    "approved_budget": 98000,
-    "stage": "Completed",
-    "status": "Approved",
-    "progress_status": "Completed",
-    "created_at": "2025-05-18",
-    "abstract": "Field lysimeter experiment determining bio-accumulation factor of lead and mercury over an 8-month vegetative cycle.",
-    "coordinator_remarks": "Archived following publication in the Philippine Journal of Science.",
-    "archived": true
-  }
+        {
+                "id": 1,
+                "title": "AI-Driven Early Crop Disease Detection for Calabarzon Farming",
+                "funding_source": "DOST-PCIEERD Research Grant",
+                "researchers": "Dr. Aris Thorne, Engr. Katrina Valdez",
+                "college": "College of Computer Studies and Technology",
+                "budget": 180000,
+                "approved_budget": 180000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Completed",
+                "created_at": "2026-01-15",
+                "abstract": "Development and lightweight quantization of MobileNetV4 architectures deployed on Raspberry Pi 5 to classify tomato and eggplant leaf fungal blights with 96.4% precision.",
+                "coordinator_remarks": "Proposal screened and verified. Ethical clearance and college computing lab endorsement attached.",
+                "coordinator_name": "Dr. CCS Coordinator",
+                "coordinator_reviewed_at": "2026-01-18",
+                "director_remarks": "Approved under RIUH High-Impact Agricultural Technology program with evaluation rating 96.50/100.",
+                "director_name": "Dr. Aris Thorne",
+                "director_reviewed_at": "2026-01-22",
+                "evaluation_rating": "96.50",
+                "executive_remarks": "Final executive approval and budget release authorized. Phase 1 milestone set for Q2.",
+                "executive_name": "Super Administrator",
+                "executive_approved_at": "2026-01-25",
+                "document_filename": "AI_Early_Blight_Detection_Study.pdf",
+                "archived": false
+        },
+        {
+                "id": 2,
+                "title": "Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households",
+                "funding_source": "DOH Health Systems Fund",
+                "researchers": "Prof. Lorna Bautista, Dr. Elena Morales",
+                "college": "College of Nursing and Allied Health Sciences",
+                "budget": 125000,
+                "approved_budget": 125000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-01",
+                "abstract": "A cross-sectional epidemiologic study investigating behavioral predictors and health literacy factors among mothers in rural Laguna communities.",
+                "coordinator_remarks": "Under active college coordinator screening. Ethical clearance review in progress.",
+                "coordinator_name": "Prof. CONAHS Coordinator",
+                "document_filename": "Pediatric_Immunization_Study.pdf",
+                "archived": false
+        },
+        {
+                "id": 3,
+                "title": "Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station",
+                "funding_source": "Institutional Research Grant",
+                "researchers": "Engr. Katrina Valdez, Engr. Mark Santos",
+                "college": "College of Engineering",
+                "budget": 220000,
+                "approved_budget": 220000,
+                "stage": "Stage 2: Director Evaluation",
+                "status": "Pending Director Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-12",
+                "abstract": "Design and deployment of smart multiparameter sensors (turbidity, pH, TDS) integrated with solar micro-controllers for local flood-prone barangays.",
+                "coordinator_remarks": "Endorsed by College Research Coordinator with high priority rating.",
+                "coordinator_name": "Engr. COE Coordinator",
+                "coordinator_reviewed_at": "2026-02-15",
+                "document_filename": "Solar_Rainwater_Harvesting_Proposal.pdf",
+                "archived": false
+        },
+        {
+                "id": 4,
+                "title": "Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency",
+                "funding_source": "DTI-University Partnership Grant",
+                "researchers": "Prof. Raymond Cruz",
+                "college": "College of Business Administration",
+                "budget": 95000,
+                "approved_budget": 95000,
+                "stage": "Stage 3: Executive Approval",
+                "status": "Pending Executive Approval",
+                "progress_status": "Planning",
+                "created_at": "2026-02-18",
+                "abstract": "Empirical survey examining financial technology uptake, online logistics barriers, and inventory replenishment patterns among 250 local MSMEs.",
+                "coordinator_remarks": "College endorsed.",
+                "coordinator_name": "Prof. CBA Coordinator",
+                "director_remarks": "RIUH evaluation score: 94.00/100. Recommended for executive institutional authorization.",
+                "director_name": "Dr. Aris Thorne",
+                "director_reviewed_at": "2026-02-22",
+                "evaluation_rating": "94.00",
+                "document_filename": "MSME_Ecommerce_Resiliency.pdf",
+                "archived": false
+        },
+        {
+                "id": 5,
+                "title": "Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility",
+                "funding_source": "BSP Research Academy Grant",
+                "researchers": "Prof. Vicente Reyes",
+                "college": "College of Business Administration",
+                "budget": 110000,
+                "approved_budget": 110000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-03-10",
+                "abstract": "Econometric stress-testing of 45 Calabarzon cooperative and thrift banks using Vector Autoregression (VAR) during policy rate hikes.",
+                "coordinator_remarks": "Awaiting initial statistical framework review.",
+                "coordinator_name": "Prof. CBA Coordinator",
+                "document_filename": "Rural_Bank_Contagion_Model.pdf",
+                "archived": false
+        },
+        {
+                "id": 6,
+                "title": "Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients",
+                "funding_source": "DOH-PCHRD Health Research Grant",
+                "researchers": "Prof. Melissa Aquino",
+                "college": "College of Nursing and Allied Health Sciences",
+                "budget": 150000,
+                "approved_budget": 150000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Needs Revision",
+                "progress_status": "Planning",
+                "created_at": "2026-03-12",
+                "abstract": "Randomized control trial evaluating sensor-assisted upper limb exercise routines versus conventional clinic physiotherapy.",
+                "coordinator_remarks": "Please provide the formal Institutional Review Board (IRB) ethical clearance protocol approval before endorsement.",
+                "coordinator_name": "Prof. CONAHS Coordinator",
+                "coordinator_reviewed_at": "2026-03-14",
+                "document_filename": "Stroke_TeleRehab_Protocol.pdf",
+                "archived": false
+        },
+        {
+                "id": 7,
+                "title": "Phytoremediation Capacity of Vetiver Grass on Heavy Metal Leaching in Artisan Mining Sediments",
+                "funding_source": "DENR-ERDB Collaborative Grant",
+                "researchers": "Dr. Samuel Tan",
+                "college": "College of Agriculture",
+                "budget": 98000,
+                "approved_budget": 98000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Completed",
+                "created_at": "2025-05-18",
+                "abstract": "Field lysimeter experiment determining bio-accumulation factor of lead and mercury over an 8-month vegetative cycle.",
+                "coordinator_remarks": "Archived following publication in the Philippine Journal of Science.",
+                "document_filename": "Vetiver_Phytoremediation_Report.pdf",
+                "archived": true
+        }
 ];
         let currentTab = 'active';
         let activeDetailId = null;
@@ -442,7 +636,10 @@
         function getProjects() {
             try {
                 const raw = localStorage.getItem('ovpre_research_projects');
-                if (raw) return JSON.parse(raw);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length && parsed[0].title === initialSeed[0].title) return parsed;
+                }
             } catch (e) {}
             localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
             return initialSeed;
@@ -456,18 +653,19 @@
 
         function switchResearchTab(tab) {
             currentTab = tab;
-            document.getElementById('tabActiveBtn').classList.toggle('is-active', tab === 'active');
-            document.getElementById('tabArchivedBtn').classList.toggle('is-active', tab === 'archived');
+            const tabActiveBtn = document.getElementById('tabActiveBtn');
+            const tabArchivedBtn = document.getElementById('tabArchivedBtn');
+            if (tabActiveBtn && tabArchivedBtn) {
+                tabActiveBtn.classList.toggle('is-active', tab === 'active');
+                tabArchivedBtn.classList.toggle('is-active', tab === 'archived');
+                tabActiveBtn.setAttribute('aria-selected', tab === 'active' ? 'true' : 'false');
+                tabArchivedBtn.setAttribute('aria-selected', tab === 'archived' ? 'true' : 'false');
+            }
             renderTable();
         }
 
         function renderTable() {
             const all = getProjects();
-            const flags = (window.OVPRE && OVPRE.roleFlags) ? OVPRE.roleFlags() : { isAdmin: true, isCoordinator: true, isDirector: true, isExecutive: true };
-            const isCoordinator = flags.isCoordinator || flags.isAdmin;
-            const isDirector = flags.isDirector || flags.isAdmin;
-            const isExecutive = flags.isExecutive;
-
             const activeList = all.filter(p => !p.archived);
             const archivedList = all.filter(p => p.archived);
             document.getElementById('activeCount').textContent = activeList.length;
@@ -485,46 +683,101 @@
             } else {
                 list.forEach(p => {
                     const tr = document.createElement('tr');
+                    tr.setAttribute('data-table-row', '');
+                    tr.setAttribute('data-status', p.status);
+                    tr.setAttribute('data-stage', p.stage);
+                    tr.setAttribute('data-college', p.college);
                     tr.id = 'research-project-' + p.id;
                     const pStatus = p.status || 'Pending Coordinator Review';
                     const lead = p.researchers || 'Faculty Researcher';
                     const sDate = p.created_at || '2026-01-15';
-                    const col = p.college || 'College of Research';
+                    const col = p.college || 'College of Computer Studies and Technology';
                     const stg = p.stage || 'Proposal';
                     const docName = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
 
-                    let actionsHtml = '<div style="display: flex; gap: 6px; flex-wrap: wrap;">';
-
+                    let actionsHtml = '';
                     if (currentTab === 'active') {
-                        if (isCoordinator && (pStatus === 'Pending Coordinator Review' || pStatus === 'Pending' || pStatus === 'Under Review')) {
-                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openCoordModal(' + p.id + ')" style="background: #15803d;" title="Endorse proposal to Research Director"><i class="ri-check-double-line"></i> Endorse</button>';
-                            actionsHtml += '<button class="ghost-btn mini-btn" type="button" onclick="openCoordModal(' + p.id + ', true)" style="color: #c2410c; border-color: #fed7aa;" title="Return to faculty for revision"><i class="ri-arrow-go-back-line"></i> Revision</button>';
-                        } else if (isDirector && (pStatus === 'Pending Director Review' || pStatus === 'Under Review')) {
-                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openDirModal(' + p.id + ')" style="background: #1d4ed8;" title="Director Evaluation (RIUH)"><i class="ri-award-line"></i> Evaluate</button>';
-                        } else if (isExecutive && pStatus === 'Pending Executive Approval') {
-                            actionsHtml += '<button class="primary-btn mini-btn" type="button" onclick="openExecModal(' + p.id + ')" style="background: #7e22ce;" title="Executive Final Approval"><i class="ri-shield-check-line"></i> Approve</button>';
+                        if (pStatus === 'Pending Coordinator Review') {
+                            actionsHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                    <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                        <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
+                                    </button>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                                            <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                                        </button>
+                                        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                            <i class="ri-eye-line"></i><span>Details</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        } else if (pStatus === 'Pending Director Review') {
+                            actionsHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                    <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                        <i class="ri-award-line"></i><span>Evaluate</span>
+                                    </button>
+                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <i class="ri-eye-line"></i><span>Details</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else if (pStatus === 'Pending Executive Approval') {
+                            actionsHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                                    <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                        <i class="ri-shield-check-line"></i><span>Approve</span>
+                                    </button>
+                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <i class="ri-eye-line"></i><span>Details</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else if (pStatus === 'Needs Revision') {
+                            actionsHtml = `
+                                <div style="display: flex; gap: 6px;">
+                                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                                    </button>
+                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <i class="ri-eye-line"></i><span>Details</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            actionsHtml = `
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <i class="ri-eye-line"></i><span>Details</span>
+                                </button>
+                            `;
                         }
+                    } else {
+                        actionsHtml = `
+                            <div style="display: flex; gap: 6px;">
+                                <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
+                            </div>
+                        `;
                     }
 
-                    actionsHtml += '<button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(' + p.id + ')"><i class="ri-eye-line"></i><span>Details</span></button>';
-                    actionsHtml += '</div>';
-
                     tr.innerHTML = `
-                        <td>
+                        <td data-sort-value="${OVPRE.h(p.title)}">
                             <strong>${OVPRE.h(p.title)}</strong>
                             ${p.funding_source ? '<div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">' + OVPRE.h(p.funding_source) + '</div>' : ''}
                         </td>
-                        <td>${OVPRE.h(lead)}</td>
+                        <td data-sort-value="${OVPRE.h(lead)}">${OVPRE.h(lead)}</td>
                         <td data-sort-value="${OVPRE.h(col)}"><span class="dept-pill">${OVPRE.h(col)}</span></td>
-                        <td><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
-                        <td>
+                        <td data-sort-value="${OVPRE.h(stg)}"><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
+                        <td data-sort-value="${OVPRE.h(pStatus)}">
                             <span class="status-pill status-${OVPRE.statusClass(pStatus)}">
                                 ${OVPRE.h(pStatus)}
                             </span>
                         </td>
                         <td>
-                            <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('${OVPRE.h(p.title)}', '${OVPRE.h(docName)}')" title="Preview Document">
-                                <i class="ri-file-text-line"></i>
+                            <button class="ghost-btn mini-btn" type="button" onclick="openDocPreview('${OVPRE.h(p.title)}', '${OVPRE.h(docName)}')" title="Preview Document" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+                                <i class="ri-file-text-fill" style="font-size: 1.25rem; color: #16a34a;"></i>
                             </button>
                         </td>
                         <td data-sort-value="${sDate}">${OVPRE.date(sDate)}</td>
@@ -534,7 +787,6 @@
                 });
             }
 
-            // Tell app.js to reload data-table toolbar and pagination
             if (window.OVPRE && OVPRE.reloadTable) {
                 OVPRE.reloadTable('researchProjectsTable');
             } else if (typeof window.reloadAdminTablePagination === 'function') {
@@ -542,7 +794,7 @@
             }
         }
 
-        // --- Create Proposal ---
+        // --- SUBMIT PROPOSAL ---
         function handleCreateResearchProposal(event) {
             event.preventDefault();
             const title = document.getElementById('createTitle').value.trim();
@@ -554,7 +806,9 @@
 
             const all = getProjects();
             const newId = (all.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0)) + 1;
-            const newProj = {
+            const docFilename = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf';
+
+            const newProposal = {
                 id: newId,
                 title,
                 researchers,
@@ -562,61 +816,62 @@
                 funding_source: funding,
                 budget,
                 approved_budget: budget,
-                stage: 'Proposal',
-                status: 'Pending Coordinator Review',
-                progress_status: 'Planning',
+                stage: "Stage 1: Coordinator Screening",
+                status: "Pending Coordinator Review",
+                progress_status: "Planning",
                 created_at: new Date().toISOString().slice(0, 10),
                 abstract,
-                archived: false,
-                document_filename: title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Proposal.pdf'
+                document_filename: docFilename,
+                archived: false
             };
 
-            all.unshift(newProj);
+            all.unshift(newProposal);
             saveProjects(all);
 
             OVPRE.closeModal('createResearchProposalModal');
             document.getElementById('createResearchProposalForm').reset();
-            OVPRE.toast('Research proposal successfully submitted for College Coordinator review!', 'success');
+            OVPRE.toast('Research proposal submitted successfully! Routed to College Coordinator.', 'success');
             renderTable();
         }
 
-        // --- Coordinator Action ---
-        function openCoordModal(id, isRevision) {
-            const p = getProjects().find(item => item.id == id);
+        // --- COORDINATOR SCREENING ---
+        function openCoordModal(id, isRevisionOnly) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             document.getElementById('coordProjId').value = p.id;
             document.getElementById('coordProjTitle').textContent = p.title;
-            document.getElementById('coordRemarks').value = isRevision
-                ? 'Please include full research methodology and institutional ethical clearance before resubmission.'
-                : 'Proposal aligned with College research priorities and methodology validated. Endorsed to Research Director (RIUH).';
+            document.getElementById('coordRemarks').value = p.coordinator_remarks || '';
             OVPRE.openModal('coordModal');
         }
 
         function handleCoordSubmit(event) {
             event.preventDefault();
-            const id = document.getElementById('coordProjId').value;
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'endorse';
+            const id = Number(document.getElementById('coordProjId').value);
             const remarks = document.getElementById('coordRemarks').value.trim();
-            const submitter = event.submitter ? event.submitter.value : 'endorse';
 
             const all = getProjects();
-            const p = all.find(item => item.id == id);
+            const p = all.find(item => item.id === id);
             if (!p) return;
 
-            if (submitter === 'endorse') {
+            p.coordinator_remarks = remarks;
+            p.coordinator_name = "College Coordinator";
+            p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            if (action === 'endorse') {
                 p.status = 'Pending Director Review';
-                p.coordinator_remarks = remarks;
-                p.coordinator_name = OVPRE.user().fullname || 'Research Coordinator';
-                p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
-                OVPRE.toast('Research proposal successfully endorsed to Director (RIUH)!', 'success');
-            } else if (submitter === 'revision') {
+                p.stage = 'Stage 2: Director Evaluation';
+                OVPRE.toast('Proposal endorsed to Research Director!', 'success');
+            } else if (action === 'revision') {
                 p.status = 'Needs Revision';
-                p.coordinator_remarks = remarks;
-                p.coordinator_name = OVPRE.user().fullname || 'Research Coordinator';
-                OVPRE.toast('Proposal returned to faculty proponent for revision.', 'success');
-            } else {
+                p.stage = 'Stage 1: Coordinator Screening';
+                OVPRE.toast('Proposal returned to faculty for revision.', 'info');
+            } else if (action === 'decline') {
                 p.status = 'Declined';
-                p.coordinator_remarks = remarks;
-                OVPRE.toast('Proposal declined.', 'success');
+                p.stage = 'Terminated';
+                OVPRE.toast('Proposal declined at college screening stage.', 'error');
             }
 
             saveProjects(all);
@@ -624,47 +879,50 @@
             renderTable();
         }
 
-        // --- Director Action ---
+        // --- DIRECTOR EVALUATION ---
         function openDirModal(id) {
-            const p = getProjects().find(item => item.id == id);
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             document.getElementById('dirProjId').value = p.id;
             document.getElementById('dirProjTitle').textContent = p.title;
-            document.getElementById('dirRating').value = p.evaluation_rating || '93.50';
+            document.getElementById('dirRating').value = p.evaluation_rating || '88.50';
             document.getElementById('dirApprovedBudget').value = p.approved_budget || p.budget;
-            document.getElementById('dirRemarks').value = 'RIUH technical evaluation completed with rating ' + (p.evaluation_rating || '93.50') + '/100. High institutional publication potential and clear timeline. Endorsed for executive approval.';
+            document.getElementById('dirRemarks').value = p.director_remarks || '';
             OVPRE.openModal('dirModal');
         }
 
         function handleDirSubmit(event) {
             event.preventDefault();
-            const id = document.getElementById('dirProjId').value;
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'endorse';
+            const id = Number(document.getElementById('dirProjId').value);
             const rating = document.getElementById('dirRating').value;
-            const budget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
+            const appBudget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
             const remarks = document.getElementById('dirRemarks').value.trim();
-            const submitter = event.submitter ? event.submitter.value : 'endorse';
 
             const all = getProjects();
-            const p = all.find(item => item.id == id);
+            const p = all.find(item => item.id === id);
             if (!p) return;
 
-            if (submitter === 'endorse') {
+            p.evaluation_rating = rating;
+            p.approved_budget = appBudget;
+            p.director_remarks = remarks;
+            p.director_name = "Dr. Aris Thorne";
+            p.director_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            if (action === 'endorse') {
                 p.status = 'Pending Executive Approval';
-                p.evaluation_rating = rating;
-                p.approved_budget = budget;
-                p.director_remarks = remarks;
-                p.director_name = OVPRE.user().fullname || 'Research Director';
-                p.director_reviewed_at = new Date().toISOString().slice(0, 10);
-                OVPRE.toast('Research proposal evaluated and forwarded for Executive Final Approval!', 'success');
-            } else if (submitter === 'revision') {
+                p.stage = 'Stage 3: Executive Approval';
+                OVPRE.toast('RIUH Director evaluation completed. Endorsed to Executive VP!', 'success');
+            } else if (action === 'revision') {
                 p.status = 'Needs Revision';
-                p.director_remarks = remarks;
-                p.director_name = OVPRE.user().fullname || 'Research Director';
-                OVPRE.toast('Proposal returned for revision.', 'success');
-            } else {
+                p.stage = 'Stage 1: Coordinator Screening';
+                OVPRE.toast('Proposal returned for revision by Director.', 'info');
+            } else if (action === 'decline') {
                 p.status = 'Declined';
-                p.director_remarks = remarks;
-                OVPRE.toast('Proposal declined.', 'success');
+                p.stage = 'Terminated';
+                OVPRE.toast('Proposal declined by Research Director.', 'error');
             }
 
             saveProjects(all);
@@ -672,38 +930,41 @@
             renderTable();
         }
 
-        // --- Executive Action ---
+        // --- EXECUTIVE FINAL APPROVAL ---
         function openExecModal(id) {
-            const p = getProjects().find(item => item.id == id);
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             document.getElementById('execProjId').value = p.id;
             document.getElementById('execProjTitle').textContent = p.title;
-            document.getElementById('execRemarks').value = 'Approved for implementation under Institutional Research Program. Notice to Proceed issued and university grant release authorized.';
+            document.getElementById('execRemarks').value = p.executive_remarks || 'Approved for implementation under Institutional Research Program. Notice to Proceed and grant release authorized.';
             OVPRE.openModal('execModal');
         }
 
         function handleExecSubmit(event) {
             event.preventDefault();
-            const id = document.getElementById('execProjId').value;
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'approve';
+            const id = Number(document.getElementById('execProjId').value);
             const remarks = document.getElementById('execRemarks').value.trim();
-            const submitter = event.submitter ? event.submitter.value : 'approve';
 
             const all = getProjects();
-            const p = all.find(item => item.id == id);
+            const p = all.find(item => item.id === id);
             if (!p) return;
 
-            if (submitter === 'approve') {
+            p.executive_remarks = remarks;
+            p.executive_name = "Super Administrator";
+            p.executive_approved_at = new Date().toISOString().slice(0, 10);
+
+            if (action === 'approve') {
                 p.status = 'Approved';
-                p.stage = 'Ongoing';
+                p.stage = 'Completed';
                 p.progress_status = 'Ongoing';
-                p.executive_remarks = remarks;
-                p.executive_name = OVPRE.user().fullname || 'Executive VP / Director';
-                p.executive_approved_at = new Date().toISOString().slice(0, 10);
-                OVPRE.toast('🎉 Final Institutional Approval successfully granted for research proposal!', 'success');
+                OVPRE.toast('Final Executive Approval granted! Proposal is officially approved.', 'success');
             } else {
                 p.status = 'Declined';
-                p.executive_remarks = remarks;
-                OVPRE.toast('Proposal declined by executive resolution.', 'success');
+                p.stage = 'Terminated';
+                OVPRE.toast('Proposal disapproved by Executive Office.', 'error');
             }
 
             saveProjects(all);
@@ -711,45 +972,58 @@
             renderTable();
         }
 
-        // --- Details Modal ---
+        // --- DETAILS MODAL ---
         function openDetailsModal(id) {
-            const p = getProjects().find(item => item.id == id);
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
             if (!p) return;
             activeDetailId = p.id;
+
             document.getElementById('detailStage').textContent = p.stage || 'Proposal';
             document.getElementById('detailTitle').textContent = p.title;
-            document.getElementById('detailSubtitle').textContent = 'Lead: ' + (p.researchers || 'Faculty Researcher') + ' | ' + (p.college || 'College');
+            document.getElementById('detailSubtitle').textContent = p.college + ' | Lead: ' + p.researchers;
             document.getElementById('detailFunding').textContent = p.funding_source || 'Institutional Research Grant';
-            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget).toLocaleString(undefined, { minimumFractionDigits: 2 });
             document.getElementById('detailDate').textContent = OVPRE.date(p.created_at);
-            document.getElementById('detailAbstract').textContent = p.abstract || 'No abstract text submitted.';
+            document.getElementById('detailAbstract').textContent = p.abstract || 'No abstract provided.';
 
             const trail = document.getElementById('detailWorkflowTrail');
             trail.innerHTML = '';
 
             if (p.coordinator_remarks) {
-                const box = document.createElement('div');
-                box.style.cssText = 'border-left: 3px solid #15803d; padding-left: 10px; font-size: 0.88rem;';
-                box.innerHTML = '<strong style="color: #15803d;"><i class="ri-check-double-line"></i> Coordinator Endorsement:</strong><div>' + OVPRE.h(p.coordinator_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.coordinator_name || 'Coordinator') + (p.coordinator_reviewed_at ? ' (' + p.coordinator_reviewed_at + ')' : '') + '</small>';
-                trail.appendChild(box);
+                trail.innerHTML += `
+                    <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 1: College Coordinator Screening</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.coordinator_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.coordinator_name || 'Coordinator')} | ${OVPRE.date(p.coordinator_reviewed_at || p.created_at)}</small>
+                    </div>
+                `;
             }
-
             if (p.director_remarks) {
-                const box = document.createElement('div');
-                box.style.cssText = 'border-left: 3px solid #1d4ed8; padding-left: 10px; font-size: 0.88rem;';
-                box.innerHTML = '<strong style="color: #1d4ed8;"><i class="ri-award-line"></i> Director Evaluation (Rating: ' + OVPRE.h(p.evaluation_rating || 'N/A') + '/100):</strong><div>' + OVPRE.h(p.director_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.director_name || 'Research Director') + (p.director_reviewed_at ? ' (' + p.director_reviewed_at + ')' : '') + '</small>';
-                trail.appendChild(box);
+                trail.innerHTML += `
+                    <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 2: Director Evaluation (Rating: ${OVPRE.h(p.evaluation_rating || 'N/A')}/100)</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.director_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.director_name || 'Research Director')} | ${OVPRE.date(p.director_reviewed_at || p.created_at)}</small>
+                    </div>
+                `;
             }
-
             if (p.executive_remarks) {
-                const box = document.createElement('div');
-                box.style.cssText = 'border-left: 3px solid #7e22ce; padding-left: 10px; font-size: 0.88rem;';
-                box.innerHTML = '<strong style="color: #7e22ce;"><i class="ri-shield-check-line"></i> Executive Final Approval:</strong><div>' + OVPRE.h(p.executive_remarks) + '</div><small style="color: #6b7280;">By: ' + OVPRE.h(p.executive_name || 'Executive VP') + (p.executive_approved_at ? ' (' + p.executive_approved_at + ')' : '') + '</small>';
-                trail.appendChild(box);
+                trail.innerHTML += `
+                    <div style="background: #faf5ff; border-left: 4px solid #9333ea; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 3: Executive Final Approval</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.executive_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.executive_name || 'Executive')} | ${OVPRE.date(p.executive_approved_at || p.created_at)}</small>
+                    </div>
+                `;
             }
 
-            const archiveBtn = document.getElementById('detailArchiveBtn');
-            archiveBtn.innerHTML = p.archived ? '<i class="ri-arrow-go-back-line"></i> <span>Restore Proposal</span>' : '<i class="ri-archive-line"></i> <span>Archive Proposal</span>';
+            const archBtn = document.getElementById('detailArchiveBtn');
+            if (p.archived) {
+                archBtn.innerHTML = '<i class="ri-arrow-go-back-line"></i> <span>Restore Proposal</span>';
+            } else {
+                archBtn.innerHTML = '<i class="ri-archive-line"></i> <span>Archive Proposal</span>';
+            }
 
             OVPRE.openModal('detailsModal');
         }
@@ -757,27 +1031,45 @@
         function toggleArchiveFromDetails() {
             if (!activeDetailId) return;
             const all = getProjects();
-            const p = all.find(item => item.id == activeDetailId);
+            const p = all.find(item => item.id === activeDetailId);
             if (!p) return;
             p.archived = !p.archived;
             saveProjects(all);
             OVPRE.closeModal('detailsModal');
-            OVPRE.toast('Proposal ' + (p.archived ? 'archived.' : 'restored.'), 'success');
+            OVPRE.toast(p.archived ? 'Proposal archived successfully.' : 'Proposal restored to active proposals.', 'success');
             renderTable();
         }
 
-        // --- Document Preview Modal ---
-        function openDocPreview(title, docName) {
+        function restoreProject(id) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+            p.archived = false;
+            saveProjects(all);
+            OVPRE.toast('Proposal restored to active proposals.', 'success');
+            renderTable();
+        }
+
+        // --- PREVIEW MODAL ---
+        function openDocPreview(title, filename) {
             document.getElementById('previewModalTitle').innerHTML = '<i class="ri-file-text-line"></i> ' + OVPRE.h(title);
-            document.getElementById('previewFileName').textContent = docName;
+            document.getElementById('previewFileName').textContent = filename;
             const dl = document.getElementById('previewDownloadBtn');
-            dl.setAttribute('download', docName);
-            dl.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('OVPRE Research Document: ' + title + '\nFile: ' + docName));
+            dl.setAttribute('download', filename);
+            dl.setAttribute('href', 'data:application/pdf;charset=utf-8,' + encodeURIComponent('Research Document: ' + title));
             OVPRE.openModal('previewModal');
         }
 
-        // Initialize on load
+        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const stored = localStorage.getItem('ovpre_research_projects');
+                if (!stored || JSON.parse(stored)[0]?.title !== initialSeed[0].title) {
+                    localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
+                }
+            } catch (e) {
+                localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
+            }
             renderTable();
         });
     </script>
