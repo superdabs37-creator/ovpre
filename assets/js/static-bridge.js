@@ -208,4 +208,89 @@
         link.remove();
         window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     };
+
+    /* ---------------------------------------------------------------
+       Supabase Live Sync Layer
+       --------------------------------------------------------------- */
+    OVPRE.syncWithSupabase = async function (module) {
+        if (!window.OVPRE_SUPABASE || !window.OVPRE_SUPABASE.isReady()) return;
+
+        try {
+            const page = window.location.pathname.toLowerCase();
+            const isResearch = module === 'research' || page.includes('research.html');
+            const isExtension = module === 'extension' || page.includes('extension.html');
+            const isAnnouncements = module === 'announcements' || page.includes('announcements.html');
+
+            if (isResearch) {
+                const projects = await OVPRE_SUPABASE.fetchResearchProjects();
+                if (Array.isArray(projects) && projects.length) {
+                    const mapped = projects.map(p => ({
+                        id: p.id,
+                        title: p.title,
+                        researchers: p.researchers || 'Faculty Researcher',
+                        college: p.department_name || 'College of Computer Studies and Technology',
+                        funding_source: p.funding_source || '',
+                        budget: p.grant_amount || 0,
+                        stage: p.workflow_stage || 'Proposal',
+                        status: p.status || 'Pending Coordinator Review',
+                        created_at: p.created_at ? p.created_at.slice(0, 10) : '2026-01-15',
+                        abstract: p.abstract || '',
+                        archived: Boolean(p.archived_at)
+                    }));
+                    localStorage.setItem('ovpre_research_projects', JSON.stringify(mapped));
+                    if (typeof window.renderTable === 'function') window.renderTable();
+                }
+            }
+
+            if (isExtension) {
+                const exts = await OVPRE_SUPABASE.fetchExtensionProjects();
+                if (Array.isArray(exts) && exts.length) {
+                    const mapped = exts.map(p => ({
+                        id: p.id,
+                        title: p.project_title,
+                        coordinator: p.coordinator || 'Faculty Lead',
+                        partner: p.community_partner || 'Local Community Partner',
+                        college: p.department_name || 'College of Nursing and Allied Health Sciences',
+                        budget: p.approved_budget || p.budget || 0,
+                        location: p.location || '',
+                        start_date: p.start_date || '2026-01-20',
+                        end_date: p.end_date || '2026-04-20',
+                        stage: p.workflow_stage || 'Proposal',
+                        status: p.status || 'Pending Coordinator Review',
+                        archived: Boolean(p.archived_at)
+                    }));
+                    localStorage.setItem('ovpre_extension_projects', JSON.stringify(mapped));
+                    if (typeof window.renderTable === 'function') window.renderTable();
+                }
+            }
+
+            if (isAnnouncements) {
+                const anns = await OVPRE_SUPABASE.fetchAnnouncements();
+                if (Array.isArray(anns) && anns.length) {
+                    const mapped = anns.map(a => ({
+                        id: a.id,
+                        title: a.title,
+                        category: a.category || 'Announcement',
+                        audience: a.audience || 'All',
+                        priority: a.priority || 'Normal',
+                        date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'Nov 01, 2026',
+                        expiry: a.expiry_date || 'Dec 31, 2026',
+                        content: a.content || '',
+                        status: a.status || 'Published'
+                    }));
+                    localStorage.setItem('ovpre_announcements', JSON.stringify(mapped));
+                    if (typeof window.renderAnnouncements === 'function') window.renderAnnouncements();
+                }
+            }
+        } catch (e) {
+            console.warn('[OVPRE Supabase] Live sync error:', e);
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Auto-sync in background after DOM is ready
+        setTimeout(function () {
+            if (OVPRE.syncWithSupabase) OVPRE.syncWithSupabase();
+        }, 100);
+    });
 })();
