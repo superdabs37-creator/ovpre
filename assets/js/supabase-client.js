@@ -1,8 +1,8 @@
 /**
- * OVPRE I-Record - Supabase Client Bridge & Realtime Engine
+ * OVPRE I-Record - Supabase Client Bridge
  * ------------------------------------------------------------------
  * Connects HTML5, CSS3, JavaScript (ES6+), Remix Icon, and Font Awesome
- * directly to the Supabase Cloud Database, Storage, and Realtime Engine.
+ * directly to the Supabase Cloud Database & Storage.
  */
 (function () {
     'use strict';
@@ -16,13 +16,7 @@
     let client = null;
     if (window.supabase && typeof window.supabase.createClient === 'function') {
         try {
-            client = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
-                realtime: {
-                    params: {
-                        eventsPerSecond: 10
-                    }
-                }
-            });
+            client = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
             console.info('[OVPRE Supabase] Connected successfully to ' + SUPABASE_CONFIG.url);
         } catch (e) {
             console.warn('[OVPRE Supabase] Init error:', e.message);
@@ -40,7 +34,6 @@
     }
 
     const clientId = 'client_' + Math.random().toString(36).substring(2, 9);
-    let globalRealtimeChannel = null;
 
     const OVPRE_SUPABASE = (window.OVPRE_SUPABASE = {
         config: SUPABASE_CONFIG,
@@ -382,73 +375,13 @@
             }
         },
 
-        // --- REALTIME ENGINE & BROADCASTING ---
-        broadcastChange: function (tableName, eventType, record, meta) {
-            if (!globalRealtimeChannel) return;
-            const user = getCurrentUser();
-            const message = {
-                senderId: clientId,
-                table: tableName,
-                eventType: eventType,
-                record: record,
-                meta: meta || {},
-                user: {
-                    fullname: user.fullname || 'Institutional User',
-                    role: user.role || 'Member'
-                },
-                timestamp: Date.now()
-            };
-
-            try {
-                globalRealtimeChannel.send({
-                    type: 'broadcast',
-                    event: 'ovpre_table_change',
-                    payload: message
-                });
-                console.info('[OVPRE Realtime] Broadcast sent:', tableName, eventType);
-            } catch (err) {
-                console.warn('[OVPRE Realtime] Broadcast error:', err.message);
-            }
+        // Safe stub if called by any existing event triggers
+        broadcastChange: function () {
+            // Live Realtime broadcast disabled
         },
 
-        // Handle incoming changes from either Broadcast OR PostgreSQL Changes
-        handleIncomingRealtimeEvent: function (payload, source) {
-            if (!payload) return;
-            // Ignore own broadcast echoes
-            if (payload.senderId && payload.senderId === clientId) return;
-
-            const tableName = payload.table || (payload.table_name) || (payload.schema ? payload.table : null);
-            const eventType = payload.eventType || payload.type || 'UPDATE';
-            const record = payload.record || payload.new || payload.data;
-            const meta = payload.meta || {};
-            const senderUser = payload.user || { fullname: 'Portal User', role: 'Collaborator' };
-
-            console.info(`[OVPRE Realtime] Received live change via ${source}:`, tableName, eventType, record);
-
-            // Notify UI via non-intrusive toast
-            if (window.OVPRE && OVPRE.toast && (meta.actionText || record?.title || record?.project_title)) {
-                const desc = meta.title || record?.title || record?.project_title || tableName;
-                const action = meta.actionText || (eventType === 'INSERT' ? 'added a new record' : 'updated record');
-                OVPRE.toast(`⚡ Live Update: ${senderUser.fullname} (${senderUser.role}) ${action}: "${desc.slice(0, 32)}..."`, 'info');
-            }
-
-            // Sync Table & Local Storage according to tableName
-            if (tableName === 'research_projects') {
-                OVPRE_SUPABASE.syncResearchProjects();
-            } else if (tableName === 'extension_projects') {
-                OVPRE_SUPABASE.syncExtensionProjects();
-            } else if (tableName === 'announcements') {
-                OVPRE_SUPABASE.syncAnnouncements();
-            } else if (tableName === 'activities') {
-                if (typeof window.loadActivities === 'function' && typeof window.renderAll === 'function') {
-                    window.renderAll();
-                }
-            }
-
-            // Dispatch global event for custom page listeners
-            window.dispatchEvent(new CustomEvent('ovpre:realtime:change', {
-                detail: { tableName, eventType, record, senderUser }
-            }));
+        handleIncomingRealtimeEvent: function () {
+            // Live Realtime handling disabled
         },
 
         // Background Remote Sync helpers that seamlessly merge cloud records into localStorage
@@ -475,7 +408,6 @@
                     window.renderTable();
                 }
                 if (typeof callback === 'function') callback(data);
-                window.dispatchEvent(new CustomEvent('ovpre:realtime:research'));
             }
         },
 
@@ -501,7 +433,6 @@
                     window.renderTable();
                 }
                 if (typeof callback === 'function') callback(data);
-                window.dispatchEvent(new CustomEvent('ovpre:realtime:extension'));
             }
         },
 
@@ -527,92 +458,34 @@
                     window.renderAnnouncements();
                 }
                 if (typeof callback === 'function') callback(data);
-                window.dispatchEvent(new CustomEvent('ovpre:realtime:announcements'));
             }
         },
 
-        // --- REALTIME HUB INITIALIZER ---
         initRealtimeHub: function () {
-            if (!client) {
-                console.warn('[OVPRE Realtime] Client not initialized. Running in local mode.');
-                return;
-            }
-
-            try {
-                globalRealtimeChannel = client.channel('ovpre-realtime-global', {
-                    config: {
-                        broadcast: { self: false }
-                    }
-                });
-
-                // 1. Listen for instant Broadcast events across browser sessions
-                globalRealtimeChannel.on('broadcast', { event: 'ovpre_table_change' }, function (msg) {
-                    OVPRE_SUPABASE.handleIncomingRealtimeEvent(msg.payload, 'Broadcast Channel');
-                });
-
-                // 2. Listen for PostgreSQL Changes on replicated database tables
-                ['research_projects', 'extension_projects', 'announcements', 'activities'].forEach(function (table) {
-                    globalRealtimeChannel.on('postgres_changes', { event: '*', schema: 'public', table: table }, function (payload) {
-                        OVPRE_SUPABASE.handleIncomingRealtimeEvent({
-                            table: table,
-                            eventType: payload.eventType,
-                            record: payload.new || payload.old
-                        }, 'PostgreSQL Replication');
-                    });
-                });
-
-                globalRealtimeChannel.subscribe(function (status, err) {
-                    console.info('[OVPRE Realtime Hub] Channel Status:', status);
-                    if (status === 'SUBSCRIBED') {
-                        OVPRE_SUPABASE.renderRealtimeBadge(true);
-                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                        console.warn('[OVPRE Realtime Hub] Subscription issue:', err);
-                    }
-                });
-
-                // Perform initial cloud sync
-                setTimeout(function () {
-                    if (window.location.pathname.includes('research.html')) {
-                        OVPRE_SUPABASE.syncResearchProjects();
-                    } else if (window.location.pathname.includes('extension.html')) {
-                        OVPRE_SUPABASE.syncExtensionProjects();
-                    } else if (window.location.pathname.includes('announcements.html')) {
-                        OVPRE_SUPABASE.syncAnnouncements();
-                    }
-                }, 100);
-
-            } catch (err) {
-                console.warn('[OVPRE Realtime Hub] Init exception:', err.message);
-            }
+            // Live Realtime disabled
+            const badge = document.getElementById('ovpreRealtimeBadge');
+            if (badge) badge.remove();
         },
 
-        // Render Live Realtime badge in topbar
-        renderRealtimeBadge: function (isLive) {
-            const topbar = document.querySelector('.topbar') || document.querySelector('.panel-heading');
-            if (!topbar || document.getElementById('ovpreRealtimeBadge')) return;
-
-            const badge = document.createElement('div');
-            badge.id = 'ovpreRealtimeBadge';
-            badge.className = 'realtime-status-badge';
-            badge.title = 'Connected to Supabase Realtime Engine. Cloud updates sync automatically.';
-            badge.style.marginRight = '8px';
-            badge.innerHTML = '<span class="realtime-dot"></span> <span>Live Realtime</span>';
-
-            const searchForm = topbar.querySelector('.topbar-search');
-            if (searchForm) {
-                topbar.insertBefore(badge, searchForm);
-            } else {
-                topbar.appendChild(badge);
-            }
+        renderRealtimeBadge: function () {
+            // Live Realtime badge disabled
+            const badge = document.getElementById('ovpreRealtimeBadge');
+            if (badge) badge.remove();
         }
     });
 
-    // Auto-initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-            OVPRE_SUPABASE.initRealtimeHub();
+    // Cleanup any lingering realtime UI elements
+    function removeRealtimeElements() {
+        const badge = document.getElementById('ovpreRealtimeBadge');
+        if (badge) badge.remove();
+        document.querySelectorAll('.realtime-status-badge, .realtime-dot').forEach(function (el) {
+            el.remove();
         });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', removeRealtimeElements);
     } else {
-        OVPRE_SUPABASE.initRealtimeHub();
+        removeRealtimeElements();
     }
 })();

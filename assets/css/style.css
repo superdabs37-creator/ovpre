@@ -2020,54 +2020,6 @@ button {
 .portal-table-tab .tab-count {
     display: inline-block;
     padding: 2px 7px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-
-/* Realtime Status Badge & Pulsing Indicator */
-.realtime-status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: #f0fdf4;
-    border: 1px solid #86efac;
-    color: #15803d;
-    border-radius: 999px;
-    font-size: 0.76rem;
-    font-weight: 700;
-    line-height: 1;
-    white-space: nowrap;
-    user-select: none;
-}
-
-.realtime-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #16a34a;
-    display: inline-block;
-    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
-    animation: realtime-pulse 2s infinite;
-}
-
-@keyframes realtime-pulse {
-    0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
-    }
-    70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
-    }
-    100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
-    }
-}
-    display: inline-block;
-    padding: 2px 7px;
     font-size: 0.75rem;
     border-radius: 10px;
     background: #e2e8f0;
