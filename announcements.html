@@ -76,75 +76,173 @@
             </header>
 
             <main class="content-area">
-                <!-- =========================================================
-                     MODULE HEADER
-                ========================================================= -->
-                <section class="module-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px; padding: 20px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px;">
-                    <div class="module-icon" style="width: 50px; height: 50px; border-radius: 12px; background: #ffedd5; color: #ea580c; display: inline-grid; place-items: center; font-size: 1.6rem; flex-shrink: 0;">
-                        <i class="ri-megaphone-line"></i>
-                    </div>
+                <!-- BULLETIN FEED LAUNCHER -->
+                <section class="panel modal-launcher-panel" style="margin-bottom: 22px; padding: 22px 26px; border-radius: 16px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
                     <div>
-                        <p style="margin: 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #ea580c;">Institutional Circulars</p>
-                        <h2 style="margin: 2px 0 4px; font-size: 1.45rem; font-weight: 800; color: #0f172a;">Announcements &amp; Bulletins</h2>
-                        <span style="font-size: 0.84rem; color: #64748b;">Publish and broadcast research calls, policy updates, and executive directives.</span>
+                        <h2 style="margin: 0 0 6px; font-size: 1.25rem; font-weight: 800; color: #ea580c;">Bulletin Feed</h2>
+                        <span style="font-size: 0.9rem; color: #64748b;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</span>
                     </div>
-                </section>
-
-                <div id="actionToast" style="display: none; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 600; font-size: 0.92rem; align-items: center; gap: 8px;"></div>
-
-                <!-- LAUNCHER -->
-                <section class="panel modal-launcher-panel" style="margin-bottom: 20px; padding: 18px 22px; border-radius: 14px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-                    <div>
-                        <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 800; color: #ea580c;">Bulletin Feed</h3>
-                        <span style="font-size: 0.88rem; color: #64748b;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</span>
-                    </div>
-                    <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">
+                    <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
                         <i class="ri-megaphone-line"></i> Publish Announcement
                     </button>
                 </section>
 
-                <!-- ANNOUNCEMENTS TABLE -->
+                <!-- ANNOUNCEMENTS TABLE PANEL -->
                 <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                    <!-- Segmented Control Tabs -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
                         <div class="portal-table-tabs" style="display: flex; gap: 8px;">
-                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchAnnounceTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ea580c; color: #ffffff; cursor: pointer;">
+                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchAnnounceTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; background: #ea580c; color: #ffffff; cursor: pointer;">
                                 <i class="ri-checkbox-circle-line"></i>
                                 <span>Published</span>
-                                <span class="tab-count" id="activeBadge" style="background: rgba(255,255,255,0.25); padding: 2px 7px; border-radius: 999px; font-size: 0.75rem;">5</span>
+                                <span class="tab-count" id="activeBadge" style="background: rgba(255,255,255,0.25); color: #ffffff; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">4</span>
                             </button>
-                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchAnnounceTab('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchAnnounceTab('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
                                 <i class="ri-archive-line"></i>
                                 <span>Archived</span>
-                                <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 7px; border-radius: 999px; font-size: 0.75rem;">1</span>
+                                <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">1</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="table-scroll">
+                    <!-- Table Toolbar (Search, Show Entries, Export CSV) -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; background: #ffffff; width: 280px;">
+                            <i class="ri-search-line" style="color: #94a3b8; font-size: 1rem;"></i>
+                            <input type="text" id="annSearchInput" oninput="handleAnnSearch(this.value)" placeholder="Search this table" style="border: none; outline: none; width: 100%; font-size: 0.88rem; background: transparent;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #475569;">
+                                <span>Show</span>
+                                <select id="pageSizeSelect" onchange="changePageSize(this.value)" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.88rem; background: #fff; cursor: pointer;">
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                                <span>entries</span>
+                            </div>
+                            <button type="button" class="ghost-btn action-btn" onclick="exportAnnouncementsCSV()" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 0.88rem; cursor: pointer;">
+                                <i class="ri-download-2-line"></i> <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
                         <table class="data-table" id="announcementsTable" style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
-                                    <th style="padding: 12px 10px;">Announcement Title</th>
-                                    <th style="padding: 12px 10px;">Category</th>
-                                    <th style="padding: 12px 10px;">Audience</th>
-                                    <th style="padding: 12px 10px;">Priority</th>
-                                    <th style="padding: 12px 10px;">Published Date</th>
-                                    <th style="padding: 12px 10px;">Expiry Date</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Manage / Action</th>
+                            <thead style="background: #ecfdf5;">
+                                <tr style="border-bottom: 1px solid #d1fae5;">
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('title')">
+                                        ANNOUNCEMENT TITLE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('category')">
+                                        CATEGORY <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('audience')">
+                                        AUDIENCE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('priority')">
+                                        PRIORITY <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('date')">
+                                        PUBLISHED DATE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; cursor: pointer;" onclick="sortAnnTable('expiry')">
+                                        EXPIRY DATE <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
+                                    <th style="padding: 12px 14px; font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
+                                        MANAGE / ACTION <i class="ri-arrow-up-down-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="announcementsTableBody" style="font-size: 0.88rem;">
-                                <!-- Populated by JS -->
+
+    <tr data-table-row data-priority="High" data-category="Research Call" id="announcement-row-1" style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 14px 14px; max-width: 320px;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(1)">Call for Research Proposals: FY 2026 Institutional Seed Funding</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The Office of the Vice President for Research and Extension invites full-time faculty members to submit a...</p>
+        </td>
+        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Research Call</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">All Faculty</td>
+        <td style="padding: 14px 14px;"><strong style="color: #ea580c; font-size: 0.85rem;">High</strong></td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Oct 15, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Dec 15, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(1)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Edit</button>
+                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(1)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Archive</button>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-priority="Medium" data-category="Policy" id="announcement-row-2" style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 14px 14px; max-width: 320px;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(2)">Guidelines on Extension Program Liquidation and Impact Reporting</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">All College Extension Coordinators and project heads must submit complete liquidation reports and communi...</p>
+        </td>
+        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Policy</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">Extension Coordinators</td>
+        <td style="padding: 14px 14px;"><strong style="color: #1e3a8a; font-size: 0.85rem;">Medium</strong></td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Oct 20, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Nov 30, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(2)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Edit</button>
+                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(2)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Archive</button>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-priority="Urgent" data-category="Event" id="announcement-row-3" style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 14px 14px; max-width: 320px;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(3)">Annual University Research Colloquium & Best Paper Awards 2026</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are w...</p>
+        </td>
+        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Event</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">General Academic Community</td>
+        <td style="padding: 14px 14px;"><strong style="color: #dc2626; font-size: 0.85rem;">Urgent</strong></td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Oct 28, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Dec 10, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(3)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Edit</button>
+                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(3)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Archive</button>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-priority="High" data-category="Extension Call" id="announcement-row-4" style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 14px 14px; max-width: 320px;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(4)">Quarterly Submission Window for Community Extension Proposals</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The fourth quarter submission window for community extension proposals will officially close on November ...</p>
+        </td>
+        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Extension Call</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">Faculty Extensionists</td>
+        <td style="padding: 14px 14px;"><strong style="color: #ea580c; font-size: 0.85rem;">High</strong></td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Nov 01, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Nov 25, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(4)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Edit</button>
+                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(4)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Archive</button>
+            </div>
+        </td>
+    </tr>
+
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
                     <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
-                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 5 entries</span>
+                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 4 of 4 entries</span>
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <button type="button" id="prevPageBtn" onclick="changeAnnouncePage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
-                            <span id="paginationNumbers" style="display: flex; gap: 4px;"></span>
+                            <span id="paginationNumbers" style="display: flex; gap: 4px;">
+                                <button type="button" style="padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; background: #ea580c; color: #fff;">1</button>
+                            </span>
                             <button type="button" id="nextPageBtn" onclick="changeAnnouncePage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
                         </div>
                     </div>
@@ -156,126 +254,160 @@
     <!-- MODAL: ADD / EDIT ANNOUNCEMENT -->
     <div class="modal" id="announcementEditorModal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-backdrop" data-close-modal></div>
-        <article class="modal-card">
+        <article class="modal-card" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div style="margin-bottom: 14px;">
+                <h2 id="annModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-megaphone-line" style="color: #ea580c;"></i> <span>Publish Announcement</span>
+                </h2>
+                <p style="margin: 4px 0 0; color: #64748b; font-size: 0.88rem;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</p>
+            </div>
+            <form onsubmit="handleSaveAnnouncement(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="editAnnId">
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Title</label>
+                    <input type="text" id="annTitle" required placeholder="Subject or announcement heading" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Category</label>
+                        <select id="annCategory" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                            <option value="Research Call">Research Call</option>
+                            <option value="Extension Call">Extension Call</option>
+                            <option value="Policy">Policy</option>
+                            <option value="Event">Event</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Audience</label>
+                        <select id="annAudience" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                            <option value="All Faculty">All Faculty</option>
+                            <option value="Extension Coordinators">Extension Coordinators</option>
+                            <option value="Faculty Extensionists">Faculty Extensionists</option>
+                            <option value="General Academic Community">General Academic Community</option>
+                            <option value="All">All</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Priority</label>
+                        <select id="annPriority" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                            <option value="Normal">Normal</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Expiry Date</label>
+                    <input type="text" id="annExpiry" placeholder="e.g. Dec 15, 2026" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Message / Body</label>
+                    <textarea id="annContent" rows="5" required placeholder="Full circular text..." style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; line-height: 1.5;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
+                    <button type="submit" id="annSubmitBtn" class="primary-btn" style="background: #ea580c; color: #fff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">Publish Now</button>
+                </div>
+            </form>
+        </article>
+    </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-            <h3 id="annModalTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Publish Announcement</h3>
-            <button type="button" onclick="closeDialog('announcementEditorModal')" style="width: 32px; height: 32px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <form onsubmit="handleSaveAnnouncement(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 80px); overflow-y: auto;">
-            <input type="hidden" id="editAnnId">
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Title</label>
-                <input type="text" id="annTitle" required placeholder="Subject or announcement heading" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Category</label>
-                    <select id="annCategory" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="Research">Research</option>
-                        <option value="Extension">Extension</option>
-                        <option value="General">General</option>
-                        <option value="Policies">Policies</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Audience</label>
-                    <input type="text" id="annAudience" value="All Faculty" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Priority</label>
-                    <select id="annPriority" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <option value="Normal">Normal</option>
-                        <option value="High">High</option>
-                        <option value="Urgent">Urgent</option>
-                    </select>
+    <!-- MODAL: VIEW ANNOUNCEMENT -->
+    <div class="modal" id="announcementViewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div style="margin-bottom: 12px;">
+                <span class="category-badge" id="viewAnnCategory" style="background: #ffedd5; color: #ea580c; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
+                <h2 id="viewAnnTitle" style="margin: 8px 0 4px; font-size: 1.3rem; color: #0f172a; line-height: 1.35;"></h2>
+                <div style="font-size: 0.84rem; color: #64748b; margin-top: 4px;">
+                    <span>Audience: <strong id="viewAnnAudience" style="color: #334155;"></strong></span> &bull; 
+                    <span>Priority: <strong id="viewAnnPriority"></strong></span> &bull; 
+                    <span>Published: <strong id="viewAnnDate" style="color: #334155;"></strong></span>
                 </div>
             </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Expiry Date</label>
-                <input type="date" id="annExpiry" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+            <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin: 14px 0; font-size: 0.92rem; line-height: 1.6; color: #334155;" id="viewAnnContent">
             </div>
-            <div>
-                <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Message / Body</label>
-                <textarea id="annContent" rows="5" required placeholder="Full circular text..." style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;"></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <span id="viewAnnExpiry" style="font-size: 0.82rem; color: #64748b;"></span>
+                <button type="button" class="ghost-btn mini-btn" data-close-modal>Close</button>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" onclick="closeDialog('announcementEditorModal')" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancel</button>
-                <button type="submit" style="padding: 9px 20px; border-radius: 8px; border: none; background: #ea580c; color: #fff; font-weight: 700; cursor: pointer;">Publish Now</button>
-            </div>
-        </form>
-    
         </article>
     </div>
 
     <script>
+        const initialAnnouncements = [
+        {
+                "id": 1,
+                "title": "Call for Research Proposals: FY 2026 Institutional Seed Funding",
+                "content": "The Office of the Vice President for Research and Extension invites full-time faculty members to submit applied research proposals aligned with the university strategic research priorities. Selected proposals are eligible for institutional grants up to PHP 250,000.",
+                "category": "Research Call",
+                "audience": "All Faculty",
+                "priority": "High",
+                "date": "Oct 15, 2026",
+                "expiry": "Dec 15, 2026",
+                "archived": false
+        },
+        {
+                "id": 2,
+                "title": "Guidelines on Extension Program Liquidation and Impact Reporting",
+                "content": "All College Extension Coordinators and project heads must submit complete liquidation reports and community beneficiary feedback surveys within 30 days of project conclusion.",
+                "category": "Policy",
+                "audience": "Extension Coordinators",
+                "priority": "Medium",
+                "date": "Oct 20, 2026",
+                "expiry": "Nov 30, 2026",
+                "archived": false
+        },
+        {
+                "id": 3,
+                "title": "Annual University Research Colloquium & Best Paper Awards 2026",
+                "content": "The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are welcome across all nine academic colleges.",
+                "category": "Event",
+                "audience": "General Academic Community",
+                "priority": "Urgent",
+                "date": "Oct 28, 2026",
+                "expiry": "Dec 10, 2026",
+                "archived": false
+        },
+        {
+                "id": 4,
+                "title": "Quarterly Submission Window for Community Extension Proposals",
+                "content": "The fourth quarter submission window for community extension proposals will officially close on November 25, 2026. Please ensure coordinator endorsements are secured prior to submission.",
+                "category": "Extension Call",
+                "audience": "Faculty Extensionists",
+                "priority": "High",
+                "date": "Nov 01, 2026",
+                "expiry": "Nov 25, 2026",
+                "archived": false
+        },
+        {
+                "id": 5,
+                "title": "Call for Submissions: 2025 Regional Extension Compendium",
+                "content": "Annual compilation of completed and ongoing community extension initiatives across Calabarzon LGUs.",
+                "category": "Publication",
+                "audience": "All Faculty",
+                "priority": "Normal",
+                "date": "Sep 10, 2025",
+                "expiry": "Oct 30, 2025",
+                "archived": true
+        }
+];
+
         let currentAnnTab = 'active';
         let annPage = 1;
-        const annPageSize = 6;
-
-        const initialAnnouncements = [
-            {
-                id: 1,
-                title: "Call for Research Proposals: FY 2026 Institutional Seed Funding",
-                content: "The Office of the Vice President for Research and Extension invites full-time faculty members to submit applied research proposals aligned with the university strategic research priorities. Selected proposals are eligible for institutional grants up to PHP 250,000.",
-                category: "Research Call",
-                audience: "All Faculty",
-                priority: "High",
-                date: "Oct 15, 2026",
-                expiry: "Dec 15, 2026",
-                archived: false
-            },
-            {
-                id: 2,
-                title: "Guidelines on Extension Program Liquidation and Impact Reporting",
-                content: "All College Extension Coordinators and project heads must submit complete liquidation reports and community beneficiary feedback surveys within 30 days of project conclusion.",
-                category: "Policy",
-                audience: "Extension Coordinators",
-                priority: "Medium",
-                date: "Oct 20, 2026",
-                expiry: "Nov 30, 2026",
-                archived: false
-            },
-            {
-                id: 3,
-                title: "Annual University Research Colloquium & Best Paper Awards 2026",
-                content: "The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are welcome across all nine academic colleges.",
-                category: "Event",
-                audience: "General Academic Community",
-                priority: "Urgent",
-                date: "Oct 28, 2026",
-                expiry: "Dec 10, 2026",
-                archived: false
-            },
-            {
-                id: 4,
-                title: "Quarterly Submission Window for Community Extension Proposals",
-                content: "The fourth quarter submission window for community extension proposals will officially close on November 25, 2026. Please ensure coordinator endorsements are secured prior to submission.",
-                category: "Extension Call",
-                audience: "Faculty Extensionists",
-                priority: "High",
-                date: "Nov 01, 2026",
-                expiry: "Nov 25, 2026",
-                archived: false
-            },
-            {
-                id: 5,
-                title: "FY 2025 Institutional Research Accomplishment Archive",
-                content: "Completed project deliverables and published journal papers for academic year 2025 have been archived in the central institutional repository.",
-                category: "Archived Notice",
-                audience: "University Wide",
-                priority: "Low",
-                date: "Jan 10, 2026",
-                expiry: "Closed",
-                archived: true
-            }
-        ];
+        let annPageSize = 10;
+        let sortField = 'title';
+        let sortAsc = true;
 
         function getStoredAnnouncements() {
             try {
                 const s = localStorage.getItem('ovpre_announcements');
                 if (s) return JSON.parse(s);
-            } catch(e) {}
+            } catch (e) {}
             localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
             return initialAnnouncements;
         }
@@ -284,91 +416,146 @@
             localStorage.setItem('ovpre_announcements', JSON.stringify(data));
         }
 
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('actionToast');
-            t.style.display = 'flex';
-            t.style.background = type === 'success' ? '#f0fdf4' : '#fef2f2';
-            t.style.border = `1px solid ${type === 'success' ? '#86efac' : '#fecaca'}`;
-            t.style.color = type === 'success' ? '#166534' : '#b91c1c';
-            t.innerHTML = `<i class="${type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line'}"></i> ${msg}`;
-            setTimeout(() => { t.style.display = 'none'; }, 4000);
-        }
-
         function switchAnnounceTab(tab) {
             currentAnnTab = tab;
             annPage = 1;
-            document.getElementById('tabActiveBtn').style.background = tab === 'active' ? '#ea580c' : '#ffffff';
-            document.getElementById('tabActiveBtn').style.color = tab === 'active' ? '#ffffff' : '#475569';
-            document.getElementById('tabArchivedBtn').style.background = tab === 'archived' ? '#ea580c' : '#ffffff';
-            document.getElementById('tabArchivedBtn').style.color = tab === 'archived' ? '#ffffff' : '#475569';
+            const activeBtn = document.getElementById('tabActiveBtn');
+            const archBtn = document.getElementById('tabArchivedBtn');
+            if (tab === 'active') {
+                activeBtn.style.background = '#ea580c';
+                activeBtn.style.color = '#ffffff';
+                activeBtn.style.border = 'none';
+                archBtn.style.background = '#ffffff';
+                archBtn.style.color = '#475569';
+                archBtn.style.border = '1px solid #cbd5e1';
+            } else {
+                activeBtn.style.background = '#ffffff';
+                activeBtn.style.color = '#475569';
+                activeBtn.style.border = '1px solid #cbd5e1';
+                archBtn.style.background = '#ea580c';
+                archBtn.style.color = '#ffffff';
+                archBtn.style.border = 'none';
+            }
             renderAnnouncements();
+        }
+
+        function handleAnnSearch(val) {
+            annPage = 1;
+            renderAnnouncements();
+        }
+
+        function changePageSize(size) {
+            annPageSize = Number(size) || 10;
+            annPage = 1;
+            renderAnnouncements();
+        }
+
+        function sortAnnTable(field) {
+            if (sortField === field) {
+                sortAsc = !sortAsc;
+            } else {
+                sortField = field;
+                sortAsc = true;
+            }
+            renderAnnouncements();
+        }
+
+        function getPriorityHtml(priority) {
+            if (priority === 'High') {
+                return '<strong style="color: #ea580c; font-size: 0.85rem;">High</strong>';
+            } else if (priority === 'Urgent') {
+                return '<strong style="color: #dc2626; font-size: 0.85rem;">Urgent</strong>';
+            } else if (priority === 'Medium') {
+                return '<strong style="color: #1e3a8a; font-size: 0.85rem;">Medium</strong>';
+            } else {
+                return '<strong style="color: #15803d; font-size: 0.85rem;">Normal</strong>';
+            }
         }
 
         function renderAnnouncements() {
             const all = getStoredAnnouncements();
             const activeList = all.filter(a => !a.archived);
             const archivedList = all.filter(a => a.archived);
+
             document.getElementById('activeBadge').textContent = activeList.length;
             document.getElementById('archivedBadge').textContent = archivedList.length;
 
             let filtered = currentAnnTab === 'active' ? activeList : archivedList;
 
-            const searchVal = (document.getElementById('topbarSearchInput')?.value || '').trim().toLowerCase();
-            if (searchVal) {
+            const q = (document.getElementById('annSearchInput')?.value || '').trim().toLowerCase();
+            if (q) {
                 filtered = filtered.filter(a => 
-                    a.title.toLowerCase().includes(searchVal) ||
-                    a.category.toLowerCase().includes(searchVal) ||
-                    a.content.toLowerCase().includes(searchVal)
+                    (a.title || '').toLowerCase().includes(q) ||
+                    (a.category || '').toLowerCase().includes(q) ||
+                    (a.audience || '').toLowerCase().includes(q) ||
+                    (a.content || '').toLowerCase().includes(q) ||
+                    (a.priority || '').toLowerCase().includes(q)
                 );
             }
+
+            // Sorting
+            filtered.sort((x, y) => {
+                let vX = (x[sortField] || '').toString().toLowerCase();
+                let vY = (y[sortField] || '').toString().toLowerCase();
+                if (vX < vY) return sortAsc ? -1 : 1;
+                if (vX > vY) return sortAsc ? 1 : -1;
+                return 0;
+            });
 
             const total = filtered.length;
             const startIdx = (annPage - 1) * annPageSize;
             const pageItems = filtered.slice(startIdx, startIdx + annPageSize);
 
             const tbody = document.getElementById('announcementsTableBody');
-            tbody.replaceChildren();
+            tbody.innerHTML = '';
 
             if (!pageItems.length) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="7" style="text-align: center; padding: 32px; color: #64748b;">No announcements found.</td>`;
+                tr.innerHTML = '<td colspan="7" style="text-align: center; padding: 36px; color: #64748b;">No ' + (currentAnnTab === 'active' ? 'published' : 'archived') + ' announcements found.</td>';
                 tbody.appendChild(tr);
             } else {
                 pageItems.forEach(a => {
                     const tr = document.createElement('tr');
+                    tr.id = 'announcement-row-' + a.id;
                     tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
 
-                    let prioBg = '#f1f5f9', prioColor = '#334155';
-                    if (a.priority === 'High') { prioBg = '#ffedd5'; prioColor = '#c2410c'; }
-                    else if (a.priority === 'Urgent') { prioBg = '#fef2f2'; prioColor = '#dc2626'; }
+                    const actionButtons = currentAnnTab === 'active' ? `
+                        <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Edit</button>
+                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Archive</button>
+                        </div>
+                    ` : `
+                        <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Edit</button>
+                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 4px 14px; border-radius: 8px; cursor: pointer; min-height: 30px;">Restore</button>
+                        </div>
+                    `;
 
                     tr.innerHTML = `
-                        <td style="padding: 12px 10px;">
-                            <strong style="color: #0f172a; line-height: 1.4; display: block;">${a.title}</strong>
-                            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">${a.content.slice(0, 110)}...</p>
+                        <td style="padding: 14px 14px; max-width: 320px;">
+                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(${a.id})">${OVPRE.h(a.title)}</strong>
+                            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">${OVPRE.h(a.content.slice(0, 105))}...</p>
                         </td>
-                        <td style="padding: 12px 10px;"><span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.78rem;">${a.category}</span></td>
-                        <td style="padding: 12px 10px; color: #475569; font-size: 0.82rem;">${a.audience}</td>
-                        <td style="padding: 12px 10px;"><span class="badge" style="background: ${prioBg}; color: ${prioColor}; font-weight: 700; font-size: 0.76rem;">${a.priority}</span></td>
-                        <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem; white-space: nowrap;">${a.date}</td>
-                        <td style="padding: 12px 10px; color: #64748b; font-size: 0.82rem; white-space: nowrap;">${a.expiry || 'No expiry'}</td>
-                        <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
-                            <button type="button" class="btn" onclick="openEditAnnouncementModal(${a.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #ffedd5; border: 1px solid #fed7aa; color: #ea580c; border-radius: 6px; cursor: pointer; margin-right: 4px;">Edit</button>
-                            <button type="button" class="btn" onclick="toggleArchiveAnnouncement(${a.id})" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; background: #fff; border: 1px solid #cbd5e1; color: ${a.archived ? '#15803d' : '#b45309'}; border-radius: 6px; cursor: pointer;">${a.archived ? 'Restore' : 'Archive'}</button>
-                        </td>
+                        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">${OVPRE.h(a.category)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">${OVPRE.h(a.audience)}</td>
+                        <td style="padding: 14px 14px;">${getPriorityHtml(a.priority)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">${OVPRE.h(a.date)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">${OVPRE.h(a.expiry || 'No expiry')}</td>
+                        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">${actionButtons}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
 
-            // Pagination
+            // Pagination UI
             const pageCount = Math.max(1, Math.ceil(total / annPageSize));
+            if (annPage > pageCount) annPage = pageCount;
             document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + annPageSize, total)} of ${total} entries` : 'No records';
             document.getElementById('prevPageBtn').disabled = annPage <= 1;
             document.getElementById('nextPageBtn').disabled = annPage >= pageCount;
 
             const pNumContainer = document.getElementById('paginationNumbers');
-            pNumContainer.replaceChildren();
+            pNumContainer.innerHTML = '';
             for (let i = 1; i <= pageCount; i++) {
                 const b = document.createElement('button');
                 b.textContent = i;
@@ -383,94 +570,142 @@
             renderAnnouncements();
         }
 
-        function openDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.showModal();
-        }
-
-        function closeDialog(id) {
-            const d = document.getElementById(id);
-            if (d) d.close();
-        }
-
         function openAddAnnouncementModal() {
             document.getElementById('editAnnId').value = '';
-            document.getElementById('annModalTitle').textContent = 'Publish Announcement';
+            document.getElementById('annModalTitle').innerHTML = '<i class="ri-megaphone-line" style="color: #ea580c;"></i> <span>Publish Announcement</span>';
+            document.getElementById('annSubmitBtn').textContent = 'Publish Now';
             document.getElementById('annTitle').value = '';
+            document.getElementById('annCategory').value = 'Research Call';
             document.getElementById('annAudience').value = 'All Faculty';
-            document.getElementById('annContent').value = '';
+            document.getElementById('annPriority').value = 'High';
             document.getElementById('annExpiry').value = '';
-            openDialog('announcementEditorModal');
+            document.getElementById('annContent').value = '';
+            OVPRE.openModal('announcementEditorModal');
         }
 
         function openEditAnnouncementModal(id) {
             const all = getStoredAnnouncements();
-            const a = all.find(item => item.id === id);
+            const a = all.find(item => item.id === Number(id));
             if (!a) return;
             document.getElementById('editAnnId').value = a.id;
-            document.getElementById('annModalTitle').textContent = 'Edit Announcement';
+            document.getElementById('annModalTitle').innerHTML = '<i class="ri-edit-line" style="color: #ea580c;"></i> <span>Edit Announcement</span>';
+            document.getElementById('annSubmitBtn').textContent = 'Update Announcement';
             document.getElementById('annTitle').value = a.title;
             document.getElementById('annCategory').value = a.category;
             document.getElementById('annAudience').value = a.audience;
             document.getElementById('annPriority').value = a.priority;
             document.getElementById('annExpiry').value = a.expiry || '';
             document.getElementById('annContent').value = a.content;
-            openDialog('announcementEditorModal');
+            OVPRE.openModal('announcementEditorModal');
+        }
+
+        function openViewAnnouncementModal(id) {
+            const all = getStoredAnnouncements();
+            const a = all.find(item => item.id === Number(id));
+            if (!a) return;
+            document.getElementById('viewAnnCategory').textContent = a.category;
+            document.getElementById('viewAnnTitle').textContent = a.title;
+            document.getElementById('viewAnnAudience').textContent = a.audience;
+            document.getElementById('viewAnnPriority').innerHTML = getPriorityHtml(a.priority);
+            document.getElementById('viewAnnDate').textContent = a.date;
+            document.getElementById('viewAnnExpiry').textContent = a.expiry ? ('Valid until ' + a.expiry) : 'No expiration date';
+            document.getElementById('viewAnnContent').textContent = a.content;
+            OVPRE.openModal('announcementViewModal');
         }
 
         function handleSaveAnnouncement(e) {
             e.preventDefault();
-            const all = getStoredAnnouncements();
-            const editId = document.getElementById('editAnnId').value;
+            const id = document.getElementById('editAnnId').value;
+            const title = document.getElementById('annTitle').value.trim();
+            const category = document.getElementById('annCategory').value;
+            const audience = document.getElementById('annAudience').value;
+            const priority = document.getElementById('annPriority').value;
+            const expiry = document.getElementById('annExpiry').value.trim();
+            const content = document.getElementById('annContent').value.trim();
 
-            if (editId) {
-                const a = all.find(item => item.id === parseInt(editId, 10));
-                if (a) {
-                    a.title = document.getElementById('annTitle').value.trim();
-                    a.category = document.getElementById('annCategory').value;
-                    a.audience = document.getElementById('annAudience').value.trim();
-                    a.priority = document.getElementById('annPriority').value;
-                    a.expiry = document.getElementById('annExpiry').value;
-                    a.content = document.getElementById('annContent').value.trim();
+            const all = getStoredAnnouncements();
+            if (id) {
+                const item = all.find(a => a.id === Number(id));
+                if (item) {
+                    item.title = title;
+                    item.category = category;
+                    item.audience = audience;
+                    item.priority = priority;
+                    item.expiry = expiry;
+                    item.content = content;
+                    saveAnnouncements(all);
+                    OVPRE.toast('Announcement updated successfully.', 'success');
                 }
             } else {
-                const newA = {
-                    id: Date.now(),
-                    title: document.getElementById('annTitle').value.trim(),
-                    category: document.getElementById('annCategory').value,
-                    audience: document.getElementById('annAudience').value.trim(),
-                    priority: document.getElementById('annPriority').value,
-                    date: new Date().toISOString().slice(0, 10),
-                    expiry: document.getElementById('annExpiry').value,
-                    content: document.getElementById('annContent').value.trim(),
-                    status: 'Published',
+                const newId = (all.reduce((max, a) => Math.max(max, a.id || 0), 0)) + 1;
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const now = new Date();
+                const dateStr = months[now.getMonth()] + ' ' + String(now.getDate()).padStart(2, '0') + ', ' + now.getFullYear();
+
+                all.unshift({
+                    id: newId,
+                    title,
+                    content,
+                    category,
+                    audience,
+                    priority,
+                    date: dateStr,
+                    expiry: expiry || 'Dec 31, 2026',
                     archived: false
-                };
-                all.unshift(newA);
+                });
+                saveAnnouncements(all);
+                OVPRE.toast('Announcement published successfully.', 'success');
             }
 
-            saveAnnouncements(all);
-            closeDialog('announcementEditorModal');
-            showToast('Announcement published successfully!');
+            OVPRE.closeModal('announcementEditorModal');
             renderAnnouncements();
         }
 
         function toggleArchiveAnnouncement(id) {
             const all = getStoredAnnouncements();
-            const a = all.find(item => item.id === id);
+            const a = all.find(item => item.id === Number(id));
             if (!a) return;
             a.archived = !a.archived;
             saveAnnouncements(all);
-            showToast(`Announcement has been ${a.archived ? 'archived' : 'restored'}.`);
+            OVPRE.toast(a.archived ? 'Announcement archived.' : 'Announcement restored to published feed.', 'success');
             renderAnnouncements();
         }
 
-        document.getElementById('topbarSearchInput')?.addEventListener('input', () => {
-            annPage = 1;
-            renderAnnouncements();
-        });
+        function exportAnnouncementsCSV() {
+            const all = getStoredAnnouncements();
+            const list = currentAnnTab === 'active' ? all.filter(a => !a.archived) : all.filter(a => a.archived);
+            const headers = ['ID', 'Title', 'Category', 'Audience', 'Priority', 'Published Date', 'Expiry Date', 'Content'];
+            const rows = list.map(a => [
+                a.id,
+                '"' + (a.title || '').replace(/"/g, '""') + '"',
+                '"' + (a.category || '').replace(/"/g, '""') + '"',
+                '"' + (a.audience || '').replace(/"/g, '""') + '"',
+                '"' + (a.priority || '').replace(/"/g, '""') + '"',
+                '"' + (a.date || '').replace(/"/g, '""') + '"',
+                '"' + (a.expiry || '').replace(/"/g, '""') + '"',
+                '"' + (a.content || '').replace(/"/g, '""') + '"'
+            ]);
 
-        document.addEventListener('DOMContentLoaded', () => {
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', (currentAnnTab === 'active' ? 'published' : 'archived') + '_announcements.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            OVPRE.toast('Announcements exported to CSV.', 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const stored = localStorage.getItem('ovpre_announcements');
+                if (!stored || JSON.parse(stored)[0]?.title !== initialAnnouncements[0].title) {
+                    localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
+                }
+            } catch (e) {
+                localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
+            }
             renderAnnouncements();
         });
     </script>
