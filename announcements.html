@@ -76,20 +76,9 @@
             </header>
 
             <main class="content-area">
-                <!-- BULLETIN FEED LAUNCHER -->
-                <section class="panel modal-launcher-panel" style="margin-bottom: 22px; padding: 22px 26px; border-radius: 16px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-                    <div>
-                        <h2 style="margin: 0 0 6px; font-size: 1.25rem; font-weight: 800; color: #ea580c;">Bulletin Feed</h2>
-                        <span style="font-size: 0.9rem; color: #64748b;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</span>
-                    </div>
-                    <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
-                        <i class="ri-megaphone-line"></i> Publish Announcement
-                    </button>
-                </section>
-
                 <!-- ANNOUNCEMENTS TABLE PANEL -->
                 <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
-                    <!-- Segmented Control Tabs -->
+                    <!-- Segmented Control Tabs & Action Button -->
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
                         <div class="portal-table-tabs" style="display: flex; gap: 8px;">
                             <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchAnnounceTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; background: #ea580c; color: #ffffff; cursor: pointer;">
@@ -103,6 +92,9 @@
                                 <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">1</span>
                             </button>
                         </div>
+                        <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
+                            <i class="ri-megaphone-line"></i> Publish Announcement
+                        </button>
                     </div>
 
                     <!-- Table Toolbar (Search, Show Entries, Export CSV) -->

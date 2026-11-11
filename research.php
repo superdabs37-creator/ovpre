@@ -346,18 +346,7 @@ renderHeader('Research Management', 'research');
 
 <?php if ($notice): ?><div class="notice <?php echo h($notice['type']); ?>"><?php echo h($notice['message']); ?></div><?php endif; ?>
 
-<!-- SUBMIT PROPOSAL PANEL (FOR RESEARCHERS AND COORDINATORS) -->
 <?php if (!$isSuperAdmin): ?>
-<section class="panel modal-launcher-panel">
-    <div class="panel-heading">
-        <div>
-            <h2 style="font-size: 1.5rem; font-weight: bold; color: #16a34a;">Research Proposals</h2>
-            <span style="font-size: 1.1rem; color: #4b5563;">Submit a new research proposal for College Coordinator screening.</span>
-        </div>
-        <button class="primary-btn" type="button" data-open-modal="createResearchProposalModal"><i class="ri-add-line"></i> Submit Research Proposal</button>
-    </div>
-</section>
-
 <div class="modal" id="createResearchProposalModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createResearchProposalTitle">
     <div class="modal-backdrop" data-close-modal></div>
     <article class="modal-card simple-submit-modal">

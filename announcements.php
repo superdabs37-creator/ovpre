@@ -160,17 +160,6 @@ function render_priority_badge(string $priority): string {
 renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 'announcements');
 ?>
 
-<!-- BULLETIN FEED BANNER (Exact matching screenshot media_1794397157837_1796c9e0.png) -->
-<section class="panel modal-launcher-panel" style="margin-bottom: 20px; padding: 22px 24px; border-radius: 14px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-    <div>
-        <h2 style="margin: 0 0 6px; font-size: 1.25rem; font-weight: 800; color: #ea580c;">Bulletin Feed</h2>
-        <span style="font-size: 0.9rem; color: #64748b;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</span>
-    </div>
-    <button class="primary-btn" type="button" data-open-modal="createAnnouncementModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
-        <i class="ri-megaphone-line"></i> Publish Announcement
-    </button>
-</section>
-
 <?php if ($notice): ?>
     <div class="notice <?php echo h($notice['type']); ?>" style="margin-bottom: 18px;">
         <i class="ri-<?php echo $notice['type'] === 'success' ? 'checkbox-circle' : 'error-warning'; ?>-line"></i>
@@ -253,7 +242,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 
 <!-- ANNOUNCEMENTS TABLE PANEL -->
 <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-    <!-- Segmented Control Tabs -->
+    <!-- Segmented Control Tabs & Action Button -->
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
         <div class="portal-table-tabs" style="display: flex; gap: 8px;">
             <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="announcements.php" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; <?php echo !$archived ? 'background: #ea580c; color: #ffffff; border: none;' : 'border: 1px solid #cbd5e1; background: #ffffff; color: #475569;'; ?>">
@@ -267,6 +256,11 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                 <span class="tab-count" style="<?php echo $archived ? 'background: rgba(255,255,255,0.25); color: #ffffff;' : 'background: #f1f5f9; color: #475569;'; ?> padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;"><?php echo $archivedCount; ?></span>
             </a>
         </div>
+        <?php if (!$archived): ?>
+        <button class="primary-btn" type="button" data-open-modal="createAnnouncementModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
+            <i class="ri-megaphone-line"></i> Publish Announcement
+        </button>
+        <?php endif; ?>
     </div>
 
     <!-- Table Toolbar (Search, Show Entries, Export CSV) -->
