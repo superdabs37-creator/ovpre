@@ -855,20 +855,18 @@
     <!-- 5. PREVIEW MODAL -->
     <div class="modal preview-modal" id="previewModal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-backdrop" data-close-modal></div>
-        <article class="modal-card preview-card" style="max-width: 760px;">
+        <article class="modal-card preview-card">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
-            <h2 id="prevDocTitle"><i class="ri-file-text-line"></i> Document Preview</h2>
-            <div style="background: #f8fafc; padding: 28px 20px; border-radius: 12px; text-align: center; border: 1px dashed #cbd5e1; margin: 12px 0;">
-                <i class="ri-file-pdf-2-line" style="font-size: 3rem; color: #dc2626; display: block; margin-bottom: 8px;"></i>
-                <strong id="prevFileName" style="font-size: 1.05rem; color: #0f172a; display: block;">file.pdf</strong>
-                <p id="prevDocMeta" style="color: #64748b; font-size: 0.85rem; margin-top: 6px;">Size: 3.2 MB | Registered under OVPRE Repository</p>
-                <div style="margin-top: 16px;">
-                    <a href="#" id="prevDownloadBtn" class="primary-btn mini-btn" download style="display: inline-flex;"><i class="ri-download-2-line"></i> Download Record</a>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-right: 36px; flex-wrap: wrap; gap: 8px;">
+                <h2 id="prevDocTitle" style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>Document Preview</span>
+                </h2>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="#" id="prevOpenTabBtn" target="_blank" class="ghost-btn mini-btn" title="Open in new window"><i class="ri-external-link-line"></i> <span>New Tab</span></a>
+                    <a href="#" id="prevDownloadBtn" class="primary-btn mini-btn" download><i class="ri-download-2-line"></i> <span>Download PDF</span></a>
                 </div>
             </div>
-            <div style="display: flex; justify-content: flex-end;">
-                <button type="button" class="ghost-btn mini-btn" data-close-modal>Close</button>
-            </div>
+            <iframe id="previewIframe" class="document-preview" src="about:blank"></iframe>
         </article>
     </div>
 
@@ -1678,12 +1676,17 @@
             const all = getDocs();
             const d = all.find(item => Number(item.id) === Number(docId));
             if (!d) return;
-            document.getElementById('prevDocTitle').innerHTML = '<i class="ri-file-text-line"></i> ' + OVPRE.h(d.title);
-            document.getElementById('prevFileName').textContent = d.original_filename;
-            document.getElementById('prevDocMeta').textContent = 'Size: ' + (d.size || '3.5 MB') + ' | Category: ' + d.category_name + ' | Author: ' + d.author;
+            document.getElementById('prevDocTitle').innerHTML = '<i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>' + OVPRE.h(d.title) + '</span>';
+            const pdfUrl = 'uploads/records/' + d.original_filename;
+            const iframe = document.getElementById('previewIframe');
+            if (iframe) iframe.src = pdfUrl;
+            const openTab = document.getElementById('prevOpenTabBtn');
+            if (openTab) openTab.href = pdfUrl;
             const dl = document.getElementById('prevDownloadBtn');
-            dl.setAttribute('download', d.original_filename);
-            dl.setAttribute('href', 'data:application/pdf;charset=utf-8,' + encodeURIComponent('OVPRE Document: ' + d.title));
+            if (dl) {
+                dl.setAttribute('download', d.original_filename);
+                dl.setAttribute('href', pdfUrl);
+            }
             OVPRE.openModal('previewModal');
         }
 
