@@ -22,7 +22,7 @@ function render_record_selection(string $tableId, string $entity, array $actions
     echo '<input type="hidden" name="action" value="bulk_table"><input type="hidden" name="entity" value="' . h($entity) . '">';
     foreach ($actions as $action => $label) {
         if ($action === 'delete') continue;
-        echo '<button class="ghost-btn action-btn" type="submit" name="bulk_action" value="' . h($action) . '" data-bulk-submit><i class="ri-' . ($action === 'archive' ? 'archive-line' : 'arrow-go-back-line') . '"></i><span>' . h($label) . '</span></button>';
+        echo '<button class="' . ($action === 'archive' ? 'action-btn btn-archive-natural' : 'ghost-btn action-btn') . '" type="submit" name="bulk_action" value="' . h($action) . '" data-bulk-submit><i class="' . ($action === 'archive' ? 'ri-download-2-line' : 'ri-arrow-go-back-line') . '"></i><span>' . h($label) . '</span></button>';
     }
     if ($archivedView) echo '<input type="hidden" name="archived_view" value="1">';
     echo '</form></div>';
@@ -466,7 +466,7 @@ if (!empty($docIds)) {
         <button class="ghost-btn action-btn" type="button" data-open-modal="versions-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-git-branch-line"></i><span>Versions</span></button>
         <?php if (!$archived): ?>
             <button class="primary-btn action-btn" type="button" data-open-modal="status-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-checkbox-circle-line"></i><span>Review</span></button>
-            <form method="post" class="record-archive-form"><?php echo csrf_field(); ?><input type="hidden" name="action" value="archive"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><input type="hidden" name="reason" value="Archived from Record Management"><button class="ghost-btn action-btn" type="submit"><i class="ri-archive-line"></i><span>Archive</span></button></form>
+            <form method="post" class="record-archive-form"><?php echo csrf_field(); ?><input type="hidden" name="action" value="archive"><input type="hidden" name="id" value="<?php echo (int) $doc['id']; ?>"><input type="hidden" name="reason" value="Archived from Record Management"><button class="action-btn btn-archive-natural" type="submit"><i class="ri-download-2-line"></i><span>Archive</span></button></form>
         <?php else: ?>
             <button class="ghost-btn action-btn" type="button" data-open-modal="restore-<?php echo (int) $doc['id']; ?>" data-dismiss-modal><i class="ri-arrow-go-back-line"></i><span>Retrieve</span></button>
         <?php endif; ?>

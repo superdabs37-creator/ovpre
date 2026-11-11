@@ -264,8 +264,8 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
     </div>
 
     <!-- Bulk Selection Toolbar for Announcements -->
-    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; margin-bottom: 14px;">
-        <span data-selection-count style="font-weight: 700; color: #c2410c; font-size: 0.88rem;">0 selected</span>
+    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 14px;">
+        <span data-selection-count style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
         <form id="bulk-announcementsTable" method="post" data-bulk-selection-form style="margin: 0;">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="bulk">
@@ -275,8 +275,8 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                     <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                 </button>
             <?php else: ?>
-                <button class="action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -346,7 +346,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="archive">
                                         <input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>">
-                                        <button class="action-btn" type="submit" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                                        <button class="action-btn btn-archive-natural" type="submit"><i class="ri-download-2-line"></i><span>Archive</span></button>
                                     </form>
                                 <?php endif; ?>
                             </div>

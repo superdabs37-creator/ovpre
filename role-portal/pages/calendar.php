@@ -300,8 +300,8 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                     <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                 </button>
             <?php else: ?>
-                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected schedule requests?');">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected schedule requests?');">
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -344,7 +344,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="archive_schedule_request">
                                         <input type="hidden" name="request_id" value="<?php echo (int) $request['id']; ?>">
-                                        <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
+                                        <button class="action-btn btn-archive-natural mini-btn" type="submit"><i class="ri-download-2-line"></i> <span>Archive</span></button>
                                     </form>
                                 <?php else: ?>
                                     <form method="post" style="display:inline;">
@@ -409,8 +409,8 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                     <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                 </button>
             <?php else: ?>
-                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected calendar activities?');">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected calendar activities?');">
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -465,7 +465,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                                             <?php echo csrf_field(); ?>
                                             <input type="hidden" name="action" value="archive_activity">
                                             <input type="hidden" name="activity_id" value="<?php echo (int) $activity['id']; ?>">
-                                            <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
+                                            <button class="action-btn btn-archive-natural mini-btn" type="submit"><i class="ri-download-2-line"></i> <span>Archive</span></button>
                                         </form>
                                     <?php else: ?>
                                         <button class="ghost-btn mini-btn" type="button" data-view-activity="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-eye-line"></i> View</button>

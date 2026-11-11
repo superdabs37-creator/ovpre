@@ -402,7 +402,7 @@ renderHeader('Research Management', 'research');
                 </button>
             <?php else: ?>
                 <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected research proposal(s)?');">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -560,8 +560,8 @@ renderHeader('Research Management', 'research');
                             <i class="ri-arrow-go-back-line"></i><span>Restore Proposal</span>
                         </button>
                     <?php else: ?>
-                        <button class="ghost-btn action-btn" type="submit" name="action" value="archive" style="color: #b45309; border: 1px solid #fed7aa; background: #fff7ed;" onclick="return confirm('Archive this research proposal?');">
-                            <i class="ri-archive-line"></i><span>Archive Proposal</span>
+                        <button class="action-btn btn-archive-natural" type="submit" name="action" value="archive" onclick="return confirm('Archive this research proposal?');">
+                            <i class="ri-download-2-line"></i><span>Archive Proposal</span>
                         </button>
                     <?php endif; ?>
                 </div>

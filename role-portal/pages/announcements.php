@@ -87,8 +87,8 @@ $counts = portal_announcement_counts();
                     <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                 </button>
             <?php else: ?>
-                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcements?');">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcements?');">
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -140,8 +140,8 @@ $counts = portal_announcement_counts();
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="archive">
                                         <input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>">
-                                        <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;">
-                                            <i class="ri-archive-line"></i> Archive
+                                        <button class="action-btn btn-archive-natural mini-btn" type="submit">
+                                            <i class="ri-download-2-line"></i> <span>Archive</span>
                                         </button>
                                     </form>
                                 <?php endif; ?>

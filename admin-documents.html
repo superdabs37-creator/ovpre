@@ -134,7 +134,7 @@
                                 <span data-selection-count>0 selected</span>
                                 <button class="ghost-btn action-btn" type="button" data-open-selected-research><i class="ri-arrow-right-line"></i><span>Open Selected</span></button>
                                 <form id="bulk-researchSubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'researchSubmissionTable')">
-                                    <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-archive-line"></i><span>Archive Selected</span></button>
+                                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
                                 </form>
                             </div>
                             <table class="data-table portal-table" id="researchSubmissionTable">
@@ -245,7 +245,7 @@
                             <div class="table-selection-toolbar" data-selection-toolbar="extensionSubmissionTable" hidden>
                                 <span data-selection-count>0 selected</span>
                                 <form id="bulk-extensionSubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'extensionSubmissionTable')">
-                                    <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-archive-line"></i><span>Archive Selected</span></button>
+                                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
                                 </form>
                             </div>
                             <table class="data-table portal-table" id="extensionSubmissionTable">
@@ -356,7 +356,7 @@
                             <div class="table-selection-toolbar" data-selection-toolbar="activitySubmissionTable" hidden>
                                 <span data-selection-count>0 selected</span>
                                 <form id="bulk-activitySubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'activitySubmissionTable')">
-                                    <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-archive-line"></i><span>Archive Selected</span></button>
+                                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
                                 </form>
                             </div>
                             <table class="data-table portal-table" id="activitySubmissionTable">
@@ -509,7 +509,7 @@
                         <div class="table-selection-toolbar" data-selection-toolbar="recordsTable" hidden>
                             <span data-selection-count>0 selected</span>
                             <form id="bulk-recordsTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'recordsTable')">
-                                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-archive-line"></i><span id="bulkRecordActionLabel">Archive Selected</span></button>
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span id="bulkRecordActionLabel">Archive Selected</span></button>
                             </form>
                         </div>
                         <table class="data-table portal-table" id="recordsTable">
@@ -781,7 +781,7 @@
                 <button class="ghost-btn action-btn" type="button" id="manageTimelineBtn"><i class="ri-time-line"></i><span>Timeline</span></button>
                 <button class="ghost-btn action-btn" type="button" id="manageVersionsBtn"><i class="ri-git-branch-line"></i><span>Versions</span></button>
                 <button class="primary-btn action-btn" type="button" id="manageReviewBtn"><i class="ri-checkbox-circle-line"></i><span>Review</span></button>
-                <button class="ghost-btn action-btn" type="button" id="manageArchiveBtn"><i class="ri-archive-line"></i><span>Archive</span></button>
+                <button class="action-btn btn-archive-natural" type="button" id="manageArchiveBtn"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </article>
     </div>
@@ -1666,7 +1666,7 @@
                     openRestoreModal(doc.id);
                 };
             } else {
-                archBtn.innerHTML = '<i class="ri-archive-line"></i><span>Archive</span>';
+                archBtn.innerHTML = '<i class="ri-download-2-line"></i><span>Archive</span>';
                 archBtn.onclick = () => {
                     toggleArchiveDoc(doc.id);
                 };

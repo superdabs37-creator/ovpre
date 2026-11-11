@@ -89,8 +89,8 @@ if (in_array(PORTAL_ROLE, ['Research Director', 'Research Coordinator', 'Researc
                         <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                     </button>
                 <?php else: ?>
-                    <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected submissions?');">
-                        <i class="ri-archive-line"></i><span>Archive Selected</span>
+                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected submissions?');">
+                        <i class="ri-download-2-line"></i><span>Archive Selected</span>
                     </button>
                 <?php endif; ?>
             </form>
@@ -172,7 +172,7 @@ if (in_array(PORTAL_ROLE, ['Research Director', 'Research Coordinator', 'Researc
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="archive">
                                         <input type="hidden" name="id" value="<?php echo (int) $row['id']; ?>">
-                                        <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
+                                        <button class="action-btn btn-archive-natural mini-btn" type="submit"><i class="ri-download-2-line"></i> <span>Archive</span></button>
                                     </form>
                                 <?php endif; ?>
                             </td>
@@ -296,7 +296,7 @@ if (in_array(PORTAL_ROLE, ['Extension Director', 'Extension Coordinator', 'Facul
                                     <?php if ($viewArchived): ?>
                                         <button class="ghost-btn mini-btn" type="submit"><i class="ri-arrow-go-back-line"></i> Restore</button>
                                     <?php else: ?>
-                                        <button class="ghost-btn mini-btn" type="submit" style="color:#b45309;"><i class="ri-archive-line"></i> Archive</button>
+                                        <button class="action-btn btn-archive-natural mini-btn" type="submit"><i class="ri-download-2-line"></i> <span>Archive</span></button>
                                     <?php endif; ?>
                                 </form>
                             </td>

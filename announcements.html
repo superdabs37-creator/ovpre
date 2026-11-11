@@ -98,12 +98,12 @@
                     </div>
 
                     <!-- BULK SELECTION TOOLBAR -->
-                    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" id="announcementsSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; margin-bottom: 14px;">
-                        <span data-selection-count id="announcementsSelectedCount" style="font-weight: 700; color: #c2410c; font-size: 0.88rem;">0 selected</span>
+                    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" id="announcementsSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 14px;">
+                        <span data-selection-count id="announcementsSelectedCount" style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
                         <form id="bulk-announcementsTable" onsubmit="handleBulkAnnouncementsSubmit(event)" style="margin: 0;">
                             <span id="bulkAnnouncementsBtnContainer">
-                                <button class="action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
+                                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                                 </button>
                             </span>
                         </form>
@@ -160,7 +160,7 @@
         <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                 <button type="button" class="action-btn" onclick="openEditAnnouncementModal(1)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(1)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(1)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
     </tr>
@@ -182,7 +182,7 @@
         <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                 <button type="button" class="action-btn" onclick="openEditAnnouncementModal(2)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(2)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(2)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
     </tr>
@@ -204,7 +204,7 @@
         <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                 <button type="button" class="action-btn" onclick="openEditAnnouncementModal(3)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(3)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(3)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
     </tr>
@@ -226,7 +226,7 @@
         <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                 <button type="button" class="action-btn" onclick="openEditAnnouncementModal(4)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(4)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(4)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
     </tr>
@@ -431,8 +431,8 @@
                 archBtn.style.border = '1px solid #cbd5e1';
                 if (bulkBtnContainer) {
                     bulkBtnContainer.innerHTML = `
-                        <button class="action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                            <i class="ri-archive-line"></i><span>Archive Selected</span>
+                        <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
+                            <i class="ri-download-2-line"></i><span>Archive Selected</span>
                         </button>
                     `;
                 }
@@ -537,7 +537,7 @@
                     const actionButtons = currentAnnTab === 'active' ? `
                         <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                             <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                            <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(${a.id})"><i class="ri-download-2-line"></i><span>Archive</span></button>
                         </div>
                     ` : `
                         <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">

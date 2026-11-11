@@ -4589,16 +4589,87 @@ button {
     border-color: #dc2626;
 }
 
-.btn-archive-natural {
+.btn-archive-natural,
+.btn-archive,
+.btn-archive-activity,
+button[name="bulk_action"][value="archive"],
+button[name="action"][value="archive"],
+button[value="archive"],
+.action-btn[data-archive-btn] {
     color: #b45309 !important;
     background: #fffbeb !important;
     border: 1px solid #fde68a !important;
+    font-weight: 700 !important;
+    padding: 0 11px !important;
+    min-height: 38px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    transition: all 0.15s ease !important;
 }
 
-.btn-archive-natural:hover {
+.data-table .btn-archive-natural,
+.data-table button[name="action"][value="archive"],
+.data-table button[value="archive"],
+.btn-archive-natural.mini-btn {
+    min-height: 30px !important;
+    padding: 4px 12px !important;
+    font-size: 0.82rem !important;
+}
+
+.btn-archive-natural:hover,
+.btn-archive:hover,
+.btn-archive-activity:hover,
+button[name="bulk_action"][value="archive"]:hover,
+button[name="action"][value="archive"]:hover,
+button[value="archive"]:hover,
+.action-btn[data-archive-btn]:hover {
     background: #fef3c7 !important;
     color: #92400e !important;
     border-color: #fcd34d !important;
+}
+
+.btn-archive-natural i,
+.btn-archive i,
+.btn-archive-activity i,
+button[name="bulk_action"][value="archive"] i,
+button[name="action"][value="archive"] i,
+button[value="archive"] i,
+.action-btn[data-archive-btn] i {
+    color: #b45309 !important;
+}
+
+.btn-archive-natural:hover i,
+.btn-archive:hover i,
+.btn-archive-activity:hover i,
+button[name="bulk_action"][value="archive"]:hover i,
+button[name="action"][value="archive"]:hover i,
+button[value="archive"]:hover i,
+.action-btn[data-archive-btn]:hover i {
+    color: #92400e !important;
+}
+
+.btn-archive-natural span,
+.btn-archive span,
+.btn-archive-activity span,
+button[name="bulk_action"][value="archive"] span,
+button[name="action"][value="archive"] span,
+button[value="archive"] span,
+.action-btn[data-archive-btn] span {
+    color: #b45309 !important;
+}
+
+.btn-archive-natural:hover span,
+.btn-archive:hover span,
+.btn-archive-activity:hover span,
+button[name="bulk_action"][value="archive"]:hover span,
+button[name="action"][value="archive"]:hover span,
+button[value="archive"]:hover span,
+.action-btn[data-archive-btn]:hover span {
+    color: #92400e !important;
 }
 
 .btn-delete-natural {

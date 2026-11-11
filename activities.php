@@ -332,7 +332,7 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                 </button>
             <?php else: ?>
                 <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected activities from calendar?');">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -450,8 +450,8 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
             
             <div class="activity-modal-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; padding-top: 16px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
                 <div class="activity-modal-destructive" style="display: flex; align-items: center; gap: 8px;">
-                    <button type="submit" formnovalidate name="action" value="archive" id="archiveActivityButton" onclick="return confirm('Archive this activity from the calendar?');" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; cursor: pointer; transition: all 0.15s;">
-                        <i class="ri-archive-line"></i><span>Archive</span>
+                    <button type="submit" formnovalidate name="action" value="archive" id="archiveActivityButton" class="action-btn btn-archive-natural" onclick="return confirm('Archive this activity from the calendar?');">
+                        <i class="ri-download-2-line"></i><span>Archive</span>
                     </button>
                     <?php if (($user['role'] ?? '') === 'Super Admin'): ?>
                         <button type="submit" formnovalidate name="action" value="reject" id="rejectActivityButton" onclick="return confirm('Reject this activity and remove it from the shared calendar?')" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; transition: all 0.15s;">

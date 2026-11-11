@@ -554,8 +554,8 @@ foreach ($projects as $p) {
                     <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                 </button>
             <?php else: ?>
-                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected proposals?');">
-                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected proposals?');">
+                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
         </form>
@@ -691,8 +691,8 @@ foreach ($projects as $p) {
                                             <?php echo csrf_field(); ?>
                                             <input type="hidden" name="action" value="archive_proposal">
                                             <input type="hidden" name="id" value="<?php echo (int) $project['id']; ?>">
-                                            <button class="ghost-btn action-btn" type="submit" style="width: 100%; justify-content: flex-start; color: #b45309;">
-                                                <i class="ri-archive-line"></i><span>Archive Proposal</span>
+                                            <button class="action-btn btn-archive-natural" type="submit" style="width: 100%; justify-content: flex-start;">
+                                                <i class="ri-download-2-line"></i><span>Archive Proposal</span>
                                             </button>
                                         </form>
                                     <?php endif; ?>
