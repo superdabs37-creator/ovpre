@@ -632,6 +632,10 @@ function require_login(array $roles = []): array {
     $allowedRoles = array_map('role_access_group', $roles);
     if (role_dashboard_path($userRole) === null || ($roles && !in_array(role_access_group($userRole), $allowedRoles, true))) {
         http_response_code(403);
+        if (file_exists(__DIR__ . '/../403.php')) {
+            require __DIR__ . '/../403.php';
+            exit;
+        }
         exit('You do not have access to this page.');
     }
     return $user;

@@ -7,6 +7,11 @@ DirectoryIndex landing.php index.php
     RewriteRule ^extension-director(?:/.*)?$ dashboard.php [R=302,L]
 </IfModule>
 
+# Custom Error Pages
+ErrorDocument 404 /404.php
+ErrorDocument 403 /403.php
+ErrorDocument 500 /500.php
+
 <FilesMatch "^(config\.local\.php|.*\.(sql|ini|log))$">
     Require all denied
 </FilesMatch>

@@ -1,0 +1,76 @@
+<?php
+require_once __DIR__ . '/includes/bootstrap.php';
+http_response_code(404);
+
+$user = current_user();
+$dashboardUrl = $user ? (role_dashboard_path((string)$user['role']) ?? 'dashboard.php') : 'index.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page or Resource Not Found | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261111-error">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="error-page-wrapper">
+        <article class="error-card error-404">
+            <a href="<?php echo h($dashboardUrl); ?>" class="error-brand" title="Go to Dashboard">
+                <img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo">
+                <div class="error-brand-text">
+                    <strong>I-Record Portal</strong>
+                    <span>Office of the Vice President for Research &amp; Extension</span>
+                </div>
+            </a>
+
+            <div class="error-illustration">
+                <i class="ri-file-search-line"></i>
+            </div>
+
+            <span class="error-code-badge">404 NOT FOUND</span>
+            <h1 class="error-title">Page or Resource Not Found</h1>
+            <p class="error-description">
+                The requested resource or page could not be located in the institutional repository. It may have been archived, renamed, or moved.
+            </p>
+
+            <form class="error-search-box" action="search.php" method="get">
+                <i class="ri-search-line" style="color: #94a3b8; font-size: 1.1rem; margin-right: 6px;"></i>
+                <input type="text" name="q" placeholder="Search across accessible records or modules..." aria-label="Search records">
+                <button type="submit"><i class="ri-arrow-right-line"></i> Search</button>
+            </form>
+
+            <div class="error-actions">
+                <a href="<?php echo h($dashboardUrl); ?>" class="error-btn-primary">
+                    <i class="ri-dashboard-line"></i> Return to Dashboard
+                </a>
+                <a href="admin-documents.php" class="error-btn-secondary">
+                    <i class="ri-file-search-line"></i> Browse Records
+                </a>
+                <a href="index.php" class="error-btn-secondary">
+                    <i class="ri-home-4-line"></i> Home
+                </a>
+            </div>
+
+            <div class="error-quick-links">
+                <p>Quick Navigation</p>
+                <div class="error-links-grid">
+                    <a href="research.php" class="error-link-pill"><i class="ri-flask-line"></i> Research</a>
+                    <a href="extension.php" class="error-link-pill"><i class="ri-community-line"></i> Extension</a>
+                    <a href="announcements.php" class="error-link-pill"><i class="ri-megaphone-line"></i> Announcements</a>
+                    <a href="activities.php" class="error-link-pill"><i class="ri-calendar-event-line"></i> Activities</a>
+                </div>
+            </div>
+
+            <div class="error-footer">
+                <span>Requested Resource: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;"><?php echo h($_SERVER['REQUEST_URI'] ?? ''); ?></code></span>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

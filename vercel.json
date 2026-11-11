@@ -114,6 +114,18 @@
       "dest": "/search.html"
     },
     {
+      "src": "^/404$",
+      "dest": "/404.html"
+    },
+    {
+      "src": "^/403$",
+      "dest": "/403.html"
+    },
+    {
+      "src": "^/500$",
+      "dest": "/500.html"
+    },
+    {
       "src": "^/assets/(.*)",
       "dest": "/assets/$1"
     },
