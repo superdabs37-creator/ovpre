@@ -5946,3 +5946,137 @@ body.register-body .stepper-nav {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* =========================================================
+   AUTHENTIC RESEARCH & EXTENSION WORKFLOW BUTTONS
+   ========================================================= */
+.workflow-actions-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.workflow-actions-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.action-btn.btn-endorse {
+    background-color: #15803d !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    padding: 0 18px !important;
+    min-height: 36px !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25) !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.1s ease !important;
+}
+
+.action-btn.btn-endorse:hover {
+    background-color: #166534 !important;
+    transform: translateY(-1px) !important;
+}
+
+.action-btn.btn-evaluate {
+    background-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    padding: 0 18px !important;
+    min-height: 36px !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25) !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.1s ease !important;
+}
+
+.action-btn.btn-evaluate:hover {
+    background-color: #1e40af !important;
+    transform: translateY(-1px) !important;
+}
+
+.action-btn.btn-approve {
+    background-color: #7e22ce !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    padding: 0 18px !important;
+    min-height: 36px !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    box-shadow: 0 2px 6px rgba(126, 34, 206, 0.25) !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.1s ease !important;
+}
+
+.action-btn.btn-approve:hover {
+    background-color: #6b21a8 !important;
+    transform: translateY(-1px) !important;
+}
+
+.action-btn.btn-revision {
+    background-color: #fff7ed !important;
+    border: 1px solid #fed7aa !important;
+    color: #c2410c !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    padding: 0 14px !important;
+    min-height: 34px !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+.action-btn.btn-revision:hover {
+    background-color: #ffedd5 !important;
+    border-color: #fdba74 !important;
+}
+
+.action-btn.btn-details {
+    background-color: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    color: #047857 !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    padding: 0 14px !important;
+    min-height: 34px !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+.action-btn.btn-details:hover {
+    background-color: #dcfce7 !important;
+    border-color: #86efac !important;
+    color: #065f46 !important;
+}
+

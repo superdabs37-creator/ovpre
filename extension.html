@@ -153,7 +153,7 @@
                 </button>
             </td>
             <td>
-            <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <button class="action-btn btn-details" type="button" onclick="openDetailsModal(1)">
                 <i class="ri-eye-line"></i><span>Details</span>
             </button>
         </td>
@@ -186,15 +186,15 @@
                 </button>
             </td>
             <td>
-            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+            <div class="workflow-actions-cell">
+                <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(2)">
                     <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
                 </button>
-                <div style="display: flex; gap: 6px;">
-                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                <div class="workflow-actions-row">
+                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(2, true)">
                         <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                     </button>
-                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(2)">
                         <i class="ri-eye-line"></i><span>Details</span>
                     </button>
                 </div>
@@ -229,11 +229,11 @@
                 </button>
             </td>
             <td>
-            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+            <div class="workflow-actions-cell">
+                <button class="action-btn btn-evaluate" type="button" onclick="openDirModal(3)">
                     <i class="ri-award-line"></i><span>Evaluate</span>
                 </button>
-                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(3)">
                     <i class="ri-eye-line"></i><span>Details</span>
                 </button>
             </div>
@@ -267,11 +267,11 @@
                 </button>
             </td>
             <td>
-            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+            <div class="workflow-actions-cell">
+                <button class="action-btn btn-approve" type="button" onclick="openExecModal(4)">
                     <i class="ri-shield-check-line"></i><span>Approve</span>
                 </button>
-                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(4)">
                     <i class="ri-eye-line"></i><span>Details</span>
                 </button>
             </div>
@@ -305,15 +305,15 @@
                 </button>
             </td>
             <td>
-            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+            <div class="workflow-actions-cell">
+                <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(5)">
                     <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
                 </button>
-                <div style="display: flex; gap: 6px;">
-                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                <div class="workflow-actions-row">
+                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(5, true)">
                         <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                     </button>
-                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(5)">
                         <i class="ri-eye-line"></i><span>Details</span>
                     </button>
                 </div>
@@ -348,15 +348,15 @@
                 </button>
             </td>
             <td>
-            <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+            <div class="workflow-actions-cell">
+                <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(6)">
                     <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
                 </button>
-                <div style="display: flex; gap: 6px;">
-                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                <div class="workflow-actions-row">
+                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(6, true)">
                         <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                     </button>
-                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(6)">
                         <i class="ri-eye-line"></i><span>Details</span>
                     </button>
                 </div>
@@ -772,15 +772,15 @@
                     if (currentTab === 'active') {
                         if (pStatus === 'Pending Coordinator Review') {
                             actionsHtml = `
-                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                                    <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id})" style="background: #15803d; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                <div class="workflow-actions-cell">
+                                    <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(${p.id})">
                                         <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
                                     </button>
-                                    <div style="display: flex; gap: 6px;">
-                                        <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                                    <div class="workflow-actions-row">
+                                        <button class="action-btn btn-revision" type="button" onclick="openCoordModal(${p.id}, true)">
                                             <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                                         </button>
-                                        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                        <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
                                             <i class="ri-eye-line"></i><span>Details</span>
                                         </button>
                                     </div>
@@ -788,49 +788,49 @@
                             `;
                         } else if (pStatus === 'Pending Director Review') {
                             actionsHtml = `
-                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                                    <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                <div class="workflow-actions-cell">
+                                    <button class="action-btn btn-evaluate" type="button" onclick="openDirModal(${p.id})">
                                         <i class="ri-award-line"></i><span>Evaluate</span>
                                     </button>
-                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
                                         <i class="ri-eye-line"></i><span>Details</span>
                                     </button>
                                 </div>
                             `;
                         } else if (pStatus === 'Pending Executive Approval') {
                             actionsHtml = `
-                                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                                    <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff; border: none; font-weight: 600; width: 100%; justify-content: center;">
+                                <div class="workflow-actions-cell">
+                                    <button class="action-btn btn-approve" type="button" onclick="openExecModal(${p.id})">
                                         <i class="ri-shield-check-line"></i><span>Approve</span>
                                     </button>
-                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
                                         <i class="ri-eye-line"></i><span>Details</span>
                                     </button>
                                 </div>
                             `;
                         } else if (pStatus === 'Needs Revision') {
                             actionsHtml = `
-                                <div style="display: flex; gap: 6px;">
-                                    <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed; font-weight: 600;">
+                                <div class="workflow-actions-row">
+                                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(${p.id}, true)">
                                         <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                                     </button>
-                                    <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
                                         <i class="ri-eye-line"></i><span>Details</span>
                                     </button>
                                 </div>
                             `;
                         } else {
                             actionsHtml = `
-                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
                                     <i class="ri-eye-line"></i><span>Details</span>
                                 </button>
                             `;
                         }
                     } else {
                         actionsHtml = `
-                            <div style="display: flex; gap: 6px;">
+                            <div class="workflow-actions-row">
                                 <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
-                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
+                                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})"><i class="ri-eye-line"></i><span>Details</span></button>
                             </div>
                         `;
                     }
