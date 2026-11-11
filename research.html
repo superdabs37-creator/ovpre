@@ -663,6 +663,10 @@
 
         function openCreateProposalModal() {
             const role = getCurrentUserRole();
+            if (role === 'Super Admin' || role === 'OVPRE Admin') {
+                OVPRE.toast('System Admin accounts cannot submit research proposals.', 'error');
+                return;
+            }
             const fullname = getCurrentUserFullname();
             const resInput = document.getElementById('createResearchers');
             if (resInput && (!resInput.value || resInput.value.includes('Dr. Juan Dela Cruz'))) {
@@ -679,11 +683,18 @@
             document.getElementById('archivedCount').textContent = archivedList.length;
 
             const userRole = getCurrentUserRole();
-            const isSuperAdmin = (userRole === 'Super Admin' || userRole === 'OVPRE Admin');
-            const isCoordinator = (userRole === 'Research Coordinator' || isSuperAdmin);
-            const isDirector = (userRole === 'Research Director' || isSuperAdmin);
-            const isExecutive = isSuperAdmin;
-            const isFaculty = (userRole === 'Faculty Researcher' || userRole === 'User');
+            const isSuperAdmin = (userRole === 'Super Admin');
+            const isOVPREAdmin = (userRole === 'OVPRE Admin');
+            const isExecutive = isSuperAdmin || isOVPREAdmin;
+            const isCoordinator = (userRole === 'Research Coordinator');
+            const isDirector = (userRole === 'Research Director');
+            const isFaculty = (userRole === 'Faculty Researcher' || userRole === 'Researcher');
+
+            // System Admin accounts cannot submit proposals - hide button for Admin / Executive
+            const submitBtn = document.getElementById('btnSubmitProposal');
+            if (submitBtn) {
+                submitBtn.style.display = isExecutive ? 'none' : 'inline-flex';
+            }
 
             const list = currentTab === 'active' ? activeList : archivedList;
             const tbody = document.getElementById('researchProjectsBody');
@@ -713,7 +724,7 @@
                     if (currentTab === 'active') {
                         let workflowBtns = '';
 
-                        // Stage 1: Coordinator Screening (Coordinator or Super Admin)
+                        // Stage 1: STRICTLY College Coordinator ONLY (No override)
                         if (isCoordinator && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse proposal to Research Director">
@@ -724,7 +735,7 @@
                                 </button>
                             `;
                         }
-                        // Stage 2: Director Evaluation (Director or Super Admin)
+                        // Stage 2: STRICTLY Research Director ONLY (No override)
                         else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director RIUH & Policy Evaluation">
@@ -732,7 +743,7 @@
                                 </button>
                             `;
                         }
-                        // Stage 3: Executive Final Approval (Super Admin / Executive)
+                        // Stage 3: STRICTLY Executive (Super Admin / OVPRE Admin) ONLY (No override)
                         else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
@@ -740,8 +751,8 @@
                                 </button>
                             `;
                         }
-                        // Faculty Resubmission (on Needs Revision)
-                        else if ((isFaculty || isSuperAdmin) && pStatus === 'Needs Revision') {
+                        // Revision: STRICTLY Faculty Proponent ONLY (No override)
+                        else if (isFaculty && pStatus === 'Needs Revision') {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised proposal">
                                     <i class="ri-refresh-line"></i><span>Resubmit</span>
@@ -796,6 +807,12 @@
         // --- SUBMIT PROPOSAL ---
         async function handleCreateResearchProposal(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole === 'Super Admin' || userRole === 'OVPRE Admin') {
+                OVPRE.toast('System Admin accounts cannot submit research proposals.', 'error');
+                return;
+            }
+
             const title = document.getElementById('createTitle').value.trim();
             const researchers = document.getElementById('createResearchers').value.trim();
             const college = document.getElementById('createCollege').value;
@@ -859,6 +876,12 @@
 
         // --- FACULTY RESUBMIT MODAL & HANDLER ---
         function openResubmitModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Faculty Researcher' && userRole !== 'Researcher') {
+                OVPRE.toast('Access Denied: Only faculty proponents can resubmit proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -881,6 +904,12 @@
 
         async function handleResubmitResearchProposal(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Faculty Researcher' && userRole !== 'Researcher') {
+                OVPRE.toast('Access Denied: Only faculty proponents can resubmit proposals.', 'error');
+                return;
+            }
+
             const id = Number(document.getElementById('resubmitProjId').value);
             const title = document.getElementById('resubmitTitle').value.trim();
             const researchers = document.getElementById('resubmitResearchers').value.trim();
@@ -950,6 +979,12 @@
 
         // --- COORDINATOR SCREENING ---
         function openCoordModal(id, isRevisionOnly) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Research Coordinator') {
+                OVPRE.toast('Access Denied: Only College Research Coordinators can screen proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -972,6 +1007,12 @@
 
         async function handleCoordSubmit(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Research Coordinator') {
+                OVPRE.toast('Access Denied: Only College Research Coordinators can screen proposals.', 'error');
+                return;
+            }
+
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'endorse';
             const id = Number(document.getElementById('coordProjId').value);
@@ -1026,6 +1067,12 @@
 
         // --- DIRECTOR EVALUATION ---
         function openDirModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Research Director') {
+                OVPRE.toast('Access Denied: Only the Research Director can evaluate proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -1039,6 +1086,12 @@
 
         async function handleDirSubmit(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Research Director') {
+                OVPRE.toast('Access Denied: Only the Research Director can evaluate proposals.', 'error');
+                return;
+            }
+
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'endorse';
             const id = Number(document.getElementById('dirProjId').value);
@@ -1099,6 +1152,12 @@
 
         // --- EXECUTIVE FINAL APPROVAL ---
         function openExecModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Super Admin' && userRole !== 'OVPRE Admin') {
+                OVPRE.toast('Access Denied: Only Executive Administration can approve proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -1110,6 +1169,12 @@
 
         async function handleExecSubmit(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Super Admin' && userRole !== 'OVPRE Admin') {
+                OVPRE.toast('Access Denied: Only Executive Administration can approve proposals.', 'error');
+                return;
+            }
+
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'approve';
             const id = Number(document.getElementById('execProjId').value);

@@ -731,6 +731,10 @@
 
         function openCreateProjectModal() {
             const role = getCurrentUserRole();
+            if (role === 'Super Admin' || role === 'OVPRE Admin') {
+                OVPRE.toast('System Admin accounts cannot submit extension proposals.', 'error');
+                return;
+            }
             const fullname = getCurrentUserFullname();
             const coordInput = document.getElementById('createCoordinator');
             if (coordInput && (!coordInput.value || coordInput.value.includes('Prof. Elena Cruz'))) {
@@ -747,11 +751,18 @@
             document.getElementById('archivedCount').textContent = archivedList.length;
 
             const userRole = getCurrentUserRole();
-            const isSuperAdmin = (userRole === 'Super Admin' || userRole === 'OVPRE Admin');
-            const isCoordinator = (userRole === 'Extension Coordinator' || isSuperAdmin);
-            const isDirector = (userRole === 'Extension Director' || isSuperAdmin);
-            const isExecutive = isSuperAdmin;
-            const isFaculty = (userRole === 'Faculty Extensionist' || userRole === 'User');
+            const isSuperAdmin = (userRole === 'Super Admin');
+            const isOVPREAdmin = (userRole === 'OVPRE Admin');
+            const isExecutive = isSuperAdmin || isOVPREAdmin;
+            const isCoordinator = (userRole === 'Extension Coordinator');
+            const isDirector = (userRole === 'Extension Director');
+            const isFaculty = (userRole === 'Faculty Extensionist' || userRole === 'Extensionist');
+
+            // System Admin accounts cannot submit proposals - hide button for Admin / Executive
+            const submitBtn = document.getElementById('btnSubmitProject');
+            if (submitBtn) {
+                submitBtn.style.display = isExecutive ? 'none' : 'inline-flex';
+            }
 
             const list = currentTab === 'active' ? activeList : archivedList;
             const tbody = document.getElementById('extensionProjectsBody');
@@ -785,7 +796,7 @@
                     if (currentTab === 'active') {
                         let workflowBtns = '';
 
-                        // Stage 1: Coordinator Screening (Coordinator or Super Admin)
+                        // Stage 1: STRICTLY College Coordinator ONLY (No override)
                         if (isCoordinator && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse project to Extension Director">
@@ -796,7 +807,7 @@
                                 </button>
                             `;
                         }
-                        // Stage 2: Director Evaluation (Director or Super Admin)
+                        // Stage 2: STRICTLY Extension Director ONLY (No override)
                         else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director Project Evaluation">
@@ -804,7 +815,7 @@
                                 </button>
                             `;
                         }
-                        // Stage 3: Executive Final Approval (Super Admin / Executive)
+                        // Stage 3: STRICTLY Executive (Super Admin / OVPRE Admin) ONLY (No override)
                         else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
@@ -812,8 +823,8 @@
                                 </button>
                             `;
                         }
-                        // Faculty Resubmission (on Needs Revision)
-                        else if ((isFaculty || isSuperAdmin) && pStatus === 'Needs Revision') {
+                        // Revision: STRICTLY Faculty Proponent ONLY (No override)
+                        else if (isFaculty && pStatus === 'Needs Revision') {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised extension project">
                                     <i class="ri-refresh-line"></i><span>Resubmit</span>
@@ -874,6 +885,12 @@
         // --- SUBMIT EXTENSION PROPOSAL ---
         async function handleCreateExtensionProject(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole === 'Super Admin' || userRole === 'OVPRE Admin') {
+                OVPRE.toast('System Admin accounts cannot submit extension proposals.', 'error');
+                return;
+            }
+
             const title = document.getElementById('createTitle').value.trim();
             const coordinator = document.getElementById('createCoordinator').value.trim();
             const partner = document.getElementById('createPartner').value.trim();
@@ -943,6 +960,12 @@
 
         // --- FACULTY RESUBMIT MODAL & HANDLER ---
         function openResubmitModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Faculty Extensionist' && userRole !== 'Extensionist') {
+                OVPRE.toast('Access Denied: Only faculty proponents can resubmit proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -968,6 +991,12 @@
 
         async function handleResubmitExtensionProject(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Faculty Extensionist' && userRole !== 'Extensionist') {
+                OVPRE.toast('Access Denied: Only faculty proponents can resubmit proposals.', 'error');
+                return;
+            }
+
             const id = Number(document.getElementById('resubmitExtProjId').value);
             const title = document.getElementById('resubmitExtTitle').value.trim();
             const coordinator = document.getElementById('resubmitExtCoordinator').value.trim();
@@ -1044,6 +1073,12 @@
 
         // --- COORDINATOR SCREENING ---
         function openCoordModal(id, isRevisionOnly) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Extension Coordinator') {
+                OVPRE.toast('Access Denied: Only College Extension Coordinators can screen proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -1066,6 +1101,12 @@
 
         async function handleCoordSubmit(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Extension Coordinator') {
+                OVPRE.toast('Access Denied: Only College Extension Coordinators can screen proposals.', 'error');
+                return;
+            }
+
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'endorse';
             const id = Number(document.getElementById('coordProjId').value);
@@ -1120,6 +1161,12 @@
 
         // --- DIRECTOR EVALUATION ---
         function openDirModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Extension Director') {
+                OVPRE.toast('Access Denied: Only the Extension Director can evaluate proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -1133,6 +1180,12 @@
 
         async function handleDirSubmit(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Extension Director') {
+                OVPRE.toast('Access Denied: Only the Extension Director can evaluate proposals.', 'error');
+                return;
+            }
+
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'endorse';
             const id = Number(document.getElementById('dirProjId').value);
@@ -1193,6 +1246,12 @@
 
         // --- EXECUTIVE FINAL APPROVAL ---
         function openExecModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Super Admin' && userRole !== 'OVPRE Admin') {
+                OVPRE.toast('Access Denied: Only Executive Administration can approve proposals.', 'error');
+                return;
+            }
+
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
@@ -1204,6 +1263,12 @@
 
         async function handleExecSubmit(event) {
             event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Super Admin' && userRole !== 'OVPRE Admin') {
+                OVPRE.toast('Access Denied: Only Executive Administration can approve proposals.', 'error');
+                return;
+            }
+
             const submitter = event.submitter;
             const action = submitter ? submitter.value : 'approve';
             const id = Number(document.getElementById('execProjId').value);
