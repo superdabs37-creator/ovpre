@@ -147,10 +147,10 @@
             </td>
             <td data-sort-value="2026-01-15">Jan 15, 2026</td>
             <td>
-            <button class="action-btn btn-details" type="button" onclick="openDetailsModal(1)">
-                <i class="ri-eye-line"></i><span>Details</span>
-            </button>
-        </td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(1)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -174,20 +174,10 @@
             </td>
             <td data-sort-value="2026-02-01">Feb 01, 2026</td>
             <td>
-            <div class="workflow-actions-cell">
-                <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(2)">
-                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
-                </button>
-                <div class="workflow-actions-row">
-                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(2, true)">
-                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
-                    </button>
-                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(2)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </div>
-        </td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(2)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -211,15 +201,10 @@
             </td>
             <td data-sort-value="2026-02-12">Feb 12, 2026</td>
             <td>
-            <div class="workflow-actions-cell">
-                <button class="action-btn btn-evaluate" type="button" onclick="openDirModal(3)">
-                    <i class="ri-award-line"></i><span>Evaluate</span>
-                </button>
-                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(3)">
-                    <i class="ri-eye-line"></i><span>Details</span>
-                </button>
-            </div>
-        </td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(3)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -243,15 +228,10 @@
             </td>
             <td data-sort-value="2026-02-18">Feb 18, 2026</td>
             <td>
-            <div class="workflow-actions-cell">
-                <button class="action-btn btn-approve" type="button" onclick="openExecModal(4)">
-                    <i class="ri-shield-check-line"></i><span>Approve</span>
-                </button>
-                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(4)">
-                    <i class="ri-eye-line"></i><span>Details</span>
-                </button>
-            </div>
-        </td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(4)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -275,20 +255,10 @@
             </td>
             <td data-sort-value="2026-03-10">Mar 10, 2026</td>
             <td>
-            <div class="workflow-actions-cell">
-                <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(5)">
-                    <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
-                </button>
-                <div class="workflow-actions-row">
-                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(5, true)">
-                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
-                    </button>
-                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(5)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </div>
-        </td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(5)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -312,15 +282,10 @@
             </td>
             <td data-sort-value="2026-03-12">Mar 12, 2026</td>
             <td>
-            <div class="workflow-actions-row">
-                <button class="action-btn btn-revision" type="button" onclick="openCoordModal(6, true)">
-                    <i class="ri-arrow-go-back-line"></i><span>Revision</span>
-                </button>
-                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(6)">
-                    <i class="ri-eye-line"></i><span>Details</span>
-                </button>
-            </div>
-        </td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(6)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
                             </tbody>
@@ -697,67 +662,16 @@
 
                     let actionsHtml = '';
                     if (currentTab === 'active') {
-                        if (pStatus === 'Pending Coordinator Review') {
-                            actionsHtml = `
-                                <div class="workflow-actions-cell">
-                                    <button class="action-btn btn-endorse" type="button" onclick="openCoordModal(${p.id})">
-                                        <i class="ri-checkbox-circle-line"></i><span>Endorse</span>
-                                    </button>
-                                    <div class="workflow-actions-row">
-                                        <button class="action-btn btn-revision" type="button" onclick="openCoordModal(${p.id}, true)">
-                                            <i class="ri-arrow-go-back-line"></i><span>Revision</span>
-                                        </button>
-                                        <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
-                                            <i class="ri-eye-line"></i><span>Details</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                        } else if (pStatus === 'Pending Director Review') {
-                            actionsHtml = `
-                                <div class="workflow-actions-cell">
-                                    <button class="action-btn btn-evaluate" type="button" onclick="openDirModal(${p.id})">
-                                        <i class="ri-award-line"></i><span>Evaluate</span>
-                                    </button>
-                                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
-                                        <i class="ri-eye-line"></i><span>Details</span>
-                                    </button>
-                                </div>
-                            `;
-                        } else if (pStatus === 'Pending Executive Approval') {
-                            actionsHtml = `
-                                <div class="workflow-actions-cell">
-                                    <button class="action-btn btn-approve" type="button" onclick="openExecModal(${p.id})">
-                                        <i class="ri-shield-check-line"></i><span>Approve</span>
-                                    </button>
-                                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
-                                        <i class="ri-eye-line"></i><span>Details</span>
-                                    </button>
-                                </div>
-                            `;
-                        } else if (pStatus === 'Needs Revision') {
-                            actionsHtml = `
-                                <div class="workflow-actions-row">
-                                    <button class="action-btn btn-revision" type="button" onclick="openCoordModal(${p.id}, true)">
-                                        <i class="ri-arrow-go-back-line"></i><span>Revision</span>
-                                    </button>
-                                    <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
-                                        <i class="ri-eye-line"></i><span>Details</span>
-                                    </button>
-                                </div>
-                            `;
-                        } else {
-                            actionsHtml = `
-                                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})">
-                                    <i class="ri-eye-line"></i><span>Details</span>
-                                </button>
-                            `;
-                        }
+                        actionsHtml = `
+                            <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                <i class="ri-eye-line"></i><span>Details</span>
+                            </button>
+                        `;
                     } else {
                         actionsHtml = `
-                            <div class="workflow-actions-row">
+                            <div style="display: flex; gap: 6px;">
                                 <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
-                                <button class="action-btn btn-details" type="button" onclick="openDetailsModal(${p.id})"><i class="ri-eye-line"></i><span>Details</span></button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
                             </div>
                         `;
                     }
