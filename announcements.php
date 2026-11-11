@@ -307,20 +307,20 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                         </td>
                         <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
                             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                                <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" style="background: #ea580c; color: #ffffff; border: none; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);"><i class="ri-edit-line"></i><span>Edit</span></button>
+                                <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                                 <?php if ($archived): ?>
                                     <form method="post" style="margin: 0; display: inline;" onsubmit="return confirm('Restore this announcement to published?');">
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="restore">
                                         <input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>">
-                                        <button class="action-btn" type="submit" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                        <button class="action-btn" type="submit" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
                                     </form>
                                 <?php else: ?>
                                     <form method="post" style="margin: 0; display: inline;" onsubmit="return confirm('Archive this announcement?');">
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="archive">
                                         <input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>">
-                                        <button class="action-btn" type="submit" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
+                                        <button class="action-btn" type="submit" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-archive-line"></i><span>Archive</span></button>
                                     </form>
                                 <?php endif; ?>
                             </div>
