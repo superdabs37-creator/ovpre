@@ -6176,7 +6176,7 @@ body.register-body::before {
     width: min(112vmin, 1000px);
     aspect-ratio: 1 / 1;
     transform: translate(-50%, -50%);
-    background: url("../img/ovpre-logo2.jpg") center / contain no-repeat;
+    background: url("../img/ovpre-logo.jpg") center / contain no-repeat;
     mix-blend-mode: multiply;
     opacity: 0.14;
     filter: saturate(0.8) blur(0.4px);
