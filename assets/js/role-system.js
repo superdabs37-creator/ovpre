@@ -140,6 +140,18 @@
         'Faculty Extensionist': 'Prof. Maria Bautista'
     };
 
+    // Default demo college/department affiliations (only faculty & coordinators belong to colleges)
+    const ROLE_DEMO_DEPARTMENTS = {
+        'Super Admin': '',
+        'OVPRE Admin': '',
+        'Research Director': '',
+        'Extension Director': '',
+        'Research Coordinator': 'College of Computer Studies and Technology (CCST)',
+        'Extension Coordinator': 'College of Business and Accountancy (CBA)',
+        'Faculty Researcher': 'College of Computer Studies and Technology (CCST)',
+        'Faculty Extensionist': 'College of Nursing and Allied Health Sciences (CONAHS)'
+    };
+
     function normalizeRole(role) {
         if (!role) return 'Super Admin';
         const lower = role.toLowerCase();
@@ -162,9 +174,17 @@
             if (raw) {
                 const parsed = JSON.parse(raw);
                 parsed.role = normalizeRole(parsed.role);
+                // Institutional executive administration roles do NOT belong to any specific college
+                if (['Super Admin', 'OVPRE Admin', 'Research Director', 'Extension Director'].includes(parsed.role)) {
+                    parsed.department = '';
+                } else if (!parsed.department && ROLE_DEMO_DEPARTMENTS[parsed.role]) {
+                    parsed.department = ROLE_DEMO_DEPARTMENTS[parsed.role];
+                }
                 if (!parsed.fullname) {
                     parsed.fullname = ROLE_DEMO_NAMES[parsed.role] || 'User';
                 }
+                sessionStorage.setItem('irecord_user', JSON.stringify(parsed));
+                localStorage.setItem('irecord_user', JSON.stringify(parsed));
                 return parsed;
             }
         } catch (e) {}
@@ -187,9 +207,9 @@
         const currentUser = getCurrentUser();
         currentUser.role = normalized;
         currentUser.fullname = ROLE_DEMO_NAMES[normalized] || (normalized + ' User');
-        if (normalized.includes('Coordinator')) {
-            currentUser.department = currentUser.department || 'College of Computer Studies and Technology (CCST)';
-        }
+        currentUser.department = ROLE_DEMO_DEPARTMENTS[normalized] !== undefined
+            ? ROLE_DEMO_DEPARTMENTS[normalized]
+            : '';
 
         sessionStorage.setItem('irecord_user', JSON.stringify(currentUser));
         localStorage.setItem('irecord_user', JSON.stringify(currentUser));
@@ -224,7 +244,11 @@
 
         const dropdownRole = document.getElementById('dropdownUserRole');
         if (dropdownRole) {
-            const deptText = user.department ? ` • ${user.department.split('(')[1]?.replace(')', '') || user.department}` : '';
+            const isInstitutional = ['Super Admin', 'OVPRE Admin', 'Research Director', 'Extension Director'].includes(roleKey);
+            const dept = isInstitutional ? '' : (user.department || '');
+            const deptText = (dept && dept !== 'Institutional' && dept !== 'None')
+                ? ` • ${dept.split('(')[1]?.replace(')', '') || dept}`
+                : '';
             dropdownRole.textContent = `${config.title}${deptText}`;
         }
 
