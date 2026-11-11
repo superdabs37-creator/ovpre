@@ -1931,6 +1931,8 @@ button {
 #archivedRecordsTable td:first-child,
 #activitiesTable th:first-child.table-checkbox-col,
 #activitiesTable td:first-child.table-checkbox-col,
+#announcementsTable th:first-child.table-checkbox-col,
+#announcementsTable td:first-child.table-checkbox-col,
 #researchProjectsTable th:first-child.table-checkbox-col,
 #researchProjectsTable td:first-child.table-checkbox-col,
 #extensionProjectsTable th:first-child.table-checkbox-col,

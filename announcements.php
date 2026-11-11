@@ -263,12 +263,35 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
         <?php endif; ?>
     </div>
 
-
+    <!-- Bulk Selection Toolbar for Announcements -->
+    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; margin-bottom: 14px;">
+        <span data-selection-count style="font-weight: 700; color: #c2410c; font-size: 0.88rem;">0 selected</span>
+        <form id="bulk-announcementsTable" method="post" data-bulk-selection-form style="margin: 0;">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="action" value="bulk">
+            <?php if ($archived): ?>
+                <input type="hidden" name="archived_view" value="1">
+                <button class="action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit onclick="return confirm('Restore selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
+                </button>
+            <?php else: ?>
+                <button class="action-btn" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ri-archive-line"></i><span>Archive Selected</span>
+                </button>
+            <?php endif; ?>
+        </form>
+    </div>
 
     <div class="table-scroll">
-        <table class="data-table" id="announcementsTable" style="width: 100%; border-collapse: collapse;">
+        <table class="data-table" id="announcementsTable" style="width: 100%; min-width: 900px; border-collapse: collapse;">
             <thead style="background: #ecfdf5; border-bottom: 2px solid #bbf7d0;">
                 <tr style="text-align: left;">
+                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 12px 8px;">
+                        <label class="select-all-control">
+                            <input form="bulk-announcementsTable" type="checkbox" aria-label="Select all announcements" data-select-all="announcementsTable">
+                            <span>Select all</span>
+                        </label>
+                    </th>
                     <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">ANNOUNCEMENT TITLE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
                     <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">CATEGORY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
                     <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">AUDIENCE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
@@ -284,7 +307,10 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                     $audienceDisplay = $item['audience'] === 'Other Authorized Users' ? 'Faculty Researchers' : $item['audience'];
                 ?>
                     <tr data-table-row data-priority="<?php echo h($meta['priority']); ?>" data-category="<?php echo h($meta['category']); ?>" id="announcement-row-<?php echo (int) $item['id']; ?>" style="border-bottom: 1px solid #f1f5f9;">
-                        <td style="padding: 14px 14px; max-width: 320px;">
+                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+                            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="<?php echo (int) $item['id']; ?>" aria-label="Select announcement <?php echo (int) $item['id']; ?>" data-row-select="announcementsTable">
+                        </td>
+                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
                             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" data-open-modal="viewAnnouncementModal<?php echo (int) $item['id']; ?>"><?php echo h($item['title']); ?></strong>
                             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">
                                 <?php echo h(mb_strimwidth($item['content'] ?? '', 0, 95, '...')); ?>
@@ -329,7 +355,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                 <?php endforeach; ?>
                 <?php if (!$announcements): ?>
                     <tr id="emptyRow">
-                        <td colspan="7" style="text-align: center; padding: 36px 16px; color: #64748b;">
+                        <td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b;">
                             <i class="ri-inbox-line" style="font-size: 2.2rem; display: block; margin-bottom: 8px; color: #94a3b8;"></i>
                             <?php echo $archived ? 'No archived announcements found.' : 'No announcements published yet.'; ?>
                         </td>
@@ -454,13 +480,14 @@ function exportAnnouncementsCsvPhp() {
 
     rows.forEach(r => {
         const cols = r.querySelectorAll('td');
-        if (cols.length >= 6) {
-            const title = '"' + (cols[0].querySelector('strong')?.textContent.trim() || '').replace(/"/g, '""') + '"';
-            const cat = '"' + (cols[1]?.textContent.trim() || '').replace(/"/g, '""') + '"';
-            const aud = '"' + (cols[2]?.textContent.trim() || '').replace(/"/g, '""') + '"';
-            const prio = '"' + (cols[3]?.textContent.trim() || '').replace(/"/g, '""') + '"';
-            const pub = '"' + (cols[4]?.textContent.trim() || '').replace(/"/g, '""') + '"';
-            const exp = '"' + (cols[5]?.textContent.trim() || '').replace(/"/g, '""') + '"';
+        const offset = r.querySelector('.table-checkbox-col') ? 1 : 0;
+        if (cols.length >= 6 + offset) {
+            const title = '"' + (cols[offset + 0].querySelector('strong')?.textContent.trim() || '').replace(/"/g, '""') + '"';
+            const cat = '"' + (cols[offset + 1]?.textContent.trim() || '').replace(/"/g, '""') + '"';
+            const aud = '"' + (cols[offset + 2]?.textContent.trim() || '').replace(/"/g, '""') + '"';
+            const prio = '"' + (cols[offset + 3]?.textContent.trim() || '').replace(/"/g, '""') + '"';
+            const pub = '"' + (cols[offset + 4]?.textContent.trim() || '').replace(/"/g, '""') + '"';
+            const exp = '"' + (cols[offset + 5]?.textContent.trim() || '').replace(/"/g, '""') + '"';
             lines.push([title, cat, aud, prio, pub, exp].join(','));
         }
     });
