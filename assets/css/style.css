@@ -3031,27 +3031,42 @@ button {
 .modal {
     position: fixed;
     inset: 0;
-    z-index: 90;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
     display: none;
-    place-items: center;
-    padding: 18px;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .modal.open {
-    display: grid;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .modal-backdrop {
     position: fixed;
     inset: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background: rgba(15, 35, 28, 0.58);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .modal-card {
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    margin: auto !important;
     width: min(100%, 680px);
     max-height: min(92vh, 900px);
     overflow-y: auto;
@@ -5478,21 +5493,66 @@ mark.global-search-hit {
 /* =========================================================
    PERSON SUBMISSIONS MODAL TABLE REFINEMENTS
 ========================================================= */
-#personSubmissionsDialog {
-    width: min(920px, calc(100% - 32px));
-    max-width: 920px;
-    max-height: 85vh;
-    padding: 0;
-    border: 0;
-    border-radius: 16px;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);
-    overflow: hidden;
-    background: #ffffff;
+#personSubmissionsDialog.modal,
+#submissionQuickPreviewDialog.modal,
+#programsByCollegeModal.modal {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 24px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow-y: auto !important;
 }
 
-#personSubmissionsDialog::backdrop {
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(4px);
+#personSubmissionsDialog .modal-card {
+    width: min(940px, calc(100vw - 48px)) !important;
+    max-width: 940px !important;
+    max-height: calc(90vh - 32px) !important;
+    margin: auto !important;
+    padding: 0 !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 25px 80px rgba(15, 23, 42, 0.35) !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+#submissionQuickPreviewDialog .modal-card {
+    width: min(680px, calc(100vw - 48px)) !important;
+    max-width: 680px !important;
+    max-height: calc(90vh - 32px) !important;
+    margin: auto !important;
+    padding: 0 !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 25px 80px rgba(15, 23, 42, 0.35) !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+#programsByCollegeModal .modal-card {
+    width: min(840px, calc(100vw - 48px)) !important;
+    max-width: 840px !important;
+    max-height: calc(90vh - 32px) !important;
+    margin: auto !important;
+    padding: 0 !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 25px 80px rgba(15, 23, 42, 0.35) !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
 }
 
 .person-dialog-body {
