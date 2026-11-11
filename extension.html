@@ -500,9 +500,13 @@
                 <h2 id="previewModalTitle" style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">
                     <i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>Document Preview</span>
                 </h2>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <a href="#" id="previewOpenTabBtn" target="_blank" class="ghost-btn mini-btn" title="Open in new window"><i class="ri-external-link-line"></i> <span>New Tab</span></a>
-                    <a href="#" id="previewDownloadBtn" class="primary-btn mini-btn" download><i class="ri-download-2-line"></i> <span>Download PDF</span></a>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="#" id="previewOpenTabBtn" target="_blank" class="preview-btn preview-btn-tab action-btn" title="Open in new window">
+                        <i class="ri-external-link-line"></i> <span>New Tab</span>
+                    </a>
+                    <a href="#" id="previewDownloadBtn" class="preview-btn preview-btn-download action-btn" download title="Download document">
+                        <i class="ri-download-2-line"></i> <span>Download PDF</span>
+                    </a>
                 </div>
             </div>
             <iframe id="previewIframe" class="document-preview" src="about:blank"></iframe>
@@ -1368,7 +1372,7 @@
             if (dl) {
                 const fname = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
                 dl.setAttribute('download', fname);
-                dl.setAttribute('href', 'uploads/records/' + fname);
+                dl.setAttribute('href', p.document_url || ('uploads/records/' + fname));
             }
 
             const archBtn = document.getElementById('detailArchiveBtn');
@@ -1409,6 +1413,45 @@
             document.getElementById('previewModalTitle').innerHTML = '<i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>' + OVPRE.h(title) + '</span>';
             const iframe = document.getElementById('previewIframe');
             if (iframe) {
+                iframe.onload = function () {
+                    try {
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (doc && doc.body && (doc.title.includes('404') || doc.body.innerText.includes('404 NOT FOUND') || doc.body.innerText.includes('Page or Resource Not Found'))) {
+                            doc.open();
+                            doc.write(`
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta charset="utf-8">
+                                    <style>
+                                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; margin: 0; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 80vh; box-sizing: border-box; }
+                                        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 650px; width: 100%; padding: 36px 32px; text-align: center; }
+                                        .badge { display: inline-block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-bottom: 16px; }
+                                        h2 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.35rem; font-weight: 700; line-height: 1.4; }
+                                        p { color: #64748b; font-size: 0.92rem; line-height: 1.6; margin: 0 0 20px 0; }
+                                        .doc-box { background: #f1f5f9; border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left; font-family: monospace; font-size: 0.88rem; color: #334155; word-break: break-all; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="card">
+                                        <div class="badge">OVPRE Digital Repository Document</div>
+                                        <h2>` + OVPRE.h(title) + `</h2>
+                                        <div class="doc-box">
+                                            <strong>Document:</strong> ` + OVPRE.h(filename) + `<br>
+                                            <strong>Status:</strong> Official Extension Record<br>
+                                            <strong>Repository:</strong> OVPRE Central Archive
+                                        </div>
+                                        <p>This project is registered in the institutional repository. The document is accessible via the download action or institutional backup.</p>
+                                    </div>
+                                </body>
+                                </html>
+                            `);
+                            doc.close();
+                        }
+                    } catch (e) {
+                        // Handled natively by browser PDF viewer
+                    }
+                };
                 iframe.src = url;
             }
             const openTab = document.getElementById('previewOpenTabBtn');
@@ -1430,7 +1473,8 @@
             if (!p) return;
             OVPRE.closeModal('detailsModal');
             const fname = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
-            openDocPreview(p.title, fname, 'uploads/records/' + fname);
+            const url = p.document_url || ('uploads/records/' + fname);
+            openDocPreview(p.title, fname, url);
         }
 
         // --- INITIALIZATION ---

@@ -2154,6 +2154,68 @@ button {
     border-radius: 16px;
 }
 
+/* Document Preview Header Action Buttons */
+.preview-card .preview-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    min-width: 105px !important;
+    max-width: none !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: all 0.15s ease !important;
+}
+
+.preview-card .preview-btn-tab {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1.5px solid #cbd5e1 !important;
+}
+
+.preview-card .preview-btn-tab:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+.preview-card .preview-btn-download {
+    background: #15803d !important;
+    color: #ffffff !important;
+    border: 1.5px solid #15803d !important;
+    box-shadow: 0 1px 3px rgba(21, 128, 61, 0.25) !important;
+}
+
+.preview-card .preview-btn-download:hover {
+    background: #166534 !important;
+    border-color: #166534 !important;
+}
+
+.preview-card .preview-btn span {
+    display: inline !important;
+    color: inherit !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+.preview-card .preview-btn i {
+    font-size: 1.1rem !important;
+    color: inherit !important;
+    margin: 0 !important;
+}
+
 @media print {
 
     .sidebar,
