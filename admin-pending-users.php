@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/includes/layout.php';
 $actor = require_login([ROLE_OVPRE_ADMIN, ROLE_SUPER_ADMIN, ROLE_RESEARCH_DIRECTOR]);
-verify_csrf();
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Account approvals removed: registration directly activates accounts
+redirect_to('admin-users.php');
+exit;
     $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
     if (!$id || $id <= 0 || (int) $id === (int) $actor['id']) {
         flash('error', 'Choose a valid account to approve.');

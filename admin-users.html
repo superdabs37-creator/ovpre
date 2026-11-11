@@ -124,14 +124,6 @@
                     <div>
                         <span id="userCountBadge" style="font-weight: 700; color: #15803d; font-size: 0.95rem;"><i class="ri-shield-user-line"></i> Showing 8 Registered Accounts</span>
                     </div>
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <a href="admin-pending-users.html" class="ghost-btn action-btn" style="color: #b45309; border-color: #fde68a; background: #fffbeb;">
-                            <i class="ri-user-follow-line"></i><span>Pending Approvals</span>
-                        </a>
-                        <button type="button" class="primary-btn" data-open-modal="addUserModal">
-                            <i class="ri-user-add-line"></i> Add New User
-                        </button>
-                    </div>
                 </section>
                 <!-- Users Table -->
                 <article class="panel" style="padding: 22px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -229,71 +221,6 @@
                 <div class="modal-footer">
                     <button type="button" onclick="closeEditUserModal()" style="padding: 9px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Cancel</button>
                     <button type="submit" style="padding: 9px 22px; border-radius: 8px; border: none; background: #15803d; color: #fff; cursor: pointer; font-weight: 700;">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add User Modal -->
-    <div class="modal" id="addUserModal" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="modal-backdrop" data-close-modal></div>
-        <div class="modal-card">
-            <div class="modal-header">
-                <div>
-                    <h3 style="margin: 0 0 4px; color: #0f172a; font-size: 1.2rem;"><i class="ri-user-add-line" style="color: #15803d;"></i> Create New User Account</h3>
-                    <p style="margin: 0; font-size: 0.82rem; color: #64748b;">Add an authorized faculty, director, or administrative member.</p>
-                </div>
-                <button type="button" onclick="closeAddUserModal()" style="border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
-                    <i class="ri-close-line"></i>
-                </button>
-            </div>
-            <form id="addUserForm" onsubmit="createUser(event)">
-                <div class="modal-body">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Full Name *</label>
-                            <input type="text" id="addFullName" placeholder="e.g. Prof. Juan Dela Cruz" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Username *</label>
-                            <input type="text" id="addUsername" placeholder="e.g. jdelacruz" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 14px;">
-                        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Institutional Email *</label>
-                        <input type="email" id="addEmail" placeholder="e.g. jdelacruz@dlsp.edu.ph" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.9rem;">
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">System Role *</label>
-                            <select id="addRole" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem; font-weight: 600;">
-                                <option value="Faculty Researcher">Faculty Researcher</option>
-                                <option value="Faculty Extensionist">Faculty Extensionist</option>
-                                <option value="Research Coordinator">Research Coordinator</option>
-                                <option value="Extension Coordinator">Extension Coordinator</option>
-                                <option value="Research Director">Research Director</option>
-                                <option value="Extension Director">Extension Director</option>
-                                <option value="OVPRE Admin">OVPRE Admin</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px;">College / Department</label>
-                            <select id="addCollege" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.88rem;">
-                                <option value="CCST">College of Computer Studies and Technology (CCST)</option>
-                                <option value="COE">College of Engineering (COE)</option>
-                                <option value="CONAHS">College of Nursing and Allied Health Sciences (CONAHS)</option>
-                                <option value="CAS">College of Arts and Sciences (CAS)</option>
-                                <option value="CBA">College of Business and Accountancy (CBA)</option>
-                                <option value="Institutional">None (Institutional / OVPRE)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="closeAddUserModal()" style="padding: 9px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Cancel</button>
-                    <button type="submit" style="padding: 9px 22px; border-radius: 8px; border: none; background: #15803d; color: #fff; cursor: pointer; font-weight: 700;">Add User</button>
                 </div>
             </form>
         </div>
@@ -422,33 +349,6 @@
                 renderUsers();
                 closeEditUserModal();
             }
-        }
-
-        function openAddUserModal() {
-            document.getElementById('addUserModal').classList.add('open');
-        }
-
-        function closeAddUserModal() {
-            document.getElementById('addUserModal').classList.remove('open');
-        }
-
-        function createUser(e) {
-            e.preventDefault();
-            let users = getUsers();
-            const newUser = {
-                id: Date.now(),
-                fullname: document.getElementById('addFullName').value,
-                username: document.getElementById('addUsername').value,
-                email: document.getElementById('addEmail').value,
-                role: document.getElementById('addRole').value,
-                college: document.getElementById('addCollege').value,
-                created_at: new Date().toISOString().slice(0, 10),
-                status: 'Active'
-            };
-            users.unshift(newUser);
-            localStorage.setItem('irecord_registered_users', JSON.stringify(users));
-            renderUsers();
-            closeAddUserModal();
         }
 
         function deleteUser(id) {
