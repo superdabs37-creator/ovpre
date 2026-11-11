@@ -263,27 +263,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
         <?php endif; ?>
     </div>
 
-    <!-- Table Toolbar (Search, Show Entries, Export CSV) -->
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; gap: 8px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; background: #ffffff; width: 280px;">
-            <i class="ri-search-line" style="color: #94a3b8; font-size: 1rem;"></i>
-            <input type="text" id="annSearchInput" oninput="filterPhpAnnTable(this.value)" placeholder="Search this table" style="border: none; outline: none; width: 100%; font-size: 0.88rem; background: transparent;">
-        </div>
-        <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #475569;">
-                <span>Show</span>
-                <select id="pageSizeSelect" onchange="changePhpPageSize(this.value)" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 0.88rem; background: #fff; cursor: pointer;">
-                    <option value="10" selected>10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                </select>
-                <span>entries</span>
-            </div>
-            <button type="button" class="ghost-btn action-btn" onclick="exportAnnouncementsCsvPhp()" style="background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 0.88rem; cursor: pointer;">
-                <i class="ri-download-2-line"></i> <span>Export CSV</span>
-            </button>
-        </div>
-    </div>
+
 
     <div class="table-scroll">
         <table class="data-table" id="announcementsTable" style="width: 100%; border-collapse: collapse;">
