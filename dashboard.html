@@ -12,6 +12,21 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .role-research-director .hide-for-research-director {
+            display: none !important;
+        }
+    </style>
+    <script>
+        (function() {
+            try {
+                var u = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user'));
+                if (u && u.role === 'Research Director') {
+                    document.documentElement.classList.add('role-research-director');
+                }
+            } catch(e) {}
+        })();
+    </script>
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
@@ -89,8 +104,8 @@
                                 <i class="ri-file-text-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
-                        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">25</div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
+                        <div id="kpiAcademicRecordsCount" style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">25</div>
+                        <small id="kpiAcademicRecordsSub" style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
                     </div>
 
                     <!-- Research Proposals -->
@@ -118,7 +133,7 @@
                     </div>
 
                     <!-- Extension Initiatives -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
+                    <div id="kpiExtensionCard" class="panel kpi-solid-card hide-for-research-director" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -184,7 +199,7 @@
                                     <option value="college-8">College of Human Kinetics</option>
                                 </select>
                             </div>
-                            <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
+                            <span id="deptSubmissionsBadge" class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
                                 25 Total Submissions
                             </span>
                         </div>
@@ -232,7 +247,7 @@
                             <h2 style="margin: 0; color: #166534; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
                                 <i class="ri-line-chart-line" style="font-size: 1.4rem;"></i> Monthly Submission Trends
                             </h2>
-                            <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.85rem;">Research proposals, extension programs, and accomplishment reports submitted each month</span>
+                            <span id="monthlySubmissionSubtitle" style="display: block; margin-top: 4px; color: #64748b; font-size: 0.85rem;">Research proposals, extension programs, and accomplishment reports submitted each month</span>
                         </div>
                         <span class="badge" style="background: #f0fdf4; color: #166534; padding: 6px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">Last 12 months</span>
                     </div>
@@ -249,7 +264,7 @@
                         <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
                             <i class="ri-pie-chart-2-line" style="color: #15803d; font-size: 1.3rem;"></i> Submission Status Distribution
                         </h3>
-                        <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Distribution of pending, review, revision, and approved research and extension submissions</span>
+                        <span id="statusDistributionSubtitle" style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Distribution of pending, review, revision, and approved research and extension submissions</span>
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px;">
@@ -262,7 +277,7 @@
                                     </h2>
                                     <span style="font-size: 0.8rem; color: #64748b;">Submissions by current review status</span>
                                 </div>
-                                <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
+                                <span id="statusTrackedBadge" class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
                                     23 Tracked Submissions
                                 </span>
                             </div>
@@ -298,12 +313,12 @@
                         <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
                             <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
                                 <div>
-                                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
+                                    <h2 id="streamChartTitle" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
                                         <i class="ri-git-branch-line" style="color: #7c3aed;"></i> Completion by Stream
                                     </h2>
-                                    <span style="font-size: 0.8rem; color: #64748b;">Research vs. Extension completion</span>
+                                    <span id="streamChartSubtitle" style="font-size: 0.8rem; color: #64748b;">Research vs. Extension completion</span>
                                 </div>
-                                <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
+                                <span id="streamChartBadge" class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
                                     Research &amp; Extension
                                 </span>
                             </div>
@@ -484,7 +499,7 @@
                             <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
                                 <i class="ri-team-line" style="color: #15803d;"></i> Submission Performance by Person
                             </h2>
-                            <small style="color: #64748b; font-size: 0.85rem;">Research and extension submissions grouped by submitter, with approved totals.</small>
+                            <small id="personTableSubtitle" style="color: #64748b; font-size: 0.85rem;">Research and extension submissions grouped by submitter, with approved totals.</small>
                         </div>
                     </div>
                     <div class="table-scroll">
@@ -494,7 +509,7 @@
                                     <th style="padding: 12px 10px;">Submitter</th>
                                     <th style="padding: 12px 10px;">College</th>
                                     <th style="padding: 12px 10px; text-align: center;">Research Submissions</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Extension Submissions</th>
+                                    <th id="thPersonExtension" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;">Extension Submissions</th>
                                     <th style="padding: 12px 10px; text-align: center;">Approved</th>
                                     <th style="padding: 12px 10px; text-align: center;">All Submissions</th>
                                 </tr>
@@ -636,7 +651,7 @@
                             <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
                                 <i class="ri-table-line" style="color: #15803d;"></i> Tactical Colleges Submissions Matrix
                             </h2>
-                            <small style="color: #64748b; font-size: 0.85rem;">Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.</small>
+                            <small id="matrixSubtitle" style="color: #64748b; font-size: 0.85rem;">Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.</small>
                         </div>
                     </div>
                     <div class="table-scroll">
@@ -647,8 +662,8 @@
                                     <th style="padding: 12px 10px; text-align: center;">Faculty</th>
                                     <th style="padding: 12px 10px; text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
                                     <th style="padding: 12px 10px; text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
-                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
-                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
+                                    <th id="thMatrixExtProposals" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
+                                    <th id="thMatrixAccomplishments" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
                                     <th style="padding: 12px 10px; text-align: center;">Total Submissions</th>
                                     <th style="padding: 12px 10px; text-align: center;">Activity Status</th>
                                 </tr>
@@ -669,9 +684,9 @@
                             <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
                                 <i class="ri-shield-check-line" style="color: #15803d;"></i> Executive Proposal Approval Queue (Stage 4 Final Sign-off)
                             </h2>
-                            <small style="color: #64748b; font-size: 0.85rem;">Proposals endorsed by College Coordinators and Directors awaiting Final Executive Grant Release &amp; Activation.</small>
+                            <small id="queueSubtitle" style="color: #64748b; font-size: 0.85rem;">Proposals endorsed by College Coordinators and Directors awaiting Final Executive Grant Release &amp; Activation.</small>
                         </div>
-                        <span class="status-pill status-pending-executive-approval" style="font-weight: 700; background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 999px;">
+                        <span id="queueAwaitingBadge" class="status-pill status-pending-executive-approval" style="font-weight: 700; background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 999px;">
                             3 Awaiting Decision
                         </span>
                     </div>
@@ -706,7 +721,7 @@
                                         </a>
                                     </td>
                                 </tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <tr class="hide-for-research-director" style="border-bottom: 1px solid #f1f5f9;">
                                     <td style="padding: 14px 10px;">
                                         <span class="status-pill" style="background: #e0f2fe; color: #0369a1; font-weight: 700; font-size: 0.74rem; padding: 4px 8px; border-radius: 6px;">Extension</span>
                                     </td>
@@ -750,6 +765,13 @@
          ANALYTICAL ENGINE JAVASCRIPT
     ========================================================= -->
     <script>
+        const isResearchDirector = (function() {
+            try {
+                const u = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user'));
+                return u && u.role === 'Research Director';
+            } catch(e) { return false; }
+        })();
+
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
             'College of Business Administration': ['Bachelor of Science in Business Administration', 'Bachelor of Science in Entrepreneurship', 'Bachelor of Science in Office Administration'],

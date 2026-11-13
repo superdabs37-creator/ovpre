@@ -339,8 +339,12 @@
         }
 
         // 4. Update Sidebar Footer Title
+        const sidebarFooter = document.querySelector('.sidebar-footer');
         const sidebarFooterSpan = document.querySelector('.sidebar-footer span');
-        if (sidebarFooterSpan) {
+        if (sidebarFooter && config.division) {
+            sidebarFooter.setAttribute('title', config.division);
+        }
+        if (sidebarFooterSpan && config.division) {
             sidebarFooterSpan.textContent = config.division;
         }
 
@@ -391,6 +395,99 @@
                     Active Role: <strong style="color: #0f172a;">${config.roleName}</strong>
                 </span>
             `;
+        }
+
+        // Specific customizations when viewing as Research Director
+        if (config.roleName === 'Research Director') {
+            document.documentElement.classList.add('role-research-director');
+            document.body.classList.add('role-research-director');
+
+            // 1. Hide extension initiatives KPI card
+            const extCard = document.getElementById('kpiExtensionCard');
+            if (extCard) extCard.style.display = 'none';
+
+            // 2. Update Academic Records KPI card
+            const recCount = document.getElementById('kpiAcademicRecordsCount');
+            if (recCount) recCount.textContent = '16';
+            const recSub = document.getElementById('kpiAcademicRecordsSub');
+            if (recSub) recSub.textContent = 'Research records cataloged';
+
+            // 3. Update Primary Spotlight subtitle & badge
+            const deptChartSubtitle = document.getElementById('deptChartSubtitle');
+            if (deptChartSubtitle) {
+                deptChartSubtitle.textContent = 'Programs are grouped under their college; institutional research submissions repeat for each listed program';
+            }
+            const deptBadge = document.getElementById('deptSubmissionsBadge');
+            if (deptBadge) {
+                deptBadge.textContent = '16 Research Proposals';
+            }
+
+            // 4. Update Monthly Submission Trends subtitle
+            const monthlySub = document.getElementById('monthlySubmissionSubtitle');
+            if (monthlySub) {
+                monthlySub.textContent = 'Research proposals submitted each month';
+            }
+
+            // 5. Update Submission Status Distribution subtitle & badge
+            const statusSub = document.getElementById('statusDistributionSubtitle');
+            if (statusSub) {
+                statusSub.textContent = 'Distribution of pending, review, revision, and approved research submissions';
+            }
+            const statusBadge = document.getElementById('statusTrackedBadge');
+            if (statusBadge) {
+                statusBadge.textContent = '16 Tracked Research Submissions';
+            }
+
+            // 6. Update Stream Chart Title, Subtitle & Badge
+            const streamTitle = document.getElementById('streamChartTitle');
+            if (streamTitle) {
+                streamTitle.innerHTML = '<i class="ri-git-branch-line" style="color: #15803d;"></i> Research Completion Status';
+            }
+            const streamSub = document.getElementById('streamChartSubtitle');
+            if (streamSub) {
+                streamSub.textContent = 'Completed vs. ongoing institutional research projects';
+            }
+            const streamBadge = document.getElementById('streamChartBadge');
+            if (streamBadge) {
+                streamBadge.textContent = 'Research Division';
+                streamBadge.style.background = '#dcfce7';
+                streamBadge.style.color = '#166534';
+            }
+
+            // 7. Update Person Submissions Table Subtitle
+            const personSub = document.getElementById('personTableSubtitle');
+            if (personSub) {
+                personSub.textContent = 'Research submissions grouped by submitter, with approved totals.';
+            }
+
+            // 8. Update Matrix Subtitle
+            const matrixSub = document.getElementById('matrixSubtitle');
+            if (matrixSub) {
+                matrixSub.textContent = 'Granular breakdown differentiating Research Proposals and Publications per college.';
+            }
+
+            // 9. Update Executive Queue Subtitle & Badge
+            const queueSub = document.getElementById('queueSubtitle');
+            if (queueSub) {
+                queueSub.textContent = 'Research proposals endorsed by College Coordinators and Research Director awaiting Final Executive Grant Release & Activation.';
+            }
+            const queueBadge = document.getElementById('queueAwaitingBadge');
+            if (queueBadge) {
+                queueBadge.textContent = '2 Awaiting Decision';
+            }
+
+            // 10. Completed project filter: remove extension option & select research
+            const compFilter = document.getElementById('completedProjectTypeFilter');
+            if (compFilter) {
+                const extOpt = compFilter.querySelector('option[value="extension"]');
+                if (extOpt) extOpt.remove();
+                const allOpt = compFilter.querySelector('option[value="all"]');
+                if (allOpt) allOpt.textContent = 'All Research Projects';
+                compFilter.value = 'research';
+            }
+        } else {
+            document.documentElement.classList.remove('role-research-director');
+            document.body.classList.remove('role-research-director');
         }
     }
 
