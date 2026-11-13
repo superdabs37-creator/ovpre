@@ -415,6 +415,8 @@
             document.body.classList.remove('role-extension-director');
             document.documentElement.classList.remove('role-extension-coordinator');
             document.body.classList.remove('role-extension-coordinator');
+            document.documentElement.classList.remove('role-faculty-extensionist');
+            document.body.classList.remove('role-faculty-extensionist');
 
             // 1. Hide extension initiatives KPI card
             const extCard = document.getElementById('kpiExtensionCard');
@@ -505,17 +507,19 @@
                 if (allOpt) allOpt.textContent = 'All Research Projects';
                 compFilter.value = 'research';
             }
-        } else if (config.roleName === 'Extension Director' || config.roleName === 'Extension Coordinator') {
-            const roleClass = config.roleName === 'Extension Director' ? 'role-extension-director' : 'role-extension-coordinator';
+        } else if (config.roleName === 'Extension Director' || config.roleName === 'Extension Coordinator' || config.roleName === 'Faculty Extensionist') {
+            let roleClass = 'role-extension-director';
+            if (config.roleName === 'Extension Coordinator') roleClass = 'role-extension-coordinator';
+            else if (config.roleName === 'Faculty Extensionist') roleClass = 'role-faculty-extensionist';
+
             document.documentElement.classList.add(roleClass);
             document.body.classList.add(roleClass);
-            if (config.roleName === 'Extension Coordinator') {
-                document.documentElement.classList.remove('role-extension-director');
-                document.body.classList.remove('role-extension-director');
-            } else {
-                document.documentElement.classList.remove('role-extension-coordinator');
-                document.body.classList.remove('role-extension-coordinator');
-            }
+            ['role-extension-director', 'role-extension-coordinator', 'role-faculty-extensionist'].forEach(c => {
+                if (c !== roleClass) {
+                    document.documentElement.classList.remove(c);
+                    document.body.classList.remove(c);
+                }
+            });
             document.documentElement.classList.remove('role-research-director');
             document.body.classList.remove('role-research-director');
             document.documentElement.classList.remove('role-research-coordinator');
@@ -594,9 +598,13 @@
             // 9. Update Executive Queue Subtitle & Badge
             const queueSub = document.getElementById('queueSubtitle');
             if (queueSub) {
-                queueSub.textContent = config.roleName === 'Extension Director'
-                    ? 'Extension proposals endorsed by College Coordinators and Extension Director awaiting Final Executive Grant Release & Activation.'
-                    : 'Extension proposals awaiting College Coordinator endorsement and Executive Grant Release.';
+                if (config.roleName === 'Extension Director') {
+                    queueSub.textContent = 'Extension proposals endorsed by College Coordinators and Extension Director awaiting Final Executive Grant Release & Activation.';
+                } else if (config.roleName === 'Extension Coordinator') {
+                    queueSub.textContent = 'Extension proposals awaiting College Coordinator endorsement and Executive Grant Release.';
+                } else {
+                    queueSub.textContent = 'Faculty community extension proposals undergoing college screening and executive grant approval.';
+                }
             }
             const queueBadge = document.getElementById('queueAwaitingBadge');
             if (queueBadge) {
@@ -623,6 +631,8 @@
             document.body.classList.remove('role-extension-director');
             document.documentElement.classList.remove('role-extension-coordinator');
             document.body.classList.remove('role-extension-coordinator');
+            document.documentElement.classList.remove('role-faculty-extensionist');
+            document.body.classList.remove('role-faculty-extensionist');
         }
     }
 

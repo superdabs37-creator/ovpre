@@ -19,7 +19,8 @@
             display: none !important;
         }
         .role-extension-director .hide-for-extension-director,
-        .role-extension-coordinator .hide-for-extension-director {
+        .role-extension-coordinator .hide-for-extension-director,
+        .role-faculty-extensionist .hide-for-extension-director {
             display: none !important;
         }
     </style>
@@ -38,6 +39,8 @@
                         document.documentElement.classList.add('role-extension-director');
                     } else if (u.role === 'Extension Coordinator') {
                         document.documentElement.classList.add('role-extension-coordinator');
+                    } else if (u.role === 'Faculty Extensionist') {
+                        document.documentElement.classList.add('role-faculty-extensionist');
                     }
                 }
             } catch(e) {}
@@ -793,7 +796,8 @@
         const isResearchOnlyRole = isResearchDirector || isResearchCoordinator || isFacultyResearcher;
         const isExtensionDirector = currentUserRole === 'Extension Director';
         const isExtensionCoordinator = currentUserRole === 'Extension Coordinator';
-        const isExtensionOnlyRole = isExtensionDirector || isExtensionCoordinator;
+        const isFacultyExtensionist = currentUserRole === 'Faculty Extensionist';
+        const isExtensionOnlyRole = isExtensionDirector || isExtensionCoordinator || isFacultyExtensionist;
 
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
