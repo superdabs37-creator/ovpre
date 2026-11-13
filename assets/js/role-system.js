@@ -454,21 +454,7 @@
                 statusBadge.textContent = '16 Tracked Research Submissions';
             }
 
-            // 6. Update Stream Chart Title, Subtitle & Badge
-            const streamTitle = document.getElementById('streamChartTitle');
-            if (streamTitle) {
-                streamTitle.innerHTML = '<i class="ri-git-branch-line" style="color: #15803d;"></i> Research Completion Status';
-            }
-            const streamSub = document.getElementById('streamChartSubtitle');
-            if (streamSub) {
-                streamSub.textContent = 'Completed vs. ongoing institutional research projects';
-            }
-            const streamBadge = document.getElementById('streamChartBadge');
-            if (streamBadge) {
-                streamBadge.textContent = 'Research Division';
-                streamBadge.style.background = '#dcfce7';
-                streamBadge.style.color = '#166534';
-            }
+
 
             // 7. Update Person Submissions Table Subtitle
             const personSub = document.getElementById('personTableSubtitle');
@@ -567,21 +553,7 @@
                 statusBadge.textContent = '7 Tracked Extension Submissions';
             }
 
-            // 6. Update Stream Chart Title, Subtitle & Badge
-            const streamTitle = document.getElementById('streamChartTitle');
-            if (streamTitle) {
-                streamTitle.innerHTML = '<i class="ri-git-branch-line" style="color: #0d9488;"></i> Extension Completion Status';
-            }
-            const streamSub = document.getElementById('streamChartSubtitle');
-            if (streamSub) {
-                streamSub.textContent = 'Completed vs. ongoing community extension projects';
-            }
-            const streamBadge = document.getElementById('streamChartBadge');
-            if (streamBadge) {
-                streamBadge.textContent = 'Extension Division';
-                streamBadge.style.background = '#ccfbf1';
-                streamBadge.style.color = '#0f766e';
-            }
+
 
             // 7. Update Person Submissions Table Subtitle
             const personSub = document.getElementById('personTableSubtitle');

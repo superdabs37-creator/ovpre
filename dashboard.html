@@ -1785,39 +1785,7 @@
             if (wingCanvas) {
                 new Chart(wingCanvas, {
                     type: 'bar',
-                    data: isResearchOnlyRole ? {
-                        labels: ['Research Division'],
-                        datasets: [
-                            {
-                                label: 'Completed',
-                                data: [11],
-                                backgroundColor: '#15803d',
-                                borderRadius: 6
-                            },
-                            {
-                                label: 'In Progress / Ongoing',
-                                data: [5],
-                                backgroundColor: '#ea580c',
-                                borderRadius: 6
-                            }
-                        ]
-                    } : isExtensionOnlyRole ? {
-                        labels: ['Extension Division'],
-                        datasets: [
-                            {
-                                label: 'Completed',
-                                data: [5],
-                                backgroundColor: '#0d9488',
-                                borderRadius: 6
-                            },
-                            {
-                                label: 'In Progress / Ongoing',
-                                data: [2],
-                                backgroundColor: '#ea580c',
-                                borderRadius: 6
-                            }
-                        ]
-                    } : {
+                    data: {
                         labels: ['Research Wing', 'Extension Wing'],
                         datasets: [
                             {
