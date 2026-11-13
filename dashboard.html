@@ -17,7 +17,8 @@
         .role-research-coordinator .hide-for-research-director {
             display: none !important;
         }
-        .role-extension-director .hide-for-extension-director {
+        .role-extension-director .hide-for-extension-director,
+        .role-extension-coordinator .hide-for-extension-director {
             display: none !important;
         }
     </style>
@@ -32,6 +33,8 @@
                         document.documentElement.classList.add('role-research-coordinator');
                     } else if (u.role === 'Extension Director') {
                         document.documentElement.classList.add('role-extension-director');
+                    } else if (u.role === 'Extension Coordinator') {
+                        document.documentElement.classList.add('role-extension-coordinator');
                     }
                 }
             } catch(e) {}
@@ -785,6 +788,8 @@
         const isResearchCoordinator = currentUserRole === 'Research Coordinator';
         const isResearchOnlyRole = isResearchDirector || isResearchCoordinator;
         const isExtensionDirector = currentUserRole === 'Extension Director';
+        const isExtensionCoordinator = currentUserRole === 'Extension Coordinator';
+        const isExtensionOnlyRole = isExtensionDirector || isExtensionCoordinator;
 
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
@@ -937,7 +942,7 @@
             const allOpt = completedProjectFilter.querySelector('option[value="all"]');
             if (allOpt) allOpt.textContent = 'All Research Projects';
             completedProjectFilter.value = 'research';
-        } else if (completedProjectFilter && isExtensionDirector) {
+        } else if (completedProjectFilter && isExtensionOnlyRole) {
             const resOpt = completedProjectFilter.querySelector('option[value="research"]');
             if (resOpt) resOpt.remove();
             const allOpt = completedProjectFilter.querySelector('option[value="all"]');
@@ -1025,8 +1030,8 @@
             submissionPerformance.forEach(person => {
                 const tr = document.createElement('tr');
                 tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
-                const userSubs = isResearchOnlyRole ? person.submissions.filter(s => s.type === 'Research') : (isExtensionDirector ? person.submissions.filter(s => s.type === 'Extension') : person.submissions);
-                const viewBtnText = isResearchOnlyRole ? `View research (${userSubs.length})` : (isExtensionDirector ? `View extension (${userSubs.length})` : `View all (${person.submissions.length})`);
+                const userSubs = isResearchOnlyRole ? person.submissions.filter(s => s.type === 'Research') : (isExtensionOnlyRole ? person.submissions.filter(s => s.type === 'Extension') : person.submissions);
+                const viewBtnText = isResearchOnlyRole ? `View research (${userSubs.length})` : (isExtensionOnlyRole ? `View extension (${userSubs.length})` : `View all (${person.submissions.length})`);
 
                 tr.innerHTML = `
                     <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${person.submitter_name}</strong></td>
@@ -1042,7 +1047,7 @@
                 `;
 
                 tr.querySelector('button').addEventListener('click', () => {
-                    personDialogTitle.textContent = isResearchOnlyRole ? `Research Submissions - ${person.submitter_name}` : (isExtensionDirector ? `Extension Submissions - ${person.submitter_name}` : `All Submissions - ${person.submitter_name}`);
+                    personDialogTitle.textContent = isResearchOnlyRole ? `Research Submissions - ${person.submitter_name}` : (isExtensionOnlyRole ? `Extension Submissions - ${person.submitter_name}` : `All Submissions - ${person.submitter_name}`);
                     personSubTableBody.replaceChildren();
 
                     userSubs.forEach(sub => {
@@ -1087,7 +1092,7 @@
             submissionsBreakdown.forEach(col => {
                 const row = document.createElement('tr');
                 row.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
-                const totalSub = isResearchOnlyRole ? (col.res_proposals + col.res_publications) : (isExtensionDirector ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
+                const totalSub = isResearchOnlyRole ? (col.res_proposals + col.res_publications) : (isExtensionOnlyRole ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
                 row.innerHTML = `
                     <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${col.department_name}</strong></td>
                     <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="font-weight: 700;">${col.total_faculty}</span></td>
@@ -1624,7 +1629,7 @@
                 const diffDatasets = isResearchOnlyRole ? [
                     { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
                     { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 }
-                ] : isExtensionDirector ? [
+                ] : isExtensionOnlyRole ? [
                     { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
                     { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
                 ] : [
@@ -1672,7 +1677,7 @@
                         fill: false,
                         borderWidth: 3
                     }
-                ] : isExtensionDirector ? [
+                ] : isExtensionOnlyRole ? [
                     {
                         label: 'Extension Programs',
                         data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
@@ -1750,7 +1755,7 @@
                     data: {
                         labels: ['Pending Review', 'Under Review', 'For Revision', 'Approved'],
                         datasets: [{
-                            data: isResearchOnlyRole ? [2, 3, 1, 10] : (isExtensionDirector ? [1, 2, 1, 3] : [3, 5, 2, 13]),
+                            data: isResearchOnlyRole ? [2, 3, 1, 10] : (isExtensionOnlyRole ? [1, 2, 1, 3] : [3, 5, 2, 13]),
                             backgroundColor: ['#f59e0b', '#0284c7', '#ea580c', '#15803d'],
                             borderWidth: 3,
                             borderColor: '#ffffff'
@@ -1788,7 +1793,7 @@
                                 borderRadius: 6
                             }
                         ]
-                    } : isExtensionDirector ? {
+                    } : isExtensionOnlyRole ? {
                         labels: ['Extension Division'],
                         datasets: [
                             {

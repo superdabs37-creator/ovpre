@@ -411,6 +411,8 @@
             }
             document.documentElement.classList.remove('role-extension-director');
             document.body.classList.remove('role-extension-director');
+            document.documentElement.classList.remove('role-extension-coordinator');
+            document.body.classList.remove('role-extension-coordinator');
 
             // 1. Hide extension initiatives KPI card
             const extCard = document.getElementById('kpiExtensionCard');
@@ -497,9 +499,17 @@
                 if (allOpt) allOpt.textContent = 'All Research Projects';
                 compFilter.value = 'research';
             }
-        } else if (config.roleName === 'Extension Director') {
-            document.documentElement.classList.add('role-extension-director');
-            document.body.classList.add('role-extension-director');
+        } else if (config.roleName === 'Extension Director' || config.roleName === 'Extension Coordinator') {
+            const roleClass = config.roleName === 'Extension Director' ? 'role-extension-director' : 'role-extension-coordinator';
+            document.documentElement.classList.add(roleClass);
+            document.body.classList.add(roleClass);
+            if (config.roleName === 'Extension Coordinator') {
+                document.documentElement.classList.remove('role-extension-director');
+                document.body.classList.remove('role-extension-director');
+            } else {
+                document.documentElement.classList.remove('role-extension-coordinator');
+                document.body.classList.remove('role-extension-coordinator');
+            }
             document.documentElement.classList.remove('role-research-director');
             document.body.classList.remove('role-research-director');
             document.documentElement.classList.remove('role-research-coordinator');
@@ -576,7 +586,9 @@
             // 9. Update Executive Queue Subtitle & Badge
             const queueSub = document.getElementById('queueSubtitle');
             if (queueSub) {
-                queueSub.textContent = 'Extension proposals endorsed by College Coordinators and Extension Director awaiting Final Executive Grant Release & Activation.';
+                queueSub.textContent = config.roleName === 'Extension Director'
+                    ? 'Extension proposals endorsed by College Coordinators and Extension Director awaiting Final Executive Grant Release & Activation.'
+                    : 'Extension proposals awaiting College Coordinator endorsement and Executive Grant Release.';
             }
             const queueBadge = document.getElementById('queueAwaitingBadge');
             if (queueBadge) {
@@ -599,6 +611,8 @@
             document.body.classList.remove('role-research-coordinator');
             document.documentElement.classList.remove('role-extension-director');
             document.body.classList.remove('role-extension-director');
+            document.documentElement.classList.remove('role-extension-coordinator');
+            document.body.classList.remove('role-extension-coordinator');
         }
     }
 
