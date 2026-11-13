@@ -82,7 +82,7 @@
                 ========================================================= -->
                 <section class="kpi-capsules-grid">
                     <!-- Academic Records -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
+                    <div class="panel kpi-solid-card" onclick="window.location.href='admin-documents.html'" title="Open Academic Records Repository" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22); cursor: pointer;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Academic Records</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -90,11 +90,13 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">25</div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
+                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
+                            <span>Cataloged in repository</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
+                        </small>
                     </div>
 
                     <!-- Research Proposals -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
+                    <div class="panel kpi-solid-card" onclick="window.location.href='research.html'" title="Open Research Proposals" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22); cursor: pointer;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -102,11 +104,13 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">16</div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
+                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
+                            <span>Faculty submissions</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
+                        </small>
                     </div>
 
                     <!-- Upcoming Activities Capsule -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22); cursor: pointer;" onclick="document.getElementById('upcomingActivitiesSection').scrollIntoView({behavior: 'smooth'})" title="Jump to Upcoming Activities Analytics">
+                    <div class="panel kpi-solid-card" onclick="scrollToUpcomingActivities()" title="Click to jump to Upcoming Activities Analytics" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22); cursor: pointer;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Upcoming Activities</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -114,11 +118,13 @@
                             </span>
                         </div>
                         <div id="kpiUpcomingActivitiesCount" style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">5</div>
-                        <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.85); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Next: Nov 15, 2026</small>
+                        <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.95); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
+                            <span>1 Ongoing &middot; Next: Nov 15</span> <i class="ri-arrow-down-line" style="font-size: 0.8rem;"></i>
+                        </small>
                     </div>
 
                     <!-- Extension Initiatives -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
+                    <div class="panel kpi-solid-card" onclick="window.location.href='extension.html'" title="Open Extension Initiatives" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22); cursor: pointer;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -126,11 +132,13 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">7</div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
+                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
+                            <span>Community outreach</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
+                        </small>
                     </div>
 
                     <!-- Colleges Participation -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
+                    <div class="panel kpi-solid-card" onclick="scrollToCollegeAnalytics()" title="View College Participation Analytics" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22); cursor: pointer;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges Active</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -138,11 +146,13 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">9 <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ 9</span></div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
+                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
+                            <span>Colleges with submissions</span> <i class="ri-arrow-down-line" style="font-size: 0.8rem;"></i>
+                        </small>
                     </div>
 
                     <!-- Active Faculty -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
+                    <div class="panel kpi-solid-card" onclick="window.location.href='admin-users.html'" title="Manage Registered Users" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22); cursor: pointer;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -150,7 +160,9 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">15 <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ 15</span></div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
+                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
+                            <span>Active accounts</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
+                        </small>
                     </div>
                 </section>
 
@@ -1263,6 +1275,59 @@
 
         let activityDonutChartInstance = null;
 
+        
+        window.scrollToUpcomingActivities = function() {
+            const sec = document.getElementById('upcomingActivitiesSection');
+            if (sec) {
+                sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                sec.classList.remove('act-section-spotlight');
+                void sec.offsetWidth; // trigger reflow
+                sec.classList.add('act-section-spotlight');
+                setTimeout(() => sec.classList.remove('act-section-spotlight'), 2500);
+            }
+        };
+
+        window.scrollToCollegeAnalytics = function() {
+            const sec = document.getElementById('differentiatedSubmissionsChart');
+            if (sec) {
+                const card = sec.closest('article');
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    card.classList.remove('act-section-spotlight');
+                    void card.offsetWidth;
+                    card.classList.add('act-section-spotlight');
+                    setTimeout(() => card.classList.remove('act-section-spotlight'), 2500);
+                }
+            }
+        };
+
+        function getUpcomingKpiSubtitle(activities) {
+            const todayIso = new Date().toISOString().slice(0, 10);
+            const active = activities.filter(a => !a.archived_at && (a.date_to || a.date) >= todayIso);
+            if (!active.length) return 'No events scheduled';
+
+            const ongoing = active.filter(a => a.date <= todayIso && (a.date_to || a.date) >= todayIso);
+            const future = active.filter(a => a.date > todayIso);
+            future.sort((a, b) => a.date.localeCompare(b.date));
+
+            if (future.length > 0) {
+                const next = future[0];
+                const nextD = new Date(next.date + 'T00:00:00');
+                const mShort = nextD.toLocaleString('en-US', { month: 'short' });
+                const day = nextD.getDate();
+                const diff = getDaysDifference(next.date);
+                const rel = diff === 1 ? 'Tomorrow' : 'In ' + diff + ' days';
+
+                if (ongoing.length > 0) {
+                    return ongoing.length + ' Ongoing · Next: ' + mShort + ' ' + day;
+                }
+                return 'Next: ' + mShort + ' ' + day + ' (' + rel + ')';
+            } else if (ongoing.length > 0) {
+                return ongoing.length + ' Active Ongoing Event' + (ongoing.length > 1 ? 's' : '');
+            }
+            return active.length + ' Scheduled Events';
+        }
+
         function renderUpcomingActivitiesModule() {
             const allActivities = loadDashboardActivities();
             const nowIso = new Date().toISOString().slice(0, 10);
@@ -1297,19 +1362,13 @@
                 return true;
             });
 
-            // Update top KPI capsule
+            // Update top KPI capsule with smart upcoming & ongoing calculation
             const kpiCountEl = document.getElementById('kpiUpcomingActivitiesCount');
             const kpiSubEl = document.getElementById('kpiUpcomingActivitiesSub');
             if (kpiCountEl) kpiCountEl.textContent = activeScheduled.length;
             if (kpiSubEl) {
-                if (activeScheduled.length > 0) {
-                    const nextAct = activeScheduled[0];
-                    const nextD = new Date(nextAct.date + 'T00:00:00');
-                    const mShort = nextD.toLocaleString('en-US', { month: 'short' });
-                    kpiSubEl.textContent = 'Next: ' + mShort + ' ' + nextD.getDate() + ', ' + nextD.getFullYear();
-                } else {
-                    kpiSubEl.textContent = 'No events scheduled';
-                }
+                const subText = getUpcomingKpiSubtitle(allActivities);
+                kpiSubEl.innerHTML = '<span>' + subText + '</span> <i class="ri-arrow-down-line" style="font-size: 0.8rem;"></i>';
             }
 
             // Update module micro KPIs
@@ -1322,7 +1381,8 @@
             const nextDateBadgeEl = document.getElementById('actKpiNextDateBadge');
             const nextTitleEl = document.getElementById('actKpiNextTitle');
             if (filtered.length > 0) {
-                const nearest = filtered[0];
+                // Find next upcoming non-concluded event
+                let nearest = filtered.find(a => a.date >= nowIso) || filtered[0];
                 const timing = getActivityTiming(nearest);
                 if (nextDaysEl) {
                     nextDaysEl.childNodes[0].nodeValue = timing.label + ' ';
@@ -1454,7 +1514,7 @@
                     const count = filteredCounts[cat] || 0;
                     const meta = activityCategoryMeta[cat] || { color: '#15803d' };
                     const pct = filtered.length ? Math.round((count / filtered.length) * 100) : 0;
-                    return '<div class="act-category-bar-row">' +
+                    return '<div class="act-category-bar-row" data-filter-cat="' + cat + '" title="Click to filter by ' + cat + '">' +
                         '<div class="act-category-bar-header">' +
                             '<span style="font-weight: 700; color: #334155; display: inline-flex; align-items: center; gap: 6px;">' +
                                 '<span style="width: 8px; height: 8px; border-radius: 50%; background: ' + meta.color + '; display: inline-block;"></span>' +
@@ -1497,6 +1557,17 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             cutout: '68%',
+                            onClick: (evt, elements) => {
+                                if (elements && elements.length > 0) {
+                                    const index = elements[0].index;
+                                    const clickedCat = cats[index];
+                                    const catSelect = document.getElementById('activityCategoryFilter');
+                                    if (catSelect) {
+                                        catSelect.value = (catSelect.value === clickedCat) ? 'all' : clickedCat;
+                                        renderUpcomingActivitiesModule();
+                                    }
+                                }
+                            },
                             plugins: {
                                 legend: {
                                     position: 'bottom',
