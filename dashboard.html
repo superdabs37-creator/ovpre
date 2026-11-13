@@ -513,12 +513,12 @@
                         <table id="personPerformanceTable" class="data-table portal-table" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
-                                    <th style="padding: 12px 10px;">Submitter</th>
-                                    <th style="padding: 12px 10px;">College</th>
-                                    <th id="thPersonResearch" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;">Research Submissions</th>
-                                    <th id="thPersonExtension" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;">Extension Submissions</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Approved</th>
-                                    <th style="padding: 12px 10px; text-align: center;">All Submissions</th>
+                                    <th style="padding: 12px 14px; text-align: left; vertical-align: middle; white-space: nowrap;">Submitter</th>
+                                    <th style="padding: 12px 14px; text-align: left; vertical-align: middle; white-space: nowrap;">College</th>
+                                    <th id="thPersonResearch" class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; white-space: nowrap;">Research Submissions</th>
+                                    <th id="thPersonExtension" class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; white-space: nowrap;">Extension Submissions</th>
+                                    <th style="padding: 12px 14px; text-align: center; vertical-align: middle; white-space: nowrap;">Approved</th>
+                                    <th style="padding: 12px 14px; text-align: center; vertical-align: middle; white-space: nowrap;">All Submissions</th>
                                 </tr>
                             </thead>
                             <tbody id="personPerformanceTableBody">
@@ -1007,24 +1007,27 @@
             submissionPerformance.forEach(person => {
                 const tr = document.createElement('tr');
                 tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
+                const userSubs = isResearchDirector ? person.submissions.filter(s => s.type === 'Research') : (isExtensionDirector ? person.submissions.filter(s => s.type === 'Extension') : person.submissions);
+                const viewBtnText = isResearchDirector ? `View research (${userSubs.length})` : (isExtensionDirector ? `View extension (${userSubs.length})` : `View all (${person.submissions.length})`);
+
                 tr.innerHTML = `
-                    <td style="padding: 12px 10px;"><strong>${person.submitter_name}</strong></td>
-                    <td style="padding: 12px 10px; color: #475569;">${person.department_name}</td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${person.research_count}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${person.extension_count}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${person.approved_count}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;">
+                    <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${person.submitter_name}</strong></td>
+                    <td style="padding: 12px 14px; text-align: left; vertical-align: middle; color: #475569;">${person.department_name}</td>
+                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${person.research_count}</span></td>
+                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${person.extension_count}</span></td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${person.approved_count}</span></td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;">
                         <button type="button" class="ghost-btn action-btn mini-btn" style="padding: 6px 14px; font-size: 0.82rem; border-radius: 8px; border: 1.5px solid #86efac !important; background: #f0fdf4 !important; color: #166534 !important; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; min-height: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                            <i class="ri-eye-line" style="color: #166534 !important; font-size: 0.95rem;"></i> <span style="color: #166534 !important; font-weight: 700;">View all (${person.submissions.length})</span>
+                            <i class="ri-eye-line" style="color: #166534 !important; font-size: 0.95rem;"></i> <span style="color: #166534 !important; font-weight: 700;">${viewBtnText}</span>
                         </button>
                     </td>
                 `;
 
                 tr.querySelector('button').addEventListener('click', () => {
-                    personDialogTitle.textContent = `All Submissions - ${person.submitter_name}`;
+                    personDialogTitle.textContent = isResearchDirector ? `Research Submissions - ${person.submitter_name}` : (isExtensionDirector ? `Extension Submissions - ${person.submitter_name}` : `All Submissions - ${person.submitter_name}`);
                     personSubTableBody.replaceChildren();
 
-                    person.submissions.forEach(sub => {
+                    userSubs.forEach(sub => {
                         const subRow = document.createElement('tr');
                         subRow.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.84rem;';
                         subRow.innerHTML = `
@@ -1066,14 +1069,15 @@
             submissionsBreakdown.forEach(col => {
                 const row = document.createElement('tr');
                 row.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
+                const totalSub = isResearchDirector ? (col.res_proposals + col.res_publications) : (isExtensionDirector ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
                 row.innerHTML = `
-                    <td style="padding: 12px 10px;"><strong>${col.department_name}</strong></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="font-weight: 700;">${col.total_faculty}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${col.res_proposals}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${col.res_publications}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${col.ext_proposals}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;">${col.ext_accomplishments}</span></td>
-                    <td style="padding: 12px 10px; text-align: center;"><strong style="color: #0f172a; font-size: 0.95rem;">${col.total_submissions}</strong></td>
+                    <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${col.department_name}</strong></td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="font-weight: 700;">${col.total_faculty}</span></td>
+                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${col.res_proposals}</span></td>
+                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${col.res_publications}</span></td>
+                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${col.ext_proposals}</span></td>
+                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;">${col.ext_accomplishments}</span></td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><strong style="color: #0f172a; font-size: 0.95rem;">${totalSub}</strong></td>
                     <td style="padding: 12px 10px; text-align: center;">
                         <span class="status-pill status-approved" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
                             <i class="ri-check-line"></i> Active Submissions
@@ -1599,16 +1603,24 @@
                     accData = progs.map((_, i) => Math.ceil(col.ext_accomplishments / progs.length));
                 }
 
+                const diffDatasets = isResearchDirector ? [
+                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 }
+                ] : isExtensionDirector ? [
+                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
+                ] : [
+                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 },
+                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
+                ];
+
                 diffChartInstance = new Chart(diffCanvas, {
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [
-                            { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
-                            { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 },
-                            { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
-                            { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
-                        ]
+                        datasets: diffDatasets
                     },
                     options: {
                         responsive: true,
@@ -1632,39 +1644,70 @@
             // 2. Monthly Submission Trends Line Chart
             const monthlyCanvas = document.getElementById('monthlySubmissionTrendChart');
             if (monthlyCanvas) {
+                const monthlyDatasets = isResearchDirector ? [
+                    {
+                        label: 'Research Proposals',
+                        data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
+                        borderColor: '#15803d',
+                        backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    }
+                ] : isExtensionDirector ? [
+                    {
+                        label: 'Extension Programs',
+                        data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Accomplishment Reports',
+                        data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
+                        borderColor: '#ea580c',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    }
+                ] : [
+                    {
+                        label: 'Research Proposals',
+                        data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
+                        borderColor: '#15803d',
+                        backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Extension Programs',
+                        data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Accomplishment Reports',
+                        data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
+                        borderColor: '#ea580c',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    }
+                ];
+
                 new Chart(monthlyCanvas, {
                     type: 'line',
                     data: {
                         labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-                        datasets: [
-                            {
-                                label: 'Research Proposals',
-                                data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
-                                borderColor: '#15803d',
-                                backgroundColor: 'rgba(21, 128, 61, 0.1)',
-                                tension: 0.35,
-                                fill: false,
-                                borderWidth: 3
-                            },
-                            {
-                                label: 'Extension Programs',
-                                data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
-                                borderColor: '#0284c7',
-                                backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                                tension: 0.35,
-                                fill: false,
-                                borderWidth: 3
-                            },
-                            {
-                                label: 'Accomplishment Reports',
-                                data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
-                                borderColor: '#ea580c',
-                                backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                                tension: 0.35,
-                                fill: false,
-                                borderWidth: 3
-                            }
-                        ]
+                        datasets: monthlyDatasets
                     },
                     options: {
                         responsive: true,
@@ -1689,7 +1732,7 @@
                     data: {
                         labels: ['Pending Review', 'Under Review', 'For Revision', 'Approved'],
                         datasets: [{
-                            data: [3, 5, 2, 13],
+                            data: isResearchDirector ? [2, 3, 1, 10] : (isExtensionDirector ? [1, 2, 1, 3] : [3, 5, 2, 13]),
                             backgroundColor: ['#f59e0b', '#0284c7', '#ea580c', '#15803d'],
                             borderWidth: 3,
                             borderColor: '#ffffff'
@@ -1711,7 +1754,39 @@
             if (wingCanvas) {
                 new Chart(wingCanvas, {
                     type: 'bar',
-                    data: {
+                    data: isResearchDirector ? {
+                        labels: ['Research Division'],
+                        datasets: [
+                            {
+                                label: 'Completed',
+                                data: [11],
+                                backgroundColor: '#15803d',
+                                borderRadius: 6
+                            },
+                            {
+                                label: 'In Progress / Ongoing',
+                                data: [5],
+                                backgroundColor: '#ea580c',
+                                borderRadius: 6
+                            }
+                        ]
+                    } : isExtensionDirector ? {
+                        labels: ['Extension Division'],
+                        datasets: [
+                            {
+                                label: 'Completed',
+                                data: [5],
+                                backgroundColor: '#0d9488',
+                                borderRadius: 6
+                            },
+                            {
+                                label: 'In Progress / Ongoing',
+                                data: [2],
+                                backgroundColor: '#ea580c',
+                                borderRadius: 6
+                            }
+                        ]
+                    } : {
                         labels: ['Research Wing', 'Extension Wing'],
                         datasets: [
                             {
