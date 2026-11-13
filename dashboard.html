@@ -105,6 +105,18 @@
                         <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
                     </div>
 
+                    <!-- Upcoming Activities Capsule -->
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Upcoming Activities</span>
+                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                                <i class="ri-calendar-event-line" style="font-size: 1.15rem; color: #ffffff;"></i>
+                            </span>
+                        </div>
+                        <div id="kpiUpcomingActivitiesCount" style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">5</div>
+                        <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.85); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Next: Nov 15, 2026</small>
+                    </div>
+
                     <!-- Extension Initiatives -->
                     <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
@@ -302,7 +314,168 @@
                     </div>
                 </div>
 
+                
                 <!-- =========================================================
+                     UPCOMING ACTIVITIES & SCHEDULE ANALYTICS
+                ========================================================= -->
+                <article id="upcomingActivitiesSection" class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 22px 24px;">
+                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 20px;">
+                        <div>
+                            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; color: #047857; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                                <i class="ri-calendar-check-line"></i> Institutional Event Intelligence
+                            </div>
+                            <h2 style="color: #166534; font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
+                                <i class="ri-calendar-event-line" style="color: #15803d; font-size: 1.4rem;"></i> Upcoming Activities &amp; Schedule Analytics
+                            </h2>
+                            <span style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 4px;">
+                                Real-time monitoring of scheduled academic colloquiums, capacity building workshops, community outreach missions, and defense panels.
+                            </span>
+                        </div>
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <label for="activityCategoryFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">Type:</label>
+                                <select id="activityCategoryFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 7px 11px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                                    <option value="all">All Event Types</option>
+                                    <option value="Seminar">Seminar</option>
+                                    <option value="Workshop">Workshop</option>
+                                    <option value="Training">Training</option>
+                                    <option value="Community Outreach">Community Outreach</option>
+                                    <option value="Project Defense">Project Defense</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <label for="activityTimeframeFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">Window:</label>
+                                <select id="activityTimeframeFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 7px 11px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                                    <option value="all">All Scheduled</option>
+                                    <option value="30">Next 30 Days</option>
+                                    <option value="60">Next 60 Days</option>
+                                    <option value="month">This Month</option>
+                                </select>
+                            </div>
+                            <a href="activities.html" class="primary-btn compact-btn" style="padding: 7px 14px; font-size: 0.82rem; background: #15803d; color: #ffffff; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="ri-calendar-2-line"></i><span>Open Calendar View</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- KPI Micro-Summary Cards Strip -->
+                    <div class="activities-micro-kpi-grid">
+                        <!-- KPI 1: Total Scheduled -->
+                        <div class="act-micro-kpi">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Scheduled Activities</div>
+                                <div id="actKpiTotalCount" style="font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.15;">5</div>
+                                <small id="actKpiTotalSub" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active on calendar</small>
+                            </div>
+                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #ecfdf5; border: 1px solid #a7f3d0; display: inline-grid; place-items: center; flex-shrink: 0;">
+                                <i class="ri-calendar-schedule-line" style="font-size: 1.25rem; color: #059669;"></i>
+                            </span>
+                        </div>
+
+                        <!-- KPI 2: Nearest Activity -->
+                        <div class="act-micro-kpi">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Nearest Event</div>
+                                <div id="actKpiNextDays" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; line-height: 1.15; display: flex; align-items: center; gap: 6px;">
+                                    In 2 days
+                                    <span id="actKpiNextDateBadge" style="font-size: 0.72rem; font-weight: 700; background: #cffafe; color: #0891b2; padding: 2px 6px; border-radius: 6px;">Nov 15</span>
+                                </div>
+                                <small id="actKpiNextTitle" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Grant Proposal Writing Workshop">Grant Proposal Writing</small>
+                            </div>
+                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #ecfeff; border: 1px solid #a5f3fc; display: inline-grid; place-items: center; flex-shrink: 0;">
+                                <i class="ri-timer-flash-line" style="font-size: 1.25rem; color: #0891b2;"></i>
+                            </span>
+                        </div>
+
+                        <!-- KPI 3: Dominant Category -->
+                        <div class="act-micro-kpi">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Primary Category</div>
+                                <div id="actKpiDominantCat" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Seminar &amp; Workshop</div>
+                                <small id="actKpiDominantShare" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">40% share of upcoming</small>
+                            </div>
+                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #f3e8ff; border: 1px solid #d8b4fe; display: inline-grid; place-items: center; flex-shrink: 0;">
+                                <i class="ri-pie-chart-2-line" style="font-size: 1.25rem; color: #7c3aed;"></i>
+                            </span>
+                        </div>
+
+                        <!-- KPI 4: Venues Engaged -->
+                        <div class="act-micro-kpi">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Reserved Venues</div>
+                                <div id="actKpiVenuesCount" style="font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.15;">5 Venues</div>
+                                <small id="actKpiVenuesSub" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Campus &amp; community sites</small>
+                            </div>
+                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #fef3c7; border: 1px solid #fde68a; display: inline-grid; place-items: center; flex-shrink: 0;">
+                                <i class="ri-map-pin-range-line" style="font-size: 1.25rem; color: #d97706;"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Main Split View: Left (Interactive Activity Feed) & Right (Visual Analytics) -->
+                    <div class="activities-analytics-grid">
+                        <!-- Left Column: Upcoming Activities Schedule Feed -->
+                        <div class="act-feed-container">
+                            <div class="act-feed-header">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px;">
+                                        <i class="ri-list-check" style="color: #15803d;"></i> Upcoming Event Schedule
+                                    </h3>
+                                    <span id="actListCountBadge" class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 3px 9px; border-radius: 999px;">
+                                        5 Events
+                                    </span>
+                                </div>
+                                <span style="font-size: 0.78rem; color: #64748b; font-weight: 600;">Chronological Order</span>
+                            </div>
+                            <div id="upcomingActivitiesFeedList" class="act-feed-list">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Visual Analytics & Breakdown -->
+                        <div class="act-analytics-container">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                                <div>
+                                    <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px;">
+                                        <i class="ri-pie-chart-line" style="color: #15803d;"></i> Activity Type Analytics
+                                    </h3>
+                                    <span style="font-size: 0.8rem; color: #64748b;">Distribution by categorical classification</span>
+                                </div>
+                                <span class="badge" style="background: #f8fafc; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0; padding: 4px 8px; border-radius: 6px;">
+                                    Real-time
+                                </span>
+                            </div>
+
+                            <!-- Doughnut Chart -->
+                            <div style="position: relative; height: 210px; width: 100%;">
+                                <canvas id="upcomingActivitiesDonutChart"></canvas>
+                            </div>
+
+                            <!-- Category Bars Breakdown -->
+                            <div id="activityCategoryBarsContainer" style="display: flex; flex-direction: column; gap: 10px; padding-top: 4px; border-top: 1px solid #f1f5f9;">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+
+                            <!-- Operational Metrics Strip -->
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 10px 12px;">
+                                    <span style="display: block; font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Approval Health</span>
+                                    <div style="font-size: 0.98rem; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                                        <i class="ri-checkbox-circle-fill"></i> 100% Approved
+                                    </div>
+                                </div>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 10px 12px;">
+                                    <span style="display: block; font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Avg Event Span</span>
+                                    <div id="actAvgSpanMetric" style="font-size: 0.98rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                                        <i class="ri-time-line" style="color: #0284c7;"></i> 2.8 Days
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+<!-- =========================================================
                      ROW 3: SUBMISSION PERFORMANCE BY PERSON
                 ========================================================= -->
                 <section class="panel" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
@@ -395,6 +568,64 @@
                 
         </article>
     </div>
+
+                <!-- QUICK PREVIEW MODAL FOR UPCOMING ACTIVITIES -->
+                <div class="modal" id="activityQuickPreviewModal" aria-hidden="true" role="dialog" aria-modal="true">
+                    <div class="modal-backdrop" data-close-modal></div>
+                    <article class="modal-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="actModalTypeBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 6px;"></span>
+                                <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px;">
+                                    <i class="ri-check-line"></i> Approved
+                                </span>
+                            </div>
+                            <button type="button" id="closeActivityModalBtn" data-close-modal aria-label="Close activity preview" style="width: 30px; height: 30px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+                        </div>
+                        <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; max-height: calc(85vh - 72px); overflow-y: auto;">
+                            <div>
+                                <h3 id="actModalTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.22rem; font-weight: 800; line-height: 1.35;"></h3>
+                                <div id="actModalRelativeBadge" style="display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 700; color: #166534; background: #f0fdf4; padding: 3px 9px; border-radius: 6px; margin-top: 4px;">
+                                    <i class="ri-timer-line"></i> <span id="actModalRelativeText"></span>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px;">
+                                <div>
+                                    <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Schedule &amp; Dates</span>
+                                    <div id="actModalDate" style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin-top: 3px;"></div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Designated Venue</span>
+                                    <div id="actModalVenue" style="font-size: 0.88rem; font-weight: 600; color: #0f172a; margin-top: 3px;"></div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Host / Coordinator</span>
+                                    <div id="actModalOrganizer" style="font-size: 0.88rem; font-weight: 600; color: #0f172a; margin-top: 3px;">Super Administrator</div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Event Duration</span>
+                                    <div id="actModalDuration" style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin-top: 3px;"></div>
+                                </div>
+                            </div>
+
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                                <strong style="display: block; margin-bottom: 8px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">Scope &amp; Activity Overview</strong>
+                                <p id="actModalDescription" style="margin: 0; color: #334155; font-size: 0.88rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word;"></p>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 12px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+                                <button type="button" class="ghost-btn" data-close-modal style="padding: 8px 16px; font-size: 0.84rem; font-weight: 600; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                                    Close
+                                </button>
+                                <a href="activities.html" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; text-decoration: none;">
+                                    <i class="ri-calendar-line"></i> <span>Manage in Full Calendar</span>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
 
                 <!-- =========================================================
                      ROW 4: TACTICAL COLLEGES SUBMISSIONS MATRIX
@@ -823,9 +1054,485 @@
         }
 
         // ==========================================
+        
+        // =========================================================
+        // UPCOMING ACTIVITIES & ANALYTICS CLIENT LOGIC
+        // =========================================================
+        const ACTIVITY_STORAGE_KEY = 'ovpre_calendar_activities';
+
+        function getInitialCalendarActivities() {
+            return [
+                {
+                    id: 1,
+                    title: 'Annual University Research Colloquium 2026',
+                    activity_type: 'Seminar',
+                    date: '2026-10-28',
+                    date_to: '2026-12-10',
+                    venue: 'University Gymnasium & Performing Arts Auditorium',
+                    description: 'Multi-college academic colloquium and peer review sessions for approved faculty and graduate research studies.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 2,
+                    title: 'Grant Proposal Writing Workshop for Early-Career Faculty',
+                    activity_type: 'Workshop',
+                    date: '2026-11-15',
+                    date_to: '2026-11-17',
+                    venue: 'Audio-Visual Room (AVR), Main Building',
+                    description: 'Capacity building on crafting CHED- and DOST-compliant funding proposals with RIUH evaluation scoring benchmarks.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 3,
+                    title: 'Barangay Health & Livelihood Community Outreach Caravan',
+                    activity_type: 'Community Outreach',
+                    date: '2026-11-22',
+                    date_to: '2026-11-24',
+                    venue: 'Barangay San Lucas Covered Court',
+                    description: 'Inter-college extension mission combining medical screening, digital literacy tutorials, and micro-business counseling.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 4,
+                    title: 'Regional Extension Impact & Assessment Conference',
+                    activity_type: 'Training',
+                    date: '2026-12-05',
+                    date_to: '2026-12-06',
+                    venue: 'University Function Hall, 3rd Floor',
+                    description: 'Annual assessment of completed community extension initiatives, monitoring deliverables and societal impact ratings.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                },
+                {
+                    id: 5,
+                    title: 'Mid-Year Thesis and Dissertation Defense Colloquium',
+                    activity_type: 'Project Defense',
+                    date: '2026-12-12',
+                    date_to: '2026-12-14',
+                    venue: 'Graduate School Amphitheater',
+                    description: 'Oral examination and panel defenses for candidate masters and doctoral research papers.',
+                    approval_status: 'Approved',
+                    created_by: 'Super Administrator',
+                    archived_at: null
+                }
+            ];
+        }
+
+        function loadDashboardActivities() {
+            try {
+                const stored = localStorage.getItem(ACTIVITY_STORAGE_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {
+                console.warn('Could not read activities from localStorage', e);
+            }
+            const initial = getInitialCalendarActivities();
+            try {
+                localStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(initial));
+            } catch (e) {}
+            return initial;
+        }
+
+        const activityCategoryMeta = {
+            'Seminar': { color: '#15803d', bg: '#dcfce7', text: '#166534', border: '#86efac' },
+            'Workshop': { color: '#0891b2', bg: '#cffafe', text: '#0e7490', border: '#67e8f9' },
+            'Training': { color: '#2563eb', bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
+            'Community Outreach': { color: '#d97706', bg: '#fef3c7', text: '#92400e', border: '#fde68a' },
+            'Project Defense': { color: '#7c3aed', bg: '#f3e8ff', text: '#6b21a8', border: '#d8b4fe' }
+        };
+
+        function getDaysDifference(targetDateStr) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const target = new Date(targetDateStr + 'T00:00:00');
+            target.setHours(0, 0, 0, 0);
+            return Math.round((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        }
+
+        function getActivityTiming(activity) {
+            const startDiff = getDaysDifference(activity.date);
+            const endDiff = activity.date_to ? getDaysDifference(activity.date_to) : startDiff;
+
+            if (startDiff <= 0 && endDiff >= 0) {
+                return { label: 'Ongoing', isOngoing: true, badgeBg: '#dcfce7', badgeText: '#15803d', diff: 0 };
+            }
+            if (startDiff === 0) {
+                return { label: 'Today', isOngoing: false, badgeBg: '#fef3c7', badgeText: '#92400e', diff: 0 };
+            }
+            if (startDiff === 1) {
+                return { label: 'Tomorrow', isOngoing: false, badgeBg: '#e0f2fe', badgeText: '#0369a1', diff: 1 };
+            }
+            if (startDiff > 1) {
+                return { label: 'In ' + startDiff + ' days', isOngoing: false, badgeBg: '#f1f5f9', badgeText: '#334155', diff: startDiff };
+            }
+            return { label: 'Concluded', isOngoing: false, badgeBg: '#f1f5f9', badgeText: '#64748b', diff: startDiff };
+        }
+
+        function formatActDateRange(dateFromStr, dateToStr) {
+            const d1 = new Date(dateFromStr + 'T00:00:00');
+            const d2 = dateToStr ? new Date(dateToStr + 'T00:00:00') : d1;
+            const m1 = d1.toLocaleString('en-US', { month: 'short' });
+            const day1 = String(d1.getDate()).padStart(2, '0');
+            const y1 = d1.getFullYear();
+            if (!dateToStr || dateFromStr === dateToStr) {
+                return m1 + ' ' + day1 + ', ' + y1;
+            }
+            const m2 = d2.toLocaleString('en-US', { month: 'short' });
+            const day2 = String(d2.getDate()).padStart(2, '0');
+            const y2 = d2.getFullYear();
+            if (m1 === m2 && y1 === y2) {
+                return m1 + ' ' + day1 + ' – ' + day2 + ', ' + y1;
+            }
+            return m1 + ' ' + day1 + ', ' + y1 + ' – ' + m2 + ' ' + day2 + ', ' + y2;
+        }
+
+        function getActDurationDays(dateFromStr, dateToStr) {
+            if (!dateToStr || dateFromStr === dateToStr) return 1;
+            const d1 = new Date(dateFromStr + 'T00:00:00');
+            const d2 = new Date(dateToStr + 'T00:00:00');
+            return Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) + 1);
+        }
+
+        function escapeActHtml(text) {
+            return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Activity Preview Modal
+        const actPreviewModal = document.getElementById('activityQuickPreviewModal');
+        const closeActModalBtn = document.getElementById('closeActivityModalBtn');
+
+        function openActivityPreviewModal(activity) {
+            if (!actPreviewModal) return;
+            const meta = activityCategoryMeta[activity.activity_type] || { color: '#15803d', bg: '#dcfce7', text: '#166534' };
+            const typeBadge = document.getElementById('actModalTypeBadge');
+            typeBadge.textContent = activity.activity_type || 'Event';
+            typeBadge.style.background = meta.bg;
+            typeBadge.style.color = meta.text;
+
+            document.getElementById('actModalTitle').textContent = activity.title || 'Untitled Activity';
+            
+            const timing = getActivityTiming(activity);
+            document.getElementById('actModalRelativeText').textContent = timing.label;
+            const relBadge = document.getElementById('actModalRelativeBadge');
+            relBadge.style.background = timing.badgeBg;
+            relBadge.style.color = timing.badgeText;
+
+            document.getElementById('actModalDate').textContent = formatActDateRange(activity.date, activity.date_to);
+            document.getElementById('actModalVenue').textContent = activity.venue || 'TBA';
+            document.getElementById('actModalOrganizer').textContent = activity.created_by || 'Super Administrator';
+            const durationDays = getActDurationDays(activity.date, activity.date_to);
+            document.getElementById('actModalDuration').textContent = durationDays + (durationDays === 1 ? ' Day' : ' Days (Multi-day session)');
+            document.getElementById('actModalDescription').textContent = activity.description || 'No detailed abstract provided for this scheduled event.';
+
+            if (window.OVPRE && OVPRE.openModal) {
+                OVPRE.openModal('activityQuickPreviewModal');
+            } else {
+                actPreviewModal.classList.add('open');
+                actPreviewModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        if (closeActModalBtn && actPreviewModal) {
+            closeActModalBtn.addEventListener('click', () => {
+                if (window.OVPRE && OVPRE.closeModal) {
+                    OVPRE.closeModal('activityQuickPreviewModal');
+                } else {
+                    actPreviewModal.classList.remove('open');
+                    actPreviewModal.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                }
+            });
+            actPreviewModal.addEventListener('click', (e) => {
+                if (e.target === actPreviewModal || e.target.classList.contains('modal-backdrop')) {
+                    actPreviewModal.classList.remove('open');
+                    actPreviewModal.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        let activityDonutChartInstance = null;
+
+        function renderUpcomingActivitiesModule() {
+            const allActivities = loadDashboardActivities();
+            const nowIso = new Date().toISOString().slice(0, 10);
+            
+            // Non-archived and active/future
+            const activeScheduled = allActivities.filter(a => {
+                if (a.archived_at) return false;
+                const endOrStart = a.date_to || a.date;
+                return endOrStart >= nowIso;
+            });
+            activeScheduled.sort((a, b) => a.date.localeCompare(b.date));
+
+            // Apply filters
+            const catFilter = document.getElementById('activityCategoryFilter');
+            const timeFilter = document.getElementById('activityTimeframeFilter');
+            const selectedCat = catFilter ? catFilter.value : 'all';
+            const selectedTime = timeFilter ? timeFilter.value : 'all';
+
+            let filtered = activeScheduled.filter(a => {
+                if (selectedCat !== 'all' && a.activity_type !== selectedCat) return false;
+                if (selectedTime === '30') {
+                    const days = getDaysDifference(a.date);
+                    if (days > 30) return false;
+                } else if (selectedTime === '60') {
+                    const days = getDaysDifference(a.date);
+                    if (days > 60) return false;
+                } else if (selectedTime === 'month') {
+                    const actMonth = a.date.slice(0, 7);
+                    const curMonth = nowIso.slice(0, 7);
+                    if (actMonth !== curMonth) return false;
+                }
+                return true;
+            });
+
+            // Update top KPI capsule
+            const kpiCountEl = document.getElementById('kpiUpcomingActivitiesCount');
+            const kpiSubEl = document.getElementById('kpiUpcomingActivitiesSub');
+            if (kpiCountEl) kpiCountEl.textContent = activeScheduled.length;
+            if (kpiSubEl) {
+                if (activeScheduled.length > 0) {
+                    const nextAct = activeScheduled.find(a => a.date >= nowIso) || activeScheduled[0];
+                    const nextD = new Date(nextAct.date + 'T00:00:00');
+                    const mShort = nextD.toLocaleString('en-US', { month: 'short' });
+                    kpiSubEl.textContent = 'Next: ' + mShort + ' ' + nextD.getDate() + ', ' + nextD.getFullYear();
+                } else {
+                    kpiSubEl.textContent = 'No events scheduled';
+                }
+            }
+
+            // Update module micro KPIs
+            const totalCountEl = document.getElementById('actKpiTotalCount');
+            const totalSubEl = document.getElementById('actKpiTotalSub');
+            if (totalCountEl) totalCountEl.textContent = filtered.length;
+            if (totalSubEl) totalSubEl.textContent = selectedCat === 'all' ? 'Active on calendar' : selectedCat + ' events';
+
+            const nextDaysEl = document.getElementById('actKpiNextDays');
+            const nextDateBadgeEl = document.getElementById('actKpiNextDateBadge');
+            const nextTitleEl = document.getElementById('actKpiNextTitle');
+            if (filtered.length > 0) {
+                const nearest = filtered.find(a => a.date >= nowIso) || filtered[0];
+                const timing = getActivityTiming(nearest);
+                if (nextDaysEl) {
+                    nextDaysEl.childNodes[0].nodeValue = timing.label + ' ';
+                }
+                if (nextDateBadgeEl) {
+                    const d = new Date(nearest.date + 'T00:00:00');
+                    nextDateBadgeEl.textContent = d.toLocaleString('en-US', { month: 'short' }) + ' ' + d.getDate();
+                }
+                if (nextTitleEl) {
+                    nextTitleEl.textContent = nearest.title;
+                    nextTitleEl.title = nearest.title;
+                }
+            } else {
+                if (nextDaysEl) nextDaysEl.childNodes[0].nodeValue = 'None ';
+                if (nextDateBadgeEl) nextDateBadgeEl.textContent = '–';
+                if (nextTitleEl) nextTitleEl.textContent = 'No events in filter';
+            }
+
+            // Dominant Category
+            const countsByType = {};
+            activeScheduled.forEach(a => {
+                const t = a.activity_type || 'Other';
+                countsByType[t] = (countsByType[t] || 0) + 1;
+            });
+            let dominantType = 'None';
+            let maxCount = 0;
+            Object.entries(countsByType).forEach(([type, count]) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    dominantType = type;
+                }
+            });
+            const domCatEl = document.getElementById('actKpiDominantCat');
+            const domShareEl = document.getElementById('actKpiDominantShare');
+            if (domCatEl) domCatEl.textContent = dominantType;
+            if (domShareEl) {
+                const pct = activeScheduled.length ? Math.round((maxCount / activeScheduled.length) * 100) : 0;
+                domShareEl.textContent = pct + '% share (' + maxCount + ' events)';
+            }
+
+            // Reserved Venues
+            const uniqueVenues = new Set(filtered.map(a => a.venue).filter(Boolean));
+            const venuesCountEl = document.getElementById('actKpiVenuesCount');
+            if (venuesCountEl) venuesCountEl.textContent = uniqueVenues.size + (uniqueVenues.size === 1 ? ' Venue' : ' Venues');
+
+            // Avg Duration
+            let totalSpanDays = 0;
+            filtered.forEach(a => {
+                totalSpanDays += getActDurationDays(a.date, a.date_to);
+            });
+            const avgSpan = filtered.length ? (totalSpanDays / filtered.length).toFixed(1) : '0';
+            const avgSpanEl = document.getElementById('actAvgSpanMetric');
+            if (avgSpanEl) {
+                avgSpanEl.innerHTML = '<i class="ri-time-line" style="color: #0284c7;"></i> ' + avgSpan + ' Days';
+            }
+
+            // Render Feed List
+            const feedContainer = document.getElementById('upcomingActivitiesFeedList');
+            const countBadgeEl = document.getElementById('actListCountBadge');
+            if (countBadgeEl) countBadgeEl.textContent = filtered.length + ' Event' + (filtered.length === 1 ? '' : 's');
+
+            if (feedContainer) {
+                if (filtered.length === 0) {
+                    feedContainer.innerHTML = '<div style="text-align: center; padding: 36px 16px; color: #64748b;"><i class="ri-calendar-close-line" style="font-size: 2.2rem; color: #cbd5e1; display: block; margin-bottom: 8px;"></i><p style="margin: 0; font-weight: 600; font-size: 0.9rem;">No upcoming activities found</p><span style="font-size: 0.78rem;">Try clearing or broadening your category or window filters.</span></div>';
+                } else {
+                    feedContainer.innerHTML = filtered.map(activity => {
+                        const d = new Date(activity.date + 'T00:00:00');
+                        const dayNum = String(d.getDate()).padStart(2, '0');
+                        const monShort = d.toLocaleString('en-US', { month: 'short' });
+                        const meta = activityCategoryMeta[activity.activity_type] || { color: '#15803d', bg: '#dcfce7', text: '#166534', border: '#86efac' };
+                        const timing = getActivityTiming(activity);
+                        const duration = getActDurationDays(activity.date, activity.date_to);
+                        const durationBadge = duration > 1 ? '<span style="font-size: 0.68rem; background: #e0f2fe; color: #0369a1; padding: 1px 6px; border-radius: 4px; font-weight: 700;">' + duration + ' Days</span>' : '';
+
+                        return '<div class="act-timeline-item" data-act-id="' + activity.id + '">' +
+                            '<div class="act-date-capsule">' +
+                                '<div class="act-day">' + dayNum + '</div>' +
+                                '<div class="act-mon">' + monShort + '</div>' +
+                            '</div>' +
+                            '<div style="min-width: 0;">' +
+                                '<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">' +
+                                    '<span class="badge" style="background: ' + meta.bg + '; color: ' + meta.text + '; border: 1px solid ' + meta.border + '; font-weight: 700; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">' +
+                                        escapeActHtml(activity.activity_type) +
+                                    '</span>' +
+                                    '<span class="badge" style="background: ' + timing.badgeBg + '; color: ' + timing.badgeText + '; font-weight: 700; font-size: 0.72rem; padding: 2px 7px; border-radius: 999px;">' +
+                                        timing.label +
+                                    '</span>' +
+                                    durationBadge +
+                                '</div>' +
+                                '<h4 style="margin: 0 0 3px; font-size: 0.95rem; font-weight: 800; color: #0f172a; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + escapeActHtml(activity.title) + '">' +
+                                    escapeActHtml(activity.title) +
+                                '</h4>' +
+                                '<div style="font-size: 0.78rem; color: #64748b; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + escapeActHtml(activity.venue) + '">' +
+                                    '<i class="ri-map-pin-2-fill" style="color: #15803d; font-size: 0.85rem; flex-shrink: 0;"></i> ' + escapeActHtml(activity.venue || 'Campus Venue') +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="act-timeline-actions" style="display: flex; align-items: center; gap: 6px;">' +
+                                '<button type="button" class="btn act-view-btn" data-preview-act="' + activity.id + '" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">' +
+                                    '<i class="ri-eye-line"></i> <span>Details</span>' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>';
+                    }).join('');
+
+                    // Add click listeners to items and buttons
+                    feedContainer.querySelectorAll('.act-timeline-item').forEach(item => {
+                        const actId = item.getAttribute('data-act-id');
+                        const act = allActivities.find(a => String(a.id) === String(actId));
+                        if (!act) return;
+                        item.addEventListener('click', (e) => {
+                            openActivityPreviewModal(act);
+                        });
+                    });
+                }
+            }
+
+            // Render Category Bars Breakdown
+            const barsContainer = document.getElementById('activityCategoryBarsContainer');
+            if (barsContainer) {
+                const cats = ['Seminar', 'Workshop', 'Training', 'Community Outreach', 'Project Defense'];
+                const filteredCounts = {};
+                cats.forEach(c => { filteredCounts[c] = 0; });
+                filtered.forEach(a => {
+                    const t = a.activity_type || 'Seminar';
+                    filteredCounts[t] = (filteredCounts[t] || 0) + 1;
+                });
+
+                barsContainer.innerHTML = cats.map(cat => {
+                    const count = filteredCounts[cat] || 0;
+                    const meta = activityCategoryMeta[cat] || { color: '#15803d' };
+                    const pct = filtered.length ? Math.round((count / filtered.length) * 100) : 0;
+                    return '<div class="act-category-bar-row">' +
+                        '<div class="act-category-bar-header">' +
+                            '<span style="font-weight: 700; color: #334155; display: inline-flex; align-items: center; gap: 6px;">' +
+                                '<span style="width: 8px; height: 8px; border-radius: 50%; background: ' + meta.color + '; display: inline-block;"></span>' +
+                                cat +
+                            '</span>' +
+                            '<span style="font-weight: 800; color: #0f172a;">' + count + ' <span style="font-size: 0.74rem; font-weight: 500; color: #64748b;">(' + pct + '%)</span></span>' +
+                        '</div>' +
+                        '<div class="act-category-bar-track">' +
+                            '<div class="act-category-bar-fill" style="width: ' + pct + '%; background: ' + meta.color + ';"></div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            }
+
+            // Update / Render Doughnut Chart
+            const chartCanvas = document.getElementById('upcomingActivitiesDonutChart');
+            if (chartCanvas && window.Chart) {
+                const cats = ['Seminar', 'Workshop', 'Training', 'Community Outreach', 'Project Defense'];
+                const counts = cats.map(c => {
+                    return filtered.filter(a => a.activity_type === c).length;
+                });
+                const colors = cats.map(c => activityCategoryMeta[c].color);
+
+                if (activityDonutChartInstance) {
+                    activityDonutChartInstance.data.datasets[0].data = counts;
+                    activityDonutChartInstance.update();
+                } else {
+                    activityDonutChartInstance = new Chart(chartCanvas, {
+                        type: 'doughnut',
+                        data: {
+                            labels: cats,
+                            datasets: [{
+                                data: counts,
+                                backgroundColor: colors,
+                                borderWidth: 3,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '68%',
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        usePointStyle: true,
+                                        boxWidth: 8,
+                                        font: { size: 10.5, weight: 600 }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                            const val = ctx.raw || 0;
+                                            const pct = total ? Math.round((val / total) * 100) : 0;
+                                            return ' ' + ctx.label + ': ' + val + ' (' + pct + '%)';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // Attach Filter Listeners
+        const actCatFilterEl = document.getElementById('activityCategoryFilter');
+        const actTimeFilterEl = document.getElementById('activityTimeframeFilter');
+        if (actCatFilterEl) actCatFilterEl.addEventListener('change', renderUpcomingActivitiesModule);
+        if (actTimeFilterEl) actTimeFilterEl.addEventListener('change', renderUpcomingActivitiesModule);
+
         // CHART.JS INITIALIZATIONS
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
+            renderUpcomingActivitiesModule();
             if (!window.Chart) return;
 
             // 1. Differentiated Submissions Chart
