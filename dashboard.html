@@ -682,7 +682,7 @@
                                     <th id="thMatrixResProposals" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
                                     <th id="thMatrixResPublications" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
                                     <th id="thMatrixExtProposals" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
-                                    <th id="thMatrixAccomplishments" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
+                                    <th id="thMatrixAccomplishments" style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
                                     <th style="padding: 12px 10px; text-align: center;">Total Submissions</th>
                                     <th style="padding: 12px 10px; text-align: center;">Activity Status</th>
                                 </tr>
@@ -1100,14 +1100,14 @@
             submissionsBreakdown.forEach(col => {
                 const row = document.createElement('tr');
                 row.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
-                const totalSub = isResearchOnlyRole ? (col.res_proposals + col.res_publications) : (isExtensionOnlyRole ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
+                const totalSub = isResearchOnlyRole ? (col.res_proposals + col.res_publications + col.ext_accomplishments) : (isExtensionOnlyRole ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
                 row.innerHTML = `
                     <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${col.department_name}</strong></td>
                     <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="font-weight: 700;">${col.total_faculty}</span></td>
                     <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${col.res_proposals}</span></td>
                     <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${col.res_publications}</span></td>
                     <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${col.ext_proposals}</span></td>
-                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;">${col.ext_accomplishments}</span></td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;">${col.ext_accomplishments}</span></td>
                     <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><strong style="color: #0f172a; font-size: 0.95rem;">${totalSub}</strong></td>
                     <td style="padding: 12px 10px; text-align: center;">
                         <span class="status-pill status-approved" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
@@ -1636,7 +1636,8 @@
 
                 const diffDatasets = isResearchOnlyRole ? [
                     { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
-                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 }
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
                 ] : isExtensionOnlyRole ? [
                     { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
                     { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
@@ -1681,6 +1682,15 @@
                         data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
                         borderColor: '#15803d',
                         backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Accomplishment Reports',
+                        data: [1, 1, 2, 2, 3, 3, 4, 3, 5, 4, 5, 6],
+                        borderColor: '#ea580c',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
                         tension: 0.35,
                         fill: false,
                         borderWidth: 3

@@ -441,7 +441,7 @@
             // 4. Update Monthly Submission Trends subtitle
             const monthlySub = document.getElementById('monthlySubmissionSubtitle');
             if (monthlySub) {
-                monthlySub.textContent = 'Research proposals submitted each month';
+                monthlySub.textContent = 'Research proposals and accomplishment reports submitted each month';
             }
 
             // 5. Update Submission Status Distribution subtitle & badge
@@ -465,7 +465,7 @@
             // 8. Update Matrix Subtitle
             const matrixSub = document.getElementById('matrixSubtitle');
             if (matrixSub) {
-                matrixSub.textContent = 'Granular breakdown differentiating Research Proposals and Publications per college.';
+                matrixSub.textContent = 'Granular breakdown differentiating Research Proposals, Publications, and Accomplishment Reports per college.';
             }
 
             // 9. Update Executive Queue Subtitle & Badge
