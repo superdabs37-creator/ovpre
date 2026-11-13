@@ -16,13 +16,20 @@
         .role-research-director .hide-for-research-director {
             display: none !important;
         }
+        .role-extension-director .hide-for-extension-director {
+            display: none !important;
+        }
     </style>
     <script>
         (function() {
             try {
                 var u = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user'));
-                if (u && u.role === 'Research Director') {
-                    document.documentElement.classList.add('role-research-director');
+                if (u) {
+                    if (u.role === 'Research Director') {
+                        document.documentElement.classList.add('role-research-director');
+                    } else if (u.role === 'Extension Director') {
+                        document.documentElement.classList.add('role-extension-director');
+                    }
                 }
             } catch(e) {}
         })();
@@ -109,7 +116,7 @@
                     </div>
 
                     <!-- Research Proposals -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
+                    <div id="kpiResearchCard" class="panel kpi-solid-card hide-for-extension-director" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -508,7 +515,7 @@
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
                                     <th style="padding: 12px 10px;">Submitter</th>
                                     <th style="padding: 12px 10px;">College</th>
-                                    <th style="padding: 12px 10px; text-align: center;">Research Submissions</th>
+                                    <th id="thPersonResearch" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;">Research Submissions</th>
                                     <th id="thPersonExtension" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;">Extension Submissions</th>
                                     <th style="padding: 12px 10px; text-align: center;">Approved</th>
                                     <th style="padding: 12px 10px; text-align: center;">All Submissions</th>
@@ -660,8 +667,8 @@
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
                                     <th style="padding: 12px 10px;">College Name</th>
                                     <th style="padding: 12px 10px; text-align: center;">Faculty</th>
-                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
-                                    <th style="padding: 12px 10px; text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
+                                    <th id="thMatrixResProposals" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
+                                    <th id="thMatrixResPublications" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
                                     <th id="thMatrixExtProposals" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
                                     <th id="thMatrixAccomplishments" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
                                     <th style="padding: 12px 10px; text-align: center;">Total Submissions</th>
@@ -705,7 +712,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <tr class="hide-for-extension-director" style="border-bottom: 1px solid #f1f5f9;">
                                     <td style="padding: 14px 10px;">
                                         <span class="status-pill" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.74rem; padding: 4px 8px; border-radius: 6px;">Research</span>
                                     </td>
@@ -737,7 +744,7 @@
                                         </a>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr class="hide-for-extension-director">
                                     <td style="padding: 14px 10px;">
                                         <span class="status-pill" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.74rem; padding: 4px 8px; border-radius: 6px;">Research</span>
                                     </td>
@@ -765,12 +772,14 @@
          ANALYTICAL ENGINE JAVASCRIPT
     ========================================================= -->
     <script>
-        const isResearchDirector = (function() {
+        const currentUserRole = (function() {
             try {
                 const u = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user'));
-                return u && u.role === 'Research Director';
-            } catch(e) { return false; }
+                return u && u.role ? u.role : 'Super Admin';
+            } catch(e) { return 'Super Admin'; }
         })();
+        const isResearchDirector = currentUserRole === 'Research Director';
+        const isExtensionDirector = currentUserRole === 'Extension Director';
 
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],

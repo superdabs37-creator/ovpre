@@ -485,9 +485,104 @@
                 if (allOpt) allOpt.textContent = 'All Research Projects';
                 compFilter.value = 'research';
             }
+        } else if (config.roleName === 'Extension Director') {
+            document.documentElement.classList.add('role-extension-director');
+            document.body.classList.add('role-extension-director');
+            document.documentElement.classList.remove('role-research-director');
+            document.body.classList.remove('role-research-director');
+
+            // 1. Hide research proposals KPI card
+            const resCard = document.getElementById('kpiResearchCard');
+            if (resCard) resCard.style.display = 'none';
+
+            // 2. Update Academic Records KPI card
+            const recCount = document.getElementById('kpiAcademicRecordsCount');
+            if (recCount) recCount.textContent = '7';
+            const recSub = document.getElementById('kpiAcademicRecordsSub');
+            if (recSub) recSub.textContent = 'Extension records cataloged';
+
+            // 3. Update Primary Spotlight title, subtitle & badge
+            const deptChartTitle = document.getElementById('deptChartTitle');
+            if (deptChartTitle) {
+                deptChartTitle.innerHTML = '<i class="ri-building-line" style="color: #0d9488; font-size: 1.45rem;"></i> Extension Analytics by College and Program';
+            }
+            const deptChartSubtitle = document.getElementById('deptChartSubtitle');
+            if (deptChartSubtitle) {
+                deptChartSubtitle.textContent = 'Programs are grouped under their college; institutional extension submissions repeat for each listed program';
+            }
+            const deptBadge = document.getElementById('deptSubmissionsBadge');
+            if (deptBadge) {
+                deptBadge.textContent = '7 Extension Proposals';
+            }
+
+            // 4. Update Monthly Submission Trends subtitle
+            const monthlySub = document.getElementById('monthlySubmissionSubtitle');
+            if (monthlySub) {
+                monthlySub.textContent = 'Extension programs and accomplishment reports submitted each month';
+            }
+
+            // 5. Update Submission Status Distribution subtitle & badge
+            const statusSub = document.getElementById('statusDistributionSubtitle');
+            if (statusSub) {
+                statusSub.textContent = 'Distribution of pending, review, revision, and approved extension submissions';
+            }
+            const statusBadge = document.getElementById('statusTrackedBadge');
+            if (statusBadge) {
+                statusBadge.textContent = '7 Tracked Extension Submissions';
+            }
+
+            // 6. Update Stream Chart Title, Subtitle & Badge
+            const streamTitle = document.getElementById('streamChartTitle');
+            if (streamTitle) {
+                streamTitle.innerHTML = '<i class="ri-git-branch-line" style="color: #0d9488;"></i> Extension Completion Status';
+            }
+            const streamSub = document.getElementById('streamChartSubtitle');
+            if (streamSub) {
+                streamSub.textContent = 'Completed vs. ongoing community extension projects';
+            }
+            const streamBadge = document.getElementById('streamChartBadge');
+            if (streamBadge) {
+                streamBadge.textContent = 'Extension Division';
+                streamBadge.style.background = '#ccfbf1';
+                streamBadge.style.color = '#0f766e';
+            }
+
+            // 7. Update Person Submissions Table Subtitle
+            const personSub = document.getElementById('personTableSubtitle');
+            if (personSub) {
+                personSub.textContent = 'Extension submissions grouped by submitter, with approved totals.';
+            }
+
+            // 8. Update Matrix Subtitle
+            const matrixSub = document.getElementById('matrixSubtitle');
+            if (matrixSub) {
+                matrixSub.textContent = 'Granular breakdown differentiating Extension Proposals and Accomplishment Reports per college.';
+            }
+
+            // 9. Update Executive Queue Subtitle & Badge
+            const queueSub = document.getElementById('queueSubtitle');
+            if (queueSub) {
+                queueSub.textContent = 'Extension proposals endorsed by College Coordinators and Extension Director awaiting Final Executive Grant Release & Activation.';
+            }
+            const queueBadge = document.getElementById('queueAwaitingBadge');
+            if (queueBadge) {
+                queueBadge.textContent = '1 Awaiting Decision';
+            }
+
+            // 10. Completed project filter: remove research option & select extension
+            const compFilter = document.getElementById('completedProjectTypeFilter');
+            if (compFilter) {
+                const resOpt = compFilter.querySelector('option[value="research"]');
+                if (resOpt) resOpt.remove();
+                const allOpt = compFilter.querySelector('option[value="all"]');
+                if (allOpt) allOpt.textContent = 'All Extension Projects';
+                compFilter.value = 'extension';
+            }
         } else {
             document.documentElement.classList.remove('role-research-director');
             document.body.classList.remove('role-research-director');
+            document.documentElement.classList.remove('role-extension-director');
+            document.body.classList.remove('role-extension-director');
         }
     }
 
