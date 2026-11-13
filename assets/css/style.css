@@ -6067,30 +6067,35 @@ mark.global-search-hit {
 #personPerformanceTable th:nth-child(5) { width: 10%; }
 #personPerformanceTable th:nth-child(6) { width: 14%; }
 
-/* 5-column role views (Research Director & Extension Director) */
+/* 5-column role views (Research Director, Research Coordinator & Extension Director) */
 .role-research-director #personPerformanceTable th:nth-child(1),
+.role-research-coordinator #personPerformanceTable th:nth-child(1),
 .role-extension-director #personPerformanceTable th:nth-child(1) {
     width: 25% !important;
 }
 
 .role-research-director #personPerformanceTable th:nth-child(2),
+.role-research-coordinator #personPerformanceTable th:nth-child(2),
 .role-extension-director #personPerformanceTable th:nth-child(2) {
     width: 33% !important;
 }
 
 .role-research-director #personPerformanceTable th#thPersonResearch,
+.role-research-coordinator #personPerformanceTable th#thPersonResearch,
 .role-extension-director #personPerformanceTable th#thPersonExtension {
     width: 16% !important;
     text-align: center !important;
 }
 
 .role-research-director #personPerformanceTable th:nth-child(5),
+.role-research-coordinator #personPerformanceTable th:nth-child(5),
 .role-extension-director #personPerformanceTable th:nth-child(5) {
     width: 11% !important;
     text-align: center !important;
 }
 
 .role-research-director #personPerformanceTable th:nth-child(6),
+.role-research-coordinator #personPerformanceTable th:nth-child(6),
 .role-extension-director #personPerformanceTable th:nth-child(6) {
     width: 15% !important;
     text-align: center !important;

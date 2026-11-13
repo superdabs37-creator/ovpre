@@ -397,10 +397,20 @@
             `;
         }
 
-        // Specific customizations when viewing as Research Director
-        if (config.roleName === 'Research Director') {
-            document.documentElement.classList.add('role-research-director');
-            document.body.classList.add('role-research-director');
+        // Specific customizations when viewing as Research Director or Research Coordinator
+        if (config.roleName === 'Research Director' || config.roleName === 'Research Coordinator') {
+            const roleClass = config.roleName === 'Research Director' ? 'role-research-director' : 'role-research-coordinator';
+            document.documentElement.classList.add(roleClass);
+            document.body.classList.add(roleClass);
+            if (config.roleName === 'Research Coordinator') {
+                document.documentElement.classList.remove('role-research-director');
+                document.body.classList.remove('role-research-director');
+            } else {
+                document.documentElement.classList.remove('role-research-coordinator');
+                document.body.classList.remove('role-research-coordinator');
+            }
+            document.documentElement.classList.remove('role-extension-director');
+            document.body.classList.remove('role-extension-director');
 
             // 1. Hide extension initiatives KPI card
             const extCard = document.getElementById('kpiExtensionCard');
@@ -469,7 +479,9 @@
             // 9. Update Executive Queue Subtitle & Badge
             const queueSub = document.getElementById('queueSubtitle');
             if (queueSub) {
-                queueSub.textContent = 'Research proposals endorsed by College Coordinators and Research Director awaiting Final Executive Grant Release & Activation.';
+                queueSub.textContent = config.roleName === 'Research Director'
+                    ? 'Research proposals endorsed by College Coordinators and Research Director awaiting Final Executive Grant Release & Activation.'
+                    : 'Research proposals awaiting College Coordinator endorsement and Executive Grant Release.';
             }
             const queueBadge = document.getElementById('queueAwaitingBadge');
             if (queueBadge) {
@@ -490,6 +502,8 @@
             document.body.classList.add('role-extension-director');
             document.documentElement.classList.remove('role-research-director');
             document.body.classList.remove('role-research-director');
+            document.documentElement.classList.remove('role-research-coordinator');
+            document.body.classList.remove('role-research-coordinator');
 
             // 1. Hide research proposals KPI card
             const resCard = document.getElementById('kpiResearchCard');
@@ -581,6 +595,8 @@
         } else {
             document.documentElement.classList.remove('role-research-director');
             document.body.classList.remove('role-research-director');
+            document.documentElement.classList.remove('role-research-coordinator');
+            document.body.classList.remove('role-research-coordinator');
             document.documentElement.classList.remove('role-extension-director');
             document.body.classList.remove('role-extension-director');
         }
