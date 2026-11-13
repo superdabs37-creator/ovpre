@@ -14,7 +14,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .role-research-director .hide-for-research-director,
-        .role-research-coordinator .hide-for-research-director {
+        .role-research-coordinator .hide-for-research-director,
+        .role-faculty-researcher .hide-for-research-director {
             display: none !important;
         }
         .role-extension-director .hide-for-extension-director,
@@ -31,6 +32,8 @@
                         document.documentElement.classList.add('role-research-director');
                     } else if (u.role === 'Research Coordinator') {
                         document.documentElement.classList.add('role-research-coordinator');
+                    } else if (u.role === 'Faculty Researcher') {
+                        document.documentElement.classList.add('role-faculty-researcher');
                     } else if (u.role === 'Extension Director') {
                         document.documentElement.classList.add('role-extension-director');
                     } else if (u.role === 'Extension Coordinator') {
@@ -786,7 +789,8 @@
         })();
         const isResearchDirector = currentUserRole === 'Research Director';
         const isResearchCoordinator = currentUserRole === 'Research Coordinator';
-        const isResearchOnlyRole = isResearchDirector || isResearchCoordinator;
+        const isFacultyResearcher = currentUserRole === 'Faculty Researcher';
+        const isResearchOnlyRole = isResearchDirector || isResearchCoordinator || isFacultyResearcher;
         const isExtensionDirector = currentUserRole === 'Extension Director';
         const isExtensionCoordinator = currentUserRole === 'Extension Coordinator';
         const isExtensionOnlyRole = isExtensionDirector || isExtensionCoordinator;

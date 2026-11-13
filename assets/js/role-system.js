@@ -397,18 +397,20 @@
             `;
         }
 
-        // Specific customizations when viewing as Research Director or Research Coordinator
-        if (config.roleName === 'Research Director' || config.roleName === 'Research Coordinator') {
-            const roleClass = config.roleName === 'Research Director' ? 'role-research-director' : 'role-research-coordinator';
+        // Specific customizations when viewing as Research Director, Research Coordinator, or Faculty Researcher
+        if (config.roleName === 'Research Director' || config.roleName === 'Research Coordinator' || config.roleName === 'Faculty Researcher') {
+            let roleClass = 'role-research-director';
+            if (config.roleName === 'Research Coordinator') roleClass = 'role-research-coordinator';
+            else if (config.roleName === 'Faculty Researcher') roleClass = 'role-faculty-researcher';
+
             document.documentElement.classList.add(roleClass);
             document.body.classList.add(roleClass);
-            if (config.roleName === 'Research Coordinator') {
-                document.documentElement.classList.remove('role-research-director');
-                document.body.classList.remove('role-research-director');
-            } else {
-                document.documentElement.classList.remove('role-research-coordinator');
-                document.body.classList.remove('role-research-coordinator');
-            }
+            ['role-research-director', 'role-research-coordinator', 'role-faculty-researcher'].forEach(c => {
+                if (c !== roleClass) {
+                    document.documentElement.classList.remove(c);
+                    document.body.classList.remove(c);
+                }
+            });
             document.documentElement.classList.remove('role-extension-director');
             document.body.classList.remove('role-extension-director');
             document.documentElement.classList.remove('role-extension-coordinator');
@@ -481,9 +483,13 @@
             // 9. Update Executive Queue Subtitle & Badge
             const queueSub = document.getElementById('queueSubtitle');
             if (queueSub) {
-                queueSub.textContent = config.roleName === 'Research Director'
-                    ? 'Research proposals endorsed by College Coordinators and Research Director awaiting Final Executive Grant Release & Activation.'
-                    : 'Research proposals awaiting College Coordinator endorsement and Executive Grant Release.';
+                if (config.roleName === 'Research Director') {
+                    queueSub.textContent = 'Research proposals endorsed by College Coordinators and Research Director awaiting Final Executive Grant Release & Activation.';
+                } else if (config.roleName === 'Research Coordinator') {
+                    queueSub.textContent = 'Research proposals awaiting College Coordinator endorsement and Executive Grant Release.';
+                } else {
+                    queueSub.textContent = 'Faculty research proposals undergoing institutional review, coordinator endorsement, and executive grant approval.';
+                }
             }
             const queueBadge = document.getElementById('queueAwaitingBadge');
             if (queueBadge) {
@@ -514,6 +520,8 @@
             document.body.classList.remove('role-research-director');
             document.documentElement.classList.remove('role-research-coordinator');
             document.body.classList.remove('role-research-coordinator');
+            document.documentElement.classList.remove('role-faculty-researcher');
+            document.body.classList.remove('role-faculty-researcher');
 
             // 1. Hide research proposals KPI card
             const resCard = document.getElementById('kpiResearchCard');
@@ -609,6 +617,8 @@
             document.body.classList.remove('role-research-director');
             document.documentElement.classList.remove('role-research-coordinator');
             document.body.classList.remove('role-research-coordinator');
+            document.documentElement.classList.remove('role-faculty-researcher');
+            document.body.classList.remove('role-faculty-researcher');
             document.documentElement.classList.remove('role-extension-director');
             document.body.classList.remove('role-extension-director');
             document.documentElement.classList.remove('role-extension-coordinator');
