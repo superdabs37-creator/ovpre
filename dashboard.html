@@ -82,7 +82,7 @@
                 ========================================================= -->
                 <section class="kpi-capsules-grid">
                     <!-- Academic Records -->
-                    <div class="panel kpi-solid-card" onclick="window.location.href='admin-documents.html'" title="Open Academic Records Repository" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22); cursor: pointer;">
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Academic Records</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -90,13 +90,11 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">25</div>
-                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
-                            <span>Cataloged in repository</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
-                        </small>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
                     </div>
 
                     <!-- Research Proposals -->
-                    <div class="panel kpi-solid-card" onclick="window.location.href='research.html'" title="Open Research Proposals" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22); cursor: pointer;">
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -104,13 +102,11 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">16</div>
-                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
-                            <span>Faculty submissions</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
-                        </small>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
                     </div>
 
                     <!-- Upcoming Activities Capsule -->
-                    <div class="panel kpi-solid-card" onclick="scrollToUpcomingActivities()" title="Click to jump to Upcoming Activities Analytics" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22); cursor: pointer;">
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Upcoming Activities</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -118,13 +114,11 @@
                             </span>
                         </div>
                         <div id="kpiUpcomingActivitiesCount" style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">5</div>
-                        <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.95); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
-                            <span>1 Ongoing &middot; Next: Nov 15</span> <i class="ri-arrow-down-line" style="font-size: 0.8rem;"></i>
-                        </small>
+                        <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Scheduled academic events</small>
                     </div>
 
                     <!-- Extension Initiatives -->
-                    <div class="panel kpi-solid-card" onclick="window.location.href='extension.html'" title="Open Extension Initiatives" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22); cursor: pointer;">
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -132,13 +126,11 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">7</div>
-                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
-                            <span>Community outreach</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
-                        </small>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
                     </div>
 
                     <!-- Colleges Participation -->
-                    <div class="panel kpi-solid-card" onclick="scrollToCollegeAnalytics()" title="View College Participation Analytics" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22); cursor: pointer;">
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges Active</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -146,13 +138,11 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">9 <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ 9</span></div>
-                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
-                            <span>Colleges with submissions</span> <i class="ri-arrow-down-line" style="font-size: 0.8rem;"></i>
-                        </small>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
                     </div>
 
                     <!-- Active Faculty -->
-                    <div class="panel kpi-solid-card" onclick="window.location.href='admin-users.html'" title="Manage Registered Users" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22); cursor: pointer;">
+                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
                             <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -160,9 +150,7 @@
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">15 <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ 15</span></div>
-                        <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px;">
-                            <span>Active accounts</span> <i class="ri-arrow-right-line" style="font-size: 0.8rem;"></i>
-                        </small>
+                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
                     </div>
                 </section>
 
@@ -1368,7 +1356,7 @@
             if (kpiCountEl) kpiCountEl.textContent = activeScheduled.length;
             if (kpiSubEl) {
                 const subText = getUpcomingKpiSubtitle(allActivities);
-                kpiSubEl.innerHTML = '<span>' + subText + '</span> <i class="ri-arrow-down-line" style="font-size: 0.8rem;"></i>';
+                kpiSubEl.textContent = 'Scheduled academic events';"></i>';
             }
 
             // Update module micro KPIs

@@ -6883,13 +6883,7 @@ body.register-body .stepper-nav {
 
 
 /* Interactive KPI Cards & Section Spotlight */
-.kpi-solid-card {
-    cursor: pointer !important;
-}
 
-.kpi-solid-card:active {
-    transform: translateY(0) scale(0.98) !important;
-}
 
 @keyframes actSpotlightPulse {
     0% {
