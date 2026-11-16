@@ -6294,11 +6294,27 @@ body.register-body .stepper-nav {
 /* Solid KPI Cards hover effect & Rock-Solid Alignment */
 .kpi-capsules-grid {
     display: grid !important;
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
     gap: 14px !important;
     margin-bottom: 24px !important;
     align-items: stretch !important;
     width: 100% !important;
+}
+
+.role-research-director .super-admin-only,
+.role-research-coordinator .super-admin-only,
+.role-faculty-researcher .super-admin-only,
+.role-extension-director .super-admin-only,
+.role-extension-coordinator .super-admin-only,
+.role-faculty-extensionist .super-admin-only,
+.role-ovpre-admin .super-admin-only,
+.role-research-director .hide-for-faculty-coor-director,
+.role-research-coordinator .hide-for-faculty-coor-director,
+.role-faculty-researcher .hide-for-faculty-coor-director,
+.role-extension-director .hide-for-faculty-coor-director,
+.role-extension-coordinator .hide-for-faculty-coor-director,
+.role-faculty-extensionist .hide-for-faculty-coor-director {
+    display: none !important;
 }
 
 .kpi-solid-card {

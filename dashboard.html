@@ -23,6 +23,29 @@
         .role-faculty-extensionist .hide-for-extension-director {
             display: none !important;
         }
+        .role-research-director .super-admin-only,
+        .role-research-coordinator .super-admin-only,
+        .role-faculty-researcher .super-admin-only,
+        .role-extension-director .super-admin-only,
+        .role-extension-coordinator .super-admin-only,
+        .role-faculty-extensionist .super-admin-only,
+        .role-ovpre-admin .super-admin-only,
+        .role-research-director .hide-for-faculty-coor-director,
+        .role-research-coordinator .hide-for-faculty-coor-director,
+        .role-faculty-researcher .hide-for-faculty-coor-director,
+        .role-extension-director .hide-for-faculty-coor-director,
+        .role-extension-coordinator .hide-for-faculty-coor-director,
+        .role-faculty-extensionist .hide-for-faculty-coor-director {
+            display: none !important;
+        }
+        .role-research-director .kpi-capsules-grid,
+        .role-research-coordinator .kpi-capsules-grid,
+        .role-faculty-researcher .kpi-capsules-grid,
+        .role-extension-director .kpi-capsules-grid,
+        .role-extension-coordinator .kpi-capsules-grid,
+        .role-faculty-extensionist .kpi-capsules-grid {
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+        }
     </style>
     <script>
         (function() {
@@ -41,6 +64,10 @@
                         document.documentElement.classList.add('role-extension-coordinator');
                     } else if (u.role === 'Faculty Extensionist') {
                         document.documentElement.classList.add('role-faculty-extensionist');
+                    } else if (u.role === 'OVPRE Admin') {
+                        document.documentElement.classList.add('role-ovpre-admin');
+                    } else if (u.role === 'Super Admin') {
+                        document.documentElement.classList.add('role-super-admin');
                     }
                 }
             } catch(e) {}
@@ -190,8 +217,8 @@
                         </div>
                     </a>
 
-                    <!-- Active Faculty -->
-                    <a href="admin-users.html" id="kpiUsersCard" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open User Management Portal" title="Click to view registered users and account directory" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
+                    <!-- Active Faculty / Registered Users (Super Admin Only) -->
+                    <a href="admin-users.html" id="kpiUsersCard" class="panel kpi-solid-card kpi-interactive-card super-admin-only hide-for-faculty-coor-director" role="button" aria-label="Open User Management Portal" title="Click to view registered users and account directory" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
                             <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -808,6 +835,7 @@
                 return u && u.role ? u.role : 'Super Admin';
             } catch(e) { return 'Super Admin'; }
         })();
+        const isSuperAdmin = currentUserRole === 'Super Admin';
         const isResearchDirector = currentUserRole === 'Research Director';
         const isResearchCoordinator = currentUserRole === 'Research Coordinator';
         const isFacultyResearcher = currentUserRole === 'Faculty Researcher';
@@ -816,6 +844,12 @@
         const isExtensionCoordinator = currentUserRole === 'Extension Coordinator';
         const isFacultyExtensionist = currentUserRole === 'Faculty Extensionist';
         const isExtensionOnlyRole = isExtensionDirector || isExtensionCoordinator || isFacultyExtensionist;
+
+        // Registered Users KPI capsule is exclusive to Super Admin
+        const kpiUsersCard = document.getElementById('kpiUsersCard');
+        if (kpiUsersCard && !isSuperAdmin) {
+            kpiUsersCard.style.display = 'none';
+        }
 
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],

@@ -418,9 +418,11 @@
             document.documentElement.classList.remove('role-faculty-extensionist');
             document.body.classList.remove('role-faculty-extensionist');
 
-            // 1. Hide extension initiatives KPI card
+            // 1. Hide extension initiatives KPI card & registered users card
             const extCard = document.getElementById('kpiExtensionCard');
             if (extCard) extCard.style.display = 'none';
+            const usersCard = document.getElementById('kpiUsersCard');
+            if (usersCard) usersCard.style.display = 'none';
 
             // 2. Update Academic Records KPI card
             const recCount = document.getElementById('kpiAcademicRecordsCount');
@@ -513,9 +515,11 @@
             document.documentElement.classList.remove('role-faculty-researcher');
             document.body.classList.remove('role-faculty-researcher');
 
-            // 1. Hide research proposals KPI card
+            // 1. Hide research proposals KPI card & registered users card
             const resCard = document.getElementById('kpiResearchCard');
             if (resCard) resCard.style.display = 'none';
+            const usersCard = document.getElementById('kpiUsersCard');
+            if (usersCard) usersCard.style.display = 'none';
 
             // 2. Update Academic Records KPI card
             const recCount = document.getElementById('kpiAcademicRecordsCount');
@@ -616,6 +620,10 @@
             if (kpiExt) kpiExt.style.display = '';
             const kpiAcc = document.getElementById('kpiAccomplishmentCount');
             if (kpiAcc) kpiAcc.textContent = '45';
+            const usersCard = document.getElementById('kpiUsersCard');
+            if (usersCard) {
+                usersCard.style.display = (config.roleName === 'Super Admin') ? '' : 'none';
+            }
         }
     }
 

@@ -641,7 +641,8 @@ renderHeader('Dashboard', 'dashboard');
         </div>
     </a>
 
-    <!-- Active Faculty -->
+    <?php if ($isSuperAdmin): ?>
+    <!-- Active Faculty / Registered Users (Super Admin Only) -->
     <a href="admin-users.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open User Management Portal" title="Click to view registered users and account directory" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
@@ -655,6 +656,7 @@ renderHeader('Dashboard', 'dashboard');
             <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
         </div>
     </a>
+    <?php endif; ?>
 </section>
 
 <!-- =========================================================
