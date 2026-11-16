@@ -116,76 +116,94 @@
                 ========================================================= -->
                 <section class="kpi-capsules-grid">
                     <!-- Academic Records -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
+                    <a href="admin-documents.html" id="kpiAcademicRecordsCard" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Academic Records in Document Management" title="Click to view all 25 cataloged academic documents" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Academic Records</span>
-                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                                 <i class="ri-file-text-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
                         <div id="kpiAcademicRecordsCount" style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">25</div>
-                        <small id="kpiAcademicRecordsSub" style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
-                    </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small id="kpiAcademicRecordsSub" style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
+                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                        </div>
+                    </a>
 
                     <!-- Research Proposals -->
-                    <div id="kpiResearchCard" class="panel kpi-solid-card hide-for-extension-director" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
+                    <a href="research.html" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card hide-for-extension-director" role="button" aria-label="Open Research Proposals registry" title="Click to view 16 faculty research proposals" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
-                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                                 <i class="ri-flask-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">16</div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
-                    </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
+                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                        </div>
+                    </a>
 
                     <!-- Upcoming Activities Capsule -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22);">
+                    <a href="activities.html" id="kpiUpcomingActivitiesCard" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Calendar of Activities" title="Click to view scheduled institutional activities (5 upcoming)" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #059669; color: #ffffff; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Upcoming Activities</span>
-                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                                 <i class="ri-calendar-event-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
                         <div id="kpiUpcomingActivitiesCount" style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">5</div>
-                        <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.85); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Next: Nov 15, 2026</small>
-                    </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small id="kpiUpcomingActivitiesSub" style="color: rgba(255, 255, 255, 0.85); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Next: Nov 15, 2026</small>
+                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                        </div>
+                    </a>
 
                     <!-- Extension Initiatives -->
-                    <div id="kpiExtensionCard" class="panel kpi-solid-card hide-for-research-director" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
+                    <a href="extension.html" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card hide-for-research-director" role="button" aria-label="Open Extension Programs registry" title="Click to view 7 community extension initiatives" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
-                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                                 <i class="ri-community-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">7</div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
-                    </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
+                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                        </div>
+                    </a>
 
                     <!-- Colleges Participation -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
+                    <a href="#programsByCollegeModal" id="kpiCollegesCard" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="View Programs and Colleges Breakdown" title="Click to view all 9 participating colleges and their academic programs" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges Active</span>
-                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                                 <i class="ri-government-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">9 <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ 9</span></div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
-                    </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
+                            <span class="kpi-card-action"><i class="ri-list-check-3"></i></span>
+                        </div>
+                    </a>
 
                     <!-- Active Faculty -->
-                    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
+                    <a href="admin-users.html" id="kpiUsersCard" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open User Management Portal" title="Click to view registered users and account directory" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
-                            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                                 <i class="ri-team-line" style="font-size: 1.15rem; color: #ffffff;"></i>
                             </span>
                         </div>
                         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;">15 <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ 15</span></div>
-                        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
-                    </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
+                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                        </div>
+                    </a>
                 </section>
 
                 <!-- =========================================================
@@ -936,10 +954,21 @@
         const progModal = document.getElementById('programsByCollegeModal');
         const openProgBtn = document.getElementById('openProgramsModal');
         const closeProgBtn = document.getElementById('closeProgramsModal');
+        const kpiCollegesCard = document.getElementById('kpiCollegesCard');
         if (progModal && openProgBtn && closeProgBtn) {
             openProgBtn.addEventListener('click', () => { if (window.OVPRE && OVPRE.openModal) OVPRE.openModal('programsByCollegeModal'); else progModal.classList.add('open'); });
             closeProgBtn.addEventListener('click', () => { if (window.OVPRE && OVPRE.closeModal) OVPRE.closeModal('programsByCollegeModal'); else progModal.classList.remove('open'); });
             progModal.addEventListener('click', (e) => { if (e.target === progModal) progModal.close(); });
+        }
+        if (kpiCollegesCard && progModal) {
+            kpiCollegesCard.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (window.OVPRE && OVPRE.openModal) {
+                    OVPRE.openModal('programsByCollegeModal');
+                } else {
+                    progModal.classList.add('open');
+                }
+            });
         }
 
         // Render Completed Colleges

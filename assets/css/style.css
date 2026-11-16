@@ -6309,12 +6309,44 @@ body.register-body .stepper-nav {
     height: 100% !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
-    transition: transform 0.22s ease, box-shadow 0.22s ease !important;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
 }
 
 .kpi-solid-card:hover {
-    transform: translateY(-3px) !important;
+    transform: translateY(-4px) !important;
 }
+
+.kpi-interactive-card {
+    text-decoration: none !important;
+    cursor: pointer !important;
+    position: relative;
+    user-select: none;
+    outline: none !important;
+}
+
+.kpi-interactive-card:hover {
+    filter: brightness(1.05);
+}
+
+.kpi-interactive-card:active {
+    transform: translateY(-1px) !important;
+}
+
+.kpi-interactive-card:focus-visible {
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px rgba(15, 23, 42, 0.6) !important;
+}
+
+.kpi-interactive-card:hover .kpi-icon-pill {
+    background: rgba(255, 255, 255, 0.32) !important;
+    transform: scale(1.08) !important;
+}
+
+.kpi-interactive-card:hover .kpi-card-action {
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.35) !important;
+    transform: translate(2px, -2px) !important;
+}
+
 
 @media (max-width: 1200px) {
     .kpi-capsules-grid {

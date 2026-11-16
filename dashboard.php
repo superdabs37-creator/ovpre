@@ -565,78 +565,96 @@ renderHeader('Dashboard', 'dashboard');
 ========================================================= -->
 <section class="kpi-capsules-grid">
     <!-- Records -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
+    <a href="admin-documents.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Academic Records in Document Management" title="Click to view all <?php echo $totalDocuments; ?> cataloged academic documents" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Academic Records</span>
-            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                 <i class="ri-file-text-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalDocuments; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
-    </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+        </div>
+    </a>
 
     <?php if (!$isFacultyExtensionist): ?>
     <!-- Research Proposals -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
+    <a href="research.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Research Proposals registry" title="Click to view <?php echo $totalResearch; ?> faculty research proposals" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
-            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                 <i class="ri-flask-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalResearch; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
-    </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+        </div>
+    </a>
     <?php else: ?>
     <!-- Accomplishment Reports -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #ea580c; color: #ffffff; box-shadow: 0 6px 18px rgba(234, 88, 12, 0.22);">
+    <a href="extension.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Extension Accomplishment Reports" title="Click to view <?php echo $totalExtAccomplishments; ?> accomplishment reports" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #ea580c; color: #ffffff; box-shadow: 0 6px 18px rgba(234, 88, 12, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Accomplishment Reports</span>
-            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                 <i class="ri-medal-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalExtAccomplishments; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension documentation</small>
-    </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension documentation</small>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+        </div>
+    </a>
     <?php endif; ?>
 
     <!-- Extension Projects -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
+    <a href="extension.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Extension Programs registry" title="Click to view <?php echo $totalExtension; ?> community extension initiatives" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
-            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                 <i class="ri-community-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalExtension; ?></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
-    </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+        </div>
+    </a>
 
     <!-- Colleges Participation -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
+    <a href="#programsByCollegeModal" id="kpiCollegesCardPhp" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="View Programs and Colleges Breakdown" title="Click to view participating colleges and their academic programs" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #7c3aed; color: #ffffff; box-shadow: 0 6px 18px rgba(124, 58, 237, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges Active</span>
-            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                 <i class="ri-government-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeCollegesCount; ?> <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalColleges; ?></span></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
-    </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
+            <span class="kpi-card-action"><i class="ri-list-check-3"></i></span>
+        </div>
+    </a>
 
     <!-- Active Faculty -->
-    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
+    <a href="admin-users.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open User Management Portal" title="Click to view registered users and account directory" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #d97706; color: #ffffff; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Registered Users</span>
-            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+            <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
                 <i class="ri-team-line" style="font-size: 1.15rem; color: #ffffff;"></i>
             </span>
         </div>
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $activeUsers; ?> <span style="font-size: 0.95rem; font-weight: 600; opacity: 0.88;">/ <?php echo $totalUsers; ?></span></div>
-        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
-    </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active accounts</small>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+        </div>
+    </a>
 </section>
 
 <!-- =========================================================
@@ -709,9 +727,16 @@ renderHeader('Dashboard', 'dashboard');
             const modal = document.getElementById('programsByCollegeModal');
             const openButton = document.getElementById('openProgramsModal');
             const closeButton = document.getElementById('closeProgramsModal');
-            if (!modal || !openButton || !closeButton) return;
-            openButton.addEventListener('click', () => modal.showModal());
-            closeButton.addEventListener('click', () => modal.close());
+            const kpiCollegesCard = document.getElementById('kpiCollegesCardPhp');
+            if (!modal) return;
+            if (openButton) openButton.addEventListener('click', () => modal.showModal());
+            if (kpiCollegesCard) {
+                kpiCollegesCard.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.showModal();
+                });
+            }
+            if (closeButton) closeButton.addEventListener('click', () => modal.close());
             modal.addEventListener('click', event => {
                 if (event.target === modal) modal.close();
             });
