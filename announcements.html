@@ -307,9 +307,9 @@
                     <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Message / Body</label>
                     <textarea id="annContent" rows="5" required placeholder="Full circular text..." style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; line-height: 1.5;"></textarea>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
-                    <button type="submit" id="annSubmitBtn" class="primary-btn" style="background: #ea580c; color: #fff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">Publish Now</button>
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                    <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                    <button type="submit" id="annSubmitBtn" class="primary-btn" style="height: 40px; background: #ea580c; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); transition: all 0.2s ease;">Publish Now</button>
                 </div>
             </form>
         </article>
@@ -331,9 +331,9 @@
             </div>
             <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin: 14px 0; font-size: 0.92rem; line-height: 1.6; color: #334155;" id="viewAnnContent">
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 14px;">
                 <span id="viewAnnExpiry" style="font-size: 0.82rem; color: #64748b;"></span>
-                <button type="button" class="ghost-btn mini-btn" data-close-modal>Close</button>
+                <button type="button" class="modal-cancel-btn" data-close-modal style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
             </div>
         </article>
     </div>

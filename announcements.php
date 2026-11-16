@@ -230,9 +230,9 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                 <textarea name="content" rows="5" required placeholder="Write the announcement body here..." style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; line-height: 1.5;"></textarea>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
-                <button class="primary-btn post-btn" type="submit" style="background: #15803d; color: #ffffff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                <button class="primary-btn post-btn" type="submit" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
                     <i class="ri-send-plane-line"></i> Publish Announcement
                 </button>
             </div>
@@ -403,9 +403,9 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
             <div style="margin-top: 14px; padding: 16px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.92rem; line-height: 1.6; color: #334155; white-space: pre-wrap;">
                 <?php echo nl2br(h($item['content'])); ?>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
                 <span style="font-size: 0.82rem; color: #64748b;">Expires: <?php echo h($meta['expiry']); ?></span>
-                <button class="ghost-btn mini-btn" type="button" data-close-modal>Close</button>
+                <button class="modal-cancel-btn" type="button" data-close-modal style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
             </div>
         </article>
     </div>
@@ -444,9 +444,9 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                     <textarea name="content" rows="6" required style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; line-height: 1.5;"><?php echo h($item['content']); ?></textarea>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                    <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
-                    <button class="primary-btn post-btn" type="submit" style="background: #15803d; color: #ffffff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                    <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                    <button class="primary-btn post-btn" type="submit" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
                         <i class="ri-save-line"></i> Save Changes
                     </button>
                 </div>

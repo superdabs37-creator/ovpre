@@ -3453,10 +3453,18 @@ button {
 
 .compact-actions .ghost-btn,
 .compact-actions .danger-btn,
-.mini-btn {
+.compact-actions .mini-btn,
+.mini-btn:empty {
     width: 38px;
     min-height: 38px;
     padding: 0;
+}
+
+.mini-btn {
+    width: auto;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0 14px;
 }
 
 .data-table td .mini-btn,
@@ -5000,8 +5008,8 @@ button[value="archive"]:hover span,
 .login-form .primary-btn:visited,
 .modal-card .primary-btn:not(.action-btn),
 .modal-card .primary-btn:not(.action-btn):visited,
-.modal-card .ghost-btn:not(.action-btn),
-.modal-card .ghost-btn:not(.action-btn):visited,
+.modal-card .ghost-btn:not(.action-btn):not([data-close-modal]):not(.modal-cancel-btn),
+.modal-card .ghost-btn:not(.action-btn):not([data-close-modal]):not(.modal-cancel-btn):visited,
 .tool-panel .primary-btn,
 .tool-panel .primary-btn:visited,
 .tool-panel .ghost-btn,
@@ -6982,4 +6990,75 @@ body.register-body .stepper-nav {
         border-top: 1px solid #f1f5f9;
     }
 }
+
+/* ==========================================================================
+   MODAL CANCEL & ACTION BUTTONS FIX
+   Ensures modal cancel / dismiss buttons have full readable width, proper
+   padding, neutral styling, and cannot be crushed by .mini-btn (38px) or
+   overridden by primary green button styles.
+   ========================================================================== */
+.modal-cancel-btn,
+.modal-card button[data-close-modal]:not(.modal-close),
+.modal-card .ghost-btn.mini-btn[data-close-modal],
+.modal-card .ghost-btn[data-close-modal] {
+    position: static !important;
+    isolation: auto !important;
+    width: auto !important;
+    min-width: 84px !important;
+    max-width: none !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 18px !important;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    color: #475569 !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    letter-spacing: normal !important;
+    line-height: normal !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+    text-overflow: clip !important;
+    transform: none !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.modal-cancel-btn:hover,
+.modal-card button[data-close-modal]:not(.modal-close):hover,
+.modal-card .ghost-btn.mini-btn[data-close-modal]:hover,
+.modal-card .ghost-btn[data-close-modal]:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    transform: none !important;
+}
+
+.modal-cancel-btn:active,
+.modal-card button[data-close-modal]:not(.modal-close):active,
+.modal-card .ghost-btn.mini-btn[data-close-modal]:active,
+.modal-card .ghost-btn[data-close-modal]:active {
+    background: #e2e8f0 !important;
+    transform: translateY(1px) !important;
+}
+
+/* Remove decorative gradient pseudo-elements that might leak onto modal cancel buttons */
+.modal-cancel-btn::before,
+.modal-cancel-btn::after,
+.modal-card button[data-close-modal]:not(.modal-close)::before,
+.modal-card button[data-close-modal]:not(.modal-close)::after,
+.modal-card .ghost-btn.mini-btn[data-close-modal]::before,
+.modal-card .ghost-btn.mini-btn[data-close-modal]::after,
+.modal-card .ghost-btn[data-close-modal]::before,
+.modal-card .ghost-btn[data-close-modal]::after {
+    display: none !important;
+    content: none !important;
+}
+
 
