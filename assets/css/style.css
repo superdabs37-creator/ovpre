@@ -1459,7 +1459,6 @@ button {
     color: var(--muted);
 }
 
-.dept-pill,
 .status-pill {
     display: inline-flex;
     align-items: center;
@@ -1468,16 +1467,24 @@ button {
     border-radius: 999px;
     font-size: 0.78rem;
     font-weight: 800;
-}
-
-.dept-pill {
-    color: var(--green-900);
-    background: var(--yellow-100);
-}
-
-.status-pill {
     color: var(--green-800);
     background: var(--green-100);
+}
+
+.dept-pill,
+.data-table td .dept-pill {
+    display: inline;
+    min-height: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent !important;
+    background-color: transparent !important;
+    color: inherit !important;
+    font-size: inherit;
+    font-weight: normal;
+    line-height: inherit;
+    box-shadow: none !important;
 }
 
 .activity-status-actions {
