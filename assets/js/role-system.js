@@ -418,11 +418,13 @@
             document.documentElement.classList.remove('role-faculty-extensionist');
             document.body.classList.remove('role-faculty-extensionist');
 
-            // 1. Hide extension initiatives KPI card & registered users card
+            // 1. Hide extension initiatives, registered users, and academic records KPI cards
             const extCard = document.getElementById('kpiExtensionCard');
             if (extCard) extCard.style.display = 'none';
             const usersCard = document.getElementById('kpiUsersCard');
             if (usersCard) usersCard.style.display = 'none';
+            const academicCard = document.getElementById('kpiAcademicRecordsCard');
+            if (academicCard) academicCard.style.display = 'none';
 
             // 2. Update Academic Records KPI card
             const recCount = document.getElementById('kpiAcademicRecordsCount');
@@ -515,11 +517,13 @@
             document.documentElement.classList.remove('role-faculty-researcher');
             document.body.classList.remove('role-faculty-researcher');
 
-            // 1. Hide research proposals KPI card & registered users card
+            // 1. Hide research proposals, registered users, and academic records KPI cards
             const resCard = document.getElementById('kpiResearchCard');
             if (resCard) resCard.style.display = 'none';
             const usersCard = document.getElementById('kpiUsersCard');
             if (usersCard) usersCard.style.display = 'none';
+            const academicCard = document.getElementById('kpiAcademicRecordsCard');
+            if (academicCard) academicCard.style.display = 'none';
 
             // 2. Update Academic Records KPI card
             const recCount = document.getElementById('kpiAcademicRecordsCount');
@@ -623,6 +627,10 @@
             const usersCard = document.getElementById('kpiUsersCard');
             if (usersCard) {
                 usersCard.style.display = (config.roleName === 'Super Admin') ? '' : 'none';
+            }
+            const academicCard = document.getElementById('kpiAcademicRecordsCard');
+            if (academicCard) {
+                academicCard.style.display = (config.roleName === 'Super Admin') ? '' : 'none';
             }
         }
     }

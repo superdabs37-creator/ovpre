@@ -564,8 +564,9 @@ renderHeader('Dashboard', 'dashboard');
      ANALYTICAL KPI SUMMARY CAPSULES
 ========================================================= -->
 <section class="kpi-capsules-grid">
-    <!-- Records -->
-    <a href="admin-documents.php" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Academic Records in Document Management" title="Click to view all <?php echo $totalDocuments; ?> cataloged academic documents" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
+    <?php if ($isSuperAdmin): ?>
+    <!-- Records (Super Admin Only) -->
+    <a href="admin-documents.php" id="kpiAcademicRecordsCard" class="panel kpi-solid-card kpi-interactive-card" role="button" aria-label="Open Academic Records in Document Management" title="Click to view all <?php echo $totalDocuments; ?> cataloged academic documents" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #15803d; color: #ffffff; box-shadow: 0 6px 18px rgba(21, 128, 61, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Academic Records</span>
             <span class="kpi-icon-pill" style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
@@ -578,6 +579,7 @@ renderHeader('Dashboard', 'dashboard');
             <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
         </div>
     </a>
+    <?php endif; ?>
 
     <?php if (!$isFacultyExtensionist): ?>
     <!-- Research Proposals -->
