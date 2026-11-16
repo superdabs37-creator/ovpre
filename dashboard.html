@@ -345,8 +345,8 @@
                                     23 Tracked Submissions
                                 </span>
                             </div>
-                            <div style="position: relative; height: 260px; width: 100%; max-width: 480px; margin: 0 auto;">
-                                <canvas id="submissionStatusDonutChart"></canvas>
+                            <div style="position: relative; height: 270px; width: 100%; max-width: 480px; margin: 0 auto;">
+                                <canvas id="submissionStatusDonutChart" role="img" aria-label="Radial segmented doughnut chart showing submissions by review status"></canvas>
                             </div>
                         </article>
 
@@ -1943,9 +1943,64 @@
                 });
             }
 
-            // 3. Status Distribution Donut Chart
+            // 3. Status Distribution Radial Segmented Doughnut Chart
             const donutCanvas = document.getElementById('submissionStatusDonutChart');
             if (donutCanvas) {
+                // Interactive Center Metric Plugin for Radial Segmented Doughnut
+                const radialCenterTextPlugin = {
+                    id: 'radialCenterText',
+                    afterDraw(chart) {
+                        const { ctx, chartArea } = chart;
+                        if (!chartArea) return;
+                        const cx = (chartArea.left + chartArea.right) / 2;
+                        const cy = (chartArea.top + chartArea.bottom) / 2;
+
+                        ctx.save();
+                        const active = chart.getActiveElements();
+                        const dataset = chart.data.datasets[0];
+                        const data = dataset.data || [];
+                        const total = data.reduce((acc, v) => acc + (Number(v) || 0), 0);
+
+                        let mainVal = '';
+                        let subLbl = '';
+                        let mainColor = '#0f172a';
+                        let subColor = '#64748b';
+
+                        if (active.length > 0) {
+                            const idx = active[0].index;
+                            const val = Number(data[idx]) || 0;
+                            const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                            const label = chart.data.labels[idx] || '';
+                            const color = Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor[idx] : '#15803d';
+
+                            mainVal = String(val);
+                            subLbl = `${label} (${pct}%)`;
+                            mainColor = color;
+                            subColor = color;
+                        } else {
+                            mainVal = String(total);
+                            subLbl = 'SUBMISSIONS';
+                            mainColor = '#0f172a';
+                            subColor = '#64748b';
+                        }
+
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+
+                        // Main count value
+                        ctx.font = "800 1.85rem 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+                        ctx.fillStyle = mainColor;
+                        ctx.fillText(mainVal, cx, cy - 8);
+
+                        // Subtitle status label
+                        ctx.font = "700 0.68rem 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+                        ctx.fillStyle = subColor;
+                        ctx.fillText(subLbl, cx, cy + 14);
+
+                        ctx.restore();
+                    }
+                };
+
                 new Chart(donutCanvas, {
                     type: 'doughnut',
                     data: {
@@ -1953,18 +2008,60 @@
                         datasets: [{
                             data: isResearchOnlyRole ? [2, 3, 1, 10] : (isExtensionOnlyRole ? [1, 2, 1, 3] : [3, 5, 2, 13]),
                             backgroundColor: ['#f59e0b', '#0284c7', '#ea580c', '#15803d'],
-                            borderWidth: 3,
-                            borderColor: '#ffffff'
+                            hoverBackgroundColor: ['#d97706', '#0369a1', '#c2410c', '#166534'],
+                            borderWidth: 0,
+                            borderRadius: 8,
+                            spacing: 6,
+                            hoverOffset: 9
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: '68%',
+                        cutout: '72%',
+                        animation: {
+                            animateRotate: true,
+                            animateScale: true,
+                            duration: 900
+                        },
                         plugins: {
-                            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 9, font: { size: 11, weight: 600 } } }
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 8,
+                                    boxHeight: 8,
+                                    padding: 16,
+                                    color: '#334155',
+                                    font: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 11.5, weight: '600' }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                                titleColor: '#ffffff',
+                                titleFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 12, weight: '700' },
+                                bodyColor: '#e2e8f0',
+                                bodyFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 11.5, weight: '500' },
+                                padding: 12,
+                                cornerRadius: 10,
+                                borderColor: 'rgba(255, 255, 255, 0.12)',
+                                borderWidth: 1,
+                                usePointStyle: true,
+                                callbacks: {
+                                    label: (ctx) => {
+                                        const dataset = ctx.dataset;
+                                        const total = dataset.data.reduce((a, b) => a + Number(b), 0);
+                                        const val = Number(ctx.raw) || 0;
+                                        const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                        return `  ${ctx.label}: ${val} submissions (${pct}%)`;
+                                    }
+                                }
+                            }
                         }
-                    }
+                    },
+                    plugins: [radialCenterTextPlugin]
                 });
             }
 

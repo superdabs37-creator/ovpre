@@ -1549,10 +1549,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Submission status distribution across research and extension projects.
+    // Submission status distribution across research and extension projects (Radial Segmented Doughnut).
     const statusDonutCanvas = document.getElementById('submissionStatusDonutChart');
     if (statusDonutCanvas) {
         const statusCounts = <?php echo json_encode(array_values($submissionStatusCounts)); ?>;
+        const radialCenterTextPlugin = {
+            id: 'radialCenterText',
+            afterDraw(chart) {
+                const { ctx, chartArea } = chart;
+                if (!chartArea) return;
+                const cx = (chartArea.left + chartArea.right) / 2;
+                const cy = (chartArea.top + chartArea.bottom) / 2;
+
+                ctx.save();
+                const active = chart.getActiveElements();
+                const dataset = chart.data.datasets[0];
+                const data = dataset.data || [];
+                const total = data.reduce((acc, v) => acc + (Number(v) || 0), 0);
+
+                let mainVal = '';
+                let subLbl = '';
+                let mainColor = '#0f172a';
+                let subColor = '#64748b';
+
+                if (active.length > 0) {
+                    const idx = active[0].index;
+                    const val = Number(data[idx]) || 0;
+                    const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                    const label = chart.data.labels[idx] || '';
+                    const color = Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor[idx] : '#15803d';
+
+                    mainVal = String(val);
+                    subLbl = `${label} (${pct}%)`;
+                    mainColor = color;
+                    subColor = color;
+                } else {
+                    mainVal = String(total);
+                    subLbl = 'SUBMISSIONS';
+                    mainColor = '#0f172a';
+                    subColor = '#64748b';
+                }
+
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Main count value
+                ctx.font = "800 1.85rem 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+                ctx.fillStyle = mainColor;
+                ctx.fillText(mainVal, cx, cy - 8);
+
+                // Subtitle status label
+                ctx.font = "700 0.68rem 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+                ctx.fillStyle = subColor;
+                ctx.fillText(subLbl, cx, cy + 14);
+
+                ctx.restore();
+            }
+        };
+
         new Chart(statusDonutCanvas, {
             type: 'doughnut',
             data: {
@@ -1560,32 +1614,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     data: statusCounts,
                     backgroundColor: ['#f59e0b', '#0284c7', '#ea580c', '#15803d'],
-                    borderColor: '#ffffff',
-                    borderWidth: 3,
-                    hoverOffset: 6
+                    hoverBackgroundColor: ['#d97706', '#0369a1', '#c2410c', '#166534'],
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    spacing: 6,
+                    hoverOffset: 9
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '66%',
+                cutout: '72%',
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 900
+                },
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 9, padding: 14, color: '#334155', font: { size: 11, weight: 600 } }
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            padding: 16,
+                            color: '#334155',
+                            font: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 11.5, weight: '600' }
+                        }
                     },
                     tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                        titleColor: '#ffffff',
+                        titleFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 12, weight: '700' },
+                        bodyColor: '#e2e8f0',
+                        bodyFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 11.5, weight: '500' },
+                        padding: 12,
+                        cornerRadius: 10,
+                        borderColor: 'rgba(255, 255, 255, 0.12)',
+                        borderWidth: 1,
+                        usePointStyle: true,
                         callbacks: {
                             label: (ctx) => {
                                 const total = statusCounts.reduce((sum, count) => sum + count, 0);
                                 const count = Number(ctx.raw) || 0;
-                                const percent = total ? Math.round((count / total) * 100) : 0;
-                                return ` ${ctx.label}: ${count} (${percent}%)`;
+                                const percent = total ? ((count / total) * 100).toFixed(1) : 0;
+                                return `  ${ctx.label}: ${count} submissions (${percent}%)`;
                             }
                         }
                     }
                 }
-            }
+            },
+            plugins: [radialCenterTextPlugin]
         });
     }
 
