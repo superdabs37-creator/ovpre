@@ -605,6 +605,17 @@
             document.body.classList.remove('role-extension-coordinator');
             document.documentElement.classList.remove('role-faculty-extensionist');
             document.body.classList.remove('role-faculty-extensionist');
+
+            const monthlyBadge = document.getElementById('monthlySubmissionTotalBadge');
+            if (monthlyBadge) {
+                monthlyBadge.innerHTML = '<i class="ri-bar-chart-box-line" style="color: #16a34a;"></i> 203 Total Submissions';
+            }
+            const kpiRes = document.getElementById('kpiResearchProposals');
+            if (kpiRes) kpiRes.style.display = '';
+            const kpiExt = document.getElementById('kpiExtensionPrograms');
+            if (kpiExt) kpiExt.style.display = '';
+            const kpiAcc = document.getElementById('kpiAccomplishmentCount');
+            if (kpiAcc) kpiAcc.textContent = '45';
         }
     }
 

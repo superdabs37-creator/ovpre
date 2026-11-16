@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'OVPRE Admin', ROLE_RESEARCH_DIRECTOR]);
+$user = require_login(['Super Admin', 'OVPRE Admin', ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR]);
 verify_csrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -150,10 +150,10 @@ function get_announcement_meta(array $item): array {
 
 function render_priority_badge(string $priority): string {
     return match ($priority) {
-        'High' => '<strong style="color: #ea580c; font-size: 0.85rem;">High</strong>',
-        'Urgent' => '<strong style="color: #dc2626; font-size: 0.85rem;">Urgent</strong>',
-        'Medium' => '<strong style="color: #1e3a8a; font-size: 0.85rem;">Medium</strong>',
-        default => '<strong style="color: #15803d; font-size: 0.85rem;">Normal</strong>',
+        'Urgent' => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.82rem;"></i> Urgent</span>',
+        'High' => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.82rem;"></i> High</span>',
+        'Medium' => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.82rem;"></i> Medium</span>',
+        default => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;"><i class="ri-checkbox-circle-fill" style="font-size: 0.82rem;"></i> Normal</span>',
     };
 }
 
@@ -173,7 +173,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
     <article class="modal-card simple-submit-modal" style="max-width: 620px;">
         <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
         <div class="activity-modal-head" style="margin-bottom: 16px;">
-            <span class="category-badge" style="background: #ffedd5; color: #ea580c; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
+            <span class="category-badge" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
             <h2 id="createAnnouncementTitle" style="margin: 8px 0 4px; font-size: 1.25rem;">Publish Announcement</h2>
             <p style="margin: 0; color: #64748b; font-size: 0.88rem;">Disseminate critical notices across university portal recipients.</p>
         </div>
@@ -232,7 +232,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 
             <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
                 <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
-                <button class="primary-btn post-btn" type="submit" style="background: #ea580c; color: #ffffff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">
+                <button class="primary-btn post-btn" type="submit" style="background: #15803d; color: #ffffff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">
                     <i class="ri-send-plane-line"></i> Publish Announcement
                 </button>
             </div>
@@ -245,33 +245,33 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
     <!-- Segmented Control Tabs & Action Button -->
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
         <div class="portal-table-tabs" style="display: flex; gap: 8px;">
-            <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="announcements.php" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; <?php echo !$archived ? 'background: #ea580c; color: #ffffff; border: none;' : 'border: 1px solid #cbd5e1; background: #ffffff; color: #475569;'; ?>">
+            <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="announcements.php" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; <?php echo !$archived ? 'background: #15803d; color: #ffffff; border: none;' : 'border: 1px solid #cbd5e1; background: #ffffff; color: #475569;'; ?>">
                 <i class="ri-checkbox-circle-line"></i>
                 <span>Published</span>
                 <span class="tab-count" style="<?php echo !$archived ? 'background: rgba(255,255,255,0.25); color: #ffffff;' : 'background: #f1f5f9; color: #475569;'; ?> padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;"><?php echo $publishedCount; ?></span>
             </a>
-            <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="announcements.php?archived=1" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; <?php echo $archived ? 'background: #ea580c; color: #ffffff; border: none;' : 'border: 1px solid #cbd5e1; background: #ffffff; color: #475569;'; ?>">
+            <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="announcements.php?archived=1" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; <?php echo $archived ? 'background: #15803d; color: #ffffff; border: none;' : 'border: 1px solid #cbd5e1; background: #ffffff; color: #475569;'; ?>">
                 <i class="ri-archive-line"></i>
                 <span>Archived</span>
                 <span class="tab-count" style="<?php echo $archived ? 'background: rgba(255,255,255,0.25); color: #ffffff;' : 'background: #f1f5f9; color: #475569;'; ?> padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;"><?php echo $archivedCount; ?></span>
             </a>
         </div>
         <?php if (!$archived): ?>
-        <button class="primary-btn" type="button" data-open-modal="createAnnouncementModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
+        <button class="primary-btn" type="button" data-open-modal="createAnnouncementModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
             <i class="ri-megaphone-line"></i> Publish Announcement
         </button>
         <?php endif; ?>
     </div>
 
     <!-- Bulk Selection Toolbar for Announcements -->
-    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 14px;">
-        <span data-selection-count style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
+    <div class="table-selection-toolbar" data-selection-toolbar="announcementsTable" hidden style="justify-content: space-between; padding: 10px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 14px;">
+        <span data-selection-count style="font-weight: 700; color: #15803d; font-size: 0.88rem;">0 selected</span>
         <form id="bulk-announcementsTable" method="post" data-bulk-selection-form style="margin: 0;">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="bulk">
             <?php if ($archived): ?>
                 <input type="hidden" name="archived_view" value="1">
-                <button class="action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit onclick="return confirm('Restore selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <button class="action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit onclick="return confirm('Restore selected announcement(s)?');" style="background: #15803d; border: 1px solid #166534; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 7px 18px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);">
                     <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                 </button>
             <?php else: ?>
@@ -284,21 +284,21 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 
     <div class="table-scroll">
         <table class="data-table" id="announcementsTable" style="width: 100%; min-width: 900px; border-collapse: collapse;">
-            <thead style="background: #ecfdf5; border-bottom: 2px solid #bbf7d0;">
+            <thead style="background: #f0fdf4; border-bottom: 2px solid #86efac;">
                 <tr style="text-align: left;">
-                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 12px 8px;">
+                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 13px 8px;">
                         <label class="select-all-control">
                             <input form="bulk-announcementsTable" type="checkbox" aria-label="Select all announcements" data-select-all="announcementsTable">
                             <span>Select all</span>
                         </label>
                     </th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">ANNOUNCEMENT TITLE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">CATEGORY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">AUDIENCE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">PRIORITY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">PUBLISHED DATE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase;">EXPIRY DATE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
-                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center;">MANAGE / ACTION <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i></th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Announcement Title</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Category</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Audience</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Priority</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Published Date</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Expiry Date</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center;">Manage / Action</th>
                 </tr>
             </thead>
             <tbody id="announcementsTableBody" style="font-size: 0.88rem;">
@@ -311,16 +311,20 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="<?php echo (int) $item['id']; ?>" aria-label="Select announcement <?php echo (int) $item['id']; ?>" data-row-select="announcementsTable">
                         </td>
                         <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
-                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" data-open-modal="viewAnnouncementModal<?php echo (int) $item['id']; ?>"><?php echo h($item['title']); ?></strong>
+                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='#15803d'" onmouseout="this.style.color='#0f172a'" data-open-modal="viewAnnouncementModal<?php echo (int) $item['id']; ?>"><?php echo h($item['title']); ?></strong>
                             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">
                                 <?php echo h(mb_strimwidth($item['content'] ?? '', 0, 95, '...')); ?>
                             </p>
                         </td>
-                        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">
-                            <?php echo h($meta['category']); ?>
+                        <td style="padding: 14px 14px; font-size: 0.88rem;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; font-size: 0.78rem; font-weight: 600;">
+                                <?php echo h($meta['category']); ?>
+                            </span>
                         </td>
-                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">
-                            <?php echo h($audienceDisplay); ?>
+                        <td style="padding: 14px 14px; font-size: 0.88rem;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 6px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.78rem; font-weight: 600;">
+                                <?php echo h($audienceDisplay); ?>
+                            </span>
                         </td>
                         <td style="padding: 14px 14px;">
                             <?php echo render_priority_badge($meta['priority']); ?>
@@ -333,13 +337,13 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                         </td>
                         <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
                             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                                <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                                <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                                 <?php if ($archived): ?>
                                     <form method="post" style="margin: 0; display: inline;" onsubmit="return confirm('Restore this announcement to published?');">
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="restore">
                                         <input type="hidden" name="id" value="<?php echo (int) $item['id']; ?>">
-                                        <button class="action-btn" type="submit" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                        <button class="action-btn" type="submit" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
                                     </form>
                                 <?php else: ?>
                                     <form method="post" style="margin: 0; display: inline;" onsubmit="return confirm('Archive this announcement?');">
@@ -387,7 +391,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
         <article class="modal-card simple-submit-modal" style="max-width: 620px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head" style="margin-bottom: 14px;">
-                <span class="category-badge" style="background: #ffedd5; color: #ea580c; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;"><?php echo h($meta['category']); ?></span>
+                <span class="category-badge" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;"><?php echo h($meta['category']); ?></span>
                 <h2 id="viewAnnouncementTitle<?php echo (int) $item['id']; ?>" style="margin: 8px 0 4px; font-size: 1.25rem; line-height: 1.35;"><?php echo h($item['title']); ?></h2>
                 <div style="margin-top: 6px; font-size: 0.84rem; color: #64748b; display: flex; gap: 8px; flex-wrap: wrap;">
                     <span><i class="ri-user-line"></i> <?php echo h($item['fullname'] ?? 'System Administrator'); ?></span> &bull;
@@ -412,7 +416,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
         <article class="modal-card simple-submit-modal" style="max-width: 620px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head" style="margin-bottom: 14px;">
-                <span class="category-badge" style="background: #ffedd5; color: #ea580c; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Edit Announcement</span>
+                <span class="category-badge" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Edit Announcement</span>
                 <h2 id="editAnnouncementTitle<?php echo (int) $item['id']; ?>" style="margin: 8px 0 4px; font-size: 1.25rem;">Edit Announcement #<?php echo (int) $item['id']; ?></h2>
                 <p style="margin: 0; color: #64748b; font-size: 0.88rem;">Update announcement headline, audience, or message content.</p>
             </div>
@@ -442,7 +446,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
                     <button type="button" class="ghost-btn mini-btn" data-close-modal>Cancel</button>
-                    <button class="primary-btn post-btn" type="submit" style="background: #ea580c; color: #ffffff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">
+                    <button class="primary-btn post-btn" type="submit" style="background: #15803d; color: #ffffff; padding: 10px 22px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;">
                         <i class="ri-save-line"></i> Save Changes
                     </button>
                 </div>

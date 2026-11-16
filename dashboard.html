@@ -271,7 +271,7 @@
                         <span class="badge" style="background: #f0fdf4; color: #166534; padding: 6px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">Last 12 months</span>
                     </div>
                     <div style="position: relative; width: 100%; height: 330px;">
-                        <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Line chart showing monthly research proposals, extension programs, and accomplishment reports"></canvas>
+                        <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Modern multi-series area chart showing monthly research proposals, extension programs, and accomplishment reports"></canvas>
                     </div>
                 </article>
 
@@ -1673,76 +1673,102 @@
             }
             renderDiffChart('all');
 
-            // 2. Monthly Submission Trends Line Chart
+            // 2. Monthly Submission Trends Multi-Series Area Chart (Green, Yellow, Orange)
             const monthlyCanvas = document.getElementById('monthlySubmissionTrendChart');
             if (monthlyCanvas) {
-                const monthlyDatasets = isResearchOnlyRole ? [
-                    {
-                        label: 'Research Proposals',
-                        data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
-                        borderColor: '#15803d',
-                        backgroundColor: 'rgba(21, 128, 61, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Accomplishment Reports',
-                        data: [1, 1, 2, 2, 3, 3, 4, 3, 5, 4, 5, 6],
-                        borderColor: '#ea580c',
-                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    }
-                ] : isExtensionOnlyRole ? [
-                    {
-                        label: 'Extension Programs',
-                        data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
-                        borderColor: '#0284c7',
-                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Accomplishment Reports',
-                        data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
-                        borderColor: '#ea580c',
-                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    }
-                ] : [
-                    {
-                        label: 'Research Proposals',
-                        data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
-                        borderColor: '#15803d',
-                        backgroundColor: 'rgba(21, 128, 61, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Extension Programs',
-                        data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
-                        borderColor: '#0284c7',
-                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Accomplishment Reports',
-                        data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
-                        borderColor: '#ea580c',
-                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        borderWidth: 3
-                    }
-                ];
+                // Dynamic vertical linear gradient generator for smooth, translucent area fills
+                const createTrendGradient = (ctx, chartArea, colorStart, colorMid, colorEnd) => {
+                    if (!chartArea) return colorStart;
+                    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                    gradient.addColorStop(0, colorStart);
+                    gradient.addColorStop(0.55, colorMid);
+                    gradient.addColorStop(1, colorEnd);
+                    return gradient;
+                };
+
+                const datasetResearch = {
+                    label: 'Research Proposals',
+                    data: [3, 5, 7, 4, 8, 6, 9, 8, 11, 10, 14, 16],
+                    borderColor: '#15803d',
+                    backgroundColor: (context) => createTrendGradient(
+                        context.chart.ctx,
+                        context.chart.chartArea,
+                        'rgba(21, 128, 61, 0.32)',
+                        'rgba(21, 128, 61, 0.08)',
+                        'rgba(21, 128, 61, 0.00)'
+                    ),
+                    borderWidth: 2.8,
+                    fill: true,
+                    tension: 0.38,
+                    cubicInterpolationMode: 'monotone',
+                    pointStyle: 'circle',
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#15803d',
+                    pointBorderWidth: 2.5,
+                    pointHoverBackgroundColor: '#15803d',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3
+                };
+
+                const datasetExtension = {
+                    label: 'Extension Programs',
+                    data: [2, 3, 3, 4, 5, 4, 6, 5, 6, 5, 7, 7],
+                    borderColor: '#eab308',
+                    backgroundColor: (context) => createTrendGradient(
+                        context.chart.ctx,
+                        context.chart.chartArea,
+                        'rgba(234, 179, 8, 0.30)',
+                        'rgba(234, 179, 8, 0.08)',
+                        'rgba(234, 179, 8, 0.00)'
+                    ),
+                    borderWidth: 2.8,
+                    fill: true,
+                    tension: 0.38,
+                    cubicInterpolationMode: 'monotone',
+                    pointStyle: 'circle',
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#eab308',
+                    pointBorderWidth: 2.5,
+                    pointHoverBackgroundColor: '#eab308',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3
+                };
+
+                const datasetAccomplishment = {
+                    label: 'Accomplishment Reports',
+                    data: [1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6],
+                    borderColor: '#ea580c',
+                    backgroundColor: (context) => createTrendGradient(
+                        context.chart.ctx,
+                        context.chart.chartArea,
+                        'rgba(234, 88, 12, 0.28)',
+                        'rgba(234, 88, 12, 0.07)',
+                        'rgba(234, 88, 12, 0.00)'
+                    ),
+                    borderWidth: 2.8,
+                    fill: true,
+                    tension: 0.38,
+                    cubicInterpolationMode: 'monotone',
+                    pointStyle: 'circle',
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#ea580c',
+                    pointBorderWidth: 2.5,
+                    pointHoverBackgroundColor: '#ea580c',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3
+                };
+
+                const monthlyDatasets = isResearchOnlyRole
+                    ? [datasetResearch, datasetAccomplishment]
+                    : isExtensionOnlyRole
+                        ? [datasetExtension, datasetAccomplishment]
+                        : [datasetResearch, datasetExtension, datasetAccomplishment];
 
                 new Chart(monthlyCanvas, {
                     type: 'line',
@@ -1754,12 +1780,97 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 11, weight: 600 }, color: '#64748b' } },
-                            y: { beginAtZero: true, grid: { color: '#eef2f7' }, ticks: { precision: 0, color: '#64748b' } }
-                        },
                         plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 600 } } }
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'center',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 9,
+                                    boxHeight: 9,
+                                    padding: 22,
+                                    color: '#334155',
+                                    font: { family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 12, weight: '600' }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                                titleColor: '#ffffff',
+                                titleFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 12.5, weight: '700' },
+                                titleSpacing: 4,
+                                bodyColor: '#e2e8f0',
+                                bodyFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 11.5, weight: '500' },
+                                bodySpacing: 7,
+                                padding: { top: 12, bottom: 12, left: 14, right: 14 },
+                                cornerRadius: 10,
+                                borderColor: 'rgba(255, 255, 255, 0.12)',
+                                borderWidth: 1,
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                boxPadding: 6,
+                                callbacks: {
+                                    title: (items) => {
+                                        if (!items || !items.length) return '';
+                                        const raw = items[0].label;
+                                        const monthsFull = {
+                                            Apr: 'April', May: 'May', Jun: 'June', Jul: 'July',
+                                            Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November',
+                                            Dec: 'December', Jan: 'January', Feb: 'February', Mar: 'March'
+                                        };
+                                        const parts = String(raw).split(' ');
+                                        if (monthsFull[parts[0]]) {
+                                            return `${monthsFull[parts[0]]}${parts[1] ? ' ' + parts[1] : ''}`;
+                                        }
+                                        return raw;
+                                    },
+                                    label: (ctx) => {
+                                        const val = Number(ctx.raw) || 0;
+                                        return `  ${ctx.dataset.label}: ${val}`;
+                                    },
+                                    footer: (items) => {
+                                        const total = items.reduce((acc, it) => acc + (Number(it.raw) || 0), 0);
+                                        return `\nTotal Submissions: ${total}`;
+                                    }
+                                },
+                                footerFont: { family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 11.5, weight: '700' },
+                                footerColor: '#86efac'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: true,
+                                    color: 'rgba(241, 245, 249, 0.9)',
+                                    lineWidth: 1
+                                },
+                                border: { display: false },
+                                ticks: {
+                                    font: { family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 11, weight: 600 },
+                                    color: '#64748b',
+                                    padding: 8
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    display: true,
+                                    color: 'rgba(226, 232, 240, 0.85)',
+                                    lineWidth: 1,
+                                    borderDash: [4, 4]
+                                },
+                                border: { display: false },
+                                ticks: {
+                                    precision: 0,
+                                    stepSize: 2,
+                                    font: { family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 11, weight: 500 },
+                                    color: '#64748b',
+                                    padding: 8
+                                }
+                            }
                         }
                     }
                 });

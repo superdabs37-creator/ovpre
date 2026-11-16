@@ -46,7 +46,7 @@ function renderHeader($pageTitle, $currentPage)
     <body>
         <div class="app-shell sidebar-expanded" id="appShell">
             <aside class="sidebar" id="sidebar">
-                <a class="brand" href="dashboard.php">
+                <a class="brand" href="<?php echo h(role_dashboard_path($userRole) ?? 'dashboard.php'); ?>">
                     <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
                     <strong><?php echo APP_NAME; ?></strong>
                 </a>
@@ -74,24 +74,43 @@ function renderHeader($pageTitle, $currentPage)
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
                         <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
                         <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
-                    <?php else: ?>
+                    <?php elseif ($isResearchDirector): ?>
                         <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                         <a class="<?php echo activePage('documents', $currentPage); ?>" href="admin-documents.php" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                        <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
                         <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                    <?php elseif ($isExtensionDirector): ?>
+                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                        <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                        <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                    <?php else: ?>
+                        <?php $rolePortalPath = role_dashboard_path($userRole) ?? 'dashboard.php'; ?>
+                        <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="<?php echo h($rolePortalPath); ?>" title="My Portal Dashboard"><i class="ri-dashboard-line"></i><span>My Portal</span></a>
                         <?php if ($canSeeResearch): ?>
                             <a class="<?php echo activePage('research', $currentPage); ?>" href="research.php" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
                         <?php endif; ?>
                         <?php if ($canSeeExtension): ?>
                             <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
                         <?php endif; ?>
-                        <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
-                        <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <?php if (in_array($userRole, [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR], true)): ?>
+                            <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </nav>
-                <div class="sidebar-footer" title="<?php echo $isSuperAdmin ? 'Executive Administration' : 'Institutional Operations'; ?>">
+                <div class="sidebar-footer" title="<?php echo $isSuperAdmin ? 'Executive Administration' : ($isResearchDirector ? 'Research Directorate' : ($isExtensionDirector ? 'Extension Directorate' : 'Institutional Operations')); ?>">
                     <?php if ($isSuperAdmin): ?>
                         <i class="ri-shield-keyhole-line"></i>
                         <span>Executive Administration</span>
+                    <?php elseif ($isResearchDirector): ?>
+                        <i class="ri-compass-3-line"></i>
+                        <span>Research Directorate</span>
+                    <?php elseif ($isExtensionDirector): ?>
+                        <i class="ri-community-line"></i>
+                        <span>Extension Directorate</span>
                     <?php else: ?>
                         <i class="ri-shield-check-line"></i>
                         <span>Institutional Operations</span>
@@ -127,8 +146,14 @@ function renderHeader($pageTitle, $currentPage)
                             <div class="profile-dropdown-identity">
                                 <span class="profile-dropdown-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><i class="ri-user-3-fill"></i><?php endif; ?></span>
                                 <strong><?php echo h($name); ?></strong>
-                                <small style="color: #202729;"><?php echo ($userRole === ROLE_SUPER_ADMIN) ? 'System Administrator' : h($user['role'] ?? 'Account'); ?></small>
+                                <small style="color: #202729; display: flex; flex-direction: column; gap: 2px;">
+                                    <span><?php echo ($userRole === ROLE_SUPER_ADMIN) ? 'System Administrator' : h($user['role'] ?? 'Account'); ?></span>
+                                    <?php if (!empty($_SESSION['original_user_id']) && (int) $_SESSION['original_user_id'] !== (int) $user['id']): ?>
+                                        <span style="font-size: 0.72rem; color: #15803d; font-weight: 700;">(Designated Role Account)</span>
+                                    <?php endif; ?>
+                                </small>
                             </div>
+                            <?php echo render_profile_role_switcher($user, ''); ?>
                             <?php $dedicatedPortalPath = role_dashboard_path($userRole); if ($dedicatedPortalPath && $dedicatedPortalPath !== 'dashboard.php'): ?>
                                 <a href="<?php echo h($dedicatedPortalPath); ?>" style="color: #15803d; font-weight: 600;"><i class="ri-dashboard-line"></i> Open <?php echo h($user['role'] ?? 'Role'); ?> Portal</a>
                             <?php endif; ?>

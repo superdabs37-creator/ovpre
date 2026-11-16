@@ -170,8 +170,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $role = $submittedRole;
             }
-            db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, role = ?, department_id = ?, updated_at = NOW() WHERE id = ?')
-                ->execute([$fullname, $gender, $birthday, $email, $phone, $username, $role, $departmentId > 0 ? $departmentId : null, (int) $id]);
+
+            // Process assigned additional roles
+            $submittedAssignedRoles = is_array($_POST['assigned_roles'] ?? null) ? $_POST['assigned_roles'] : [];
+            $assignedRolesFiltered = array_values(array_intersect($submittedAssignedRoles, array_keys($availableRolePurposes)));
+            $assignedRolesFiltered = array_values(array_diff($assignedRolesFiltered, [$role]));
+            $assignedRolesJson = !empty($assignedRolesFiltered) ? json_encode($assignedRolesFiltered) : null;
+
+            ensure_assigned_roles_column();
+            try {
+                db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, role = ?, assigned_roles = ?, department_id = ?, updated_at = NOW() WHERE id = ?')
+                    ->execute([$fullname, $gender, $birthday, $email, $phone, $username, $role, $assignedRolesJson, $departmentId > 0 ? $departmentId : null, (int) $id]);
+            } catch (Throwable) {
+                db()->prepare('UPDATE users SET fullname = ?, gender = ?, birthday = ?, email = ?, phone = ?, username = ?, role = ?, department_id = ?, updated_at = NOW() WHERE id = ?')
+                    ->execute([$fullname, $gender, $birthday, $email, $phone, $username, $role, $departmentId > 0 ? $departmentId : null, (int) $id]);
+            }
             if ($role !== $target['role']) {
                 log_action((int) $actor['id'], 'Changed role for ' . $target['username'] . ' from ' . $target['role'] . ' to ' . $role);
             }
@@ -287,7 +300,20 @@ renderHeader('User Management', 'users');
                         <td><?php echo h($user['fullname']); ?></td>
                         <td><?php echo h($user['email']); ?></td>
                         <td><?php echo h($user['username']); ?></td>
-                        <td><?php echo h($user['role']); ?></td>
+                        <td>
+                            <strong><?php echo h($user['role'] === ROLE_RESEARCHER ? 'Faculty Researcher' : $user['role']); ?></strong>
+                            <?php 
+                            $userExtras = parse_assigned_roles($user['assigned_roles'] ?? '');
+                            if (!empty($userExtras)): ?>
+                                <div style="display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px;">
+                                    <?php foreach ($userExtras as $extraRole): ?>
+                                        <span style="font-size: 0.68rem; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 1px 5px; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px;">
+                                            <i class="ri-add-line" style="font-size: 0.6rem;"></i> <?php echo h($extraRole === ROLE_RESEARCHER ? 'Faculty Researcher' : $extraRole); ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo h(date('M d, Y', strtotime($user['created_at']))); ?></td>
                         <td><?php if ($user['status'] === 'Rejected'): ?><?php echo h($user['rejection_reason'] ?? 'No reason recorded'); ?><br><small><?php echo h($user['rejected_by_name'] ?? 'Administrator'); ?> <?php echo $user['rejected_at'] ? h(date('M d, Y', strtotime($user['rejected_at']))) : ''; ?></small><?php elseif ($user['status'] === 'Active' && $user['approved_at']): ?>Approved by <?php echo h($user['approved_by_name'] ?? 'Administrator'); ?><br><small><?php echo h(date('M d, Y', strtotime($user['approved_at']))); ?></small><?php else: ?>- <?php endif; ?></td>
                         <td><?php echo $user['last_login_at'] ? h(date('M d, Y h:i A', strtotime($user['last_login_at']))) : 'Never'; ?></td>
@@ -335,6 +361,29 @@ renderHeader('User Management', 'users');
                 <?php if ($user['role'] === ROLE_SUPER_ADMIN || (int) $user['id'] === (int) $actor['id']): ?><div class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>Role changes are disabled for this account.</small></div>
                 <?php elseif (!array_key_exists($user['role'], $availableRolePurposes)): ?><label class="field"><span>Role</span><strong><?php echo h($user['role']); ?></strong><small>This legacy role is no longer available for assignment.</small><input type="hidden" name="role" value="<?php echo h($user['role']); ?>"></label>
                 <?php else: ?><label class="field"><span>Role</span><select name="role" required><?php foreach ($availableRolePurposes as $role => $purpose): ?><option value="<?php echo h($role); ?>" <?php echo $user['role'] === $role ? 'selected' : ''; ?>><?php echo h($role === ROLE_RESEARCHER ? 'Faculty Researcher' : $role); ?></option><?php endforeach; ?></select></label><?php endif; ?>
+
+                <?php
+                $userAssignedRoles = parse_assigned_roles($user['assigned_roles'] ?? '');
+                ?>
+                <div class="field" style="grid-column: 1 / -1; margin-top: 4px;">
+                    <span style="font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                        <i class="ri-swap-box-line" style="color: #15803d;"></i> Additional Assigned Roles (Multiple Roles)
+                    </span>
+                    <small style="color: #64748b; margin-bottom: 8px; display: block;">Select additional roles this user is permitted to switch to via their profile dropdown without separate accounts.</small>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                        <?php foreach ($availableRolePurposes as $availRole => $purpose): ?>
+                            <?php 
+                                $isPrimary = ($user['role'] === $availRole);
+                                $isAssigned = in_array($availRole, $userAssignedRoles, true);
+                            ?>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.84rem; color: #334155; cursor: <?php echo $isPrimary ? 'not-allowed' : 'pointer'; ?>; opacity: <?php echo $isPrimary ? '0.7' : '1'; ?>;">
+                                <input type="checkbox" name="assigned_roles[]" value="<?php echo h($availRole); ?>" <?php echo ($isPrimary || $isAssigned) ? 'checked' : ''; ?> <?php echo $isPrimary ? 'disabled' : ''; ?> style="accent-color: #15803d;">
+                                <span><?php echo h($availRole === ROLE_RESEARCHER ? 'Faculty Researcher' : $availRole); ?></span>
+                                <?php if ($isPrimary): ?><span style="font-size: 0.68rem; background: #e2e8f0; color: #475569; padding: 1px 5px; border-radius: 4px;">Primary</span><?php endif; ?>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
             </div>
             <button class="primary-btn" type="submit"><i class="ri-save-line"></i> Save User</button>
         </form>

@@ -1,10 +1,13 @@
 <?php
 require_once 'includes/layout.php';
-$user = require_login(['Super Admin', 'OVPRE Admin', ROLE_RESEARCH_DIRECTOR, 'Research Coordinator']);
+$user = require_login(['Super Admin', 'OVPRE Admin', ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR, 'Research Coordinator', 'Extension Coordinator']);
 ensure_activity_date_to_column();
 ensure_activity_archived_at_column();
 if (role_access_group((string) ($user['role'] ?? '')) === ROLE_RESEARCH_COORDINATOR) {
     redirect_to('research-coordinator/calendar.php');
+}
+if (role_access_group((string) ($user['role'] ?? '')) === ROLE_EXTENSION_COORDINATOR) {
+    redirect_to('extension-coordinator/calendar.php');
 }
 verify_csrf();
 

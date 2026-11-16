@@ -5,6 +5,9 @@ $user = require_login();
 $role = role_access_group((string) ($user['role'] ?? ''));
 $isSuperAdmin = $role === ROLE_SUPER_ADMIN;
 $isOVPREAdmin = $role === ROLE_OVPRE_ADMIN;
+$isFacultyExtensionist = in_array($role, [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist'], true)
+    || in_array((string) ($user['role'] ?? ''), [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist', 'Faculty Extensionists'], true)
+    || (isset($_SESSION['active_role']) && in_array((string) $_SESSION['active_role'], [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist', 'Faculty Extensionists'], true));
 
 $dbDriver = (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') ? 'PostgreSQL (Supabase Cloud)' : 'MySQL Database';
 
@@ -117,6 +120,9 @@ for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
     }
     $trendMonth = $trendMonth->modify('+1 month');
 }
+$annualTrendTotal = $isFacultyExtensionist
+    ? ((int) array_sum($monthlySubmissionTrend['extension']) + (int) array_sum($monthlySubmissionTrend['accomplishments']))
+    : ((int) array_sum($monthlySubmissionTrend['research']) + (int) array_sum($monthlySubmissionTrend['extension']) + (int) array_sum($monthlySubmissionTrend['accomplishments']));
 
 // Colleges Output Comparison
 $departmentCounts = db()->query('SELECT dep.department_name, COUNT(d.id) AS total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND d.archived_at IS NULL GROUP BY dep.id, dep.department_name ORDER BY total DESC, dep.department_name')->fetchAll(PDO::FETCH_ASSOC);
@@ -265,7 +271,9 @@ $totalResProposals = (int) array_sum(array_column($submissionsBreakdown, 'res_pr
 $totalResPublications = (int) array_sum(array_column($submissionsBreakdown, 'res_publications'));
 $totalExtProposals = (int) array_sum(array_column($submissionsBreakdown, 'ext_proposals'));
 $totalExtAccomplishments = (int) array_sum(array_column($submissionsBreakdown, 'ext_accomplishments'));
-$overallSubmissionsCount = $totalResProposals + $totalResPublications + $totalExtProposals + $totalExtAccomplishments;
+$overallSubmissionsCount = $isFacultyExtensionist
+    ? ($totalExtProposals + $totalExtAccomplishments)
+    : ($totalResProposals + $totalResPublications + $totalExtProposals + $totalExtAccomplishments);
 
 $programsByCollege = [
     'College of Teacher Education' => ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
@@ -414,6 +422,9 @@ $completedProjectRows = db()->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 $completedColleges = [];
 foreach ($completedProjectRows as $completedProjectRow) {
+    if ($isFacultyExtensionist && ($completedProjectRow['project_type'] ?? '') !== 'Extension') {
+        continue;
+    }
     $departmentId = (int) $completedProjectRow['department_id'];
     if (!isset($completedColleges[$departmentId])) {
         $completedColleges[$departmentId] = [
@@ -510,6 +521,9 @@ foreach ($personSubmissionRows as $personSubmissionRow) {
         ];
     }
     $projectType = (string) $personSubmissionRow['project_type'];
+    if ($isFacultyExtensionist && $projectType === 'Research') {
+        continue;
+    }
     if ($projectType === 'Research') {
         $submissionPerformance[$submitterId]['research_count']++;
     } else {
@@ -535,6 +549,9 @@ foreach ($personSubmissionRows as $personSubmissionRow) {
     ];
 }
 $submissionPerformance = array_values($submissionPerformance);
+if ($isFacultyExtensionist) {
+    $submissionPerformance = array_values(array_filter($submissionPerformance, static fn(array $p): bool => $p['extension_count'] > 0));
+}
 usort($submissionPerformance, static function (array $a, array $b): int {
     $totalCompare = ($b['research_count'] + $b['extension_count']) <=> ($a['research_count'] + $a['extension_count']);
     return $totalCompare !== 0 ? $totalCompare : strcasecmp($a['submitter_name'], $b['submitter_name']);
@@ -559,6 +576,7 @@ renderHeader('Dashboard', 'dashboard');
         <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
     </div>
 
+    <?php if (!$isFacultyExtensionist): ?>
     <!-- Research Proposals -->
     <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0284c7; color: #ffffff; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
@@ -570,6 +588,19 @@ renderHeader('Dashboard', 'dashboard');
         <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalResearch; ?></div>
         <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
     </div>
+    <?php else: ?>
+    <!-- Accomplishment Reports -->
+    <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #ea580c; color: #ffffff; box-shadow: 0 6px 18px rgba(234, 88, 12, 0.22);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Accomplishment Reports</span>
+            <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.2); display: inline-grid; place-items: center; flex-shrink: 0;">
+                <i class="ri-medal-line" style="font-size: 1.15rem; color: #ffffff;"></i>
+            </span>
+        </div>
+        <div style="font-size: 1.65rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 4px;"><?php echo $totalExtAccomplishments; ?></div>
+        <small style="color: rgba(255, 255, 255, 0.82); font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension documentation</small>
+    </div>
+    <?php endif; ?>
 
     <!-- Extension Projects -->
     <div class="panel kpi-solid-card" style="margin: 0; padding: 16px 18px; border-radius: 14px; border: 0; background: #0d9488; color: #ffffff; box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);">
@@ -618,9 +649,9 @@ renderHeader('Dashboard', 'dashboard');
                 <i class="ri-sparkling-fill"></i> Primary University Benchmark
             </div>
             <h2 id="deptChartTitle" style="color: #166534; font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
-                <i class="ri-building-line" style="color: #15803d; font-size: 1.45rem;"></i> Submission Analytics by College and Program
+                <i class="ri-building-line" style="color: #15803d; font-size: 1.45rem;"></i> <?php echo $isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'; ?>
             </h2>
-            <span id="deptChartSubtitle" style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 5px;">Programs are grouped under their college; college submission totals repeat for each listed program</span>
+            <span id="deptChartSubtitle" style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 5px;"><?php echo $isFacultyExtensionist ? 'Extension programs are grouped under their college; college submission totals repeat for each listed program' : 'Programs are grouped under their college; college submission totals repeat for each listed program'; ?></span>
         </div>
         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div style="display: flex; align-items: center; gap: 6px;">
@@ -690,18 +721,30 @@ renderHeader('Dashboard', 'dashboard');
 
 
 
-<article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 20px 22px;">
-    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+<article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 22px 24px;">
+    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px;">
         <div>
-            <h2 style="margin: 0; color: #166534; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                <i class="ri-line-chart-line" style="font-size: 1.4rem;"></i> Monthly Submission Trends
+            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 999px; color: #15803d; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                <i class="ri-pulse-line"></i> Annual Performance
+            </div>
+            <h2 style="margin: 0; color: #166534; font-size: clamp(1.15rem, 2vw, 1.35rem); font-weight: 800; display: flex; align-items: center; gap: 9px;">
+                <i class="ri-line-chart-line" style="font-size: 1.45rem; color: #15803d;"></i> Monthly Submission Trends
             </h2>
-            <span style="display: block; margin-top: 4px; color: #64748b; font-size: 0.85rem;">Research proposals, extension programs, and accomplishment reports submitted each month</span>
+            <span style="display: block; margin-top: 5px; color: #64748b; font-size: 0.84rem; font-weight: 500;">
+                <?php echo $isFacultyExtensionist ? 'Extension programs and accomplishment reports submitted each month' : 'Research proposals, extension programs, and accomplishment reports submitted each month'; ?>
+            </span>
         </div>
-        <span class="badge" style="background: #f0fdf4; color: #166534; padding: 6px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">Last 12 months</span>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; font-weight: 700; font-size: 0.82rem; padding: 7px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="ri-file-list-3-line" style="color: #15803d;"></i> <?php echo $annualTrendTotal; ?> Total Submissions
+            </span>
+            <span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 7px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="ri-calendar-line"></i> Last 12 months
+            </span>
+        </div>
     </div>
-    <div style="position: relative; width: 100%; height: 330px;">
-        <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Line chart showing monthly research proposals, extension programs, and accomplishment reports"></canvas>
+    <div style="position: relative; width: 100%; height: 350px;">
+        <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Area chart showing monthly <?php echo $isFacultyExtensionist ? 'extension programs and accomplishment reports' : 'research proposals, extension programs, and accomplishment reports'; ?>"></canvas>
     </div>
 </article>
 
@@ -743,14 +786,18 @@ renderHeader('Dashboard', 'dashboard');
                     <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
                         <i class="ri-checkbox-circle-line" style="color: #15803d;"></i> Completed Colleges
                     </h2>
-                    <span style="font-size: 0.8rem; color: #64748b;">Colleges with research or extension projects marked Completed</span>
+                    <span style="font-size: 0.8rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Colleges with extension projects marked Completed' : 'Colleges with research or extension projects marked Completed'; ?></span>
                 </div>
                 <label style="display: flex; align-items: center; gap: 7px; color: #475569; font-size: 0.78rem; font-weight: 700;">
                     Project Type
                     <select id="completedProjectTypeFilter" class="filter-select compact-select" style="padding: 6px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; font-size: 0.78rem;">
-                        <option value="all">All Projects</option>
-                        <option value="research">Research</option>
-                        <option value="extension">Extension</option>
+                        <?php if ($isFacultyExtensionist): ?>
+                            <option value="extension">Extension Only</option>
+                        <?php else: ?>
+                            <option value="all">All Projects</option>
+                            <option value="research">Research</option>
+                            <option value="extension">Extension</option>
+                        <?php endif; ?>
                     </select>
                 </label>
             </div>
@@ -794,10 +841,10 @@ renderHeader('Dashboard', 'dashboard');
                     <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
                         <i class="ri-git-branch-line" style="color: #7c3aed;"></i> Completion by Stream
                     </h2>
-                    <span style="font-size: 0.8rem; color: #64748b;">Research proposals vs. extension community projects</span>
+                    <span style="font-size: 0.8rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Extension community projects status' : 'Research proposals vs. extension community projects'; ?></span>
                 </div>
                 <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
-                    Research &amp; Extension
+                    <?php echo $isFacultyExtensionist ? 'Extension Stream' : 'Research &amp; Extension'; ?>
                 </span>
             </div>
             <div style="position: relative; height: 260px; width: 100%;">
@@ -812,7 +859,7 @@ renderHeader('Dashboard', 'dashboard');
     <div class="panel-heading">
         <div>
             <h2><i class="ri-team-line"></i> Submission Performance by Person</h2>
-            <small style="color: #64748b;">Research and extension submissions grouped by submitter, with approved totals.</small>
+            <small style="color: #64748b;"><?php echo $isFacultyExtensionist ? 'Extension submissions grouped by submitter, with approved totals.' : 'Research and extension submissions grouped by submitter, with approved totals.'; ?></small>
         </div>
     </div>
     <div class="table-scroll">
@@ -821,7 +868,9 @@ renderHeader('Dashboard', 'dashboard');
                 <tr>
                     <th>Submitter</th>
                     <th>College</th>
-                    <th style="text-align: center;">Research Submissions</th>
+                    <?php if (!$isFacultyExtensionist): ?>
+                        <th style="text-align: center;">Research Submissions</th>
+                    <?php endif; ?>
                     <th style="text-align: center;">Extension Submissions</th>
                     <th style="text-align: center;">Approved</th>
                     <th style="text-align: center;">All Submissions</th>
@@ -829,13 +878,15 @@ renderHeader('Dashboard', 'dashboard');
             </thead>
             <tbody>
                 <?php if (empty($submissionPerformance)): ?>
-                    <tr><td colspan="6" style="text-align: center; color: #64748b;">No submissions found.</td></tr>
+                    <tr><td colspan="<?php echo $isFacultyExtensionist ? '5' : '6'; ?>" style="text-align: center; color: #64748b;">No submissions found.</td></tr>
                 <?php else: ?>
                     <?php foreach ($submissionPerformance as $person): ?>
                         <tr>
                             <td><strong><?php echo h($person['submitter_name']); ?></strong></td>
                             <td><?php echo h($person['department_name'] !== '' ? $person['department_name'] : 'Unassigned'); ?></td>
-                            <td style="text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534;"><?php echo (int) $person['research_count']; ?></span></td>
+                            <?php if (!$isFacultyExtensionist): ?>
+                                <td style="text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534;"><?php echo (int) $person['research_count']; ?></span></td>
+                            <?php endif; ?>
                             <td style="text-align: center;"><span class="badge" style="background: #e0f2fe; color: #0369a1;"><?php echo (int) $person['extension_count']; ?></span></td>
                             <td style="text-align: center;"><span class="badge" style="background: #f3e8ff; color: #6b21a8;"><?php echo (int) $person['approved_count']; ?></span></td>
                             <td style="text-align: center;">
@@ -1118,7 +1169,7 @@ renderHeader('Dashboard', 'dashboard');
     <div class="panel-heading">
         <div>
             <h2><i class="ri-table-line"></i> Tactical Colleges Submissions Matrix</h2>
-            <small style="color: #64748b;">Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.</small>
+            <small style="color: #64748b;"><?php echo $isFacultyExtensionist ? 'Granular breakdown of Extension Proposals and Accomplishment Reports per college.' : 'Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.'; ?></small>
         </div>
     </div>
     <div class="table-scroll">
@@ -1127,8 +1178,10 @@ renderHeader('Dashboard', 'dashboard');
                 <tr>
                     <th>College Name</th>
                     <th style="text-align: center;">Faculty</th>
-                    <th style="text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
-                    <th style="text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
+                    <?php if (!$isFacultyExtensionist): ?>
+                        <th style="text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
+                        <th style="text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
+                    <?php endif; ?>
                     <th style="text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
                     <th style="text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
                     <th style="text-align: center;">Total Submissions</th>
@@ -1137,6 +1190,11 @@ renderHeader('Dashboard', 'dashboard');
             </thead>
             <tbody>
                 <?php foreach ($submissionsBreakdown as $col): ?>
+                    <?php
+                    $displayedSubmissions = $isFacultyExtensionist
+                        ? ((int) $col['ext_proposals'] + (int) $col['ext_accomplishments'])
+                        : (int) $col['total_submissions'];
+                    ?>
                     <tr>
                         <td>
                             <strong><?php echo h($col['department_name']); ?></strong>
@@ -1144,12 +1202,14 @@ renderHeader('Dashboard', 'dashboard');
                         <td style="text-align: center;">
                             <span class="badge" style="font-weight: 700;"><?php echo (int) $col['total_faculty']; ?></span>
                         </td>
-                        <td style="text-align: center;">
-                            <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;"><?php echo (int) $col['res_proposals']; ?></span>
-                        </td>
-                        <td style="text-align: center;">
-                            <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;"><?php echo (int) $col['res_publications']; ?></span>
-                        </td>
+                        <?php if (!$isFacultyExtensionist): ?>
+                            <td style="text-align: center;">
+                                <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;"><?php echo (int) $col['res_proposals']; ?></span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;"><?php echo (int) $col['res_publications']; ?></span>
+                            </td>
+                        <?php endif; ?>
                         <td style="text-align: center;">
                             <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;"><?php echo (int) $col['ext_proposals']; ?></span>
                         </td>
@@ -1157,10 +1217,10 @@ renderHeader('Dashboard', 'dashboard');
                             <span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;"><?php echo (int) $col['ext_accomplishments']; ?></span>
                         </td>
                         <td style="text-align: center;">
-                            <strong style="font-size: 0.95rem; color: #0f172a;"><?php echo (int) $col['total_submissions']; ?></strong>
+                            <strong style="font-size: 0.95rem; color: #0f172a;"><?php echo $displayedSubmissions; ?></strong>
                         </td>
                         <td style="text-align: center;">
-                            <?php if ($col['total_submissions'] > 0 || $col['total_faculty'] > 0): ?>
+                            <?php if ($displayedSubmissions > 0 || $col['total_faculty'] > 0): ?>
                                 <span class="status-pill status-approved"><i class="ri-check-line"></i> Active Submissions</span>
                             <?php else: ?>
                                 <span class="status-pill" style="background: #f1f5f9; color: #64748b;">Awaiting Submissions</span>
@@ -1252,85 +1312,208 @@ document.addEventListener('DOMContentLoaded', () => {
     // Palette tokens
     const vibrantColors = ['#15803d', '#0284c7', '#7c3aed', '#d97706', '#10b981', '#e11d48', '#ea580c', '#4f46e5', '#0d9488', '#64748b'];
 
-    // Monthly submission trends: proposals, extension programs, and reports.
+    // Monthly submission trends: modern multi-series area chart with subtle gradients & smooth splines
     const monthlyTrendCanvas = document.getElementById('monthlySubmissionTrendChart');
     if (monthlyTrendCanvas) {
         const monthlyTrend = <?php echo json_encode($monthlySubmissionTrend); ?>;
+
+        // Dynamic vertical linear gradient generator for smooth, translucent area fills
+        const createTrendGradient = (ctx, chartArea, colorStart, colorMid, colorEnd) => {
+            if (!chartArea) return colorStart;
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            gradient.addColorStop(0, colorStart);
+            gradient.addColorStop(0.55, colorMid);
+            gradient.addColorStop(1, colorEnd);
+            return gradient;
+        };
+
         new Chart(monthlyTrendCanvas, {
             type: 'line',
             data: {
                 labels: monthlyTrend.labels,
                 datasets: [
+                    <?php if (!$isFacultyExtensionist): ?>
                     {
                         label: 'Research Proposals',
                         data: monthlyTrend.research,
                         borderColor: '#15803d',
-                        backgroundColor: 'rgba(21, 128, 61, 0.12)',
-                        pointBackgroundColor: '#15803d',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        borderWidth: 3,
-                        tension: 0.3,
-                        fill: false
+                        backgroundColor: (context) => createTrendGradient(
+                            context.chart.ctx,
+                            context.chart.chartArea,
+                            'rgba(21, 128, 61, 0.35)',
+                            'rgba(21, 128, 61, 0.10)',
+                            'rgba(21, 128, 61, 0.00)'
+                        ),
+                        borderWidth: 2.8,
+                        fill: true,
+                        tension: 0.38,
+                        cubicInterpolationMode: 'monotone',
+                        pointStyle: 'circle',
+                        pointRadius: 4.5,
+                        pointHoverRadius: 7.5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#15803d',
+                        pointBorderWidth: 2.5,
+                        pointHoverBackgroundColor: '#15803d',
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 3
                     },
+                    <?php endif; ?>
                     {
                         label: 'Extension Programs',
                         data: monthlyTrend.extension,
-                        borderColor: '#0284c7',
-                        backgroundColor: 'rgba(2, 132, 199, 0.10)',
-                        pointBackgroundColor: '#0284c7',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        borderWidth: 3,
-                        tension: 0.3,
-                        fill: false
+                        borderColor: '#eab308',
+                        backgroundColor: (context) => createTrendGradient(
+                            context.chart.ctx,
+                            context.chart.chartArea,
+                            'rgba(234, 179, 8, 0.32)',
+                            'rgba(234, 179, 8, 0.08)',
+                            'rgba(234, 179, 8, 0.00)'
+                        ),
+                        borderWidth: 2.8,
+                        fill: true,
+                        tension: 0.38,
+                        cubicInterpolationMode: 'monotone',
+                        pointStyle: 'circle',
+                        pointRadius: 4.5,
+                        pointHoverRadius: 7.5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#eab308',
+                        pointBorderWidth: 2.5,
+                        pointHoverBackgroundColor: '#eab308',
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 3
                     },
                     {
                         label: 'Accomplishment Reports',
                         data: monthlyTrend.accomplishments,
                         borderColor: '#ea580c',
-                        backgroundColor: 'rgba(234, 88, 12, 0.10)',
-                        pointBackgroundColor: '#ea580c',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        borderWidth: 3,
-                        tension: 0.3,
-                        fill: false
+                        backgroundColor: (context) => createTrendGradient(
+                            context.chart.ctx,
+                            context.chart.chartArea,
+                            'rgba(234, 88, 12, 0.28)',
+                            'rgba(234, 88, 12, 0.08)',
+                            'rgba(234, 88, 12, 0.00)'
+                        ),
+                        borderWidth: 2.8,
+                        fill: true,
+                        tension: 0.38,
+                        cubicInterpolationMode: 'monotone',
+                        pointStyle: 'circle',
+                        pointRadius: 4.5,
+                        pointHoverRadius: 7.5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#ea580c',
+                        pointBorderWidth: 2.5,
+                        pointHoverBackgroundColor: '#ea580c',
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 3
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
                 plugins: {
                     legend: {
+                        display: true,
                         position: 'top',
-                        labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, boxHeight: 8, padding: 18, color: '#334155', font: { size: 11, weight: 600 } }
+                        align: 'center',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            boxWidth: 9,
+                            boxHeight: 9,
+                            padding: 22,
+                            color: '#334155',
+                            font: { family: "'Inter', sans-serif", size: 12, weight: '600' }
+                        }
                     },
                     tooltip: {
+                        enabled: true,
                         backgroundColor: 'rgba(15, 23, 42, 0.94)',
-                        padding: 10,
-                        cornerRadius: 8
+                        titleColor: '#ffffff',
+                        titleFont: { family: "'Inter', sans-serif", size: 12.5, weight: '700' },
+                        titleSpacing: 4,
+                        bodyColor: '#e2e8f0',
+                        bodyFont: { family: "'Inter', sans-serif", size: 11.5, weight: '500' },
+                        bodySpacing: 7,
+                        padding: { top: 12, bottom: 12, left: 14, right: 14 },
+                        cornerRadius: 10,
+                        borderColor: 'rgba(255, 255, 255, 0.12)',
+                        borderWidth: 1,
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        boxHeight: 8,
+                        boxPadding: 6,
+                        callbacks: {
+                            title: (items) => {
+                                if (!items || !items.length) return '';
+                                const raw = items[0].label;
+                                const monthsFull = {
+                                    Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April',
+                                    May: 'May', Jun: 'June', Jul: 'July', Aug: 'August',
+                                    Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December'
+                                };
+                                const parts = String(raw).split(' ');
+                                if (parts.length === 2 && monthsFull[parts[0]]) {
+                                    return `${monthsFull[parts[0]]} ${parts[1]}`;
+                                }
+                                return raw;
+                            },
+                            label: (ctx) => {
+                                const val = Number(ctx.raw) || 0;
+                                return `  ${ctx.dataset.label}: ${val}`;
+                            },
+                            footer: (items) => {
+                                const total = items.reduce((acc, it) => acc + (Number(it.raw) || 0), 0);
+                                return `\nTotal Submissions: ${total}`;
+                            }
+                        },
+                        footerFont: { family: "'Inter', sans-serif", size: 11.5, weight: '700' },
+                        footerColor: '#86efac'
                     }
                 },
                 scales: {
                     x: {
-                        grid: { display: false },
+                        grid: {
+                            display: true,
+                            color: 'rgba(241, 245, 249, 0.85)',
+                            lineWidth: 1
+                        },
                         border: { display: false },
-                        ticks: { color: '#64748b', maxRotation: 0, minRotation: 0, font: { size: 10, weight: 600 } }
+                        ticks: {
+                            color: '#64748b',
+                            font: { family: "'Inter', sans-serif", size: 11, weight: '600' },
+                            padding: 10,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            callback: function(val) {
+                                const label = this.getLabelForValue(val);
+                                return typeof label === 'string' ? label.split(' ')[0] : label;
+                            }
+                        }
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: '#eef2f7' },
+                        grid: {
+                            display: true,
+                            color: 'rgba(226, 232, 240, 0.85)',
+                            lineWidth: 1,
+                            borderDash: [4, 4]
+                        },
                         border: { display: false },
-                        ticks: { precision: 0, stepSize: 1, color: '#64748b', font: { size: 10 } }
+                        ticks: {
+                            precision: 0,
+                            stepSize: 2,
+                            color: '#64748b',
+                            font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
+                            padding: 10
+                        }
                     }
                 }
             }
@@ -1452,14 +1635,11 @@ document.addEventListener('DOMContentLoaded', () => {
         new Chart(wingCompCanvas, {
             type: 'bar',
             data: {
-                labels: ['Research Wing', 'Extension Wing'],
+                labels: <?php echo json_encode($isFacultyExtensionist ? ['Extension Wing'] : ['Research Wing', 'Extension Wing']); ?>,
                 datasets: [
                     {
                         label: 'Completed',
-                        data: [
-                            <?php echo (int) $researchTotalCompleted; ?>,
-                            <?php echo (int) $extensionTotalCompleted; ?>
-                        ],
+                        data: <?php echo json_encode($isFacultyExtensionist ? [(int) $extensionTotalCompleted] : [(int) $researchTotalCompleted, (int) $extensionTotalCompleted]); ?>,
                         backgroundColor: '#15803d',
                         borderColor: '#166534',
                         borderWidth: 1,
@@ -1468,10 +1648,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     {
                         label: 'In Progress / Ongoing',
-                        data: [
-                            <?php echo (int) $researchTotalOngoing; ?>,
-                            <?php echo (int) $extensionTotalOngoing; ?>
-                        ],
+                        data: <?php echo json_encode($isFacultyExtensionist ? [(int) $extensionTotalOngoing] : [(int) $researchTotalOngoing, (int) $extensionTotalOngoing]); ?>,
                         backgroundColor: '#ea580c',
                         borderColor: '#c2410c',
                         borderWidth: 1,
@@ -1493,7 +1670,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         intersect: false,
                         callbacks: {
                             label: (ctx) => {
-                                const isResearch = ctx.dataIndex === 0;
+                                const isResearch = <?php echo $isFacultyExtensionist ? 'false' : 'ctx.dataIndex === 0'; ?>;
                                 const total = isResearch
                                     ? <?php echo max(1, $researchTotalCompleted + $researchTotalOngoing); ?>
                                     : <?php echo max(1, $extensionTotalCompleted + $extensionTotalOngoing); ?>;
@@ -1590,7 +1767,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return { x: categoryScale, y: valueScale };
         };
 
-        const datasetConfig = {
+        const datasetConfig = <?php if ($isFacultyExtensionist): ?>{
+            ext_proposals: {
+                label: 'Extension Proposals',
+                backgroundColor: '#0284c7',
+                borderColor: '#0369a1',
+                borderWidth: 1,
+                borderRadius: 5,
+                borderSkipped: false,
+                maxBarThickness: 20
+            },
+            ext_accomplishments: {
+                label: 'Accomplishment Reports',
+                backgroundColor: '#ea580c',
+                borderColor: '#c2410c',
+                borderWidth: 1,
+                borderRadius: 5,
+                borderSkipped: false,
+                maxBarThickness: 20
+            }
+        }<?php else: ?>{
             res_proposals: {
                 label: 'Research Proposals',
                 backgroundColor: '#15803d',
@@ -1601,7 +1797,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 maxBarThickness: 20
             },
             res_publications: {
-                label: 'Research Publications & Reports',
+                label: 'Research Publications',
                 backgroundColor: '#7c3aed',
                 borderColor: '#6d28d9',
                 borderWidth: 1,
@@ -1627,7 +1823,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 borderSkipped: false,
                 maxBarThickness: 20
             }
-        };
+        }<?php endif; ?>;
 
         function getProgramDatasets(rows) {
             return Object.entries(datasetConfig).map(([key, dataset]) => ({
@@ -1694,10 +1890,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const selectedProgram = visibleRows.length === 1 && val.startsWith('program-') ? visibleRows[0] : null;
                     const selectedCollege = val.startsWith('college-') ? (visibleRows[0]?.department_name ?? null) : null;
                     titleEl.innerHTML = selectedProgram
-                        ? `<i class="ri-graduation-cap-line" style="color: #15803d;"></i> ${selectedProgram.program_name} Submission Analytics`
+                        ? `<i class="ri-graduation-cap-line" style="color: #15803d;"></i> ${selectedProgram.program_name} <?php echo $isFacultyExtensionist ? 'Extension Analytics' : 'Submission Analytics'; ?>`
                         : selectedCollege
-                            ? `<i class="ri-building-line" style="color: #15803d;"></i> ${selectedCollege} Program Analytics`
-                            : '<i class="ri-building-line" style="color: #15803d;"></i> Submission Analytics by College and Program';
+                            ? `<i class="ri-building-line" style="color: #15803d;"></i> ${selectedCollege} <?php echo $isFacultyExtensionist ? 'Extension Program Analytics' : 'Program Analytics'; ?>`
+                            : '<i class="ri-building-line" style="color: #15803d;"></i> <?php echo $isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'; ?>';
                     subtitleEl.textContent = 'Submission records are grouped by college; college totals repeat for each listed program because records are not tagged by program.';
                 }
                 deptChart.update();

@@ -106,6 +106,270 @@ function role_dashboard_path(string $role): ?string {
     };
 }
 
+function parse_assigned_roles(mixed $raw): array {
+    if (empty($raw)) {
+        return [];
+    }
+    if (is_array($raw)) {
+        return array_values(array_unique(array_filter(array_map('trim', $raw))));
+    }
+    if (is_string($raw)) {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return [];
+        }
+        if (str_starts_with($raw, '[') && str_ends_with($raw, ']')) {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                return array_values(array_unique(array_filter(array_map('trim', $decoded))));
+            }
+        }
+        return array_values(array_unique(array_filter(array_map('trim', explode(',', $raw)))));
+    }
+    return [];
+}
+
+function find_designated_user_for_role(string $role): ?array {
+    static $cache = [];
+    if (isset($cache[$role])) {
+        return $cache[$role];
+    }
+
+    $preferredUsernames = match ($role) {
+        ROLE_SUPER_ADMIN => ['admin', 'zyrus'],
+        ROLE_RESEARCH_DIRECTOR => ['jcigaral2', 'jeysii'],
+        ROLE_EXTENSION_DIRECTOR => ['edrianbanaagt', 'edrian'],
+        ROLE_RESEARCH_COORDINATOR => ['mdelosreyes', 'kendrix', 'owbiwan2'],
+        ROLE_EXTENSION_COORDINATOR => ['vramos'],
+        ROLE_FACULTY_EXTENSIONIST => ['lbautista', 'rcruz', 'jaquino'],
+        ROLE_RESEARCHER => ['athorne', 'kvaldez', 'gmendoza', 'marielramos12', 'johncarl28'],
+        default => [],
+    };
+
+    $user = null;
+    if (!empty($preferredUsernames)) {
+        $placeholders = implode(',', array_fill(0, count($preferredUsernames), '?'));
+        $stmt = db()->prepare("SELECT * FROM users WHERE status = 'Active' AND deleted_at IS NULL AND username IN ({$placeholders}) ORDER BY id ASC LIMIT 1");
+        $stmt->execute($preferredUsernames);
+        $user = $stmt->fetch() ?: null;
+    }
+
+    if (!$user) {
+        $targetGroup = role_access_group($role);
+        $stmt = db()->prepare("SELECT * FROM users WHERE (role = ? OR role = ?) AND status = 'Active' AND deleted_at IS NULL ORDER BY id ASC LIMIT 1");
+        $stmt->execute([$role, $targetGroup]);
+        $user = $stmt->fetch() ?: null;
+    }
+
+    if ($user) {
+        $cache[$role] = $user;
+    }
+    return $user;
+}
+
+function user_available_roles(?array $user = null): array {
+    if ($user === null) {
+        $user = current_user();
+    }
+    if (!$user) {
+        return [];
+    }
+
+    $primaryRole = (string) ($user['primary_role'] ?? $user['role'] ?? '');
+    $assignedRolesRaw = $user['assigned_roles'] ?? '';
+    $additionalRoles = parse_assigned_roles($assignedRolesRaw);
+
+    // If session was switched from an original user or user is an admin: provide all designated portal roles
+    $isSwitchedSession = !empty($_SESSION['original_user_id']);
+    if ($isSwitchedSession || in_array($primaryRole, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
+        $allPortalRoles = [
+            ROLE_SUPER_ADMIN,
+            ROLE_RESEARCH_DIRECTOR,
+            ROLE_EXTENSION_DIRECTOR,
+            ROLE_RESEARCH_COORDINATOR,
+            ROLE_EXTENSION_COORDINATOR,
+            ROLE_FACULTY_EXTENSIONIST,
+            ROLE_RESEARCHER,
+        ];
+        if (!empty($additionalRoles)) {
+            $allPortalRoles = array_merge($allPortalRoles, $additionalRoles);
+        }
+        return array_values(array_unique(array_filter($allPortalRoles)));
+    }
+
+    $roles = array_merge([$primaryRole], $additionalRoles);
+    return array_values(array_unique(array_filter($roles)));
+}
+
+function role_display_info(string $role): array {
+    return match ($role) {
+        ROLE_SUPER_ADMIN => [
+            'label' => 'Super Admin',
+            'portal' => 'System Administration',
+            'icon' => 'ri-shield-keyhole-line',
+            'path' => 'dashboard.php',
+            'badge_color' => '#fef2f2',
+            'badge_text' => '#b91c1c',
+        ],
+        ROLE_OVPRE_ADMIN => [
+            'label' => 'OVPRE Admin',
+            'portal' => 'Admin Operations',
+            'icon' => 'ri-admin-line',
+            'path' => 'dashboard.php',
+            'badge_color' => '#eff6ff',
+            'badge_text' => '#1d4ed8',
+        ],
+        ROLE_RESEARCH_DIRECTOR => [
+            'label' => 'Research Director',
+            'portal' => 'Research Director Portal',
+            'icon' => 'ri-compass-3-line',
+            'path' => 'dashboard.php',
+            'badge_color' => '#f0fdf4',
+            'badge_text' => '#15803d',
+        ],
+        ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR => [
+            'label' => 'Research & Creative Works Dir.',
+            'portal' => 'Research Director Portal',
+            'icon' => 'ri-compass-3-line',
+            'path' => 'dashboard.php',
+            'badge_color' => '#f0fdf4',
+            'badge_text' => '#15803d',
+        ],
+        ROLE_EXTENSION_DIRECTOR => [
+            'label' => 'Extension Director',
+            'portal' => 'Extension Director Portal',
+            'icon' => 'ri-community-line',
+            'path' => 'dashboard.php',
+            'badge_color' => '#fff7ed',
+            'badge_text' => '#c2410c',
+        ],
+        ROLE_RESEARCH_COORDINATOR => [
+            'label' => 'Research Coordinator',
+            'portal' => 'Research Coord. Portal',
+            'icon' => 'ri-flask-line',
+            'path' => 'research-coordinator/dashboard.php',
+            'badge_color' => '#f0fdf4',
+            'badge_text' => '#166534',
+        ],
+        ROLE_EXTENSION_COORDINATOR => [
+            'label' => 'Extension Coordinator',
+            'portal' => 'Extension Coord. Portal',
+            'icon' => 'ri-shake-hands-line',
+            'path' => 'extension-coordinator/dashboard.php',
+            'badge_color' => '#fff7ed',
+            'badge_text' => '#c2410c',
+        ],
+        ROLE_FACULTY_EXTENSIONIST => [
+            'label' => 'Faculty Extensionist',
+            'portal' => 'Faculty Extensionist Portal',
+            'icon' => 'ri-team-line',
+            'path' => 'faculty-extensionist/dashboard.php',
+            'badge_color' => '#fefce8',
+            'badge_text' => '#a16207',
+        ],
+        ROLE_RESEARCHER => [
+            'label' => 'Faculty Researcher',
+            'portal' => 'Researcher Portal',
+            'icon' => 'ri-microscope-line',
+            'path' => 'researcher/dashboard.php',
+            'badge_color' => '#f0fdf4',
+            'badge_text' => '#15803d',
+        ],
+        ROLE_OVPRE_SECRETARIAT => [
+            'label' => 'OVPRE Secretariat',
+            'portal' => 'Secretariat Portal',
+            'icon' => 'ri-file-user-line',
+            'path' => 'dashboard.php',
+            'badge_color' => '#eff6ff',
+            'badge_text' => '#1d4ed8',
+        ],
+        default => [
+            'label' => $role,
+            'portal' => $role . ' Portal',
+            'icon' => 'ri-user-line',
+            'path' => role_dashboard_path($role) ?? 'dashboard.php',
+            'badge_color' => '#f1f5f9',
+            'badge_text' => '#475569',
+        ],
+    };
+}
+
+function render_profile_role_switcher(array $user, string $pathPrefix = ''): string {
+    $availableRoles = user_available_roles($user);
+    if (count($availableRoles) <= 1) {
+        return '';
+    }
+
+    $activeRole = (string) ($user['active_role'] ?? $user['role'] ?? '');
+    $currentUserId = (int) ($user['id'] ?? 0);
+    $isSwitched = !empty($_SESSION['original_user_id']) && ((int) $_SESSION['original_user_id'] !== $currentUserId);
+    $token = csrf_token();
+
+    $html = '<div class="profile-role-switcher" style="padding: 10px; margin: 8px 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); text-align: left;">';
+    
+    $html .= '<div style="padding: 0 4px 6px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #15803d; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; margin-bottom: 6px;">';
+    $html .= '<span style="display: flex; align-items: center; gap: 4px;"><i class="ri-swap-box-line" style="font-size: 0.85rem;"></i> Designated Accounts</span>';
+    $html .= '<span style="font-size: 0.68rem; background: #dcfce7; color: #166534; padding: 1px 7px; border-radius: 999px; font-weight: 700;">' . count($availableRoles) . ' Portals</span>';
+    $html .= '</div>';
+
+    $html .= '<div style="display: flex; flex-direction: column; gap: 4px; max-height: 240px; overflow-y: auto;">';
+    foreach ($availableRoles as $role) {
+        $info = role_display_info($role);
+        $designatedUser = find_designated_user_for_role($role);
+        $designatedName = $designatedUser ? $designatedUser['fullname'] : '';
+        $isCurrentAccount = $designatedUser ? ((int) $designatedUser['id'] === $currentUserId) : ($activeRole === $role);
+        $switchUrl = h($pathPrefix . 'switch-role.php?role=' . urlencode($role) . '&csrf_token=' . $token);
+
+        if ($isCurrentAccount) {
+            $html .= '<div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 8px; background: #f0fdf4; border: 1px solid #86efac; color: #14532d; font-size: 0.82rem;">';
+            $html .= '<div style="display: flex; align-items: center; gap: 8px; min-width: 0;">';
+            $html .= '<i class="' . h($info['icon']) . '" style="font-size: 1rem; color: #15803d; flex-shrink: 0;"></i>';
+            $html .= '<div style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0;">';
+            $html .= '<span style="font-weight: 800; color: #14532d; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' . h($info['label']) . '</span>';
+            if ($designatedName) {
+                $html .= '<span style="font-size: 0.72rem; color: #166534; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' . h($designatedName) . '</span>';
+            }
+            $html .= '</div>';
+            $html .= '</div>';
+            $html .= '<span style="display: inline-flex; align-items: center; gap: 2px; font-size: 0.65rem; background: #15803d; color: #ffffff; padding: 2px 6px; border-radius: 999px; font-weight: 700; flex-shrink: 0;">';
+            $html .= '<i class="ri-check-line"></i> Active';
+            $html .= '</span>';
+            $html .= '</div>';
+        } else {
+            $html .= '<a href="' . $switchUrl . '" class="profile-role-item" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 8px; text-decoration: none; border: 1px solid transparent; transition: all 0.15s ease;" onmouseover="this.style.background=\'#f1f5f9\'; this.style.borderColor=\'#cbd5e1\';" onmouseout="this.style.background=\'transparent\'; this.style.borderColor=\'transparent\';">';
+            $html .= '<div style="display: flex; align-items: center; gap: 8px; min-width: 0;">';
+            $html .= '<i class="' . h($info['icon']) . '" style="font-size: 1rem; color: #64748b; flex-shrink: 0;"></i>';
+            $html .= '<div style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0;">';
+            $html .= '<span style="font-weight: 700; color: #1e293b; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' . h($info['label']) . '</span>';
+            if ($designatedName) {
+                $html .= '<span style="font-size: 0.72rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' . h($designatedName) . '</span>';
+            }
+            $html .= '</div>';
+            $html .= '</div>';
+            $html .= '<i class="ri-arrow-right-s-line" style="color: #94a3b8; font-size: 0.95rem; flex-shrink: 0;"></i>';
+            $html .= '</a>';
+        }
+    }
+    $html .= '</div>';
+
+    if ($isSwitched) {
+        $resetUrl = h($pathPrefix . 'switch-role.php?role=reset&csrf_token=' . $token);
+        $originalUserId = (int) $_SESSION['original_user_id'];
+        $origStmt = db()->prepare("SELECT fullname FROM users WHERE id = ? LIMIT 1");
+        $origStmt->execute([$originalUserId]);
+        $origName = (string) ($origStmt->fetchColumn() ?: 'Original Account');
+
+        $html .= '<div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #e2e8f0; text-align: center;">';
+        $html .= '<a href="' . $resetUrl . '" style="font-size: 0.74rem; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">';
+        $html .= '<i class="ri-refresh-line"></i> Reset to ' . h($origName);
+        $html .= '</a>';
+        $html .= '</div>';
+    }
+
+    $html .= '</div>';
+    return $html;
+}
+
 class SupabasePDO extends PDO {
     private ?string $lastTable = null;
 
@@ -326,6 +590,25 @@ function ensure_profile_photo_column(): void {
     $column = db()->query("SHOW COLUMNS FROM users LIKE 'profile_photo'")->fetch();
     if (!$column) {
         db()->exec('ALTER TABLE users ADD COLUMN profile_photo VARCHAR(255) DEFAULT NULL');
+    }
+    $checked = true;
+}
+
+function ensure_assigned_roles_column(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            db()->exec('ALTER TABLE users ADD COLUMN IF NOT EXISTS assigned_roles TEXT DEFAULT NULL');
+        } else {
+            $column = db()->query("SHOW COLUMNS FROM users LIKE 'assigned_roles'")->fetch();
+            if (!$column) {
+                db()->exec('ALTER TABLE users ADD COLUMN assigned_roles TEXT DEFAULT NULL AFTER role');
+            }
+        }
+    } catch (Throwable) {
     }
     $checked = true;
 }
@@ -599,9 +882,30 @@ function current_user(): ?array {
     }
     $_SESSION['last_activity'] = time();
 
+    ensure_assigned_roles_column();
+
     $stmt = db()->prepare("SELECT * FROM users WHERE id = ? AND status = 'Active' AND deleted_at IS NULL LIMIT 1");
     $stmt->execute([$_SESSION['user_id']]);
-    return $stmt->fetch() ?: null;
+    $user = $stmt->fetch() ?: null;
+    if (!$user) {
+        return null;
+    }
+
+    $user['primary_role'] = (string) ($user['role'] ?? '');
+    if (!empty($_SESSION['active_role'])) {
+        $availableRoles = user_available_roles($user);
+        if (in_array($_SESSION['active_role'], $availableRoles, true)) {
+            $user['role'] = (string) $_SESSION['active_role'];
+            $user['active_role'] = (string) $_SESSION['active_role'];
+        } else {
+            unset($_SESSION['active_role']);
+            $user['active_role'] = $user['primary_role'];
+        }
+    } else {
+        $user['active_role'] = $user['primary_role'];
+    }
+
+    return $user;
 }
 
 function role_permissions(): array {
@@ -628,9 +932,21 @@ function require_login(array $roles = []): array {
     if (!$user) {
         redirect_to('index.php');
     }
-    $userRole = (string) $user['role'];
+    $userRole = (string) ($user['role'] ?? '');
+    $userGroup = role_access_group($userRole);
     $allowedRoles = array_map('role_access_group', $roles);
-    if (role_dashboard_path($userRole) === null || ($roles && !in_array(role_access_group($userRole), $allowedRoles, true))) {
+    if (role_dashboard_path($userRole) === null || (!empty($roles) && !in_array($userGroup, $allowedRoles, true))) {
+        // Active role is not authorized for this specific page.
+        // DO NOT silently mutate $_SESSION['user_id'] or revert the user account!
+        $dashboardPath = role_dashboard_path($userRole) ?? 'dashboard.php';
+        flash('error', 'You do not have access to that feature with your active role (' . h($userRole) . ').');
+
+        $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
+        $targetScript = basename($dashboardPath);
+        if ($currentScript !== $targetScript) {
+            redirect_to($dashboardPath);
+        }
+
         http_response_code(403);
         if (file_exists(__DIR__ . '/../403.php')) {
             require __DIR__ . '/../403.php';

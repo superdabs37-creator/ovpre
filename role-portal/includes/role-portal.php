@@ -71,8 +71,13 @@ function portal_require_user(): array
     $userRole = role_access_group((string) ($user['role'] ?? ''));
     $isAdmin = in_array($userRole, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true);
     if (!$isAdmin && $userRole !== PORTAL_ROLE) {
-        http_response_code(403);
-        exit('This portal is not available for your role.');
+        // Role mismatch: do NOT mutate $_SESSION['user_id']!
+        $userDashboard = role_dashboard_path((string) ($user['role'] ?? '')) ?? '../dashboard.php';
+        if (!str_starts_with($userDashboard, '../') && !str_starts_with($userDashboard, 'http')) {
+            $userDashboard = '../' . $userDashboard;
+        }
+        flash('error', 'This portal is only accessible to ' . PORTAL_ROLE . 's.');
+        redirect_to($userDashboard);
     }
     return $user;
 }
@@ -188,8 +193,14 @@ function portal_header(string $title, string $current): array
                             <div class="role-profile-identity">
                                 <span class="role-profile-large-avatar"><?php if ($profilePhotoUrl): ?><img src="<?php echo h($profilePhotoUrl); ?>" alt=""><?php else: ?><i class="ri-user-3-fill"></i><?php endif; ?></span>
                                 <strong><?php echo h($name); ?></strong>
-                                <small><?php echo $isAdmin ? 'Admin View (' . h(PORTAL_ROLE) . ')' : h(PORTAL_ROLE); ?></small>
+                                <small style="display: flex; flex-direction: column; gap: 2px;">
+                                    <span><?php echo h($user['role'] ?? PORTAL_ROLE); ?></span>
+                                    <?php if (!empty($_SESSION['original_user_id']) && (int) $_SESSION['original_user_id'] !== (int) $user['id']): ?>
+                                        <span style="font-size: 0.72rem; color: #15803d; font-weight: 700;">(Designated Role Account)</span>
+                                    <?php endif; ?>
+                                </small>
                             </div>
+                            <?php echo render_profile_role_switcher($user, '../'); ?>
                             <?php if ($isAdmin): ?>
                                 <a href="../dashboard.php" style="color: #15803d; font-weight: 700;"><i class="ri-arrow-left-line"></i> Return to Admin Dashboard</a>
                             <?php endif; ?>

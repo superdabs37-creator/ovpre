@@ -366,7 +366,8 @@ button[data-role-sidebar],
     right: 0;
     z-index: 100;
     display: none;
-    width: 250px;
+    width: 290px;
+    max-width: calc(100vw - 24px);
     padding: 12px;
     color: #202729;
     background: #f8fafc;
@@ -425,6 +426,19 @@ button[data-role-sidebar],
 .role-profile-dropdown a:hover {
     color: #fff;
     background: #16a34a;
+}
+
+.role-profile-dropdown .profile-role-switcher a.profile-role-item {
+    border-top: none;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: #334155;
+    background: transparent;
+}
+
+.role-profile-dropdown .profile-role-switcher a.profile-role-item:hover {
+    color: #15803d;
+    background: #f1f5f9;
 }
 
 @keyframes roleMenuIn {
