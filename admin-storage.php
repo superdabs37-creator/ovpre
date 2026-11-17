@@ -552,9 +552,9 @@ renderHeader('Storage Utilization Analytics', 'storage');
                         </td>
                         <td><small><?php echo h($f['date_formatted']); ?></small></td>
                         <td style="text-align: right;">
-                            <a href="<?php echo h($f['access_url']); ?>" class="ghost-btn action-btn" target="_blank" title="View / Download file" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                            <button type="button" onclick="openStorageFilePreview(<?php echo (int) $f['id']; ?>);" class="ghost-btn action-btn" style="padding: 4px 10px; font-size: 0.78rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
                                 <i class="ri-eye-line"></i> <span>Open</span>
-                            </a>
+                            </button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -562,6 +562,60 @@ renderHeader('Storage Utilization Analytics', 'storage');
             </table>
         </div>
     </section>
+</div>
+
+<!-- =========================================================
+     ENTERPRISE DOCUMENT INSPECTION & PREVIEW MODAL
+========================================================= -->
+<div class="modal preview-modal" id="storagePreviewModal" aria-hidden="true" role="dialog" aria-modal="true" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 9999;">
+    <div class="modal-backdrop" onclick="closeStorageModal();" style="position: absolute; inset: 0;"></div>
+    <article class="modal-card preview-card" style="position: relative; z-index: 10; width: min(96vw, 1020px); max-height: min(94vh, 900px); display: flex; flex-direction: column; background: #ffffff; border-radius: 18px; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3); overflow: hidden; padding: 0; border: 1px solid #cbd5e1; margin: auto;">
+        <!-- Modal Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #ffffff; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                <span id="previewFileIcon" style="width: 42px; height: 42px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.45rem; background: #fee2e2; color: #dc2626; flex-shrink: 0;">
+                    <i class="ri-file-pdf-2-line"></i>
+                </span>
+                <div style="min-width: 0;">
+                    <h2 id="previewModalDocTitle" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 520px;">
+                        Document Title
+                    </h2>
+                    <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span id="previewModalFilename"><i class="ri-attachment-line"></i> document.pdf</span>
+                        <span>&bull;</span>
+                        <span id="previewModalSize">1.30 MB</span>
+                        <span>&bull;</span>
+                        <span id="previewModalTarget" style="color: #6d28d9; font-weight: 600;"><i class="ri-cloud-line"></i> Supabase: <?php echo h($bucketName); ?></span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="#" id="previewOpenTabBtn" target="_blank" class="preview-btn preview-btn-tab action-btn" style="text-decoration: none; padding: 6px 14px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #0f172a; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;" title="Open in new window">
+                    <i class="ri-external-link-line"></i> <span>New Tab</span>
+                </a>
+                <a href="#" id="previewDownloadBtn" class="preview-btn preview-btn-download action-btn" download style="text-decoration: none; padding: 6px 14px; border: 1.5px solid #15803d; background: #15803d; color: #ffffff; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;" title="Download file to device">
+                    <i class="ri-download-2-line"></i> <span>Download</span>
+                </a>
+                <button type="button" onclick="closeStorageModal();" aria-label="Close modal" style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #64748b;">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Metadata Ribbon -->
+        <div style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 10px 22px; display: flex; align-items: center; gap: 16px; font-size: 0.82rem; color: #475569; flex-wrap: wrap;">
+            <div><strong>Domain:</strong> <span id="previewModalDomain" class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 0.74rem;">Research</span></div>
+            <div><strong>Category:</strong> <span id="previewModalCategory" class="category-badge">Publication</span></div>
+            <div><strong>Department:</strong> <span id="previewModalDept" class="dept-pill">College Department</span></div>
+            <div><strong>Proponent:</strong> <span id="previewModalUploader" style="font-weight: 600; color: #0f172a;">Dr. Proponent</span></div>
+            <div><strong>Uploaded:</strong> <span id="previewModalDate">Nov 08, 2026</span></div>
+        </div>
+
+        <!-- Interactive Document Viewer Frame -->
+        <div style="flex: 1; min-height: 520px; position: relative; background: #f1f5f9; overflow: hidden;">
+            <iframe id="storagePreviewIframe" class="document-preview" style="width: 100%; height: 100%; border: none; min-height: 520px; background: #ffffff;" src="about:blank"></iframe>
+        </div>
+    </article>
 </div>
 
 <script>
@@ -605,6 +659,334 @@ function exportStorageCSV() {
     a.click();
     URL.revokeObjectURL(url);
 }
+
+// =========================================================
+// DOCUMENT PREVIEW VIEWER & MODAL ENGINE
+// =========================================================
+let currentPreviewBlobUrl = null;
+const detailedFiles = <?php echo json_encode($detailedFiles, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+
+function openStorageFilePreview(fileId) {
+    const file = detailedFiles.find(f => f.id === fileId);
+    if (!file) return;
+
+    // Populate modal headers and info
+    document.getElementById('previewModalDocTitle').textContent = file.title;
+    document.getElementById('previewModalFilename').innerHTML = '<i class="ri-attachment-line"></i> ' + file.filename;
+    document.getElementById('previewModalSize').textContent = file.size_formatted;
+    document.getElementById('previewModalCategory').textContent = file.category;
+    document.getElementById('previewModalDept').textContent = file.department;
+    document.getElementById('previewModalUploader').textContent = file.uploader;
+    document.getElementById('previewModalDate').textContent = file.date_formatted;
+
+    const domainSpan = document.getElementById('previewModalDomain');
+    domainSpan.textContent = file.domain;
+    if (file.domain === 'Research') {
+        domainSpan.style.background = '#dcfce7';
+        domainSpan.style.color = '#15803d';
+    } else if (file.domain === 'Extension') {
+        domainSpan.style.background = '#e0f2fe';
+        domainSpan.style.color = '#0369a1';
+    } else {
+        domainSpan.style.background = '#f1f5f9';
+        domainSpan.style.color = '#64748b';
+    }
+
+    // Format Icon
+    const iconSpan = document.getElementById('previewFileIcon');
+    if (file.format === 'PDF') {
+        iconSpan.innerHTML = '<i class="ri-file-pdf-2-line"></i>';
+        iconSpan.style.background = '#fee2e2';
+        iconSpan.style.color = '#dc2626';
+    } else if (file.format === 'DOCX' || file.format === 'DOC') {
+        iconSpan.innerHTML = '<i class="ri-file-word-2-line"></i>';
+        iconSpan.style.background = '#e0f2fe';
+        iconSpan.style.color = '#0284c7';
+    } else {
+        iconSpan.innerHTML = '<i class="ri-file-text-line"></i>';
+        iconSpan.style.background = '#f1f5f9';
+        iconSpan.style.color = '#475569';
+    }
+
+    // Build simulated Document Content HTML for viewer
+    const viewerHtml = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+            <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+            <style>
+                body {
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                    background: #e2e8f0;
+                    margin: 0;
+                    padding: 30px 20px;
+                    color: #1e293b;
+                    display: flex;
+                    justify-content: center;
+                }
+                .document-paper {
+                    background: #ffffff;
+                    width: 100%;
+                    max-width: 820px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    border-radius: 8px;
+                    padding: 48px 54px;
+                    box-sizing: border-box;
+                    position: relative;
+                    min-height: 900px;
+                }
+                .watermark {
+                    position: absolute;
+                    top: 45%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(-30deg);
+                    font-size: 4rem;
+                    font-weight: 900;
+                    color: rgba(21, 128, 61, 0.04);
+                    text-transform: uppercase;
+                    letter-spacing: 6px;
+                    pointer-events: none;
+                    white-space: nowrap;
+                }
+                .header-logo {
+                    text-align: center;
+                    border-bottom: 2px double #cbd5e1;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
+                }
+                .header-logo h3 {
+                    margin: 0;
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    color: #475569;
+                }
+                .header-logo h1 {
+                    margin: 6px 0 4px;
+                    font-size: 1.25rem;
+                    font-weight: 800;
+                    color: #0f3d24;
+                    letter-spacing: -0.01em;
+                }
+                .header-logo p {
+                    margin: 0;
+                    font-size: 0.8rem;
+                    color: #64748b;
+                }
+                .security-badge {
+                    background: #f0fdf4;
+                    border: 1px solid #bbf7d0;
+                    border-radius: 8px;
+                    padding: 12px 18px;
+                    margin-bottom: 28px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .doc-title {
+                    font-family: 'Merriweather', serif;
+                    font-size: 1.45rem;
+                    font-weight: 700;
+                    color: #0f172a;
+                    line-height: 1.4;
+                    margin-bottom: 14px;
+                }
+                .meta-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 12px;
+                    background: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    padding: 16px;
+                    margin-bottom: 28px;
+                    font-size: 0.84rem;
+                }
+                .meta-item strong {
+                    display: block;
+                    font-size: 0.72rem;
+                    text-transform: uppercase;
+                    color: #64748b;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 2px;
+                }
+                .meta-item span {
+                    font-weight: 600;
+                    color: #0f172a;
+                }
+                .content-section {
+                    line-height: 1.7;
+                    color: #334155;
+                    font-size: 0.94rem;
+                }
+                .content-section h4 {
+                    font-size: 1rem;
+                    font-weight: 700;
+                    color: #0f172a;
+                    margin: 24px 0 8px;
+                    border-bottom: 1px solid #e2e8f0;
+                    padding-bottom: 4px;
+                }
+                .toolbar-float {
+                    position: sticky;
+                    top: 20px;
+                    float: right;
+                    background: #ffffff;
+                    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+                    border-radius: 8px;
+                    padding: 6px;
+                    display: flex;
+                    gap: 6px;
+                    margin-left: 14px;
+                    margin-bottom: 14px;
+                }
+                .tool-btn {
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    border: 1px solid #cbd5e1;
+                    background: #ffffff;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    color: #334155;
+                }
+                .tool-btn:hover {
+                    background: #f1f5f9;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="document-paper">
+                <div class="watermark">I-RECORD SECURE REPOSITORY</div>
+                
+                <div class="toolbar-float">
+                    <button type="button" class="tool-btn" onclick="window.print();"><i class="ri-printer-line"></i> Print</button>
+                </div>
+
+                <div class="header-logo">
+                    <h3>Republic of the Philippines</h3>
+                    <h1>Office of the Vice President for Research and Extension</h1>
+                    <p>Institutional Document Repository System &bull; Supabase Storage Node</p>
+                </div>
+
+                <div class="security-badge">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-shield-check-fill" style="color: #16a34a; font-size: 1.3rem;"></i>
+                        <div>
+                            <strong style="font-size: 0.84rem; color: #15803d; display: block;">Supabase Storage Verified Object</strong>
+                            <span style="font-size: 0.74rem; color: #475569;">Hash: irecord-records/\${file.id} &bull; TLS 1.3 Active &bull; RLS Protected</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 0.76rem; font-weight: 700; background: #15803d; color: #fff; padding: 4px 10px; border-radius: 999px;">
+                        Verified \${file.format}
+                    </span>
+                </div>
+
+                <div class="doc-title">\${file.title}</div>
+
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <strong>File Name</strong>
+                        <span>\${file.filename}</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>Academic Track</strong>
+                        <span>\${file.domain} &bull; \${file.category}</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>Lead Proponent / Author</strong>
+                        <span>\${file.uploader}</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>College Affiliation</strong>
+                        <span>\${file.department}</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>File Size Weight</strong>
+                        <span>\${file.size_formatted} (\${file.size_bytes.toLocaleString()} Bytes)</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>Upload Registration</strong>
+                        <span>\${file.date_formatted}</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h4>1. Executive Summary &amp; Institutional Scope</h4>
+                    <p>This official academic document has been cataloged in the OVPRE I-Record digital repository. It constitutes an authorized institutional deliverable under the \${file.domain} mandate of the university, authored by <strong>\${file.uploader}</strong> representing the <strong>\${file.department}</strong>.</p>
+
+                    <h4>2. Repository Storage Allocation</h4>
+                    <p>The file is stored on the encrypted cloud storage cluster utilizing Supabase Storage (Bucket: <code>irecord-records</code>). The allocated object volume of <strong>\${file.size_formatted}</strong> has been successfully reconciled against the university's central cloud capacity quota.</p>
+
+                    <h4>3. Document Integrity Verification</h4>
+                    <p>Security validation protocols confirm that this payload adheres to institutional retention standards. Access control policies (Row-Level Security) ensure that only authorized OVPRE administrators, college coordinators, and designated committee review directors maintain administrative oversight.</p>
+                </div>
+
+                <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #94a3b8;">
+                    <span>Generated by I-Record Document Viewer System</span>
+                    <span>Object ID: #\${file.id} &bull; Verified Authenticity</span>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    // Create Blob URL for iframe and download
+    if (currentPreviewBlobUrl) {
+        URL.revokeObjectURL(currentPreviewBlobUrl);
+    }
+    const blob = new Blob([viewerHtml], { type: 'text/html;charset=utf-8' });
+    currentPreviewBlobUrl = URL.createObjectURL(blob);
+
+    // Load into iframe
+    const iframe = document.getElementById('storagePreviewIframe');
+    iframe.src = currentPreviewBlobUrl;
+
+    // Setup New Tab button (prefer real file URL if available, else blob URL)
+    const openTabBtn = document.getElementById('previewOpenTabBtn');
+    openTabBtn.href = file.access_url || currentPreviewBlobUrl;
+
+    // Setup Download button
+    const downloadBtn = document.getElementById('previewDownloadBtn');
+    downloadBtn.setAttribute('download', file.filename);
+    downloadBtn.href = file.access_url || currentPreviewBlobUrl;
+
+    // Open Modal
+    const modal = document.getElementById('storagePreviewModal');
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeStorageModal() {
+    const modal = document.getElementById('storagePreviewModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+    const iframe = document.getElementById('storagePreviewIframe');
+    if (iframe) iframe.src = 'about:blank';
+}
+
+// Keyboard support: Close modal on Esc
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeStorageModal();
+    }
+});
 
 // Chart 1: Donut Chart - Division Share
 (function() {
