@@ -170,7 +170,7 @@ renderHeader('Backup and Recovery', 'backup');
 <section class="panel" id="archived-records">
     <div class="panel-heading"><h2>Archived Records</h2><span><?php echo count($archivedRecords); ?> archived record<?php echo count($archivedRecords) === 1 ? '' : 's'; ?></span></div>
     <div class="table-scroll">
-        <div class="table-selection-toolbar" data-selection-toolbar="archivedRecordsTable" hidden>
+        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="archivedRecordsTable" hidden style="display: none;">
             <span data-selection-count>0 selected</span>
             <form id="bulk-archivedRecordsTable" method="post" data-bulk-selection-form><?php echo csrf_field(); ?><input type="hidden" name="action" value="bulk_unarchive_archived"><button class="ghost-btn action-btn" type="submit" data-bulk-submit><i class="ri-arrow-go-back-line"></i><span>Unarchive Selected</span></button></form>
         </div>

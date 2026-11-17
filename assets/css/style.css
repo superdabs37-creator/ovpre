@@ -1944,8 +1944,11 @@ button {
 }
 
 .research-selection-toolbar[hidden],
-.table-selection-toolbar[hidden] {
-    display: none;
+.table-selection-toolbar[hidden],
+.research-selection-toolbar.is-hidden,
+.table-selection-toolbar.is-hidden,
+[hidden] {
+    display: none !important;
 }
 
 .table-selection-toolbar form {

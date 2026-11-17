@@ -640,7 +640,7 @@ function initTableSelectionEngine() {
         const table = document.getElementById(tableId);
         const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
         if (!table || !toolbar) return;
-        const rowCheckboxes = () => Array.from(table.querySelectorAll('[data-row-select]'));
+        const rowCheckboxes = () => Array.from(table.querySelectorAll(`[data-row-select="${tableId}"], [data-row-select]`));
         const countLabel = toolbar.querySelector('[data-selection-count]');
         const openSelected = toolbar.querySelector('[data-open-selected-research]');
         const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
@@ -649,10 +649,17 @@ function initTableSelectionEngine() {
             const selected = checkboxes.filter((checkbox) => checkbox.checked);
             selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
             selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
-            toolbar.hidden = selected.length === 0;
+            const hasSelection = selected.length > 0;
+            toolbar.hidden = !hasSelection;
+            toolbar.classList.toggle('is-hidden', !hasSelection);
+            if (hasSelection) {
+                toolbar.style.setProperty('display', 'flex', 'important');
+            } else {
+                toolbar.style.setProperty('display', 'none', 'important');
+            }
             if (countLabel) countLabel.textContent = `${selected.length} selected`;
-            if (openSelected) openSelected.disabled = selected.length === 0;
-            bulkButtons.forEach((button) => { button.disabled = selected.length === 0; });
+            if (openSelected) openSelected.disabled = !hasSelection;
+            bulkButtons.forEach((button) => { button.disabled = !hasSelection; });
         };
 
         if (selectAll.dataset.selectionBound !== 'true') {

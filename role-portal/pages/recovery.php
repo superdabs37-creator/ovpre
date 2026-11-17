@@ -80,7 +80,7 @@ $archivedCount = count($archivedRecords);
     </div>
     <p>Archived records are hidden from your active lists but are not deleted. Restore a record to bring it back with its full review history. Permanent deletion is reserved for the Super Admin.</p>
     <div class="table-scroll">
-        <div class="table-selection-toolbar" data-selection-toolbar="recoveryTable" hidden>
+        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="recoveryTable" hidden style="display: none;">
             <span data-selection-count>0 selected</span>
             <form id="bulk-recoveryTable" method="post" data-bulk-selection-form>
                 <?php echo csrf_field(); ?>

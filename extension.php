@@ -393,7 +393,7 @@ renderHeader('Extension Management', 'extension');
     </div>
 
     <!-- Bulk Selection Toolbar for Extension -->
-    <div class="table-selection-toolbar" data-selection-toolbar="extensionTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="extensionTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-extensionTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>

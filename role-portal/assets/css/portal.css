@@ -1993,7 +1993,9 @@ body.modal-open {
     padding: 10px 0 14px 0;
 }
 
-.table-selection-toolbar[hidden] {
+.table-selection-toolbar[hidden],
+.table-selection-toolbar.is-hidden,
+[hidden] {
     display: none !important;
 }
 

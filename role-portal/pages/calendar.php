@@ -289,7 +289,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
     </div>
 
     <!-- Bulk Selection Toolbar for Schedule Requests -->
-    <div class="table-selection-toolbar" data-selection-toolbar="myScheduleRequestsTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="myScheduleRequestsTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-myScheduleRequestsTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>
@@ -398,7 +398,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
     </div>
 
     <!-- Bulk Selection Toolbar for Activities -->
-    <div class="table-selection-toolbar" data-selection-toolbar="roleCalendarActivitiesTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="roleCalendarActivitiesTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-roleCalendarActivitiesTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>

@@ -390,7 +390,7 @@ renderHeader('Research Management', 'research');
     </div>
 
     <!-- Bulk Selection Toolbar for Research -->
-    <div class="table-selection-toolbar" data-selection-toolbar="researchTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-researchTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>

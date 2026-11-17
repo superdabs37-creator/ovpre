@@ -78,7 +78,7 @@ if (in_array(PORTAL_ROLE, ['Research Director', 'Research Coordinator', 'Researc
         </div>
 
         <!-- Bulk Selection Toolbar for Research Status -->
-        <div class="table-selection-toolbar" data-selection-toolbar="researchStatusTable" hidden>
+        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchStatusTable" hidden style="display: none;">
             <span data-selection-count>0 selected</span>
             <form id="bulk-researchStatusTable" method="post" data-bulk-selection-form>
                 <?php echo csrf_field(); ?>

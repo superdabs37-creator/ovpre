@@ -543,7 +543,7 @@ foreach ($projects as $p) {
     </div>
 
     <!-- Bulk Selection Toolbar (System Admin Style) -->
-    <div class="table-selection-toolbar" data-selection-toolbar="researchSubmissionTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchSubmissionTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-researchSubmissionTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>

@@ -15,7 +15,7 @@ if (!function_exists('record_is_previewable')) {
 
 function render_record_selection(string $tableId, string $entity, array $actions, bool $openResearch = false, bool $archivedView = false): void {
     $formId = 'bulk-' . $tableId;
-    echo '<div class="table-selection-toolbar" data-selection-toolbar="' . h($tableId) . '" hidden>';
+    echo '<div class="table-selection-toolbar is-hidden" data-selection-toolbar="' . h($tableId) . '" hidden style="display: none;">';
     echo '<span data-selection-count>0 selected</span>';
     if ($openResearch) echo '<button class="ghost-btn action-btn" type="button" data-open-selected-research><i class="ri-arrow-right-line"></i><span>Open Selected</span></button>';
     echo '<form id="' . h($formId) . '" method="post" data-bulk-selection-form>' . csrf_field();

@@ -128,7 +128,7 @@
                 <!-- Users Table -->
                 <article class="panel" style="padding: 22px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                     <!-- BULK SELECTION TOOLBAR -->
-                    <div class="table-selection-toolbar" data-selection-toolbar="usersTable" id="usersSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 12px;">
+                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="usersTable" id="usersSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 12px;">
                         <span data-selection-count id="usersSelectedCount" style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
                         <form id="bulk-usersTable" onsubmit="handleBulkUsersSubmit(event)" style="margin: 0;">
                             <span id="bulkUsersBtnContainer">
@@ -318,6 +318,8 @@
             const tb = document.querySelector('[data-selection-toolbar="usersTable"]');
             if (tb) {
                 tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
                 const countBadge = tb.querySelector('[data-selection-count]');
                 if (countBadge) countBadge.textContent = '0 selected';
             }

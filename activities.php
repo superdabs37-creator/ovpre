@@ -323,7 +323,7 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
     </div>
 
     <!-- Bulk Selection Toolbar for Activities -->
-    <div class="table-selection-toolbar" data-selection-toolbar="activitiesTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="activitiesTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-activitiesTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>

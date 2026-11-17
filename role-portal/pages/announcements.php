@@ -76,7 +76,7 @@ $counts = portal_announcement_counts();
     </div>
 
     <!-- Bulk Selection Toolbar for Announcements -->
-    <div class="table-selection-toolbar" data-selection-toolbar="portalAnnouncementsTable" hidden>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="portalAnnouncementsTable" hidden style="display: none;">
         <span data-selection-count>0 selected</span>
         <form id="bulk-portalAnnouncementsTable" method="post" data-bulk-selection-form>
             <?php echo csrf_field(); ?>

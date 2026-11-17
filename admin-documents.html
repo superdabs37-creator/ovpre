@@ -130,7 +130,7 @@
                             <strong id="researchSubCount">6</strong>
                         </summary>
                         <div class="table-scroll">
-                            <div class="table-selection-toolbar" data-selection-toolbar="researchSubmissionTable" hidden>
+                            <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchSubmissionTable" hidden style="display: none;">
                                 <span data-selection-count>0 selected</span>
                                 <button class="ghost-btn action-btn" type="button" data-open-selected-research><i class="ri-arrow-right-line"></i><span>Open Selected</span></button>
                                 <form id="bulk-researchSubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'researchSubmissionTable')">
@@ -242,7 +242,7 @@
                             <strong id="extensionSubCount">6</strong>
                         </summary>
                         <div class="table-scroll">
-                            <div class="table-selection-toolbar" data-selection-toolbar="extensionSubmissionTable" hidden>
+                            <div class="table-selection-toolbar is-hidden" data-selection-toolbar="extensionSubmissionTable" hidden style="display: none;">
                                 <span data-selection-count>0 selected</span>
                                 <form id="bulk-extensionSubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'extensionSubmissionTable')">
                                     <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
@@ -353,7 +353,7 @@
                             <strong id="activitySubCount">5</strong>
                         </summary>
                         <div class="table-scroll">
-                            <div class="table-selection-toolbar" data-selection-toolbar="activitySubmissionTable" hidden>
+                            <div class="table-selection-toolbar is-hidden" data-selection-toolbar="activitySubmissionTable" hidden style="display: none;">
                                 <span data-selection-count>0 selected</span>
                                 <form id="bulk-activitySubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'activitySubmissionTable')">
                                     <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
@@ -506,7 +506,7 @@
                         <span id="recordsPanelSubtitle">Open a category card above to view its documents.</span>
                     </div>
                     <div class="table-scroll">
-                        <div class="table-selection-toolbar" data-selection-toolbar="recordsTable" hidden>
+                        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="recordsTable" hidden style="display: none;">
                             <span data-selection-count>0 selected</span>
                             <form id="bulk-recordsTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'recordsTable')">
                                 <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span id="bulkRecordActionLabel">Archive Selected</span></button>
@@ -723,7 +723,7 @@
                         <span id="archivedAnnouncementsCount">1 archived announcement</span>
                     </div>
                     <div class="table-scroll">
-                        <div class="table-selection-toolbar" data-selection-toolbar="archivedAnnouncementsTable" hidden>
+                        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="archivedAnnouncementsTable" hidden style="display: none;">
                             <span data-selection-count>0 selected</span>
                             <form id="bulk-archivedAnnouncementsTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'archivedAnnouncementsTable')">
                                 <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit><i class="ri-arrow-go-back-line"></i><span>Restore Selected</span></button>
@@ -1619,6 +1619,21 @@
                     `;
                     tbody.appendChild(tr);
                 });
+            }
+
+            const tb = document.querySelector('[data-selection-toolbar="recordsTable"]');
+            if (tb) {
+                tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
+            }
+            const selectAll = document.querySelector('[data-select-all="recordsTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
             }
 
             if (window.OVPRE && OVPRE.reloadTable) {

@@ -661,39 +661,54 @@ document.querySelectorAll('[data-export-table]').forEach((button) => {
 });
 
 // Table selection toolbar & select all checkboxes
-document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
-    const tableId = selectAll.dataset.selectAll;
-    const table = document.getElementById(tableId);
-    const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
-    if (!table || !toolbar) return;
-    const rowCheckboxes = () => Array.from(table.querySelectorAll(`[data-row-select="${tableId}"]`));
-    const countLabel = toolbar.querySelector('[data-selection-count]');
-    const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
+function initPortalSelectionEngine() {
+    document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
+        const tableId = selectAll.dataset.selectAll;
+        const table = document.getElementById(tableId);
+        const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
+        if (!table || !toolbar) return;
+        const rowCheckboxes = () => Array.from(table.querySelectorAll(`[data-row-select="${tableId}"], [data-row-select]`));
+        const countLabel = toolbar.querySelector('[data-selection-count]');
+        const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
 
-    const updateSelection = () => {
-        const checkboxes = rowCheckboxes();
-        const selected = checkboxes.filter((checkbox) => checkbox.checked);
-        selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
-        selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
-        toolbar.hidden = selected.length === 0;
-        if (countLabel) {
-            countLabel.textContent = `${selected.length} selected`;
+        const updateSelection = () => {
+            const checkboxes = rowCheckboxes();
+            const selected = checkboxes.filter((checkbox) => checkbox.checked);
+            selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
+            selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+            const hasSelection = selected.length > 0;
+            toolbar.hidden = !hasSelection;
+            toolbar.classList.toggle('is-hidden', !hasSelection);
+            if (hasSelection) {
+                toolbar.style.setProperty('display', 'flex', 'important');
+            } else {
+                toolbar.style.setProperty('display', 'none', 'important');
+            }
+            if (countLabel) {
+                countLabel.textContent = `${selected.length} selected`;
+            }
+            bulkButtons.forEach((button) => {
+                button.disabled = !hasSelection;
+            });
+        };
+
+        if (selectAll.dataset.selectionBound !== 'true') {
+            selectAll.dataset.selectionBound = 'true';
+            selectAll.addEventListener('change', () => {
+                rowCheckboxes().forEach((checkbox) => {
+                    checkbox.checked = selectAll.checked;
+                });
+                updateSelection();
+            });
+
+            table.addEventListener('change', (event) => {
+                if (!event.target.matches(`[data-row-select="${tableId}"], [data-row-select]`)) return;
+                updateSelection();
+            });
         }
-        bulkButtons.forEach((button) => {
-            button.disabled = selected.length === 0;
-        });
-    };
-
-    selectAll.addEventListener('change', () => {
-        rowCheckboxes().forEach((checkbox) => {
-            checkbox.checked = selectAll.checked;
-        });
         updateSelection();
     });
-
-    table.addEventListener('change', (event) => {
-        if (!event.target.matches(`[data-row-select="${tableId}"]`)) return;
-        updateSelection();
-    });
-});
+}
+window.initPortalSelectionEngine = initPortalSelectionEngine;
+initPortalSelectionEngine();
 

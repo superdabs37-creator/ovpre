@@ -140,7 +140,7 @@
                     </div>
 
                     <!-- BULK SELECTION TOOLBAR -->
-                    <div class="table-selection-toolbar" data-selection-toolbar="archiveTable" id="archiveSelectionToolbar" hidden style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px;">
+                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="archiveTable" id="archiveSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px;">
                         <span data-selection-count id="archiveSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
                         <form id="bulk-archiveTable" onsubmit="handleBulkArchiveSubmit(event)" style="margin: 0;">
                             <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit style="color: #15803d; border: 1.5px solid #bbf7d0; background: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
@@ -318,7 +318,11 @@
             const remaining = document.querySelectorAll('#archiveBody tr').length;
             document.getElementById('archiveCountBadge').textContent = `${remaining} Archived Records`;
             const tb = document.querySelector('[data-selection-toolbar="archiveTable"]');
-            if (tb) tb.hidden = true;
+            if (tb) {
+                tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
+            }
             const selectAll = document.querySelector('[data-select-all="archiveTable"]');
             if (selectAll) {
                 selectAll.checked = false;
