@@ -992,10 +992,60 @@ button {
     backdrop-filter: blur(14px);
 }
 
+.topbar-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+}
+
+.topbar-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #64748b;
+    line-height: 1;
+}
+
+.topbar-breadcrumb .breadcrumb-home {
+    display: inline-flex;
+    align-items: center;
+    color: #64748b;
+    font-size: 0.88rem;
+    text-decoration: none;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.topbar-breadcrumb .breadcrumb-home:hover {
+    color: #15803d;
+}
+
+.topbar-breadcrumb .breadcrumb-separator {
+    display: inline-flex;
+    align-items: center;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    line-height: 1;
+    user-select: none;
+}
+
+.topbar-breadcrumb .breadcrumb-current,
+.topbar-breadcrumb .breadcrumb-page {
+    color: #475569;
+    font-weight: 500;
+}
+
 .topbar-title h1 {
-    margin: 2px 0 0;
-    color: var(--green-900);
-    font-size: clamp(1.45rem, 3vw, 2rem);
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
 .menu-toggle {

@@ -123,6 +123,11 @@ function renderHeader($pageTitle, $currentPage)
                         <i class="ri-menu-line"></i>
                     </button>
                     <div class="topbar-title">
+                        <nav class="topbar-breadcrumb" aria-label="Breadcrumb">
+                            <a href="dashboard.php" class="breadcrumb-home" title="Home"><i class="ri-home-4-line"></i></a>
+                            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+                            <span class="breadcrumb-current"><?php echo h($pageTitle); ?></span>
+                        </nav>
                         <h1><?php echo h($pageTitle); ?></h1>
                     </div>
                     <form class="topbar-search" role="search" action="search.php" method="get" data-global-search-form>
