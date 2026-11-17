@@ -462,7 +462,7 @@ renderHeader('Research Management', 'research');
             <tbody>
                 <?php foreach ($projects as $project): ?>
                     <?php $pStatus = $project['status']; ?>
-                    <tr id="proposal-<?php echo (int) $project['id']; ?>">
+                    <tr id="proposal-<?php echo (int) $project['id']; ?>" data-id="<?php echo (int) $project['id']; ?>" data-proposal-id="<?php echo (int) $project['id']; ?>">
                         <td class="table-checkbox-col">
                             <input form="bulk-researchTable" type="checkbox" name="ids[]" aria-label="Select research proposal <?php echo (int) $project['id']; ?>" value="<?php echo (int) $project['id']; ?>" data-row-select="researchTable">
                         </td>

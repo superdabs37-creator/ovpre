@@ -1625,48 +1625,241 @@ if (document.readyState === 'loading') {
     initSearchableSelects();
 }
 
-// Auto-open modal or highlight target row based on URL hash (e.g., #proposal-12 or #project-12)
+// Universal Record Locator & Glowing Highlight Engine
+// Handles hash (#proposal-12, #project-12) and query params (?highlight=12)
 function handleLocationHashTarget() {
-    if (!window.location.hash) return;
-    const hash = window.location.hash.substring(1);
-    if (!hash) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawHash = window.location.hash ? window.location.hash.substring(1) : '';
 
-    if (hash.startsWith('proposal-')) {
-        const id = hash.replace('proposal-', '');
-        const modal = document.getElementById('research-' + id);
-        if (modal) {
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
+    let targetId = urlParams.get('highlight') || urlParams.get('proposal') || urlParams.get('project') || urlParams.get('id') || '';
+    let targetType = '';
+
+    if (!targetId && rawHash) {
+        if (rawHash.startsWith('proposal-')) {
+            targetId = rawHash.replace('proposal-', '');
+            targetType = 'research';
+        } else if (rawHash.startsWith('project-')) {
+            targetId = rawHash.replace('project-', '');
+            targetType = 'extension';
+        } else if (rawHash.startsWith('research-project-')) {
+            targetId = rawHash.replace('research-project-', '');
+            targetType = 'research';
+        } else if (rawHash.startsWith('ext-project-')) {
+            targetId = rawHash.replace('ext-project-', '');
+            targetType = 'extension';
+        } else if (/^\d+$/.test(rawHash)) {
+            targetId = rawHash;
         }
-        const row = document.getElementById(hash);
-        if (row) {
-            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            row.style.transition = 'background-color 0.4s';
-            row.style.backgroundColor = '#dcfce7';
-            setTimeout(() => { row.style.backgroundColor = ''; }, 3000);
+    }
+
+    if (!targetId && !rawHash) return;
+
+    // Search for target row across all possible selector patterns
+    const selectors = [];
+    if (targetId) {
+        selectors.push(
+            `#proposal-${targetId}`,
+            `#project-${targetId}`,
+            `#research-project-${targetId}`,
+            `#ext-project-${targetId}`,
+            `tr[data-id="${targetId}"]`,
+            `tr[data-proposal-id="${targetId}"]`,
+            `tr[data-project-id="${targetId}"]`,
+            `input[name="ids[]"][value="${targetId}"]`
+        );
+    }
+    if (rawHash) {
+        selectors.push(`#${rawHash}`);
+    }
+
+    let targetRow = null;
+    for (const sel of selectors) {
+        try {
+            const el = document.querySelector(sel);
+            if (el) {
+                targetRow = el.tagName === 'TR' ? el : el.closest('tr');
+                if (targetRow) break;
+            }
+        } catch (e) {}
+    }
+
+    if (!targetRow) return;
+
+    // If row is inside an archived/inactive tab pane, switch tab if available
+    const tabPane = targetRow.closest('.tab-pane, [data-tab-content]');
+    if (tabPane && tabPane.hidden) {
+        const tabId = tabPane.id || tabPane.dataset.tabContent;
+        const tabBtn = document.querySelector(`[data-tab="${tabId}"], [href="#${tabId}"]`);
+        if (tabBtn) tabBtn.click();
+    }
+
+    // Synchronize Table Pagination if table uses adminTablePages
+    const table = targetRow.closest('table');
+    if (table && typeof adminTablePages !== 'undefined' && adminTablePages.has(table)) {
+        const state = adminTablePages.get(table);
+        if (state) {
+            let stateChanged = false;
+            // Clear any active search query if row might be filtered out
+            if (state.query) {
+                state.query = '';
+                if (state.searchInput) state.searchInput.value = '';
+                stateChanged = true;
+            }
+            // Clear column filters if active
+            if (state.columnFilters && Object.values(state.columnFilters).some(v => v)) {
+                state.columnFilters = {};
+                table.parentElement?.querySelectorAll('.data-table-filter select').forEach(sel => { sel.value = ''; });
+                stateChanged = true;
+            }
+            if (targetRow.classList.contains('global-search-hidden')) {
+                targetRow.classList.remove('global-search-hidden');
+                stateChanged = true;
+            }
+            targetRow.dataset.localFilterMatch = 'true';
+
+            // Find which page the row is on
+            const matches = state.rows.filter(r => r.dataset.localFilterMatch !== 'false' && !r.classList.contains('global-search-hidden'));
+            const rowIndex = matches.indexOf(targetRow);
+            if (rowIndex !== -1) {
+                const targetPage = Math.floor(rowIndex / state.pageSize) + 1;
+                if (state.page !== targetPage) {
+                    state.page = targetPage;
+                    stateChanged = true;
+                }
+            }
+            if (stateChanged && typeof refreshAdminTablePagination === 'function') {
+                refreshAdminTablePagination();
+            }
         }
-    } else if (hash.startsWith('project-')) {
-        const id = hash.replace('project-', '');
-        const modal = document.getElementById('ext-detail-' + id) || document.getElementById('project-' + id);
-        if (modal && modal.classList.contains('modal')) {
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
+    }
+
+    // Scroll smoothly to center the record in view
+    requestAnimationFrame(() => {
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Remove any previous active highlights and badges
+    document.querySelectorAll('.record-highlight-active').forEach(el => {
+        el.classList.remove('record-highlight-active');
+    });
+    document.querySelectorAll('.record-highlight-badge').forEach(el => el.remove());
+
+    // Apply the glowing highlight animation
+    targetRow.classList.add('record-highlight-active');
+
+    // Add glowing badge to title column
+    const titleCell = targetRow.querySelector('strong')?.parentElement || targetRow.cells[1] || targetRow.cells[0];
+    let badge = null;
+    if (titleCell && !titleCell.querySelector('.record-highlight-badge')) {
+        badge = document.createElement('span');
+        badge.className = 'record-highlight-badge';
+        badge.innerHTML = '<i class="ri-focus-2-line"></i> Target Record';
+        titleCell.appendChild(badge);
+    }
+
+    // Determine target title for toast
+    const rowTitle = targetRow.querySelector('strong')?.textContent.trim() || (targetId ? `Record #${targetId}` : 'Selected Record');
+
+    // Check modal availability
+    const modalId = (targetType === 'extension' || rawHash.startsWith('project-') || rawHash.startsWith('ext-project-'))
+        ? ('ext-detail-' + targetId)
+        : ('research-' + targetId);
+    const modal = document.getElementById(modalId)
+        || document.getElementById('detailsModal')
+        || (targetId ? document.getElementById('project-' + targetId) : null);
+
+    const canOpenModal = !!modal || (typeof window.openDetailsModal === 'function');
+
+    // Display floating feedback toast
+    document.querySelectorAll('.record-focus-toast').forEach(t => t.remove());
+    const toast = document.createElement('div');
+    toast.className = 'record-focus-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+
+    const cleanTitle = rowTitle.length > 42 ? rowTitle.slice(0, 42) + '…' : rowTitle;
+    let actionBtnHtml = '';
+    if (canOpenModal) {
+        actionBtnHtml = `<button type="button" class="toast-btn" id="recordFocusViewDetailsBtn"><i class="ri-eye-line"></i> View Details</button>`;
+    }
+
+    toast.innerHTML = `
+        <span style="display:inline-flex;align-items:center;gap:7px;">
+            <i class="ri-checkbox-circle-fill" style="color:#22c55e;font-size:1.15rem;flex-shrink:0;"></i>
+            <span>Located in records: <strong style="color:#f8fafc;">${cleanTitle.replace(/[<>&"]/g, '')}</strong></span>
+        </span>
+        ${actionBtnHtml}
+        <button type="button" class="toast-close" aria-label="Close message"><i class="ri-close-line"></i></button>
+    `;
+
+    document.body.appendChild(toast);
+
+    const detailsBtn = toast.querySelector('#recordFocusViewDetailsBtn');
+    if (detailsBtn) {
+        detailsBtn.addEventListener('click', () => {
+            if (typeof window.openDetailsModal === 'function' && targetId) {
+                window.openDetailsModal(Number(targetId));
+            } else if (modal) {
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
+
+    const closeBtn = toast.querySelector('.toast-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => toast.remove(), 300);
+        });
+    }
+
+    setTimeout(() => {
+        if (toast.isConnected) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => toast.remove(), 300);
         }
-        const row = document.getElementById(hash);
-        if (row) {
-            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            row.style.transition = 'background-color 0.4s';
-            row.style.backgroundColor = '#e0f2fe';
-            setTimeout(() => { row.style.backgroundColor = ''; }, 3000);
+    }, 6500);
+
+    // Auto-remove row highlight after 8 seconds or when row is clicked
+    const clearHighlight = () => {
+        targetRow.classList.remove('record-highlight-active');
+        if (badge && badge.isConnected) {
+            badge.style.transition = 'opacity 0.4s ease';
+            badge.style.opacity = '0';
+            setTimeout(() => badge.remove(), 400);
         }
+        targetRow.removeEventListener('click', clearHighlight);
+    };
+    targetRow.addEventListener('click', clearHighlight);
+    setTimeout(clearHighlight, 8000);
+
+    // Optional modal auto-open if explicitly requested in URL query
+    if (urlParams.get('open_modal') === '1' || urlParams.get('modal') === '1') {
+        setTimeout(() => {
+            if (typeof window.openDetailsModal === 'function' && targetId) {
+                window.openDetailsModal(Number(targetId));
+            } else if (modal) {
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+        }, 500);
     }
 }
 
+window.handleLocationHashTarget = handleLocationHashTarget;
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', handleLocationHashTarget);
+    document.addEventListener('DOMContentLoaded', () => {
+        handleLocationHashTarget();
+        setTimeout(handleLocationHashTarget, 250);
+    });
 } else {
     handleLocationHashTarget();
+    setTimeout(handleLocationHashTarget, 250);
 }
 window.addEventListener('hashchange', handleLocationHashTarget);

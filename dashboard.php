@@ -1007,9 +1007,10 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                                 <?php foreach ($completedCollege['projects'] as $completedProject): ?>
                                     <?php
                                         $isResearch = ($completedProject['type'] ?? '') === 'Research';
+                                        $projId = (int) ($completedProject['id'] ?? 0);
                                         $targetUrl = $isResearch
-                                            ? 'research.php#proposal-' . (int) ($completedProject['id'] ?? 0)
-                                            : 'extension.php#project-' . (int) ($completedProject['id'] ?? 0);
+                                            ? 'research.php?highlight=' . $projId . '#proposal-' . $projId
+                                            : 'extension.php?highlight=' . $projId . '#project-' . $projId;
                                     ?>
                                     <div class="completed-project-pill" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, { submitter_name: <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, department_name: <?php echo json_encode($completedCollege["department_name"]); ?> })' style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 9px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 7px; cursor: pointer;" title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
                                         <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
@@ -1221,7 +1222,8 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
     function openQuickPreview(submission, person) {
         if (!previewDialog) return;
         const isResearch = submission.type === 'Research';
-        const targetUrl = isResearch ? `research.php#proposal-${submission.id}` : `extension.php#project-${submission.id}`;
+        const subId = encodeURIComponent(submission.id || '');
+        const targetUrl = isResearch ? `research.php?highlight=${subId}#proposal-${subId}` : `extension.php?highlight=${subId}#project-${subId}`;
 
         const typeBadge = document.getElementById('quickPreviewTypeBadge');
         typeBadge.textContent = submission.type;
@@ -1331,7 +1333,8 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                 person.submissions.forEach(submission => {
                     const row = document.createElement('tr');
                     const isResearch = submission.type === 'Research';
-                    const targetUrl = isResearch ? `research.php#proposal-${submission.id}` : `extension.php#project-${submission.id}`;
+                    const subId = encodeURIComponent(submission.id || '');
+                    const targetUrl = isResearch ? `research.php?highlight=${subId}#proposal-${subId}` : `extension.php?highlight=${subId}#project-${subId}`;
 
                     // 1. Type
                     const typeCell = document.createElement('td');
@@ -1557,7 +1560,7 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                         <td><strong><?php echo $prop['grant_amount'] ? 'PHP ' . number_format((float)$prop['grant_amount'], 2) : 'Under Review'; ?></strong></td>
                         <td><span class="status-pill status-pending-executive-approval">Pending Executive Approval</span></td>
                         <td>
-                            <a class="primary-btn compact-btn" href="<?php echo $prop['proposal_type'] === 'Research' ? 'research.php#project-' . (int) $prop['id'] : 'extension.php#project-' . (int) $prop['id']; ?>" style="padding: 6px 12px; font-size: 0.82rem; background: #15803d;">
+                            <a class="primary-btn compact-btn" href="<?php echo $prop['proposal_type'] === 'Research' ? 'research.php?highlight=' . (int) $prop['id'] . '#proposal-' . (int) $prop['id'] : 'extension.php?highlight=' . (int) $prop['id'] . '#project-' . (int) $prop['id']; ?>" style="padding: 6px 12px; font-size: 0.82rem; background: #15803d;">
                                 <i class="ri-checkbox-circle-line"></i><span>Sign-off / Review</span>
                             </a>
                         </td>

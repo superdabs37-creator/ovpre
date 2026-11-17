@@ -465,7 +465,7 @@ renderHeader('Extension Management', 'extension');
             <tbody>
                 <?php foreach ($projects as $project): ?>
                     <?php $pStatus = $project['status'] ?? 'Approved'; ?>
-                    <tr id="project-<?php echo (int) $project['id']; ?>">
+                    <tr id="project-<?php echo (int) $project['id']; ?>" data-id="<?php echo (int) $project['id']; ?>" data-project-id="<?php echo (int) $project['id']; ?>">
                         <td class="table-checkbox-col">
                             <input form="bulk-extensionTable" type="checkbox" name="ids[]" aria-label="Select extension project <?php echo (int) $project['id']; ?>" value="<?php echo (int) $project['id']; ?>" data-row-select="extensionTable">
                         </td>

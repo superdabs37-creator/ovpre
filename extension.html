@@ -166,7 +166,7 @@
                             </thead>
                             <tbody id="extensionProjectsBody">
 
-        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Nursing and Allied Health Sciences" id="ext-project-1">
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Nursing and Allied Health Sciences" id="project-1" data-id="1" data-project-id="1" data-alias-id="ext-project-1">
             <td data-sort-value="Barangay San Gabriel Community Health and Hypertension Teleconsultation">
                 <strong>Barangay San Gabriel Community Health and Hypertension Teleconsultation</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -194,7 +194,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="ext-project-2">
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="project-2" data-id="2" data-project-id="2" data-alias-id="ext-project-2">
             <td data-sort-value="Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors">
                 <strong>Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -222,7 +222,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="ext-project-3">
+        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="project-3" data-id="3" data-project-id="3" data-alias-id="ext-project-3">
             <td data-sort-value="Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation">
                 <strong>Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -250,7 +250,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Engineering" id="ext-project-4">
+        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Engineering" id="project-4" data-id="4" data-project-id="4" data-alias-id="ext-project-4">
             <td data-sort-value="Community IoT Flood Early Warning System & SMS Evacuation Alert">
                 <strong>Community IoT Flood Early Warning System & SMS Evacuation Alert</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -278,7 +278,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Agriculture" id="ext-project-5">
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Agriculture" id="project-5" data-id="5" data-project-id="5" data-alias-id="ext-project-5">
             <td data-sort-value="Modern Organic Backyard Aquaculture and Tilapia Pond Management">
                 <strong>Modern Organic Backyard Aquaculture and Tilapia Pond Management</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -306,7 +306,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Computer Studies" id="ext-project-6">
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Computer Studies" id="project-6" data-id="6" data-project-id="6" data-alias-id="ext-project-6">
             <td data-sort-value="STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)">
                 <strong>STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -916,7 +916,10 @@
                     tr.setAttribute('data-status', p.status);
                     tr.setAttribute('data-stage', p.stage);
                     tr.setAttribute('data-college', p.college);
-                    tr.id = 'ext-project-' + p.id;
+                    tr.id = 'project-' + p.id;
+                    tr.setAttribute('data-id', p.id);
+                    tr.setAttribute('data-project-id', p.id);
+                    tr.setAttribute('data-alias-id', 'ext-project-' + p.id);
                     const pStatus = p.status || 'Pending Coordinator Review';
                     const lead = p.coordinator || 'Faculty Lead';
                     const sDate = p.start_date || p.created_at;
@@ -1035,6 +1038,9 @@
                 OVPRE.reloadTable('extensionProjectsTable');
             } else if (typeof window.reloadAdminTablePagination === 'function') {
                 window.reloadAdminTablePagination(document.getElementById('extensionProjectsTable'));
+            }
+            if (typeof window.handleLocationHashTarget === 'function') {
+                setTimeout(window.handleLocationHashTarget, 60);
             }
         }
 

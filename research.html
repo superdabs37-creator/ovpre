@@ -166,7 +166,7 @@
                             </thead>
                             <tbody id="researchProjectsBody">
 
-        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Computer Studies and Technology" id="research-project-1">
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Computer Studies and Technology" id="proposal-1" data-id="1" data-proposal-id="1" data-alias-id="research-project-1">
             <td data-sort-value="AI-Driven Early Crop Disease Detection for Calabarzon Farming">
                 <strong>AI-Driven Early Crop Disease Detection for Calabarzon Farming</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DOST-PCIEERD Research Grant</div>
@@ -188,7 +188,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Nursing and Allied Health Sciences" id="research-project-2">
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Nursing and Allied Health Sciences" id="proposal-2" data-id="2" data-proposal-id="2" data-alias-id="research-project-2">
             <td data-sort-value="Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households">
                 <strong>Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Rural Households</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DOH Health Systems Fund</div>
@@ -210,7 +210,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="research-project-3">
+        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="proposal-3" data-id="3" data-proposal-id="3" data-alias-id="research-project-3">
             <td data-sort-value="Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station">
                 <strong>Solar-Powered Automated Rainwater Harvesting and Potability Monitoring Station</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">Institutional Research Grant</div>
@@ -232,7 +232,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Business Administration" id="research-project-4">
+        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Business Administration" id="proposal-4" data-id="4" data-proposal-id="4" data-alias-id="research-project-4">
             <td data-sort-value="Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency">
                 <strong>Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DTI-University Partnership Grant</div>
@@ -254,7 +254,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="research-project-5">
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="proposal-5" data-id="5" data-proposal-id="5" data-alias-id="research-project-5">
             <td data-sort-value="Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility">
                 <strong>Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">BSP Research Academy Grant</div>
@@ -276,7 +276,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Needs Revision" data-stage="Stage 1: Coordinator Screening" data-college="College of Nursing and Allied Health Sciences" id="research-project-6">
+        <tr data-table-row data-status="Needs Revision" data-stage="Stage 1: Coordinator Screening" data-college="College of Nursing and Allied Health Sciences" id="proposal-6" data-id="6" data-proposal-id="6" data-alias-id="research-project-6">
             <td data-sort-value="Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients">
                 <strong>Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DOH-PCHRD Health Research Grant</div>
@@ -902,7 +902,10 @@
                     tr.setAttribute('data-status', p.status);
                     tr.setAttribute('data-stage', p.stage);
                     tr.setAttribute('data-college', p.college);
-                    tr.id = 'research-project-' + p.id;
+                    tr.id = 'proposal-' + p.id;
+                    tr.setAttribute('data-id', p.id);
+                    tr.setAttribute('data-proposal-id', p.id);
+                    tr.setAttribute('data-alias-id', 'research-project-' + p.id);
                     const pStatus = p.status || 'Pending Coordinator Review';
                     const lead = p.researchers || 'Faculty Researcher';
                     const sDate = p.created_at || '2026-01-15';
@@ -1004,6 +1007,9 @@
                 OVPRE.reloadTable('researchProjectsTable');
             } else if (typeof window.reloadAdminTablePagination === 'function') {
                 window.reloadAdminTablePagination(document.getElementById('researchProjectsTable'));
+            }
+            if (typeof window.handleLocationHashTarget === 'function') {
+                setTimeout(window.handleLocationHashTarget, 60);
             }
         }
 
