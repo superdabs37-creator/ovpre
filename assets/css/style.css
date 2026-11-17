@@ -7732,3 +7732,61 @@ body.register-body .stepper-nav {
 }
 
 
+
+/* =========================================================
+   FEATURED SPOTLIGHT BENCHMARK HEADER STYLING
+   ========================================================= */
+.featured-spotlight-card {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
+    background: #ffffff !important;
+    padding: 20px 24px !important;
+}
+
+.benchmark-highlight-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 4px 10px !important;
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    border-radius: 999px !important;
+    color: #15803d !important;
+    font-size: 0.70rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 8px !important;
+    box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04) !important;
+}
+
+.benchmark-highlight-badge i {
+    color: #16a34a !important;
+    font-size: 0.75rem !important;
+}
+
+#deptChartTitle {
+    color: #0f172a !important;
+    font-size: clamp(1.15rem, 1.8vw, 1.35rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+}
+
+#deptChartTitle i {
+    color: #15803d !important;
+    font-size: 1.3rem !important;
+}
+
+#deptChartSubtitle {
+    font-size: 0.82rem !important;
+    color: #64748b !important;
+    font-weight: 450 !important;
+    display: block !important;
+    margin-top: 4px !important;
+    line-height: 1.45 !important;
+}
