@@ -160,7 +160,7 @@
                                     <th>Budget</th>
                                     <th>Stage</th>
                                     <th>Status</th>
-                                    <th>Manage / Action</th>
+                                    <th class="table-actions-col">Manage / Action</th>
                                 </tr>
                             </thead>
                             <tbody id="extensionProjectsBody">
@@ -185,11 +185,13 @@
                     Approved
                 </span>
             </td>
-            <td>
-        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(1)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-            <i class="ri-eye-line"></i><span>Details</span>
-        </button>
-    </td>
+            <td class="table-actions-cell">
+                <div class="table-action-group">
+                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(1)">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </td>
         </tr>
     
 
@@ -213,11 +215,13 @@
                     Pending Coordinator Review
                 </span>
             </td>
-            <td>
-        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(2)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-            <i class="ri-eye-line"></i><span>Details</span>
-        </button>
-    </td>
+            <td class="table-actions-cell">
+                <div class="table-action-group">
+                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(2)">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </td>
         </tr>
     
 
@@ -241,11 +245,13 @@
                     Pending Director Review
                 </span>
             </td>
-            <td>
-        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(3)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-            <i class="ri-eye-line"></i><span>Details</span>
-        </button>
-    </td>
+            <td class="table-actions-cell">
+                <div class="table-action-group">
+                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(3)">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </td>
         </tr>
     
 
@@ -269,11 +275,13 @@
                     Pending Executive Approval
                 </span>
             </td>
-            <td>
-        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(4)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-            <i class="ri-eye-line"></i><span>Details</span>
-        </button>
-    </td>
+            <td class="table-actions-cell">
+                <div class="table-action-group">
+                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(4)">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </td>
         </tr>
     
 
@@ -297,11 +305,13 @@
                     Pending Coordinator Review
                 </span>
             </td>
-            <td>
-        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(5)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-            <i class="ri-eye-line"></i><span>Details</span>
-        </button>
-    </td>
+            <td class="table-actions-cell">
+                <div class="table-action-group">
+                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(5)">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </td>
         </tr>
     
 
@@ -325,11 +335,13 @@
                     Pending Coordinator Review
                 </span>
             </td>
-            <td>
-        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(6)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
-            <i class="ri-eye-line"></i><span>Details</span>
-        </button>
-    </td>
+            <td class="table-actions-cell">
+                <div class="table-action-group">
+                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(6)">
+                        <i class="ri-eye-line"></i><span>Details</span>
+                    </button>
+                </div>
+            </td>
         </tr>
     
                             </tbody>
@@ -926,10 +938,10 @@
                         // Stage 1: STRICTLY College Coordinator ONLY (No override)
                         if (isCoordinator && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse project to Extension Director">
+                                <button class="tbl-action-btn tbl-btn-endorse" type="button" onclick="openCoordModal(${p.id}, false)" title="Endorse project to Extension Director">
                                     <i class="ri-check-double-line"></i><span>Endorse</span>
                                 </button>
-                                <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed;" title="Return to faculty for revision">
+                                <button class="tbl-action-btn tbl-btn-revision" type="button" onclick="openCoordModal(${p.id}, true)" title="Return to faculty for revision">
                                     <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                                 </button>
                             `;
@@ -937,7 +949,7 @@
                         // Stage 2: STRICTLY Extension Director ONLY (No override)
                         else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director Project Evaluation">
+                                <button class="tbl-action-btn tbl-btn-evaluate" type="button" onclick="openDirModal(${p.id})" title="Director Project Evaluation">
                                     <i class="ri-award-line"></i><span>Evaluate</span>
                                 </button>
                             `;
@@ -945,7 +957,7 @@
                         // Stage 3: STRICTLY Executive (Super Admin / OVPRE Admin) ONLY (No override)
                         else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
+                                <button class="tbl-action-btn tbl-btn-approve" type="button" onclick="openExecModal(${p.id})" title="Executive Institutional Approval">
                                     <i class="ri-shield-check-line"></i><span>Approve</span>
                                 </button>
                             `;
@@ -953,25 +965,25 @@
                         // Revision: STRICTLY Faculty Proponent ONLY (No override)
                         else if (isFaculty && pStatus === 'Needs Revision') {
                             workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised extension project">
+                                <button class="tbl-action-btn tbl-btn-resubmit" type="button" onclick="openResubmitModal(${p.id})" title="Review comments and resubmit revised extension project">
                                     <i class="ri-refresh-line"></i><span>Resubmit</span>
                                 </button>
                             `;
                         }
 
                         actionsHtml = `
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <div class="table-action-group">
                                 ${workflowBtns}
-                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(${p.id})">
                                     <i class="ri-eye-line"></i><span>Details</span>
                                 </button>
                             </div>
                         `;
                     } else {
                         actionsHtml = `
-                            <div style="display: flex; gap: 6px;">
-                                <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
-                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
+                            <div class="table-action-group">
+                                <button class="tbl-action-btn tbl-btn-restore" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(${p.id})"><i class="ri-eye-line"></i><span>Details</span></button>
                             </div>
                         `;
                     }
@@ -999,7 +1011,7 @@
                                 ${OVPRE.h(pStatus)}
                             </span>
                         </td>
-                        <td>${actionsHtml}</td>
+                        <td class="table-actions-cell">${actionsHtml}</td>
                     `;
                     tbody.appendChild(tr);
                 });

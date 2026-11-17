@@ -7002,136 +7002,210 @@ body.register-body .stepper-nav {
 }
 
 /* =========================================================
-   AUTHENTIC RESEARCH & EXTENSION WORKFLOW BUTTONS
+   PROFESSIONAL TABLE ACTION SYSTEM (Compact, Inline, Uniform)
    ========================================================= */
+th.table-actions-col {
+    white-space: nowrap !important;
+    text-align: right !important;
+    padding-right: 18px !important;
+    min-width: 260px;
+    width: 1%;
+}
+
+td.table-actions-cell {
+    white-space: nowrap !important;
+    text-align: right !important;
+    padding-right: 18px !important;
+    min-width: 260px;
+    vertical-align: middle !important;
+}
+
+.table-action-group,
+.workflow-actions-row,
 .workflow-actions-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: flex-start;
-}
-
-.workflow-actions-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.action-btn.btn-endorse {
-    background-color: #15803d !important;
-    color: #ffffff !important;
-    border: none !important;
-    font-weight: 700 !important;
-    font-size: 0.88rem !important;
-    padding: 0 18px !important;
-    min-height: 36px !important;
-    border-radius: 12px !important;
     display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 7px !important;
-    width: 100% !important;
-    box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25) !important;
-    cursor: pointer !important;
-    transition: background 0.15s ease, transform 0.1s ease !important;
-}
-
-.action-btn.btn-endorse:hover {
-    background-color: #166534 !important;
-    transform: translateY(-1px) !important;
-}
-
-.action-btn.btn-evaluate {
-    background-color: #1d4ed8 !important;
-    color: #ffffff !important;
-    border: none !important;
-    font-weight: 700 !important;
-    font-size: 0.88rem !important;
-    padding: 0 18px !important;
-    min-height: 36px !important;
-    border-radius: 12px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 7px !important;
-    width: 100% !important;
-    box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25) !important;
-    cursor: pointer !important;
-    transition: background 0.15s ease, transform 0.1s ease !important;
-}
-
-.action-btn.btn-evaluate:hover {
-    background-color: #1e40af !important;
-    transform: translateY(-1px) !important;
-}
-
-.action-btn.btn-approve {
-    background-color: #7e22ce !important;
-    color: #ffffff !important;
-    border: none !important;
-    font-weight: 700 !important;
-    font-size: 0.88rem !important;
-    padding: 0 18px !important;
-    min-height: 36px !important;
-    border-radius: 12px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 7px !important;
-    width: 100% !important;
-    box-shadow: 0 2px 6px rgba(126, 34, 206, 0.25) !important;
-    cursor: pointer !important;
-    transition: background 0.15s ease, transform 0.1s ease !important;
-}
-
-.action-btn.btn-approve:hover {
-    background-color: #6b21a8 !important;
-    transform: translateY(-1px) !important;
-}
-
-.action-btn.btn-revision {
-    background-color: #fff7ed !important;
-    border: 1px solid #fed7aa !important;
-    color: #c2410c !important;
-    font-weight: 700 !important;
-    font-size: 0.85rem !important;
-    padding: 0 14px !important;
-    min-height: 34px !important;
-    border-radius: 12px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-end !important;
     gap: 6px !important;
-    cursor: pointer !important;
-    transition: background 0.15s ease, border-color 0.15s ease !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.action-btn.btn-revision:hover {
-    background-color: #ffedd5 !important;
-    border-color: #fdba74 !important;
-}
-
+/* Individual Table Action Pill Buttons */
+.tbl-action-btn,
+.action-btn.btn-endorse,
+.action-btn.btn-evaluate,
+.action-btn.btn-approve,
+.action-btn.btn-revision,
 .action-btn.btn-details {
-    background-color: #f0fdf4 !important;
-    border: 1px solid #bbf7d0 !important;
-    color: #047857 !important;
-    font-weight: 700 !important;
-    font-size: 0.85rem !important;
-    padding: 0 14px !important;
-    min-height: 34px !important;
-    border-radius: 12px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 6px !important;
+    gap: 5px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    padding: 0 11px !important;
+    font-size: 0.77rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    border-radius: 9999px !important;
+    white-space: nowrap !important;
     cursor: pointer !important;
-    transition: background 0.15s ease, border-color 0.15s ease !important;
+    text-decoration: none !important;
+    border: 1px solid transparent !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: inherit !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    width: auto !important;
 }
 
+.tbl-action-btn i,
+.action-btn.btn-endorse i,
+.action-btn.btn-evaluate i,
+.action-btn.btn-approve i,
+.action-btn.btn-revision i,
+.action-btn.btn-details i {
+    font-size: 0.88rem !important;
+    line-height: 1 !important;
+    display: inline-block;
+}
+
+.tbl-action-btn span,
+.action-btn.btn-endorse span,
+.action-btn.btn-evaluate span,
+.action-btn.btn-approve span,
+.action-btn.btn-revision span,
+.action-btn.btn-details span {
+    display: inline-block;
+    line-height: 1;
+}
+
+.tbl-action-btn:hover,
+.action-btn.btn-endorse:hover,
+.action-btn.btn-evaluate:hover,
+.action-btn.btn-approve:hover,
+.action-btn.btn-revision:hover,
 .action-btn.btn-details:hover {
-    background-color: #dcfce7 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 6px rgba(15, 23, 42, 0.12) !important;
+}
+
+.tbl-action-btn:active,
+.action-btn.btn-endorse:active,
+.action-btn.btn-evaluate:active,
+.action-btn.btn-approve:active,
+.action-btn.btn-revision:active,
+.action-btn.btn-details:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* 1. Endorse Action (Emerald Forest Green) */
+.tbl-btn-endorse,
+.action-btn.btn-endorse {
+    background: #15803d !important;
+    background: linear-gradient(180deg, #16a34a 0%, #15803d 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #166534 !important;
+    box-shadow: 0 1px 3px rgba(21, 128, 61, 0.28) !important;
+}
+.tbl-btn-endorse:hover,
+.action-btn.btn-endorse:hover {
+    background: linear-gradient(180deg, #15803d 0%, #14532d 100%) !important;
+    border-color: #14532d !important;
+    color: #ffffff !important;
+}
+
+/* 2. Revision Action (Warm Amber / Peach) */
+.tbl-btn-revision,
+.action-btn.btn-revision {
+    background: #fff7ed !important;
+    color: #c2410c !important;
+    border: 1px solid #fed7aa !important;
+}
+.tbl-btn-revision:hover,
+.action-btn.btn-revision:hover {
+    background: #ffedd5 !important;
+    border-color: #fdba74 !important;
+    color: #9a3412 !important;
+}
+
+/* 3. Details Action (Fresh Mint Ghost) */
+.tbl-btn-details,
+.action-btn.btn-details {
+    background: #f0fdf4 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0 !important;
+}
+.tbl-btn-details:hover,
+.action-btn.btn-details:hover {
+    background: #dcfce7 !important;
     border-color: #86efac !important;
-    color: #065f46 !important;
+    color: #14532d !important;
+}
+
+/* 4. Evaluate Action (Royal Blue for Director) */
+.tbl-btn-evaluate,
+.action-btn.btn-evaluate {
+    background: #1d4ed8 !important;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #1e40af !important;
+    box-shadow: 0 1px 3px rgba(29, 78, 216, 0.28) !important;
+}
+.tbl-btn-evaluate:hover,
+.action-btn.btn-evaluate:hover {
+    background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%) !important;
+    border-color: #1e3a8a !important;
+    color: #ffffff !important;
+}
+
+/* 5. Approve Action (Executive Purple) */
+.tbl-btn-approve,
+.action-btn.btn-approve {
+    background: #7e22ce !important;
+    background: linear-gradient(180deg, #9333ea 0%, #7e22ce 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #6b21a8 !important;
+    box-shadow: 0 1px 3px rgba(126, 34, 206, 0.28) !important;
+}
+.tbl-btn-approve:hover,
+.action-btn.btn-approve:hover {
+    background: linear-gradient(180deg, #7e22ce 0%, #581c87 100%) !important;
+    border-color: #581c87 !important;
+    color: #ffffff !important;
+}
+
+/* 6. Resubmit Action (Faculty Sky Blue) */
+.tbl-btn-resubmit {
+    background: #0284c7 !important;
+    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #075985 !important;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.28) !important;
+}
+.tbl-btn-resubmit:hover {
+    background: linear-gradient(180deg, #0369a1 0%, #0c4a6e 100%) !important;
+    border-color: #0c4a6e !important;
+    color: #ffffff !important;
+}
+
+/* 7. Restore Action (Slate for Archived) */
+.tbl-btn-restore {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+.tbl-btn-restore:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #1e293b !important;
 }
 
 
