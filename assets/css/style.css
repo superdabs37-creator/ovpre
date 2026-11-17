@@ -5207,10 +5207,6 @@ a.btn-view-files:hover {
 .content-area .portal-link:visited,
 .login-form .primary-btn,
 .login-form .primary-btn:visited,
-.tool-panel .primary-btn,
-.tool-panel .primary-btn:visited,
-.tool-panel .ghost-btn,
-.tool-panel .ghost-btn:visited,
 .report-actions .primary-btn,
 .report-actions .primary-btn:visited,
 .report-actions .ghost-btn,
@@ -5242,8 +5238,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]) span,
 .content-area .portal-link span,
 .login-form .primary-btn span,
-.tool-panel .primary-btn span,
-.tool-panel .ghost-btn span,
 .report-actions .primary-btn span,
 .report-actions .ghost-btn span {
     color: #FFFFFF !important;
@@ -5255,8 +5249,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"])::before,
 .content-area .portal-link::before,
 .login-form .primary-btn::before,
-.tool-panel .primary-btn::before,
-.tool-panel .ghost-btn::before,
 .report-actions .primary-btn::before,
 .report-actions .ghost-btn::before {
     content: "";
@@ -5273,8 +5265,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"])::after,
 .content-area .portal-link::after,
 .login-form .primary-btn::after,
-.tool-panel .primary-btn::after,
-.tool-panel .ghost-btn::after,
 .report-actions .primary-btn::after,
 .report-actions .ghost-btn::after {
     content: "";
@@ -5294,8 +5284,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]):hover,
 .content-area .portal-link:hover,
 .login-form .primary-btn:hover,
-.tool-panel .primary-btn:hover,
-.tool-panel .ghost-btn:hover,
 .report-actions .primary-btn:hover,
 .report-actions .ghost-btn:hover {
     color: #FFFFFF;
@@ -5310,8 +5298,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]):hover::after,
 .content-area .portal-link:hover::after,
 .login-form .primary-btn:hover::after,
-.tool-panel .primary-btn:hover::after,
-.tool-panel .ghost-btn:hover::after,
 .report-actions .primary-btn:hover::after,
 .report-actions .ghost-btn:hover::after {
     opacity: 1;
@@ -5323,8 +5309,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]):active,
 .content-area .portal-link:active,
 .login-form .primary-btn:active,
-.tool-panel .primary-btn:active,
-.tool-panel .ghost-btn:active,
 .report-actions .primary-btn:active,
 .report-actions .ghost-btn:active {
     box-shadow: 0 7px 18px rgba(46, 125, 50, 0.24);
@@ -5336,8 +5320,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]) i,
 .content-area .portal-link i,
 .login-form .primary-btn i,
-.tool-panel .primary-btn i,
-.tool-panel .ghost-btn i,
 .report-actions .primary-btn i,
 .report-actions .ghost-btn i {
     font-size: 18px;
@@ -5350,8 +5332,6 @@ a.btn-view-files:hover {
 .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]):hover i,
 .content-area .portal-link:hover i,
 .login-form .primary-btn:hover i,
-.tool-panel .primary-btn:hover i,
-.tool-panel .ghost-btn:hover i,
 .report-actions .primary-btn:hover i,
 .report-actions .ghost-btn:hover i,
 .premium-action-hover i {
@@ -5365,9 +5345,7 @@ a.btn-view-files:hover {
     .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]),
     .content-area .portal-link,
     .login-form .primary-btn,
-    .tool-panel .primary-btn,
-    .tool-panel .ghost-btn,
-    .report-actions .primary-btn,
+            .report-actions .primary-btn,
     .report-actions .ghost-btn {
         min-height: 50px;
     }
@@ -5380,9 +5358,7 @@ a.btn-view-files:hover {
     .content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]),
     .content-area .portal-link,
     .login-form .primary-btn,
-    .tool-panel .primary-btn,
-    .tool-panel .ghost-btn,
-    .report-actions .primary-btn,
+            .report-actions .primary-btn,
     .report-actions .ghost-btn {
         min-height: 48px;
         padding: 0 18px;
@@ -5646,91 +5622,169 @@ mark.global-search-hit {
 }
 
 /* Record Management Segmented View Switcher & Toolbar Cleanup */
+.tool-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 18px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    margin-bottom: 20px;
+}
+
+/* Search control in tool-panel */
+.tool-panel .search-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    flex: 1 1 260px;
+    max-width: 380px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.tool-panel .search-control:focus-within {
+    border-color: #15803d;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+}
+
+.tool-panel .search-control i {
+    color: #94a3b8;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.tool-panel .search-control:focus-within i {
+    color: #15803d;
+}
+
+.tool-panel .search-control input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: #0f172a;
+    padding: 0;
+}
+
+.tool-panel .search-control input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+/* Tool panel action container */
+.tool-panel-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Segmented Control Switcher (Active / Archived) */
 .record-segmented-control {
     display: inline-flex;
     align-items: center;
-    background: #edf2ee;
+    background: #f1f5f9;
     padding: 3px;
-    border-radius: 12px;
-    border: 1px solid #d4dfd6;
-    gap: 3px;
-    box-shadow: inset 0 1px 2px rgba(15, 61, 36, 0.04);
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    gap: 2px;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+    height: 38px;
+    box-sizing: border-box;
 }
 
 .record-segmented-tab {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 7px 14px;
-    min-height: 34px;
-    border-radius: 9px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #4b6352;
+    gap: 6px;
+    padding: 0 12px;
+    height: 30px;
+    min-height: 30px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #64748b;
     text-decoration: none;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.18s ease;
     line-height: 1;
     border: 1px solid transparent;
+    cursor: pointer;
+    background: transparent;
+    white-space: nowrap;
+    user-select: none;
 }
 
 .record-segmented-tab:hover {
-    color: #0f3d24;
-    background: rgba(255, 255, 255, 0.65);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .record-segmented-tab.is-active {
     background: #ffffff;
-    color: #0f3d24;
-    font-weight: 700;
-    border-color: rgba(15, 61, 36, 0.08);
-    box-shadow: 0 2px 6px rgba(15, 61, 36, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+    font-weight: 600;
+    border-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .record-segmented-tab i {
-    font-size: 0.95rem;
-    color: #6c8273;
-    transition: color 0.2s ease;
+    font-size: 0.92rem;
+    color: #94a3b8;
+    transition: color 0.18s ease;
 }
 
 .record-segmented-tab.is-active i {
     color: #15803d;
 }
 
-.tool-panel {
+/* Filter Dropdown */
+.tool-panel .action-row {
+    margin: 0 !important;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 16px 20px;
-}
-
-.tool-panel-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-left: auto;
 }
 
 .tool-panel .filter-select {
-    min-height: 42px;
-    height: 42px;
-    padding: 0 14px;
-    border-radius: 12px;
-    border: 1px solid #d4dfd6;
-    background: #ffffff;
-    color: #0f3d24;
-    font-size: 0.88rem;
-    font-weight: 600;
+    height: 38px;
+    min-height: 38px;
+    padding: 0 30px 0 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    color: #0f172a;
+    font-size: 0.83rem;
+    font-weight: 500;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(15, 61, 36, 0.04);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .tool-panel .filter-select:hover {
-    border-color: #15803d;
+    border-color: #94a3b8;
 }
 
 .tool-panel .filter-select:focus {
@@ -5738,22 +5792,122 @@ mark.global-search-hit {
     box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
 }
 
-.tool-panel .primary-btn {
-    min-height: 42px;
-    height: 42px;
-    padding: 0 18px;
-    font-size: 0.88rem;
-    border-radius: 12px;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+/* Primary Button in tool-panel (Upload Record) */
+.tool-panel .primary-btn,
+.tool-panel .primary-btn:visited {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 14px !important;
+    border-radius: 8px !important;
+    background: #15803d !important;
+    color: #ffffff !important;
+    font-size: 0.83rem !important;
+    font-weight: 600 !important;
+    letter-spacing: normal !important;
+    border: 1px solid #15803d !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+    transform: none !important;
 }
 
-.tool-panel .search-control {
-    min-height: 42px;
-    height: 42px;
-    border-radius: 12px;
-    border: 1px solid #d4dfd6;
-    box-shadow: 0 1px 2px rgba(15, 61, 36, 0.04);
+.tool-panel .primary-btn::before,
+.tool-panel .primary-btn::after {
+    display: none !important;
+    content: none !important;
+}
+
+.tool-panel .primary-btn:hover,
+.tool-panel .primary-btn:visited:hover {
+    background: #166534 !important;
+    border-color: #166534 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 5px rgba(21, 128, 61, 0.22) !important;
+    transform: none !important;
+}
+
+.tool-panel .primary-btn:active,
+.tool-panel .primary-btn:visited:active {
+    background: #14532d !important;
+    border-color: #14532d !important;
+    color: #ffffff !important;
+    transform: translateY(1px) !important;
+}
+
+.tool-panel .primary-btn i {
+    font-size: 1rem !important;
+    color: #ffffff !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+.tool-panel .primary-btn:hover i {
+    transform: none !important;
+}
+
+/* Responsive adjustments for Tool Panel */
+@media (max-width: 992px) {
+    .tool-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 14px;
+    }
+
+    .tool-panel .search-control {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .tool-panel-actions {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-left: 0;
+    }
+
+    .record-segmented-control {
+        flex: 1 1 auto;
+    }
+
+    .record-segmented-tab {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .tool-panel .action-row {
+        flex: 0 1 auto;
+    }
+
+    .tool-panel .primary-btn {
+        flex: 0 1 auto;
+    }
+}
+
+@media (max-width: 580px) {
+    .tool-panel-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .record-segmented-control,
+    .tool-panel .action-row,
+    .tool-panel .filter-select,
+    .tool-panel .primary-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .tool-panel .filter-select {
+        width: 100%;
+    }
 }
 
 

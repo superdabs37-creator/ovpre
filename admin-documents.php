@@ -265,7 +265,7 @@ renderHeader('Record Management', 'documents');
 
 <section class="tool-panel">
     <div class="search-control"><i class="ri-search-line"></i><input data-table-search type="search" placeholder="Search by title, author, category, date, or status"></div>
-    <div class="tool-panel-actions" style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-left:auto;">
+    <div class="tool-panel-actions">
     <div class="record-segmented-control" role="tablist" aria-label="Record view mode">
         <a class="record-segmented-tab <?php echo !$archived ? 'is-active' : ''; ?>" href="admin-documents.php" role="tab" aria-selected="<?php echo !$archived ? 'true' : 'false'; ?>">
             <i class="ri-folder-line"></i><span>Active Records</span>
