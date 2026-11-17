@@ -416,10 +416,18 @@ $completedProjectRows = db()->query("
         dep.department_name,
         'Research' AS project_type,
         r.id AS project_id,
-        r.title AS project_title
+        r.title AS project_title,
+        COALESCE(r.abstract, '') AS project_description,
+        COALESCE(r.researchers, '') AS project_lead,
+        COALESCE(u.fullname, 'Faculty Proponent') AS submitter_name,
+        r.created_at AS submitted_at,
+        d.id AS document_id,
+        d.filename AS document_filename,
+        d.original_filename AS document_original_filename
     FROM research_projects r
     JOIN users u ON u.id = r.submitted_by
     JOIN departments dep ON dep.id = u.department_id
+    LEFT JOIN documents d ON d.id = r.document_id
     WHERE r.workflow_stage = 'Completed'
 
     UNION ALL
@@ -429,10 +437,18 @@ $completedProjectRows = db()->query("
         dep.department_name,
         'Extension' AS project_type,
         e.id AS project_id,
-        e.project_title AS project_title
+        e.project_title AS project_title,
+        COALESCE(d.description, e.location, '') AS project_description,
+        COALESCE(e.community_partner, e.coordinator, '') AS project_lead,
+        COALESCE(u.fullname, 'Extension Coordinator') AS submitter_name,
+        e.created_at AS submitted_at,
+        d.id AS document_id,
+        d.filename AS document_filename,
+        d.original_filename AS document_original_filename
     FROM extension_projects e
     JOIN users u ON u.id = e.submitted_by
     JOIN departments dep ON dep.id = u.department_id
+    LEFT JOIN documents d ON d.id = e.document_id
     WHERE e.progress_status = 'Completed'
     ORDER BY department_name ASC, project_type ASC, project_title ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
@@ -448,10 +464,26 @@ foreach ($completedProjectRows as $completedProjectRow) {
             'projects' => [],
         ];
     }
+    $docId = (int) ($completedProjectRow['document_id'] ?? 0);
+    $fileUrl = $docId > 0 ? 'download-document.php?id=' . $docId : '';
+    $fileName = !empty($completedProjectRow['document_original_filename'])
+        ? (string) $completedProjectRow['document_original_filename']
+        : (!empty($completedProjectRow['document_filename']) ? basename((string) $completedProjectRow['document_filename']) : 'Final-Completed-Report.pdf');
+
     $completedColleges[$departmentId]['projects'][] = [
         'id' => (int) $completedProjectRow['project_id'],
         'type' => (string) $completedProjectRow['project_type'],
         'title' => (string) $completedProjectRow['project_title'],
+        'status' => 'Completed',
+        'description' => (string) ($completedProjectRow['project_description'] ?? ''),
+        'lead' => (string) ($completedProjectRow['project_lead'] ?? ''),
+        'extra_info' => (string) ($completedProjectRow['project_lead'] ?? ''),
+        'submitter_name' => (string) ($completedProjectRow['submitter_name'] ?? 'Faculty Proponent'),
+        'department_name' => (string) $completedProjectRow['department_name'],
+        'submitted_at' => (string) ($completedProjectRow['submitted_at'] ?? ''),
+        'document_url' => $fileUrl,
+        'file_url' => $fileUrl,
+        'file_name' => $fileName,
     ];
 }
 $completedColleges = array_values($completedColleges);
@@ -979,15 +1011,20 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                                             ? 'research.php#proposal-' . (int) ($completedProject['id'] ?? 0)
                                             : 'extension.php#project-' . (int) ($completedProject['id'] ?? 0);
                                     ?>
-                                    <a href="<?php echo h($targetUrl); ?>" class="completed-project-pill" style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 7px; text-decoration: none;" title="<?php echo h($completedProject['title']); ?>">
-                                        <span class="badge" style="background: <?php echo $isResearch ? '#dcfce7' : '#e0f2fe'; ?>; color: <?php echo $isResearch ? '#15803d' : '#0284c7'; ?>; font-size: 0.67rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; flex-shrink: 0;">
-                                            <?php echo h($completedProject['type']); ?>
-                                        </span>
-                                        <span style="color: #334155; font-size: 0.78rem; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            <?php echo h($completedProject['title']); ?>
-                                        </span>
-                                        <i class="ri-arrow-right-up-line" style="font-size: 0.75rem; color: #94a3b8; flex-shrink: 0;"></i>
-                                    </a>
+                                    <div class="completed-project-pill" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, { submitter_name: <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, department_name: <?php echo json_encode($completedCollege["department_name"]); ?> })' style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 9px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 7px; cursor: pointer;" title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
+                                        <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                                            <span class="badge" style="background: <?php echo $isResearch ? '#dcfce7' : '#e0f2fe'; ?>; color: <?php echo $isResearch ? '#15803d' : '#0284c7'; ?>; font-size: 0.67rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; flex-shrink: 0;">
+                                                <?php echo h($completedProject['type']); ?>
+                                            </span>
+                                            <span style="color: #334155; font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                <?php echo h($completedProject['title']); ?>
+                                            </span>
+                                        </div>
+                                        <button type="button" class="view-file-badge" style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 6px; font-size: 0.69rem; font-weight: 700; flex-shrink: 0; cursor: pointer;">
+                                            <i class="ri-file-text-line" style="font-size: 0.75rem;"></i>
+                                            <span>View File</span>
+                                        </button>
+                                    </div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -1139,6 +1176,25 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
             <strong id="quickPreviewDescLabel" style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Abstract / Details</strong>
             <p id="quickPreviewDesc" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></p>
         </div>
+        <!-- Attached File Showcase Card -->
+        <div id="quickPreviewFileCard" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                <span style="width: 38px; height: 38px; border-radius: 8px; background: #dcfce7; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                    <i class="ri-file-pdf-fill"></i>
+                </span>
+                <div style="min-width: 0;">
+                    <strong id="quickPreviewFileName" style="display: block; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        Research-Documentation.pdf
+                    </strong>
+                    <span style="font-size: 0.72rem; color: #15803d; font-weight: 600;">
+                        <i class="ri-checkbox-circle-fill"></i> Official Verified Academic Document
+                    </span>
+                </div>
+            </div>
+            <a id="quickPreviewViewFileBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.78rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 7px; text-decoration: none; white-space: nowrap;">
+                <i class="ri-file-search-line"></i> <span>View File</span>
+            </a>
+        </div>
         <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
             <a id="quickPreviewDownloadBtn" href="#" target="_blank" rel="noopener" class="ghost-btn" style="display: none; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none;">
                 <i class="ri-download-cloud-line"></i> <span>Download Attached File</span>
@@ -1202,22 +1258,49 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
         document.getElementById('quickPreviewMeta').textContent = metaText;
 
         document.getElementById('quickPreviewDescLabel').textContent = isResearch ? 'Abstract / Proposal Overview' : 'Community Partner & Description';
-        document.getElementById('quickPreviewDesc').textContent = submission.description ? submission.description : 'No additional description provided.';
+        document.getElementById('quickPreviewDesc').textContent = submission.description ? submission.description : 'Completed academic project under the institutional repository.';
+
+        const fileUrl = submission.document_url || submission.file_url;
+        const fileName = submission.file_name || (submission.title ? submission.title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 32) + '-Report.pdf' : 'Academic-Document.pdf');
+        
+        const fileNameEl = document.getElementById('quickPreviewFileName');
+        if (fileNameEl) {
+            fileNameEl.textContent = fileName;
+        }
+
+        const viewFileBtn = document.getElementById('quickPreviewViewFileBtn');
+        if (viewFileBtn) {
+            if (fileUrl && fileUrl !== '#') {
+                viewFileBtn.href = fileUrl;
+                viewFileBtn.target = '_blank';
+                viewFileBtn.style.display = 'inline-flex';
+                viewFileBtn.innerHTML = '<i class="ri-file-search-line"></i> <span>View File</span>';
+            } else {
+                viewFileBtn.href = targetUrl;
+                viewFileBtn.target = '_blank';
+                viewFileBtn.style.display = 'inline-flex';
+                viewFileBtn.innerHTML = '<i class="ri-file-text-line"></i> <span>View File Details</span>';
+            }
+        }
 
         const downloadBtn = document.getElementById('quickPreviewDownloadBtn');
-        if (submission.document_url) {
-            downloadBtn.href = submission.document_url;
-            downloadBtn.style.display = 'inline-flex';
-        } else {
-            downloadBtn.style.display = 'none';
+        if (downloadBtn) {
+            if (fileUrl && fileUrl !== '#') {
+                downloadBtn.href = fileUrl;
+                downloadBtn.style.display = 'inline-flex';
+                downloadBtn.innerHTML = '<i class="ri-download-cloud-line"></i> <span>Download File</span>';
+            } else {
+                downloadBtn.style.display = 'none';
+            }
         }
 
         const fullPageBtn = document.getElementById('quickPreviewFullPageBtn');
         fullPageBtn.href = targetUrl;
-        fullPageBtn.querySelector('span').textContent = isResearch ? 'Open in Research Pipeline' : 'Open in Extension Pipeline';
+        fullPageBtn.querySelector('span').textContent = isResearch ? 'Open Full Proposal' : 'Open Full Project';
 
         previewDialog.showModal();
     }
+    window.openQuickPreview = openQuickPreview;
 
     if (closePreviewBtn && previewDialog) {
         closePreviewBtn.addEventListener('click', () => previewDialog.close());
@@ -1873,11 +1956,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 projects.forEach(project => {
                     const isResearch = project.type === 'Research';
-                    const link = document.createElement('a');
-                    link.className = 'completed-project-pill';
-                    link.href = isResearch ? `research.php#proposal-${project.id}` : `extension.php#project-${project.id}`;
-                    link.title = project.title;
-                    link.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;background:#ffffff;border:1px solid #e2e8f0;border-radius:7px;text-decoration:none;';
+                    const pill = document.createElement('div');
+                    pill.className = 'completed-project-pill';
+                    pill.role = 'button';
+                    pill.tabIndex = 0;
+                    pill.title = `Click to view file & details for: ${project.title}`;
+                    pill.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;background:#ffffff;border:1px solid #e2e8f0;border-radius:7px;cursor:pointer;';
+
+                    const leftWrap = document.createElement('div');
+                    leftWrap.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;flex:1;';
 
                     const typeBadge = document.createElement('span');
                     typeBadge.className = 'badge';
@@ -1886,14 +1973,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const titleSpan = document.createElement('span');
                     titleSpan.textContent = project.title;
-                    titleSpan.style.cssText = 'color:#334155;font-size:0.78rem;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                    titleSpan.style.cssText = 'color:#334155;font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                    leftWrap.append(typeBadge, titleSpan);
 
-                    const arrowIcon = document.createElement('i');
-                    arrowIcon.className = 'ri-arrow-right-up-line';
-                    arrowIcon.style.cssText = 'font-size:0.75rem;color:#94a3b8;flex-shrink:0;';
+                    const viewFileBtn = document.createElement('button');
+                    viewFileBtn.type = 'button';
+                    viewFileBtn.className = 'view-file-badge';
+                    viewFileBtn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;border-radius:6px;font-size:0.69rem;font-weight:700;flex-shrink:0;cursor:pointer;';
+                    viewFileBtn.innerHTML = '<i class="ri-file-text-line" style="font-size:0.75rem;"></i><span>View File</span>';
 
-                    link.append(typeBadge, titleSpan, arrowIcon);
-                    projectContainer.appendChild(link);
+                    pill.append(leftWrap, viewFileBtn);
+
+                    const triggerPreview = (e) => {
+                        if (e) e.stopPropagation();
+                        if (typeof window.openQuickPreview === 'function') {
+                            window.openQuickPreview(project, {
+                                submitter_name: project.submitter_name || 'Faculty Proponent',
+                                department_name: college.department_name
+                            });
+                        }
+                    };
+
+                    pill.addEventListener('click', triggerPreview);
+                    pill.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            triggerPreview(e);
+                        }
+                    });
+
+                    projectContainer.appendChild(pill);
                 });
 
                 card.append(heading, projectContainer);

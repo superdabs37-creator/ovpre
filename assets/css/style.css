@@ -8046,3 +8046,16 @@ body.register-body .stepper-nav {
     border-color: #cbd5e1 !important;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
+.view-file-badge {
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.completed-project-pill:hover .view-file-badge {
+    background: #15803d !important;
+    color: #ffffff !important;
+    border-color: #15803d !important;
+    box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25);
+}
+.completed-project-pill:hover .view-file-badge i {
+    color: #ffffff !important;
+}

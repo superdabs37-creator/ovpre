@@ -758,6 +758,27 @@
                             <strong id="quickPreviewDescLabel" style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Abstract / Details</strong>
                             <p id="quickPreviewDesc" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></p>
                         </div>
+
+                        <!-- Attached File Showcase Card -->
+                        <div id="quickPreviewFileCard" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                                <span style="width: 38px; height: 38px; border-radius: 8px; background: #dcfce7; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                                    <i class="ri-file-pdf-fill"></i>
+                                </span>
+                                <div style="min-width: 0;">
+                                    <strong id="quickPreviewFileName" style="display: block; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        Research-Documentation.pdf
+                                    </strong>
+                                    <span style="font-size: 0.72rem; color: #15803d; font-weight: 600;">
+                                        <i class="ri-checkbox-circle-fill"></i> Official Verified Academic Document
+                                    </span>
+                                </div>
+                            </div>
+                            <a id="quickPreviewViewFileBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.78rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 7px; text-decoration: none; white-space: nowrap;">
+                                <i class="ri-file-search-line"></i> <span>View File</span>
+                            </a>
+                        </div>
+
                         <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 12px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
                             <a id="quickPreviewDownloadBtn" href="#" class="ghost-btn action-btn" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px; font-size: 0.86rem; font-weight: 600; color: #1e293b !important; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease;">
                                 <i class="ri-download-cloud-line" style="font-size: 0.95rem;"></i> <span>Download Attached File</span>
@@ -1047,29 +1068,29 @@
             {
                 department_name: 'College of Computer Studies and Technology',
                 projects: [
-                    { id: 1, type: 'Research', title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming' },
-                    { id: 5, type: 'Research', title: 'Smart Campus IoT Energy Consumption Monitor' },
-                    { id: 2, type: 'Extension', title: 'IT Skills Training & Digital Literacy for Barangay San Juan' }
+                    { id: 1, type: 'Research', title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming', status: 'Completed', description: 'Machine learning model trained on local agrarian crop foliage images to detect leaf blight before visible manifestation.', submitter_name: 'Dr. Aris Thorne', file_name: 'AI-Driven-Crop-Disease-Detection-Model.pdf', file_url: 'research.html#proposal-1' },
+                    { id: 5, type: 'Research', title: 'Smart Campus IoT Energy Consumption Monitor', status: 'Completed', description: 'Real-time telemetry measuring sub-station electrical loads across campus academic wings.', submitter_name: 'Dr. Aris Thorne', file_name: 'Smart-Campus-IoT-Energy-System.pdf', file_url: 'research.html#proposal-5' },
+                    { id: 2, type: 'Extension', title: 'IT Skills Training & Digital Literacy for Barangay San Juan', status: 'Completed', description: 'Four-weekend computer literacy bootcamp for senior citizens and out-of-school youth in Barangay San Juan.', submitter_name: 'Prof. Clara Reyes', file_name: 'IT-Digital-Literacy-BrgySanJuan.pdf', file_url: 'extension.html#project-2' }
                 ]
             },
             {
                 department_name: 'College of Engineering',
                 projects: [
-                    { id: 3, type: 'Extension', title: 'Community Water Filtration System Installation in Barangay San Lucas' },
-                    { id: 6, type: 'Research', title: 'Solar-Powered Low-Cost Post-Harvest Food Dryer' }
+                    { id: 3, type: 'Extension', title: 'Community Water Filtration System Installation in Barangay San Lucas', status: 'Completed', description: 'Design and local fabrication of gravity-fed bio-sand water filters for clean drinking water.', submitter_name: 'Engr. Katrina Valdez', file_name: 'Water-Filtration-Community-Design.pdf', file_url: 'extension.html#project-3' },
+                    { id: 6, type: 'Research', title: 'Solar-Powered Low-Cost Post-Harvest Food Dryer', status: 'Completed', description: 'Convective drying chamber powered by photovoltaic thermal panels for fruit and vegetable preservation.', submitter_name: 'Engr. Katrina Valdez', file_name: 'Solar-Dryer-Apparatus-Documentation.pdf', file_url: 'research.html#proposal-6' }
                 ]
             },
             {
                 department_name: 'College of Nursing and Allied Health Sciences',
                 projects: [
-                    { id: 4, type: 'Research', title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households' }
+                    { id: 4, type: 'Research', title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households', status: 'Completed', description: 'Mixed-method epidemiological survey on rural maternal attitudes regarding primary childhood vaccines.', submitter_name: 'Dr. Elena Ramos', file_name: 'Pediatric-Immunization-Survey-Report.pdf', file_url: 'research.html#proposal-4' }
                 ]
             },
             {
                 department_name: 'College of Business Administration',
                 projects: [
-                    { id: 7, type: 'Research', title: 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency' },
-                    { id: 8, type: 'Extension', title: 'Financial Literacy & Bookkeeping Coaching for Market Vendors' }
+                    { id: 7, type: 'Research', title: 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency', status: 'Completed', description: 'Empirical assessment of digital point-of-sale adoption among public market retail cooperatives.', submitter_name: 'Dr. Michael Chen', file_name: 'Micro-Enterprise-ECommerce-Adoption.pdf', file_url: 'research.html#proposal-7' },
+                    { id: 8, type: 'Extension', title: 'Financial Literacy & Bookkeeping Coaching for Market Vendors', status: 'Completed', description: 'Weekly accounting clinic assisting micro-traders in basic ledger balancing and microfinance navigation.', submitter_name: 'Prof. Leo Gomez', file_name: 'Financial-Literacy-Coaching-Modules.pdf', file_url: 'extension.html#project-8' }
                 ]
             }
         ];
@@ -1228,11 +1249,15 @@
 
                 filteredProjects.forEach(project => {
                     const isResearch = project.type === 'Research';
-                    const link = document.createElement('a');
-                    link.className = 'completed-project-pill';
-                    link.href = isResearch ? `research.html#proposal-${project.id}` : `extension.html#project-${project.id}`;
-                    link.title = project.title;
-                    link.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;background:#ffffff;border:1px solid #e2e8f0;border-radius:7px;text-decoration:none;';
+                    const pill = document.createElement('div');
+                    pill.className = 'completed-project-pill';
+                    pill.role = 'button';
+                    pill.tabIndex = 0;
+                    pill.title = `Click to view file & details for: ${project.title}`;
+                    pill.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;background:#ffffff;border:1px solid #e2e8f0;border-radius:7px;cursor:pointer;';
+
+                    const leftWrap = document.createElement('div');
+                    leftWrap.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;flex:1;';
 
                     const typeBadge = document.createElement('span');
                     typeBadge.className = 'badge';
@@ -1241,14 +1266,33 @@
 
                     const titleSpan = document.createElement('span');
                     titleSpan.textContent = project.title;
-                    titleSpan.style.cssText = 'color:#334155;font-size:0.78rem;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                    titleSpan.style.cssText = 'color:#334155;font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                    leftWrap.append(typeBadge, titleSpan);
 
-                    const arrowIcon = document.createElement('i');
-                    arrowIcon.className = 'ri-arrow-right-up-line';
-                    arrowIcon.style.cssText = 'font-size:0.75rem;color:#94a3b8;flex-shrink:0;';
+                    const viewFileBtn = document.createElement('button');
+                    viewFileBtn.type = 'button';
+                    viewFileBtn.className = 'view-file-badge';
+                    viewFileBtn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;border-radius:6px;font-size:0.69rem;font-weight:700;flex-shrink:0;cursor:pointer;';
+                    viewFileBtn.innerHTML = '<i class="ri-file-text-line" style="font-size:0.75rem;"></i><span>View File</span>';
 
-                    link.append(typeBadge, titleSpan, arrowIcon);
-                    projectContainer.appendChild(link);
+                    pill.append(leftWrap, viewFileBtn);
+
+                    const triggerPreview = (e) => {
+                        if (e) e.stopPropagation();
+                        if (typeof window.openQuickPreview === 'function') {
+                            window.openQuickPreview(project, project.submitter_name || 'Faculty Proponent', col.department_name);
+                        }
+                    };
+
+                    pill.addEventListener('click', triggerPreview);
+                    pill.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            triggerPreview(e);
+                        }
+                    });
+
+                    projectContainer.appendChild(pill);
                 });
 
                 card.append(heading, projectContainer);
@@ -1282,17 +1326,49 @@
             document.getElementById('quickPreviewTypeBadge').style.color = isResearch ? '#15803d' : '#7c3aed';
 
             const statusEl = document.getElementById('quickPreviewStatusBadge');
-            statusEl.textContent = sub.status;
-            statusEl.style.background = sub.status === 'Approved' ? '#f0fdf4' : '#fffbeb';
-            statusEl.style.color = sub.status === 'Approved' ? '#15803d' : '#b45309';
+            const status = sub.status || 'Completed';
+            statusEl.textContent = status;
+            statusEl.style.background = (status === 'Completed' || status === 'Approved') ? '#f0fdf4' : '#fffbeb';
+            statusEl.style.color = (status === 'Completed' || status === 'Approved') ? '#15803d' : '#b45309';
 
             document.getElementById('quickPreviewTitle').textContent = sub.title;
-            document.getElementById('quickPreviewMeta').textContent = `Submitter: ${personName} (${deptName}) | Submitted: ${sub.submitted_at}`;
-            document.getElementById('quickPreviewDesc').textContent = sub.description || 'No description provided.';
-            document.getElementById('quickPreviewFullPageBtn').href = isResearch ? 'research.html' : 'extension.html';
+            const pName = personName || sub.submitter_name || 'Faculty Proponent';
+            const dName = deptName || sub.department_name || 'Academic Department';
+            document.getElementById('quickPreviewMeta').textContent = `Submitter: ${pName} (${dName}) | Status: ${status}`;
+            document.getElementById('quickPreviewDesc').textContent = sub.description || 'Completed institutional project document.';
+
+            const targetUrl = isResearch ? 'research.html' : 'extension.html';
+            const fileUrl = sub.file_url || sub.document_url || targetUrl;
+            const fileName = sub.file_name || (sub.title ? sub.title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 32) + '-Report.pdf' : 'Academic-Document.pdf');
+
+            const fileNameEl = document.getElementById('quickPreviewFileName');
+            if (fileNameEl) {
+                fileNameEl.textContent = fileName;
+            }
+
+            const viewFileBtn = document.getElementById('quickPreviewViewFileBtn');
+            if (viewFileBtn) {
+                viewFileBtn.href = fileUrl;
+                viewFileBtn.target = fileUrl.endsWith('.pdf') ? '_blank' : '_self';
+                viewFileBtn.innerHTML = '<i class="ri-file-search-line"></i> <span>View File</span>';
+            }
+
+            const downloadBtn = document.getElementById('quickPreviewDownloadBtn');
+            if (downloadBtn) {
+                downloadBtn.href = fileUrl;
+                downloadBtn.style.display = 'inline-flex';
+                downloadBtn.innerHTML = `<i class="ri-download-cloud-line"></i> <span>Download File</span>`;
+            }
+
+            const fullPageBtn = document.getElementById('quickPreviewFullPageBtn');
+            if (fullPageBtn) {
+                fullPageBtn.href = targetUrl;
+                fullPageBtn.querySelector('span').textContent = isResearch ? 'Open Full Proposal' : 'Open Full Project';
+            }
 
             if (window.OVPRE && OVPRE.openModal) OVPRE.openModal('submissionQuickPreviewDialog'); else previewDialog.classList.add('open');
         }
+        window.openQuickPreview = openQuickPreview;
 
         if (closePreviewDialog && previewDialog) {
             closePreviewDialog.addEventListener('click', () => { if (window.OVPRE && OVPRE.closeModal) OVPRE.closeModal('submissionQuickPreviewDialog'); else previewDialog.classList.remove('open'); });
