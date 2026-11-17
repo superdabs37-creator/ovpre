@@ -98,7 +98,7 @@
                                 <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">1</span>
                             </button>
                         </div>
-                        <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">
+                        <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" data-open-modal="announcementEditorModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">
                             <i class="ri-megaphone-line"></i> <span>Publish Announcement</span>
                         </button>
                     </div>
@@ -283,9 +283,9 @@
 
     <!-- MODAL: ADD / EDIT ANNOUNCEMENT -->
     <div class="modal" id="announcementEditorModal" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-backdrop" data-close-modal onclick="closeModal('announcementEditorModal')"></div>
         <article class="modal-card" style="max-width: 620px;">
-            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <button class="modal-close" type="button" data-close-modal onclick="closeModal('announcementEditorModal')" aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div style="margin-bottom: 14px;">
                 <h2 id="annModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
                     <i class="ri-megaphone-line" style="color: #15803d;"></i> <span>Publish Announcement</span>
@@ -338,7 +338,7 @@
                     <textarea id="annContent" rows="5" required placeholder="Full circular text..." style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; line-height: 1.5;"></textarea>
                 </div>
                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                    <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                    <button type="button" class="modal-cancel-btn" data-close-modal onclick="closeModal('announcementEditorModal')" style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
                     <button type="submit" id="annSubmitBtn" class="primary-btn" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">Publish Now</button>
                 </div>
             </form>
@@ -347,9 +347,9 @@
 
     <!-- MODAL: VIEW ANNOUNCEMENT -->
     <div class="modal" id="announcementViewModal" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-backdrop" data-close-modal onclick="closeModal('announcementViewModal')"></div>
         <article class="modal-card" style="max-width: 620px;">
-            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <button class="modal-close" type="button" data-close-modal onclick="closeModal('announcementViewModal')" aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div style="margin-bottom: 12px;">
                 <span class="category-badge" id="viewAnnCategory" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
                 <h2 id="viewAnnTitle" style="margin: 8px 0 4px; font-size: 1.3rem; color: #0f172a; line-height: 1.35;"></h2>
@@ -363,12 +363,61 @@
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 14px;">
                 <span id="viewAnnExpiry" style="font-size: 0.82rem; color: #64748b;"></span>
-                <button type="button" class="modal-cancel-btn" data-close-modal style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
+                <button type="button" class="modal-cancel-btn" data-close-modal onclick="closeModal('announcementViewModal')" style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
             </div>
         </article>
     </div>
 
     <script>
+        // Standalone helpers & modal engine (works offline without external library lag)
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function openModal(idOrEl) {
+            const m = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+            if (!m) return;
+            m.classList.add('open');
+            m.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(idOrEl) {
+            const m = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : (idOrEl || document.querySelector('.modal.open'));
+            if (!m) return;
+            m.classList.remove('open');
+            m.setAttribute('aria-hidden', 'true');
+            if (!document.querySelector('.modal.open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            let box = document.getElementById('ovpreFlash');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'ovpreFlash';
+                const host = document.querySelector('.content-area') || document.body;
+                host.insertBefore(box, host.firstChild);
+            }
+            const icon = type === 'error' ? 'ri-error-warning-line' : 'ri-checkbox-circle-line';
+            box.innerHTML = `<div class="notice ${escapeHtml(type)}" style="margin-bottom: 16px;"><i class="${icon}"></i> ${escapeHtml(message)}</div>`;
+            window.clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => { if (box) box.innerHTML = ''; }, 4500);
+        }
+
+        window.OVPRE = window.OVPRE || {};
+        window.OVPRE.openModal = openModal;
+        window.OVPRE.closeModal = closeModal;
+        window.OVPRE.h = escapeHtml;
+        window.OVPRE.toast = showToast;
+
         const initialAnnouncements = [
         {
                 "id": 1,
@@ -606,18 +655,24 @@
             // Pagination UI
             const pageCount = Math.max(1, Math.ceil(total / annPageSize));
             if (annPage > pageCount) annPage = pageCount;
-            document.getElementById('tablePageSummary').textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + annPageSize, total)} of ${total} entries` : 'No records';
-            document.getElementById('prevPageBtn').disabled = annPage <= 1;
-            document.getElementById('nextPageBtn').disabled = annPage >= pageCount;
+            const pageSummary = document.getElementById('tablePageSummary');
+            if (pageSummary) pageSummary.textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + annPageSize, total)} of ${total} entries` : 'No records';
+            const prevBtn = document.getElementById('prevPageBtn');
+            if (prevBtn) prevBtn.disabled = annPage <= 1;
+            const nextBtn = document.getElementById('nextPageBtn');
+            if (nextBtn) nextBtn.disabled = annPage >= pageCount;
 
             const pNumContainer = document.getElementById('paginationNumbers');
-            pNumContainer.innerHTML = '';
-            for (let i = 1; i <= pageCount; i++) {
-                const b = document.createElement('button');
-                b.textContent = i;
-                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === annPage ? 'background: #15803d; color: #fff; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);' : 'background: #fff; color: #1e293b;'}`;
-                b.onclick = () => { annPage = i; renderAnnouncements(); };
-                pNumContainer.appendChild(b);
+            if (pNumContainer) {
+                pNumContainer.innerHTML = '';
+                for (let i = 1; i <= pageCount; i++) {
+                    const b = document.createElement('button');
+                    b.textContent = i;
+                    b.type = 'button';
+                    b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === annPage ? 'background: #15803d; color: #fff; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);' : 'background: #fff; color: #1e293b;'}`;
+                    b.onclick = () => { annPage = i; renderAnnouncements(); };
+                    pNumContainer.appendChild(b);
+                }
             }
 
             const selectAll = document.querySelector('[data-select-all="announcementsTable"]');
@@ -643,7 +698,7 @@
             const checkedBoxes = Array.from(document.querySelectorAll('#announcementsTable [data-row-select]:checked'));
             const ids = checkedBoxes.map(c => Number(c.value));
             if (!ids.length) {
-                OVPRE.toast('Please select at least one announcement.', 'error');
+                showToast('Please select at least one announcement.', 'error');
                 return;
             }
             const submitBtn = e.submitter || document.activeElement;
@@ -657,7 +712,7 @@
                 }
             });
             saveAnnouncements(all);
-            OVPRE.toast(action === 'archive' ? `${ids.length} announcement(s) archived successfully.` : `${ids.length} announcement(s) restored successfully.`, 'success');
+            showToast(action === 'archive' ? `${ids.length} announcement(s) archived successfully.` : `${ids.length} announcement(s) restored successfully.`, 'success');
             renderAnnouncements();
         };
 
@@ -676,7 +731,7 @@
             document.getElementById('annPriority').value = 'High';
             document.getElementById('annExpiry').value = '';
             document.getElementById('annContent').value = '';
-            OVPRE.openModal('announcementEditorModal');
+            openModal('announcementEditorModal');
         }
 
         function openEditAnnouncementModal(id) {
@@ -692,16 +747,7 @@
             document.getElementById('annPriority').value = a.priority;
             document.getElementById('annExpiry').value = a.expiry || '';
             document.getElementById('annContent').value = a.content;
-            OVPRE.openModal('announcementEditorModal');
-        }
-            document.getElementById('annSubmitBtn').textContent = 'Update Announcement';
-            document.getElementById('annTitle').value = a.title;
-            document.getElementById('annCategory').value = a.category;
-            document.getElementById('annAudience').value = a.audience;
-            document.getElementById('annPriority').value = a.priority;
-            document.getElementById('annExpiry').value = a.expiry || '';
-            document.getElementById('annContent').value = a.content;
-            OVPRE.openModal('announcementEditorModal');
+            openModal('announcementEditorModal');
         }
 
         function openViewAnnouncementModal(id) {
@@ -715,7 +761,7 @@
             document.getElementById('viewAnnDate').textContent = a.date;
             document.getElementById('viewAnnExpiry').textContent = a.expiry ? ('Valid until ' + a.expiry) : 'No expiration date';
             document.getElementById('viewAnnContent').textContent = a.content;
-            OVPRE.openModal('announcementViewModal');
+            openModal('announcementViewModal');
         }
 
         function handleSaveAnnouncement(e) {
@@ -742,7 +788,7 @@
                     if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
                         OVPRE_SUPABASE.updateAnnouncement(item.id, { title, content, audience });
                     }
-                    OVPRE.toast('Announcement updated successfully.', 'success');
+                    showToast('Announcement updated successfully.', 'success');
                 }
             } else {
                 const newId = (all.reduce((max, a) => Math.max(max, a.id || 0), 0)) + 1;
@@ -766,10 +812,10 @@
                 if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
                     OVPRE_SUPABASE.createAnnouncement(newAnn);
                 }
-                OVPRE.toast('Announcement published successfully.', 'success');
+                showToast('Announcement published successfully.', 'success');
             }
 
-            OVPRE.closeModal('announcementEditorModal');
+            closeModal('announcementEditorModal');
             renderAnnouncements();
         }
 
@@ -782,7 +828,7 @@
             if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
                 OVPRE_SUPABASE.archiveAnnouncement(a.id, a.archived);
             }
-            OVPRE.toast(a.archived ? 'Announcement archived.' : 'Announcement restored to published feed.', 'success');
+            showToast(a.archived ? 'Announcement archived.' : 'Announcement restored to published feed.', 'success');
             renderAnnouncements();
         }
 
@@ -809,8 +855,43 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            OVPRE.toast('Announcements exported to CSV.', 'success');
+            showToast('Announcements exported to CSV.', 'success');
         }
+
+        // Global delegation for modal trigger elements
+        document.addEventListener('click', function(e) {
+            const opener = e.target.closest('[data-open-modal]');
+            if (opener) {
+                const targetId = opener.getAttribute('data-open-modal');
+                if (targetId) {
+                    e.preventDefault();
+                    if (targetId === 'announcementEditorModal' && !opener.hasAttribute('onclick')) {
+                        openAddAnnouncementModal();
+                    } else {
+                        openModal(targetId);
+                    }
+                }
+                return;
+            }
+            const closer = e.target.closest('[data-close-modal]');
+            if (closer) {
+                e.preventDefault();
+                const m = closer.closest('.modal');
+                if (m) {
+                    closeModal(m);
+                } else {
+                    closeModal();
+                }
+                return;
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const openModalEl = document.querySelector('.modal.open');
+                if (openModalEl) closeModal(openModalEl);
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', function () {
             try {

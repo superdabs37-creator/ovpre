@@ -169,9 +169,9 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 
 <!-- MODAL: CREATE ANNOUNCEMENT -->
 <div class="modal" id="createAnnouncementModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createAnnouncementTitle">
-    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-backdrop" data-close-modal onclick="closeModal('createAnnouncementModal')"></div>
     <article class="modal-card simple-submit-modal" style="max-width: 620px;">
-        <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
+        <button class="modal-close" type="button" data-close-modal onclick="closeModal('createAnnouncementModal')" aria-label="Close form"><i class="ri-close-line"></i></button>
         <div class="activity-modal-head" style="margin-bottom: 16px;">
             <span class="category-badge" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
             <h2 id="createAnnouncementTitle" style="margin: 8px 0 4px; font-size: 1.25rem;">Publish Announcement</h2>
@@ -231,7 +231,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
             </div>
 
             <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                <button type="button" class="modal-cancel-btn" data-close-modal onclick="closeModal('createAnnouncementModal')" style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
                 <button class="primary-btn post-btn" type="submit" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
                     <i class="ri-send-plane-line"></i> Publish Announcement
                 </button>
@@ -257,7 +257,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
             </a>
         </div>
         <?php if (!$archived): ?>
-        <button class="primary-btn" type="button" data-open-modal="createAnnouncementModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
+        <button class="primary-btn" type="button" data-open-modal="createAnnouncementModal" onclick="openModal('createAnnouncementModal')" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
             <i class="ri-megaphone-line"></i> Publish Announcement
         </button>
         <?php endif; ?>
@@ -311,7 +311,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="<?php echo (int) $item['id']; ?>" aria-label="Select announcement <?php echo (int) $item['id']; ?>" data-row-select="announcementsTable">
                         </td>
                         <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
-                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='#15803d'" onmouseout="this.style.color='#0f172a'" data-open-modal="viewAnnouncementModal<?php echo (int) $item['id']; ?>"><?php echo h($item['title']); ?></strong>
+                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='#15803d'" onmouseout="this.style.color='#0f172a'" data-open-modal="viewAnnouncementModal<?php echo (int) $item['id']; ?>" onclick="openModal('viewAnnouncementModal<?php echo (int) $item['id']; ?>')"><?php echo h($item['title']); ?></strong>
                             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">
                                 <?php echo h(mb_strimwidth($item['content'] ?? '', 0, 95, '...')); ?>
                             </p>
@@ -335,7 +335,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                         </td>
                         <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
                             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                                <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                                <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" onclick="openModal('editAnnouncementModal<?php echo (int) $item['id']; ?>')" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                                 <?php if ($archived): ?>
                                     <form method="post" style="margin: 0; display: inline;" onsubmit="return confirm('Restore this announcement to published?');">
                                         <?php echo csrf_field(); ?>
@@ -385,9 +385,9 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 ?>
     <!-- VIEW MODAL -->
     <div class="modal" id="viewAnnouncementModal<?php echo (int) $item['id']; ?>" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="viewAnnouncementTitle<?php echo (int) $item['id']; ?>">
-        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-backdrop" data-close-modal onclick="closeModal('viewAnnouncementModal<?php echo (int) $item['id']; ?>')"></div>
         <article class="modal-card simple-submit-modal" style="max-width: 620px;">
-            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <button class="modal-close" type="button" data-close-modal onclick="closeModal('viewAnnouncementModal<?php echo (int) $item['id']; ?>')" aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head" style="margin-bottom: 14px;">
                 <span class="category-badge" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;"><?php echo h($meta['category']); ?></span>
                 <h2 id="viewAnnouncementTitle<?php echo (int) $item['id']; ?>" style="margin: 8px 0 4px; font-size: 1.25rem; line-height: 1.35;"><?php echo h($item['title']); ?></h2>
@@ -403,16 +403,16 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
                 <span style="font-size: 0.82rem; color: #64748b;">Expires: <?php echo h($meta['expiry']); ?></span>
-                <button class="modal-cancel-btn" type="button" data-close-modal style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
+                <button class="modal-cancel-btn" type="button" data-close-modal onclick="closeModal('viewAnnouncementModal<?php echo (int) $item['id']; ?>')" style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
             </div>
         </article>
     </div>
 
     <!-- EDIT MODAL -->
     <div class="modal" id="editAnnouncementModal<?php echo (int) $item['id']; ?>" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="editAnnouncementTitle<?php echo (int) $item['id']; ?>">
-        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-backdrop" data-close-modal onclick="closeModal('editAnnouncementModal<?php echo (int) $item['id']; ?>')"></div>
         <article class="modal-card simple-submit-modal" style="max-width: 620px;">
-            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <button class="modal-close" type="button" data-close-modal onclick="closeModal('editAnnouncementModal<?php echo (int) $item['id']; ?>')" aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head" style="margin-bottom: 14px;">
                 <span class="category-badge" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Edit Announcement</span>
                 <h2 id="editAnnouncementTitle<?php echo (int) $item['id']; ?>" style="margin: 8px 0 4px; font-size: 1.25rem;">Edit Announcement #<?php echo (int) $item['id']; ?></h2>
@@ -443,7 +443,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-                    <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                    <button type="button" class="modal-cancel-btn" data-close-modal onclick="closeModal('editAnnouncementModal<?php echo (int) $item['id']; ?>')" style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
                     <button class="primary-btn post-btn" type="submit" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);">
                         <i class="ri-save-line"></i> Save Changes
                     </button>
@@ -454,6 +454,54 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
 <?php endforeach; ?>
 
 <script>
+function openModal(idOrEl) {
+    const m = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+    if (!m) return;
+    m.classList.add('open');
+    m.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(idOrEl) {
+    const m = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : (idOrEl || document.querySelector('.modal.open'));
+    if (!m) return;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden', 'true');
+    if (!document.querySelector('.modal.open')) {
+        document.body.style.overflow = '';
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const opener = e.target.closest('[data-open-modal]');
+    if (opener) {
+        const targetId = opener.getAttribute('data-open-modal');
+        if (targetId) {
+            e.preventDefault();
+            openModal(targetId);
+        }
+        return;
+    }
+    const closer = e.target.closest('[data-close-modal]');
+    if (closer) {
+        e.preventDefault();
+        const m = closer.closest('.modal');
+        if (m) {
+            closeModal(m);
+        } else {
+            closeModal();
+        }
+        return;
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const openModalEl = document.querySelector('.modal.open');
+        if (openModalEl) closeModal(openModalEl);
+    }
+});
+
 function filterPhpAnnTable(query) {
     query = (query || '').toLowerCase().trim();
     const rows = document.querySelectorAll('#announcementsTableBody tr[data-table-row]');
