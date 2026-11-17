@@ -87,25 +87,25 @@
                     <!-- Segmented Control Tabs & Action Button -->
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
                         <div class="portal-table-tabs" style="display: flex; gap: 8px;">
-                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchAnnounceTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; background: #ea580c; color: #ffffff; cursor: pointer;">
+                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchAnnounceTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; background: #15803d; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2); transition: all 0.2s ease;">
                                 <i class="ri-checkbox-circle-line"></i>
                                 <span>Published</span>
                                 <span class="tab-count" id="activeBadge" style="background: rgba(255,255,255,0.25); color: #ffffff; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">4</span>
                             </button>
-                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchAnnounceTab('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer;">
+                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchAnnounceTab('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: 1.5px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.2s ease;">
                                 <i class="ri-archive-line"></i>
                                 <span>Archived</span>
                                 <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">1</span>
                             </button>
                         </div>
-                        <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #ea580c; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
-                            <i class="ri-megaphone-line"></i> Publish Announcement
+                        <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">
+                            <i class="ri-megaphone-line"></i> <span>Publish Announcement</span>
                         </button>
                     </div>
 
                     <!-- BULK SELECTION TOOLBAR -->
-                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="announcementsTable" id="announcementsSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 14px;">
-                        <span data-selection-count id="announcementsSelectedCount" style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
+                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="announcementsTable" id="announcementsSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 14px;">
+                        <span data-selection-count id="announcementsSelectedCount" style="font-weight: 700; color: #15803d; font-size: 0.88rem;">0 selected</span>
                         <form id="bulk-announcementsTable" onsubmit="handleBulkAnnouncementsSubmit(event)" style="margin: 0;">
                             <span id="bulkAnnouncementsBtnContainer">
                                 <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
@@ -117,55 +117,61 @@
 
                     <div class="table-scroll">
                         <table class="data-table" id="announcementsTable" style="width: 100%; min-width: 900px; border-collapse: collapse;">
-                            <thead style="background: #ecfdf5; border-bottom: 2px solid #bbf7d0;">
+                            <thead style="background: #f0fdf4; border-bottom: 2px solid #86efac;">
                                 <tr style="text-align: left;">
-                                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 12px 8px;">
+                                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; vertical-align: middle; padding: 13px 8px;">
                                         <label class="select-all-control">
                                             <input form="bulk-announcementsTable" type="checkbox" aria-label="Select all announcements" data-select-all="announcementsTable">
                                             <span>Select all</span>
                                         </label>
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('title')">
-                                        ANNOUNCEMENT TITLE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('title')">
+                                        ANNOUNCEMENT TITLE
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('category')">
-                                        CATEGORY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('category')">
+                                        CATEGORY
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('audience')">
-                                        AUDIENCE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('audience')">
+                                        AUDIENCE
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('priority')">
-                                        PRIORITY <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('priority')">
+                                        PRIORITY
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('date')">
-                                        PUBLISHED DATE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('date')">
+                                        PUBLISHED DATE
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;" onclick="sortAnnTable('expiry')">
-                                        EXPIRY DATE <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('expiry')">
+                                        EXPIRY DATE
                                     </th>
-                                    <th style="padding: 12px 14px; color: #065f46; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center;">
-                                        MANAGE / ACTION <i class="ri-arrow-up-line" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; vertical-align: middle;">
+                                        MANAGE / ACTION
                                     </th>
                                 </tr>
                             </thead>
                             <tbody id="announcementsTableBody" style="font-size: 0.88rem;">
 
     <tr data-table-row data-priority="High" data-category="Research Call" id="announcement-row-1" style="border-bottom: 1px solid #f1f5f9;">
-        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="1" aria-label="Select announcement 1" data-row-select="announcementsTable">
         </td>
-        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(1)">Call for Research Proposals: FY 2026 Institutional Seed Funding</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The Office of the Vice President for Research and Extension invites full-time faculty members to submit a...</p>
         </td>
-        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Research Call</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">All Faculty</td>
-        <td style="padding: 14px 14px;"><strong style="color: #ea580c; font-size: 0.85rem;">High</strong></td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Oct 15, 2026</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Dec 15, 2026</td>
-        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Research Call</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> All Faculty</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Oct 15, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Dec 15, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(1)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(1)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                 <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(1)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
@@ -173,21 +179,27 @@
 
 
     <tr data-table-row data-priority="Medium" data-category="Policy" id="announcement-row-2" style="border-bottom: 1px solid #f1f5f9;">
-        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="2" aria-label="Select announcement 2" data-row-select="announcementsTable">
         </td>
-        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(2)">Guidelines on Extension Program Liquidation and Impact Reporting</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">All College Extension Coordinators and project heads must submit complete liquidation reports and communi...</p>
         </td>
-        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Policy</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">Extension Coordinators</td>
-        <td style="padding: 14px 14px;"><strong style="color: #1e3a8a; font-size: 0.85rem;">Medium</strong></td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Oct 20, 2026</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Nov 30, 2026</td>
-        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Policy</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> Extension Coordinators</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.8rem;"></i> Medium</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Oct 20, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Nov 30, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(2)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(2)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                 <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(2)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
@@ -195,21 +207,27 @@
 
 
     <tr data-table-row data-priority="Urgent" data-category="Event" id="announcement-row-3" style="border-bottom: 1px solid #f1f5f9;">
-        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="3" aria-label="Select announcement 3" data-row-select="announcementsTable">
         </td>
-        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(3)">Annual University Research Colloquium & Best Paper Awards 2026</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are w...</p>
         </td>
-        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Event</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">General Academic Community</td>
-        <td style="padding: 14px 14px;"><strong style="color: #dc2626; font-size: 0.85rem;">Urgent</strong></td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Oct 28, 2026</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Dec 10, 2026</td>
-        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Event</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> General Academic Community</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.8rem;"></i> Urgent</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Oct 28, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Dec 10, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(3)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(3)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                 <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(3)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
@@ -217,21 +235,27 @@
 
 
     <tr data-table-row data-priority="High" data-category="Extension Call" id="announcement-row-4" style="border-bottom: 1px solid #f1f5f9;">
-        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="4" aria-label="Select announcement 4" data-row-select="announcementsTable">
         </td>
-        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(4)">Quarterly Submission Window for Community Extension Proposals</strong>
             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The fourth quarter submission window for community extension proposals will officially close on November ...</p>
         </td>
-        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">Extension Call</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">Faculty Extensionists</td>
-        <td style="padding: 14px 14px;"><strong style="color: #ea580c; font-size: 0.85rem;">High</strong></td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Nov 01, 2026</td>
-        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">Nov 25, 2026</td>
-        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Extension Call</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> Faculty Extensionists</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Nov 01, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Nov 25, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(4)" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(4)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                 <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(4)"><i class="ri-download-2-line"></i><span>Archive</span></button>
             </div>
         </td>
@@ -247,7 +271,7 @@
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <button type="button" id="prevPageBtn" onclick="changeAnnouncePage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
                             <span id="paginationNumbers" style="display: flex; gap: 4px;">
-                                <button type="button" style="padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; background: #ea580c; color: #fff;">1</button>
+                                <button type="button" style="padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; background: #15803d; color: #fff;">1</button>
                             </span>
                             <button type="button" id="nextPageBtn" onclick="changeAnnouncePage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
                         </div>
@@ -264,7 +288,7 @@
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div style="margin-bottom: 14px;">
                 <h2 id="annModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                    <i class="ri-megaphone-line" style="color: #ea580c;"></i> <span>Publish Announcement</span>
+                    <i class="ri-megaphone-line" style="color: #15803d;"></i> <span>Publish Announcement</span>
                 </h2>
                 <p style="margin: 4px 0 0; color: #64748b; font-size: 0.88rem;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</p>
             </div>
@@ -315,7 +339,7 @@
                 </div>
                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
                     <button type="button" class="modal-cancel-btn" data-close-modal style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
-                    <button type="submit" id="annSubmitBtn" class="primary-btn" style="height: 40px; background: #ea580c; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); transition: all 0.2s ease;">Publish Now</button>
+                    <button type="submit" id="annSubmitBtn" class="primary-btn" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">Publish Now</button>
                 </div>
             </form>
         </article>
@@ -327,7 +351,7 @@
         <article class="modal-card" style="max-width: 620px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
             <div style="margin-bottom: 12px;">
-                <span class="category-badge" id="viewAnnCategory" style="background: #ffedd5; color: #ea580c; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
+                <span class="category-badge" id="viewAnnCategory" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
                 <h2 id="viewAnnTitle" style="margin: 8px 0 4px; font-size: 1.3rem; color: #0f172a; line-height: 1.35;"></h2>
                 <div style="font-size: 0.84rem; color: #64748b; margin-top: 4px;">
                     <span>Audience: <strong id="viewAnnAudience" style="color: #334155;"></strong></span> &bull; 
@@ -429,12 +453,14 @@
             const archBtn = document.getElementById('tabArchivedBtn');
             const bulkBtnContainer = document.getElementById('bulkAnnouncementsBtnContainer');
             if (tab === 'active') {
-                activeBtn.style.background = '#ea580c';
+                activeBtn.style.background = '#15803d';
                 activeBtn.style.color = '#ffffff';
                 activeBtn.style.border = 'none';
+                activeBtn.style.boxShadow = '0 2px 6px rgba(21, 128, 61, 0.2)';
                 archBtn.style.background = '#ffffff';
                 archBtn.style.color = '#475569';
-                archBtn.style.border = '1px solid #cbd5e1';
+                archBtn.style.border = '1.5px solid #cbd5e1';
+                archBtn.style.boxShadow = 'none';
                 if (bulkBtnContainer) {
                     bulkBtnContainer.innerHTML = `
                         <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
@@ -445,13 +471,15 @@
             } else {
                 activeBtn.style.background = '#ffffff';
                 activeBtn.style.color = '#475569';
-                activeBtn.style.border = '1px solid #cbd5e1';
-                archBtn.style.background = '#ea580c';
+                activeBtn.style.border = '1.5px solid #cbd5e1';
+                activeBtn.style.boxShadow = 'none';
+                archBtn.style.background = '#15803d';
                 archBtn.style.color = '#ffffff';
                 archBtn.style.border = 'none';
+                archBtn.style.boxShadow = '0 2px 6px rgba(21, 128, 61, 0.2)';
                 if (bulkBtnContainer) {
                     bulkBtnContainer.innerHTML = `
-                        <button class="action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit onclick="return confirm('Restore selected announcement(s)?');" style="background: #ea580c; border: 1px solid #c2410c; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 6px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                        <button class="action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit onclick="return confirm('Restore selected announcement(s)?');" style="background: #15803d; border: 1px solid #166534; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 7px 18px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);">
                             <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
                         </button>
                     `;
@@ -483,13 +511,13 @@
 
         function getPriorityHtml(priority) {
             if (priority === 'High') {
-                return '<strong style="color: #ea580c; font-size: 0.85rem;">High</strong>';
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>';
             } else if (priority === 'Urgent') {
-                return '<strong style="color: #dc2626; font-size: 0.85rem;">Urgent</strong>';
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.8rem;"></i> Urgent</span>';
             } else if (priority === 'Medium') {
-                return '<strong style="color: #1e3a8a; font-size: 0.85rem;">Medium</strong>';
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.8rem;"></i> Medium</span>';
             } else {
-                return '<strong style="color: #15803d; font-size: 0.85rem;">Normal</strong>';
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;"><i class="ri-checkbox-circle-fill" style="font-size: 0.8rem;"></i> Normal</span>';
             }
         }
 
@@ -538,34 +566,38 @@
                 pageItems.forEach(a => {
                     const tr = document.createElement('tr');
                     tr.id = 'announcement-row-' + a.id;
-                    tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+                    tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;';
 
                     const actionButtons = currentAnnTab === 'active' ? `
                         <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                             <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(${a.id})"><i class="ri-download-2-line"></i><span>Archive</span></button>
                         </div>
                     ` : `
                         <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
-                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
                         </div>
                     `;
 
                     tr.innerHTML = `
-                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
                             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="${a.id}" aria-label="Select announcement ${a.id}" data-row-select="announcementsTable">
                         </td>
-                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
-                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(${a.id})">${OVPRE.h(a.title)}</strong>
+                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
+                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='#15803d'" onmouseout="this.style.color='#0f172a'" onclick="openViewAnnouncementModal(${a.id})">${OVPRE.h(a.title)}</strong>
                             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">${OVPRE.h(a.content.slice(0, 95))}...</p>
                         </td>
-                        <td style="padding: 14px 14px; color: #334155; font-size: 0.88rem; font-weight: 500;">${OVPRE.h(a.category)}</td>
-                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; font-weight: 500;">${OVPRE.h(a.audience)}</td>
-                        <td style="padding: 14px 14px;">${getPriorityHtml(a.priority)}</td>
-                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">${OVPRE.h(a.date)}</td>
-                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">${OVPRE.h(a.expiry || 'No expiry')}</td>
-                        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">${actionButtons}</td>
+                        <td style="padding: 14px 14px; vertical-align: middle;">
+                            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">${OVPRE.h(a.category)}</span>
+                        </td>
+                        <td style="padding: 14px 14px; vertical-align: middle;">
+                            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> ${OVPRE.h(a.audience)}</span>
+                        </td>
+                        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">${getPriorityHtml(a.priority)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">${OVPRE.h(a.date)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">${OVPRE.h(a.expiry || 'No expiry')}</td>
+                        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">${actionButtons}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -583,7 +615,7 @@
             for (let i = 1; i <= pageCount; i++) {
                 const b = document.createElement('button');
                 b.textContent = i;
-                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === annPage ? 'background: #ea580c; color: #fff;' : 'background: #fff; color: #1e293b;'}`;
+                b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === annPage ? 'background: #15803d; color: #fff; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);' : 'background: #fff; color: #1e293b;'}`;
                 b.onclick = () => { annPage = i; renderAnnouncements(); };
                 pNumContainer.appendChild(b);
             }
@@ -636,7 +668,7 @@
 
         function openAddAnnouncementModal() {
             document.getElementById('editAnnId').value = '';
-            document.getElementById('annModalTitle').innerHTML = '<i class="ri-megaphone-line" style="color: #ea580c;"></i> <span>Publish Announcement</span>';
+            document.getElementById('annModalTitle').innerHTML = '<i class="ri-megaphone-line" style="color: #15803d;"></i> <span>Publish Announcement</span>';
             document.getElementById('annSubmitBtn').textContent = 'Publish Now';
             document.getElementById('annTitle').value = '';
             document.getElementById('annCategory').value = 'Research Call';
@@ -652,7 +684,16 @@
             const a = all.find(item => item.id === Number(id));
             if (!a) return;
             document.getElementById('editAnnId').value = a.id;
-            document.getElementById('annModalTitle').innerHTML = '<i class="ri-edit-line" style="color: #ea580c;"></i> <span>Edit Announcement</span>';
+            document.getElementById('annModalTitle').innerHTML = '<i class="ri-edit-line" style="color: #15803d;"></i> <span>Edit Announcement</span>';
+            document.getElementById('annSubmitBtn').textContent = 'Update Announcement';
+            document.getElementById('annTitle').value = a.title;
+            document.getElementById('annCategory').value = a.category;
+            document.getElementById('annAudience').value = a.audience;
+            document.getElementById('annPriority').value = a.priority;
+            document.getElementById('annExpiry').value = a.expiry || '';
+            document.getElementById('annContent').value = a.content;
+            OVPRE.openModal('announcementEditorModal');
+        }
             document.getElementById('annSubmitBtn').textContent = 'Update Announcement';
             document.getElementById('annTitle').value = a.title;
             document.getElementById('annCategory').value = a.category;

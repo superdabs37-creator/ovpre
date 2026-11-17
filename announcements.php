@@ -150,10 +150,10 @@ function get_announcement_meta(array $item): array {
 
 function render_priority_badge(string $priority): string {
     return match ($priority) {
-        'Urgent' => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.82rem;"></i> Urgent</span>',
-        'High' => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.82rem;"></i> High</span>',
-        'Medium' => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.82rem;"></i> Medium</span>',
-        default => '<span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;"><i class="ri-checkbox-circle-fill" style="font-size: 0.82rem;"></i> Normal</span>',
+        'Urgent' => '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.8rem;"></i> Urgent</span>',
+        'High' => '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>',
+        'Medium' => '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.8rem;"></i> Medium</span>',
+        default => '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;"><i class="ri-checkbox-circle-fill" style="font-size: 0.8rem;"></i> Normal</span>',
     };
 }
 
@@ -286,19 +286,19 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
         <table class="data-table" id="announcementsTable" style="width: 100%; min-width: 900px; border-collapse: collapse;">
             <thead style="background: #f0fdf4; border-bottom: 2px solid #86efac;">
                 <tr style="text-align: left;">
-                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 13px 8px;">
+                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 13px 8px; vertical-align: middle;">
                         <label class="select-all-control">
                             <input form="bulk-announcementsTable" type="checkbox" aria-label="Select all announcements" data-select-all="announcementsTable">
                             <span>Select all</span>
                         </label>
                     </th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Announcement Title</th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Category</th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Audience</th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Priority</th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Published Date</th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;">Expiry Date</th>
-                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center;">Manage / Action</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; vertical-align: middle;">Announcement Title</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; vertical-align: middle;">Category</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; vertical-align: middle;">Audience</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; vertical-align: middle;">Priority</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; vertical-align: middle;">Published Date</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; vertical-align: middle;">Expiry Date</th>
+                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; vertical-align: middle;">Manage / Action</th>
                 </tr>
             </thead>
             <tbody id="announcementsTableBody" style="font-size: 0.88rem;">
@@ -306,36 +306,34 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                     $meta = get_announcement_meta($item);
                     $audienceDisplay = $item['audience'] === 'Other Authorized Users' ? 'Faculty Researchers' : $item['audience'];
                 ?>
-                    <tr data-table-row data-priority="<?php echo h($meta['priority']); ?>" data-category="<?php echo h($meta['category']); ?>" id="announcement-row-<?php echo (int) $item['id']; ?>" style="border-bottom: 1px solid #f1f5f9;">
-                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px;">
+                    <tr data-table-row data-priority="<?php echo h($meta['priority']); ?>" data-category="<?php echo h($meta['category']); ?>" id="announcement-row-<?php echo (int) $item['id']; ?>" style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
+                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
                             <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="<?php echo (int) $item['id']; ?>" aria-label="Select announcement <?php echo (int) $item['id']; ?>" data-row-select="announcementsTable">
                         </td>
-                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px;">
+                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
                             <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='#15803d'" onmouseout="this.style.color='#0f172a'" data-open-modal="viewAnnouncementModal<?php echo (int) $item['id']; ?>"><?php echo h($item['title']); ?></strong>
                             <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">
                                 <?php echo h(mb_strimwidth($item['content'] ?? '', 0, 95, '...')); ?>
                             </p>
                         </td>
-                        <td style="padding: 14px 14px; font-size: 0.88rem;">
-                            <span style="display: inline-block; padding: 3px 10px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; font-size: 0.78rem; font-weight: 600;">
+                        <td style="padding: 14px 14px; vertical-align: middle;">
+                            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">
                                 <?php echo h($meta['category']); ?>
                             </span>
                         </td>
-                        <td style="padding: 14px 14px; font-size: 0.88rem;">
-                            <span style="display: inline-block; padding: 3px 10px; border-radius: 6px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.78rem; font-weight: 600;">
-                                <?php echo h($audienceDisplay); ?>
-                            </span>
+                        <td style="padding: 14px 14px; vertical-align: middle;">
+                            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> <?php echo h($audienceDisplay); ?></span>
                         </td>
-                        <td style="padding: 14px 14px;">
+                        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
                             <?php echo render_priority_badge($meta['priority']); ?>
                         </td>
-                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">
                             <?php echo h(date('M d, Y', strtotime($item['created_at']))); ?>
                         </td>
-                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap;">
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">
                             <?php echo h($meta['expiry']); ?>
                         </td>
-                        <td style="padding: 14px 14px; text-align: center; white-space: nowrap;">
+                        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
                             <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
                                 <button type="button" class="action-btn" data-open-modal="editAnnouncementModal<?php echo (int) $item['id']; ?>" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
                                 <?php if ($archived): ?>
