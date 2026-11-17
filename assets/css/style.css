@@ -5097,12 +5097,112 @@ button[value="archive"]:hover span,
 }
 
 /* Premium System Action Buttons */
-.content-area .primary-btn:not(.action-btn):not([class*="notification-btn"]),
-.content-area .primary-btn:not(.action-btn):not([class*="notification-btn"]):visited,
+/* ==========================================================================
+   Professional Notification Header Actions
+   ========================================================================== */
+.notif-header-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+    margin-left: auto !important;
+}
+
+.notif-header-actions .btn-mark-all,
+button.btn-mark-all,
+#markAllBtn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+    transition: all 0.15s ease !important;
+}
+
+.notif-header-actions .btn-mark-all span,
+#markAllBtn span {
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    font-size: inherit !important;
+}
+
+.notif-header-actions .btn-mark-all i,
+#markAllBtn i {
+    color: #15803d !important;
+    font-size: 1.05rem !important;
+}
+
+.notif-header-actions .btn-mark-all:hover,
+#markAllBtn:hover {
+    background: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-1px) !important;
+}
+
+.notif-header-actions .btn-view-files,
+a.btn-view-files {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 16px !important;
+    border: 1px solid #15803d !important;
+    border-radius: 8px !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    background: #15803d !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+    transition: all 0.15s ease !important;
+}
+
+.notif-header-actions .btn-view-files span,
+.notif-header-actions .btn-view-files i,
+a.btn-view-files span,
+a.btn-view-files i {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: inherit !important;
+}
+
+.notif-header-actions .btn-view-files i,
+a.btn-view-files i {
+    font-size: 1.05rem !important;
+}
+
+.notif-header-actions .btn-view-files:hover,
+a.btn-view-files:hover {
+    background: #166534 !important;
+    border-color: #166534 !important;
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25) !important;
+    transform: translateY(-1px) !important;
+}
+
+.content-area .primary-btn:not(.action-btn):not([class*="notification"]):not([class*="notif"]):not([class*="btn-"]):not(#markAllBtn),
+.content-area .primary-btn:not(.action-btn):not([class*="notification"]):not([class*="notif"]):not([class*="btn-"]):not(#markAllBtn):visited,
 .content-area .post-btn,
 .content-area .post-btn:visited,
-.content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]),
-.content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification-btn"]):visited,
+.content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification"]):not([class*="notif"]):not([class*="btn-"]):not(#markAllBtn),
+.content-area .ghost-btn:not(.action-btn):not(.mini-btn):not([class*="notification"]):not([class*="notif"]):not([class*="btn-"]):not(#markAllBtn):visited,
 .content-area .portal-link,
 .content-area .portal-link:visited,
 .login-form .primary-btn,

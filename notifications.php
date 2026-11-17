@@ -42,18 +42,20 @@ renderHeader('Notifications', 'notifications');
             <h2>File and Submission Alerts</h2>
             <span style="color: var(--muted); font-size: 0.9rem;">Updates about uploads, reviews, and coordinator submissions.</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto;">
+        <div class="notif-header-actions">
             <?php if ($unreadCount > 0): ?>
                 <form method="post" style="display: inline-flex; margin: 0;">
                     <?php echo csrf_field(); ?>
                     <input type="hidden" name="mark_all" value="1">
-                    <button class="ghost-btn" type="submit" id="markAllRead" style="display: inline-flex; align-items: center; gap: 6px;">
-                        <i class="ri-check-double-line"></i> Mark All as Read (<?php echo $unreadCount; ?>)
+                    <button class="btn-mark-all notification-btn" type="submit" id="markAllRead">
+                        <i class="ri-check-double-line"></i>
+                        <span>Mark All as Read (<?php echo $unreadCount; ?>)</span>
                     </button>
                 </form>
             <?php endif; ?>
-            <a class="primary-btn" href="submitted-files.php" style="display: inline-flex; align-items: center; gap: 6px;">
-                <i class="ri-folder-open-line"></i> View All Files
+            <a class="btn-view-files notification-btn" href="submitted-files.php">
+                <i class="ri-folder-open-line"></i>
+                <span>View All Files</span>
             </a>
         </div>
     </div>

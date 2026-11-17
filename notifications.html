@@ -87,12 +87,14 @@
                             <h2 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">File and Submission Alerts</h2>
                             <span style="color: #64748b; font-size: 0.88rem;">Updates about uploads, reviews, endorsements, and coordinator submissions.</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto;">
-                            <button type="button" id="markAllBtn" onclick="markAllAsRead()" class="ghost-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-weight: 700; background: #ffffff; color: #1e293b; cursor: pointer;">
-                                <i class="ri-check-double-line"></i> Mark All as Read (<span id="unreadCountSpan">2</span>)
+                        <div class="notif-header-actions">
+                            <button type="button" id="markAllBtn" onclick="markAllAsRead()" class="btn-mark-all notification-btn">
+                                <i class="ri-check-double-line"></i>
+                                <span>Mark All as Read (<span id="unreadCountSpan">2</span>)</span>
                             </button>
-                            <a class="primary-btn" href="admin-documents.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #15803d; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.85rem;">
-                                <i class="ri-folder-open-line"></i> View All Files
+                            <a class="btn-view-files notification-btn" href="admin-documents.html">
+                                <i class="ri-folder-open-line"></i>
+                                <span>View All Files</span>
                             </a>
                         </div>
                     </div>
