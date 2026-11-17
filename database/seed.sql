@@ -10,9 +10,7 @@ INSERT IGNORE INTO departments (id, department_name) VALUES
 (7, 'College of Teacher Education'),
 (8, 'College of Tourism and Hospitality Management'),
 (9, 'College of Accountancy'),
-(10, 'College of Criminal Justice Education'),
-(11, 'College of Public Administration and Governance'),
-(12, 'College of Agriculture')
+(10, 'College of Public Administration and Governance')
 ON DUPLICATE KEY UPDATE department_name = VALUES(department_name);
 
 INSERT IGNORE INTO categories (id, category_name) VALUES
