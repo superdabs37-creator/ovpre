@@ -1937,17 +1937,17 @@
                 }
 
                 const diffDatasets = isResearchOnlyRole ? [
-                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderColor: '#166534', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
-                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderColor: '#6d28d9', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
-                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 }
+                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderColor: '#166534', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 },
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderColor: '#6d28d9', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 }
                 ] : isExtensionOnlyRole ? [
-                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderColor: '#0369a1', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
-                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 }
+                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderColor: '#0369a1', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 }
                 ] : [
-                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderColor: '#166534', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
-                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderColor: '#6d28d9', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
-                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderColor: '#0369a1', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
-                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 }
+                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderColor: '#166534', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 },
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderColor: '#6d28d9', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 },
+                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderColor: '#0369a1', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 8, maxBarThickness: 56, barPercentage: 0.7, categoryPercentage: 0.8 }
                 ];
 
                 diffChartInstance = new Chart(diffCanvas, {

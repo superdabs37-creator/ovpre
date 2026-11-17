@@ -2074,18 +2074,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 backgroundColor: '#0284c7',
                 borderColor: '#0369a1',
                 borderWidth: 1,
-                borderRadius: 6,
+                borderRadius: 8,
                 borderSkipped: false,
-                maxBarThickness: 34
+                maxBarThickness: 56,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             },
             ext_accomplishments: {
                 label: 'Accomplishment Reports',
                 backgroundColor: '#ea580c',
                 borderColor: '#c2410c',
                 borderWidth: 1,
-                borderRadius: 6,
+                borderRadius: 8,
                 borderSkipped: false,
-                maxBarThickness: 34
+                maxBarThickness: 56,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             }
         }<?php else: ?>{
             res_proposals: {
@@ -2093,36 +2097,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 backgroundColor: '#15803d',
                 borderColor: '#166534',
                 borderWidth: 1,
-                borderRadius: 6,
+                borderRadius: 8,
                 borderSkipped: false,
-                maxBarThickness: 34
+                maxBarThickness: 56,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             },
             res_publications: {
                 label: 'Research Publications',
                 backgroundColor: '#7c3aed',
                 borderColor: '#6d28d9',
                 borderWidth: 1,
-                borderRadius: 6,
+                borderRadius: 8,
                 borderSkipped: false,
-                maxBarThickness: 34
+                maxBarThickness: 56,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             },
             ext_proposals: {
                 label: 'Extension Proposals',
                 backgroundColor: '#0284c7',
                 borderColor: '#0369a1',
                 borderWidth: 1,
-                borderRadius: 6,
+                borderRadius: 8,
                 borderSkipped: false,
-                maxBarThickness: 34
+                maxBarThickness: 56,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             },
             ext_accomplishments: {
                 label: 'Accomplishment Reports',
                 backgroundColor: '#ea580c',
                 borderColor: '#c2410c',
                 borderWidth: 1,
-                borderRadius: 6,
+                borderRadius: 8,
                 borderSkipped: false,
-                maxBarThickness: 34
+                maxBarThickness: 56,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
             }
         }<?php endif; ?>;
 
