@@ -160,7 +160,7 @@
                                     <th>Stage</th>
                                     <th>Status</th>
                                     <th>Date</th>
-                                    <th class="table-actions-col">Manage / Action</th>
+                                    <th>Manage / Action</th>
                                 </tr>
                             </thead>
                             <tbody id="researchProjectsBody">
@@ -179,13 +179,11 @@
                 </span>
             </td>
             <td data-sort-value="2026-01-15">Jan 15, 2026</td>
-            <td class="table-actions-cell">
-                <div class="table-action-group">
-                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(1)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(1)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -203,13 +201,11 @@
                 </span>
             </td>
             <td data-sort-value="2026-02-01">Feb 01, 2026</td>
-            <td class="table-actions-cell">
-                <div class="table-action-group">
-                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(2)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(2)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -227,13 +223,11 @@
                 </span>
             </td>
             <td data-sort-value="2026-02-12">Feb 12, 2026</td>
-            <td class="table-actions-cell">
-                <div class="table-action-group">
-                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(3)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(3)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -251,13 +245,11 @@
                 </span>
             </td>
             <td data-sort-value="2026-02-18">Feb 18, 2026</td>
-            <td class="table-actions-cell">
-                <div class="table-action-group">
-                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(4)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(4)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -275,13 +267,11 @@
                 </span>
             </td>
             <td data-sort-value="2026-03-10">Mar 10, 2026</td>
-            <td class="table-actions-cell">
-                <div class="table-action-group">
-                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(5)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(5)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
 
@@ -299,13 +289,11 @@
                 </span>
             </td>
             <td data-sort-value="2026-03-12">Mar 12, 2026</td>
-            <td class="table-actions-cell">
-                <div class="table-action-group">
-                    <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(6)">
-                        <i class="ri-eye-line"></i><span>Details</span>
-                    </button>
-                </div>
-            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(6)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
         </tr>
     
                             </tbody>
@@ -920,10 +908,10 @@
                         // Stage 1: STRICTLY College Coordinator ONLY (No override)
                         if (isCoordinator && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="tbl-action-btn tbl-btn-endorse" type="button" onclick="openCoordModal(${p.id}, false)" title="Endorse proposal to Research Director">
+                                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse proposal to Research Director">
                                     <i class="ri-check-double-line"></i><span>Endorse</span>
                                 </button>
-                                <button class="tbl-action-btn tbl-btn-revision" type="button" onclick="openCoordModal(${p.id}, true)" title="Return to faculty for revision">
+                                <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed;" title="Return to faculty for revision">
                                     <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                                 </button>
                             `;
@@ -931,7 +919,7 @@
                         // Stage 2: STRICTLY Research Director ONLY (No override)
                         else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="tbl-action-btn tbl-btn-evaluate" type="button" onclick="openDirModal(${p.id})" title="Director RIUH & Policy Evaluation">
+                                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director RIUH & Policy Evaluation">
                                     <i class="ri-award-line"></i><span>RIUH</span>
                                 </button>
                             `;
@@ -939,7 +927,7 @@
                         // Stage 3: STRICTLY Executive (Super Admin / OVPRE Admin) ONLY (No override)
                         else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="tbl-action-btn tbl-btn-approve" type="button" onclick="openExecModal(${p.id})" title="Executive Institutional Approval">
+                                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
                                     <i class="ri-shield-check-line"></i><span>Approve</span>
                                 </button>
                             `;
@@ -947,25 +935,25 @@
                         // Revision: STRICTLY Faculty Proponent ONLY (No override)
                         else if (isFaculty && pStatus === 'Needs Revision') {
                             workflowBtns += `
-                                <button class="tbl-action-btn tbl-btn-resubmit" type="button" onclick="openResubmitModal(${p.id})" title="Review comments and resubmit revised proposal">
+                                <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised proposal">
                                     <i class="ri-refresh-line"></i><span>Resubmit</span>
                                 </button>
                             `;
                         }
 
                         actionsHtml = `
-                            <div class="table-action-group">
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                 ${workflowBtns}
-                                <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(${p.id})">
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
                                     <i class="ri-eye-line"></i><span>Details</span>
                                 </button>
                             </div>
                         `;
                     } else {
                         actionsHtml = `
-                            <div class="table-action-group">
-                                <button class="tbl-action-btn tbl-btn-restore" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
-                                <button class="tbl-action-btn tbl-btn-details" type="button" onclick="openDetailsModal(${p.id})"><i class="ri-eye-line"></i><span>Details</span></button>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
                             </div>
                         `;
                     }
@@ -987,7 +975,7 @@
                             </span>
                         </td>
                         <td data-sort-value="${sDate}">${OVPRE.date(sDate)}</td>
-                        <td class="table-actions-cell">${actionsHtml}</td>
+                        <td>${actionsHtml}</td>
                     `;
                     tbody.appendChild(tr);
                 });

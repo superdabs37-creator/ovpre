@@ -457,7 +457,7 @@ renderHeader('Extension Management', 'extension');
                     <th>Budget</th>
                     <th>Stage</th>
                     <th>Status</th>
-                    <th class="table-actions-col">Manage / Action</th>
+                    <th>Manage / Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -488,26 +488,26 @@ renderHeader('Extension Management', 'extension');
                                 <?php echo h($pStatus); ?>
                             </span>
                         </td>
-                        <td class="table-actions-cell">
-                            <div class="table-action-group">
+                        <td>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                 <?php if ($isCoordinator && in_array($pStatus, ['Pending Coordinator Review', 'Pending', 'Under Review'], true)): ?>
-                                    <button class="tbl-action-btn tbl-btn-endorse" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" title="Endorse project to Extension Director">
+                                    <button class="primary-btn action-btn" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #15803d; color: #fff;" title="Endorse project to Extension Director">
                                         <i class="ri-check-double-line"></i><span>Endorse</span>
                                     </button>
-                                    <button class="tbl-action-btn tbl-btn-revision" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" title="Return to faculty for revision">
+                                    <button class="ghost-btn action-btn" type="button" data-open-modal="coord-ext-modal-<?php echo (int) $project['id']; ?>" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;" title="Return to faculty for revision">
                                         <i class="ri-arrow-go-back-line"></i><span>Revision</span>
                                     </button>
                                 <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
-                                    <button class="tbl-action-btn tbl-btn-evaluate" type="button" data-open-modal="dir-ext-modal-<?php echo (int) $project['id']; ?>" title="Director Project Evaluation">
+                                    <button class="primary-btn action-btn" type="button" data-open-modal="dir-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;" title="Director Project Evaluation">
                                         <i class="ri-award-line"></i><span>Evaluate</span>
                                     </button>
                                 <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
-                                    <button class="tbl-action-btn tbl-btn-approve" type="button" data-open-modal="exec-ext-modal-<?php echo (int) $project['id']; ?>" title="Executive Institutional Approval">
+                                    <button class="primary-btn action-btn" type="button" data-open-modal="exec-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
                                         <i class="ri-shield-check-line"></i><span>Approve</span>
                                     </button>
                                 <?php endif; ?>
 
-                                <button class="tbl-action-btn tbl-btn-details" type="button" data-open-modal="ext-detail-<?php echo (int) $project['id']; ?>">
+                                <button class="ghost-btn action-btn" type="button" data-open-modal="ext-detail-<?php echo (int) $project['id']; ?>">
                                     <i class="ri-eye-line"></i><span>Details</span>
                                 </button>
                             </div>
