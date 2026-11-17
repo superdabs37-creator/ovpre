@@ -294,30 +294,6 @@
                     <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
                         <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Bar chart of submissions by college and program"></canvas>
                     </div>
-
-                    <!-- College Acronym Guide Ribbon -->
-                    <div id="collegeAcronymGuide" style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: center; margin-top: 10px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                        <span style="font-size: 0.70rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;">
-                            <i class="ri-key-line" style="color: #15803d;"></i> College Key:
-                        </span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CTE:</strong> Teacher Ed.</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CBA:</strong> Business Admin.</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CAS:</strong> Arts &amp; Sciences</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">COA:</strong> Accountancy</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #166534; background: #dcfce7; padding: 2px 7px; border-radius: 5px; font-weight: 700;"><strong style="color: #15803d;">CCST:</strong> Computer Studies &amp; Tech</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CTHM:</strong> Tourism &amp; Hosp.</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">COE:</strong> Engineering</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CNAHS:</strong> Nursing &amp; Allied</span>
-                        <span style="color: #cbd5e1;">•</span>
-                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CHK:</strong> Human Kinetics</span>
-                    </div>
                     <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
                         <div>
                             <h3 id="programsByCollegeHeading" style="margin: 0 0 3px; color: #0f172a; font-size: 1.05rem; font-weight: 800;">Programs by College</h3>
@@ -1899,7 +1875,6 @@
             // 1. Differentiated Submissions Chart
             const diffCanvas = document.getElementById('differentiatedSubmissionsChart');
             const kindFilter = document.getElementById('submissionKindFilter');
-            const collegeGuideEl = document.getElementById('collegeAcronymGuide');
             let diffChartInstance = null;
 
             const collegeAcronymMap = {
@@ -1942,10 +1917,6 @@
                 let extData = [];
                 let accData = [];
                 const isAll = selectedKind === 'all';
-
-                if (collegeGuideEl) {
-                    collegeGuideEl.style.display = isAll ? 'flex' : 'none';
-                }
 
                 if (isAll) {
                     labels = submissionsBreakdown.map(c => getCollegeAcronym(c.department_name));
