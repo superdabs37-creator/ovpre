@@ -1076,7 +1076,7 @@ button {
 
 .profile-menu {
     position: relative;
-    margin-left: auto;
+    margin-left: 0;
 }
 
 .profile-button {
@@ -5256,25 +5256,25 @@ button[value="archive"]:hover span,
 
 .topbar-search {
     position: relative;
-    width: min(440px, 38vw);
-    min-height: 46px;
+    width: min(380px, 32vw);
+    min-height: 44px;
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-left: auto;
+    margin-left: 12px;
     padding: 0 8px 0 16px;
     color: var(--muted);
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid var(--line);
     border-radius: 999px;
-    box-shadow: 0 10px 24px rgba(15, 61, 36, 0.08);
+    box-shadow: 0 4px 14px rgba(15, 61, 36, 0.06);
     transition: width 0.24s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .topbar-search:focus-within {
-    width: min(520px, 42vw);
+    width: min(440px, 36vw);
     border-color: rgba(21, 128, 61, 0.38);
-    box-shadow: 0 14px 32px rgba(15, 61, 36, 0.13), 0 0 0 4px rgba(22, 163, 74, 0.11);
+    box-shadow: 0 10px 24px rgba(15, 61, 36, 0.1), 0 0 0 4px rgba(22, 163, 74, 0.11);
 }
 
 .topbar-search>i {
@@ -5355,6 +5355,11 @@ button[value="archive"]:hover span,
     width: 46px;
     height: 46px;
     border-radius: 15px;
+    margin-left: auto;
+}
+
+.topbar-search + .profile-menu {
+    margin-left: auto;
 }
 
 .topbar-icon span {
