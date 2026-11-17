@@ -853,6 +853,14 @@
             const myActiveList = activeList.filter(isMyProposal);
             const myArchivedList = archivedList.filter(isMyProposal);
 
+            const scopeCtrl = document.querySelector('.scope-filter-control');
+            if (scopeCtrl) {
+                scopeCtrl.style.display = isFaculty ? 'inline-flex' : 'none';
+            }
+            if (!isFaculty) {
+                currentScope = 'all';
+            }
+
             const allCountEl = document.getElementById('allScopeCount');
             const myCountEl = document.getElementById('myScopeCount');
             if (allCountEl) allCountEl.textContent = currentTab === 'active' ? activeList.length : archivedList.length;

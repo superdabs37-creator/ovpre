@@ -274,7 +274,7 @@ $queryParams = [];
 // Archive filter
 $conditions[] = $archived ? 'e.archived_at IS NOT NULL' : 'e.archived_at IS NULL';
 
-$isMyFilter = (isset($_GET['filter']) && $_GET['filter'] === 'my') || isset($_GET['my']);
+$isMyFilter = $isExtensionist && ((isset($_GET['filter']) && $_GET['filter'] === 'my') || isset($_GET['my']));
 
 $myExtStmt = db()->prepare('SELECT COUNT(*) FROM extension_projects WHERE submitted_by = ? AND archived_at IS NULL');
 $myExtStmt->execute([(int) $user['id']]);
@@ -398,6 +398,7 @@ renderHeader('Extension Management', 'extension');
                 </a>
             </div>
 
+            <?php if ($isExtensionist): ?>
             <!-- Scope / Proponent Shortcut Filter Toggle -->
             <div class="scope-filter-control" role="group" aria-label="Extension scope filter">
                 <a href="extension.php" class="scope-filter-btn <?php echo !$isMyFilter ? 'is-active' : ''; ?>" title="View all university initiatives" style="text-decoration: none;">
@@ -407,10 +408,11 @@ renderHeader('Extension Management', 'extension');
                     <i class="ri-user-star-line"></i><span>My Submissions (<?php echo $myActiveCount; ?>)</span>
                 </a>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 
-    <?php if ($isMyFilter): ?>
+    <?php if ($isExtensionist && $isMyFilter): ?>
     <div class="my-submissions-alert-banner">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
             <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>

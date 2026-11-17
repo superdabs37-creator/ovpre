@@ -274,7 +274,7 @@ $queryParams = [];
 // Archive filter
 $conditions[] = $archived ? 'r.archived_at IS NOT NULL' : 'r.archived_at IS NULL';
 
-$isMyFilter = (isset($_GET['filter']) && $_GET['filter'] === 'my') || isset($_GET['my']);
+$isMyFilter = $isResearcher && ((isset($_GET['filter']) && $_GET['filter'] === 'my') || isset($_GET['my']));
 
 $myStmt = db()->prepare('SELECT COUNT(*) FROM research_projects WHERE submitted_by = ? AND archived_at IS NULL');
 $myStmt->execute([(int) $user['id']]);
@@ -395,6 +395,7 @@ renderHeader('Research Management', 'research');
                 </a>
             </div>
 
+            <?php if ($isResearcher): ?>
             <!-- Scope / Proponent Shortcut Filter Toggle -->
             <div class="scope-filter-control" role="group" aria-label="Proposal scope filter">
                 <a href="research.php" class="scope-filter-btn <?php echo !$isMyFilter ? 'is-active' : ''; ?>" title="View all university proposals" style="text-decoration: none;">
@@ -404,10 +405,11 @@ renderHeader('Research Management', 'research');
                     <i class="ri-user-star-line"></i><span>My Submissions (<?php echo $myActiveCount; ?>)</span>
                 </a>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 
-    <?php if ($isMyFilter): ?>
+    <?php if ($isResearcher && $isMyFilter): ?>
     <div class="my-submissions-alert-banner">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
             <i class="ri-user-star-fill" style="color: #2563eb; font-size: 1.15rem;"></i>

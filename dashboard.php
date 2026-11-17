@@ -620,14 +620,7 @@ renderHeader('Dashboard', 'dashboard');
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
             <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyResearcher ? 'My submitted proposals (Click to open)' : 'Faculty submissions'; ?></small>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <?php if (!$isFacultyResearcher): ?>
-                <span class="kpi-shortcut-pill" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='research.php?filter=my';" title="Shortcut: Open only your submitted research proposals">
-                    <i class="ri-user-line"></i> My: <strong style="margin-left: 2px;"><?php echo $myResearchCount; ?></strong>
-                </span>
-                <?php endif; ?>
-                <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
-            </div>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
         </div>
     </a>
     <?php else: ?>
@@ -669,14 +662,7 @@ renderHeader('Dashboard', 'dashboard');
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
             <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyExtensionist ? 'My submitted initiatives (Click to open)' : 'Community outreach'; ?></small>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <?php if (!$isFacultyExtensionist): ?>
-                <span class="kpi-shortcut-pill" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='extension.php?filter=my';" title="Shortcut: Open only your submitted extension initiatives">
-                    <i class="ri-user-line"></i> My: <strong style="margin-left: 2px;"><?php echo $myExtensionCount; ?></strong>
-                </span>
-                <?php endif; ?>
-                <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
-            </div>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
         </div>
     </a>
 
