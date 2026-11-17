@@ -163,17 +163,25 @@
                     </a>
 
                     <!-- Research Proposals -->
-                    <a href="research.html" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-research hide-for-extension-director" role="button" aria-label="Open Research Proposals registry" title="Click to view 16 faculty research proposals">
+                    <a href="research.html" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-research hide-for-extension-director" role="button" aria-label="Open Research Proposals registry" title="Click to view faculty research proposals">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
+                            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                                <span id="kpiResearchTitle" style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
+                                <span id="kpiResearchMyBadge" class="kpi-role-tag" style="display: none;"><i class="ri-user-star-line"></i> My Submissions</span>
+                            </div>
                             <span class="kpi-icon-pill">
                                 <i class="ri-flask-line"></i>
                             </span>
                         </div>
-                        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">16</div>
+                        <div id="kpiResearchCount" style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">16</div>
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
-                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                            <small id="kpiResearchSub" style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span id="kpiResearchMyPill" class="kpi-shortcut-pill" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='research.html?filter=my';" title="Shortcut: Open only your submitted research proposals">
+                                    <i class="ri-user-line"></i> My: <strong id="kpiResearchMyNum" style="margin-left: 2px;">4</strong>
+                                </span>
+                                <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                            </div>
                         </div>
                     </a>
 
@@ -193,17 +201,25 @@
                     </a>
 
                     <!-- Extension Initiatives -->
-                    <a href="extension.html" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-extension hide-for-research-director" role="button" aria-label="Open Extension Programs registry" title="Click to view 7 community extension initiatives">
+                    <a href="extension.html" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-extension hide-for-research-director" role="button" aria-label="Open Extension Programs registry" title="Click to view community extension initiatives">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
+                            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                                <span id="kpiExtensionTitle" style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
+                                <span id="kpiExtensionMyBadge" class="kpi-role-tag" style="display: none;"><i class="ri-user-star-line"></i> My Submissions</span>
+                            </div>
                             <span class="kpi-icon-pill">
                                 <i class="ri-community-line"></i>
                             </span>
                         </div>
-                        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">7</div>
+                        <div id="kpiExtensionCount" style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">7</div>
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
-                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                            <small id="kpiExtensionSub" style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span id="kpiExtensionMyPill" class="kpi-shortcut-pill" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='extension.html?filter=my';" title="Shortcut: Open only your submitted extension initiatives">
+                                    <i class="ri-user-line"></i> My: <strong id="kpiExtensionMyNum" style="margin-left: 2px;">2</strong>
+                                </span>
+                                <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                            </div>
                         </div>
                     </a>
 
@@ -863,6 +879,47 @@
         if (kpiAcademicRecordsCard && !isSuperAdmin) {
             kpiAcademicRecordsCard.style.display = 'none';
         }
+
+        // Personalize Research & Extension KPI Capsules for Faculty Proponents
+        (function personalizeFacultyCards() {
+            const resCard = document.getElementById('kpiResearchCard');
+            const resTitle = document.getElementById('kpiResearchTitle');
+            const resBadge = document.getElementById('kpiResearchMyBadge');
+            const resCount = document.getElementById('kpiResearchCount');
+            const resSub = document.getElementById('kpiResearchSub');
+            const resMyPill = document.getElementById('kpiResearchMyPill');
+
+            const extCard = document.getElementById('kpiExtensionCard');
+            const extTitle = document.getElementById('kpiExtensionTitle');
+            const extBadge = document.getElementById('kpiExtensionMyBadge');
+            const extCount = document.getElementById('kpiExtensionCount');
+            const extSub = document.getElementById('kpiExtensionSub');
+            const extMyPill = document.getElementById('kpiExtensionMyPill');
+
+            if (isFacultyResearcher) {
+                if (resCard) {
+                    resCard.href = 'research.html?filter=my';
+                    resCard.title = 'Shortcut: Click to view only your submitted research proposals';
+                }
+                if (resTitle) resTitle.textContent = 'My Research Proposals';
+                if (resBadge) resBadge.style.display = 'inline-flex';
+                if (resCount) resCount.innerHTML = '4 <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ 16 total</span>';
+                if (resSub) resSub.textContent = 'My submitted proposals (Click to open)';
+                if (resMyPill) resMyPill.style.display = 'none';
+            }
+
+            if (isFacultyExtensionist) {
+                if (extCard) {
+                    extCard.href = 'extension.html?filter=my';
+                    extCard.title = 'Shortcut: Click to view only your submitted extension initiatives';
+                }
+                if (extTitle) extTitle.textContent = 'My Extension Projects';
+                if (extBadge) extBadge.style.display = 'inline-flex';
+                if (extCount) extCount.innerHTML = '2 <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ 7 total</span>';
+                if (extSub) extSub.textContent = 'My submitted initiatives (Click to open)';
+                if (extMyPill) extMyPill.style.display = 'none';
+            }
+        })();
 
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],

@@ -274,7 +274,13 @@ $queryParams = [];
 // Archive filter
 $conditions[] = $archived ? 'e.archived_at IS NOT NULL' : 'e.archived_at IS NULL';
 
-if ($isExtensionist) {
+$isMyFilter = (isset($_GET['filter']) && $_GET['filter'] === 'my') || isset($_GET['my']);
+
+$myExtStmt = db()->prepare('SELECT COUNT(*) FROM extension_projects WHERE submitted_by = ? AND archived_at IS NULL');
+$myExtStmt->execute([(int) $user['id']]);
+$myActiveCount = (int) $myExtStmt->fetchColumn();
+
+if ($isExtensionist || $isMyFilter) {
     $conditions[] = 'e.submitted_by = ?';
     $queryParams[] = (int) $user['id'];
 } elseif ($isCoordinator) {
@@ -378,19 +384,43 @@ renderHeader('Extension Management', 'extension');
 <!-- PROJECTS TABLE -->
 <section class="panel">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
-        <div class="portal-table-tabs">
-            <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="extension.php">
-                <i class="ri-community-line"></i>
-                <span>Active Proposals</span>
-                <span class="tab-count"><?php echo $activeCount; ?></span>
-            </a>
-            <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="extension.php?archived=1">
-                <i class="ri-archive-line"></i>
-                <span>Archived</span>
-                <span class="tab-count"><?php echo $archivedCount; ?></span>
-            </a>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div class="portal-table-tabs">
+                <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="extension.php">
+                    <i class="ri-community-line"></i>
+                    <span>Active Proposals</span>
+                    <span class="tab-count"><?php echo $activeCount; ?></span>
+                </a>
+                <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="extension.php?archived=1">
+                    <i class="ri-archive-line"></i>
+                    <span>Archived</span>
+                    <span class="tab-count"><?php echo $archivedCount; ?></span>
+                </a>
+            </div>
+
+            <!-- Scope / Proponent Shortcut Filter Toggle -->
+            <div class="scope-filter-control" role="group" aria-label="Extension scope filter">
+                <a href="extension.php" class="scope-filter-btn <?php echo !$isMyFilter ? 'is-active' : ''; ?>" title="View all university initiatives" style="text-decoration: none;">
+                    <i class="ri-grid-line"></i><span>All Initiatives (<?php echo $activeCount; ?>)</span>
+                </a>
+                <a href="extension.php?filter=my" class="scope-filter-btn <?php echo $isMyFilter ? 'is-active' : ''; ?>" title="Shortcut: Show only your personal extension projects" style="text-decoration: none;">
+                    <i class="ri-user-star-line"></i><span>My Submissions (<?php echo $myActiveCount; ?>)</span>
+                </a>
+            </div>
         </div>
     </div>
+
+    <?php if ($isMyFilter): ?>
+    <div class="my-submissions-alert-banner">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+            <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
+            <span>Filtered View: Showing your personal extension projects only (<strong><?php echo count($projects); ?></strong> found)</span>
+        </div>
+        <a href="extension.php" class="alert-btn-clear" style="text-decoration: none;">
+            <i class="ri-eye-line"></i><span>View All Initiatives</span>
+        </a>
+    </div>
+    <?php endif; ?>
 
     <!-- Bulk Selection Toolbar for Extension -->
     <div class="table-selection-toolbar is-hidden" data-selection-toolbar="extensionTable" hidden style="display: none;">

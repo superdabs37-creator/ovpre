@@ -91,19 +91,43 @@
 
                 <div id="ovpreFlash"></div>
 
-                <!-- ACTIVE / ARCHIVED VIEW SELECTOR (IN WHITE CONTAINER MATCHING SCREENSHOT) -->
+                <!-- ACTIVE / ARCHIVED VIEW SELECTOR -->
                 <section class="panel" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 12px; background: #fff;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                        <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
-                            <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchExtensionTab('active')">
-                                <i class="ri-folder-line"></i><span>Active Projects (<span id="activeCount">6</span>)</span>
-                            </button>
-                            <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchExtensionTab('archived')">
-                                <i class="ri-archive-line"></i><span>Archived Projects (<span id="archivedCount">1</span>)</span>
-                            </button>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
+                                <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchExtensionTab('active')">
+                                    <i class="ri-folder-line"></i><span>Active Initiatives (<span id="activeCount">6</span>)</span>
+                                </button>
+                                <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchExtensionTab('archived')">
+                                    <i class="ri-archive-line"></i><span>Archived Initiatives (<span id="archivedCount">1</span>)</span>
+                                </button>
+                            </div>
+
+                            <!-- Scope / Proponent Shortcut Filter Toggle -->
+                            <div class="scope-filter-control" role="group" aria-label="Extension scope filter">
+                                <button type="button" id="scopeAllExtensionBtn" class="scope-filter-btn is-active" onclick="setExtensionScope('all')" title="View all university initiatives">
+                                    <i class="ri-grid-line"></i><span>All Initiatives (<span id="allScopeCount">6</span>)</span>
+                                </button>
+                                <button type="button" id="scopeMyExtensionBtn" class="scope-filter-btn" onclick="setExtensionScope('my')" title="Shortcut: Show only your personal extension projects">
+                                    <i class="ri-user-star-line"></i><span>My Submissions (<span id="myScopeCount">2</span>)</span>
+                                </button>
+                            </div>
                         </div>
+
                         <button type="button" class="primary-btn action-btn" onclick="openCreateProjectModal()" id="btnSubmitProject" style="display: inline-flex; align-items: center; gap: 6px; background: #15803d; color: #fff; font-weight: 600;">
-                            <i class="ri-add-circle-line"></i><span>Submit Extension Proposal</span>
+                            <i class="ri-add-circle-line"></i><span>Submit Extension Initiative</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtered View Alert Banner for My Submissions -->
+                    <div id="mySubmissionsAlertBanner" class="my-submissions-alert-banner" style="display: none; margin-top: 12px; margin-bottom: 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
+                            <span>Filtered View: Showing your personal extension projects only (<strong id="myExtensionBannerCount">2</strong> found)</span>
+                        </div>
+                        <button type="button" class="alert-btn-clear" onclick="setExtensionScope('all')">
+                            <i class="ri-eye-line"></i><span>View All Initiatives</span>
                         </button>
                     </div>
                 </section>
@@ -577,7 +601,7 @@
         {
                 "id": 2,
                 "title": "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
-                "coordinator": "Prof. Elena Cruz",
+                "coordinator": "Prof. Maria Santos",
                 "college": "College of Business Administration",
                 "partner": "San Pablo City Public Market Cooperative",
                 "location": "San Pablo City Public Market",
@@ -670,7 +694,7 @@
         {
                 "id": 6,
                 "title": "STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)",
-                "coordinator": "Prof. Maria Bautista",
+                "coordinator": "Prof. Maria Santos, Dr. Aris Thorne",
                 "college": "College of Computer Studies",
                 "partner": "Sangguniang Kabataan Federation of San Pablo City",
                 "location": "San Pablo City Youth Center",
@@ -788,6 +812,37 @@
             OVPRE.openModal('createExtensionProjectModal');
         }
 
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentScope = urlParams.get('filter') === 'my' ? 'my' : 'all';
+
+        function isMyExtension(p) {
+            const userRole = getCurrentUserRole();
+            const userFullname = getCurrentUserFullname();
+            const coord = (p.coordinator || '').toLowerCase();
+            const createdBy = (p.created_by || '').toLowerCase();
+            const myName = (userFullname || '').toLowerCase();
+
+            if (myName && (coord.includes(myName) || createdBy.includes(myName))) return true;
+            if (myName.includes('santos') && coord.includes('santos')) return true;
+            if (myName.includes('thorne') && coord.includes('thorne')) return true;
+            if (p.submitted_by_me === true) return true;
+            if ((userRole === 'Faculty Extensionist' || userRole === 'Extensionist' || myName.includes('santos')) && [2, 6].includes(p.id)) return true;
+            return false;
+        }
+
+        function setExtensionScope(scope) {
+            currentScope = scope;
+            const url = new URL(window.location);
+            if (scope === 'my') {
+                url.searchParams.set('filter', 'my');
+            } else {
+                url.searchParams.delete('filter');
+            }
+            window.history.replaceState({}, '', url);
+            renderTable();
+        }
+
         function renderTable() {
             const all = getProjects();
             const activeList = all.filter(p => !p.archived);
@@ -809,7 +864,34 @@
                 submitBtn.style.display = isExecutive ? 'none' : 'inline-flex';
             }
 
-            const list = currentTab === 'active' ? activeList : archivedList;
+            const myActiveList = activeList.filter(isMyExtension);
+            const myArchivedList = archivedList.filter(isMyExtension);
+
+            const allCountEl = document.getElementById('allScopeCount');
+            const myCountEl = document.getElementById('myScopeCount');
+            if (allCountEl) allCountEl.textContent = currentTab === 'active' ? activeList.length : archivedList.length;
+            if (myCountEl) myCountEl.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
+
+            const scopeAllBtn = document.getElementById('scopeAllExtensionBtn');
+            const scopeMyBtn = document.getElementById('scopeMyExtensionBtn');
+            const banner = document.getElementById('mySubmissionsAlertBanner');
+            const bannerCount = document.getElementById('myExtensionBannerCount');
+
+            if (currentScope === 'my') {
+                if (scopeMyBtn) scopeMyBtn.classList.add('is-active');
+                if (scopeAllBtn) scopeAllBtn.classList.remove('is-active');
+                if (banner) banner.style.display = 'flex';
+                if (bannerCount) bannerCount.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
+            } else {
+                if (scopeAllBtn) scopeAllBtn.classList.add('is-active');
+                if (scopeMyBtn) scopeMyBtn.classList.remove('is-active');
+                if (banner) banner.style.display = 'none';
+            }
+
+            let list = currentTab === 'active' ? activeList : archivedList;
+            if (currentScope === 'my') {
+                list = list.filter(isMyExtension);
+            }
             const tbody = document.getElementById('extensionProjectsBody');
             tbody.innerHTML = '';
 
@@ -1565,7 +1647,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             try {
                 const stored = localStorage.getItem('ovpre_extension_projects');
-                if (!stored || JSON.parse(stored)[0]?.title !== initialSeed[0].title) {
+                if (!stored || JSON.parse(stored).length < initialSeed.length) {
                     localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
                 }
             } catch (e) {

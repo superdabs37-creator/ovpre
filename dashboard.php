@@ -5,9 +5,25 @@ $user = require_login();
 $role = role_access_group((string) ($user['role'] ?? ''));
 $isSuperAdmin = $role === ROLE_SUPER_ADMIN;
 $isOVPREAdmin = $role === ROLE_OVPRE_ADMIN;
+$isFacultyResearcher = in_array($role, [ROLE_RESEARCHER, 'faculty-researcher'], true)
+    || in_array((string) ($user['role'] ?? ''), [ROLE_RESEARCHER, 'faculty-researcher', 'Faculty Researcher'], true)
+    || (isset($_SESSION['active_role']) && in_array((string) $_SESSION['active_role'], [ROLE_RESEARCHER, 'faculty-researcher', 'Faculty Researcher'], true));
+
 $isFacultyExtensionist = in_array($role, [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist'], true)
     || in_array((string) ($user['role'] ?? ''), [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist', 'Faculty Extensionists'], true)
     || (isset($_SESSION['active_role']) && in_array((string) $_SESSION['active_role'], [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist', 'Faculty Extensionists'], true));
+
+$myResearchCount = 0;
+$myExtensionCount = 0;
+if (!empty($user['id'])) {
+    $stmtMyRes = db()->prepare('SELECT COUNT(*) FROM research_projects WHERE submitted_by = ?');
+    $stmtMyRes->execute([(int) $user['id']]);
+    $myResearchCount = (int) $stmtMyRes->fetchColumn();
+
+    $stmtMyExt = db()->prepare('SELECT COUNT(*) FROM extension_projects WHERE submitted_by = ?');
+    $stmtMyExt->execute([(int) $user['id']]);
+    $myExtensionCount = (int) $stmtMyExt->fetchColumn();
+}
 
 $dbDriver = (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') ? 'PostgreSQL (Supabase Cloud)' : 'MySQL Database';
 
@@ -583,17 +599,35 @@ renderHeader('Dashboard', 'dashboard');
 
     <?php if (!$isFacultyExtensionist): ?>
     <!-- Research Proposals -->
-    <a href="research.php" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-research" role="button" aria-label="Open Research Proposals registry" title="Click to view <?php echo $totalResearch; ?> faculty research proposals">
+    <a href="<?php echo $isFacultyResearcher ? 'research.php?filter=my' : 'research.php'; ?>" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-research" role="button" aria-label="Open Research Proposals registry" title="<?php echo $isFacultyResearcher ? 'Shortcut: Click to view only your submitted research proposals' : 'Click to view ' . $totalResearch . ' faculty research proposals'; ?>">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
+            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyResearcher ? 'My Research Proposals' : 'Research Proposals'; ?></span>
+                <?php if ($isFacultyResearcher): ?>
+                <span class="kpi-role-tag"><i class="ri-user-star-line"></i> My Submissions</span>
+                <?php endif; ?>
+            </div>
             <span class="kpi-icon-pill">
                 <i class="ri-flask-line"></i>
             </span>
         </div>
-        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;"><?php echo $totalResearch; ?></div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">
+            <?php if ($isFacultyResearcher): ?>
+                <?php echo $myResearchCount; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ <?php echo $totalResearch; ?> total</span>
+            <?php else: ?>
+                <?php echo $totalResearch; ?>
+            <?php endif; ?>
+        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Faculty submissions</small>
-            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyResearcher ? 'My submitted proposals (Click to open)' : 'Faculty submissions'; ?></small>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <?php if (!$isFacultyResearcher): ?>
+                <span class="kpi-shortcut-pill" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='research.php?filter=my';" title="Shortcut: Open only your submitted research proposals">
+                    <i class="ri-user-line"></i> My: <strong style="margin-left: 2px;"><?php echo $myResearchCount; ?></strong>
+                </span>
+                <?php endif; ?>
+                <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+            </div>
         </div>
     </a>
     <?php else: ?>
@@ -614,17 +648,35 @@ renderHeader('Dashboard', 'dashboard');
     <?php endif; ?>
 
     <!-- Extension Projects -->
-    <a href="extension.php" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-extension" role="button" aria-label="Open Extension Programs registry" title="Click to view <?php echo $totalExtension; ?> community extension initiatives">
+    <a href="<?php echo $isFacultyExtensionist ? 'extension.php?filter=my' : 'extension.php'; ?>" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-extension" role="button" aria-label="Open Extension Programs registry" title="<?php echo $isFacultyExtensionist ? 'Shortcut: Click to view only your submitted extension initiatives' : 'Click to view ' . $totalExtension . ' community extension initiatives'; ?>">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
+            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyExtensionist ? 'My Extension Projects' : 'Extension Initiatives'; ?></span>
+                <?php if ($isFacultyExtensionist): ?>
+                <span class="kpi-role-tag"><i class="ri-user-star-line"></i> My Submissions</span>
+                <?php endif; ?>
+            </div>
             <span class="kpi-icon-pill">
                 <i class="ri-community-line"></i>
             </span>
         </div>
-        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;"><?php echo $totalExtension; ?></div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">
+            <?php if ($isFacultyExtensionist): ?>
+                <?php echo $myExtensionCount; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ <?php echo $totalExtension; ?> total</span>
+            <?php else: ?>
+                <?php echo $totalExtension; ?>
+            <?php endif; ?>
+        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Community outreach</small>
-            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyExtensionist ? 'My submitted initiatives (Click to open)' : 'Community outreach'; ?></small>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <?php if (!$isFacultyExtensionist): ?>
+                <span class="kpi-shortcut-pill" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='extension.php?filter=my';" title="Shortcut: Open only your submitted extension initiatives">
+                    <i class="ri-user-line"></i> My: <strong style="margin-left: 2px;"><?php echo $myExtensionCount; ?></strong>
+                </span>
+                <?php endif; ?>
+                <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+            </div>
         </div>
     </a>
 

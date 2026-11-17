@@ -274,8 +274,14 @@ $queryParams = [];
 // Archive filter
 $conditions[] = $archived ? 'r.archived_at IS NOT NULL' : 'r.archived_at IS NULL';
 
-// Enforce role scoping:
-if ($isResearcher) {
+$isMyFilter = (isset($_GET['filter']) && $_GET['filter'] === 'my') || isset($_GET['my']);
+
+$myStmt = db()->prepare('SELECT COUNT(*) FROM research_projects WHERE submitted_by = ? AND archived_at IS NULL');
+$myStmt->execute([(int) $user['id']]);
+$myActiveCount = (int) $myStmt->fetchColumn();
+
+// Enforce role scoping or My Submissions filter:
+if ($isResearcher || $isMyFilter) {
     $conditions[] = 'r.submitted_by = ?';
     $queryParams[] = (int) $user['id'];
 } elseif ($isCoordinator) {
@@ -375,19 +381,43 @@ renderHeader('Research Management', 'research');
 <!-- PROJECTS TABLE -->
 <section class="panel">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
-        <div class="portal-table-tabs">
-            <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="research.php">
-                <i class="ri-flask-line"></i>
-                <span>Active Proposals</span>
-                <span class="tab-count"><?php echo $activeCount; ?></span>
-            </a>
-            <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="research.php?archived=1">
-                <i class="ri-archive-line"></i>
-                <span>Archived</span>
-                <span class="tab-count"><?php echo $archivedCount; ?></span>
-            </a>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div class="portal-table-tabs">
+                <a class="portal-table-tab <?php echo !$archived ? 'active' : ''; ?>" href="research.php">
+                    <i class="ri-flask-line"></i>
+                    <span>Active Proposals</span>
+                    <span class="tab-count"><?php echo $activeCount; ?></span>
+                </a>
+                <a class="portal-table-tab <?php echo $archived ? 'active' : ''; ?>" href="research.php?archived=1">
+                    <i class="ri-archive-line"></i>
+                    <span>Archived</span>
+                    <span class="tab-count"><?php echo $archivedCount; ?></span>
+                </a>
+            </div>
+
+            <!-- Scope / Proponent Shortcut Filter Toggle -->
+            <div class="scope-filter-control" role="group" aria-label="Proposal scope filter">
+                <a href="research.php" class="scope-filter-btn <?php echo !$isMyFilter ? 'is-active' : ''; ?>" title="View all university proposals" style="text-decoration: none;">
+                    <i class="ri-grid-line"></i><span>All Proposals (<?php echo $activeCount; ?>)</span>
+                </a>
+                <a href="research.php?filter=my" class="scope-filter-btn <?php echo $isMyFilter ? 'is-active' : ''; ?>" title="Shortcut: Show only your personal proposals" style="text-decoration: none;">
+                    <i class="ri-user-star-line"></i><span>My Submissions (<?php echo $myActiveCount; ?>)</span>
+                </a>
+            </div>
         </div>
     </div>
+
+    <?php if ($isMyFilter): ?>
+    <div class="my-submissions-alert-banner">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+            <i class="ri-user-star-fill" style="color: #2563eb; font-size: 1.15rem;"></i>
+            <span>Filtered View: Showing your personal research proposals only (<strong><?php echo count($projects); ?></strong> found)</span>
+        </div>
+        <a href="research.php" class="alert-btn-clear" style="text-decoration: none;">
+            <i class="ri-eye-line"></i><span>View All Proposals</span>
+        </a>
+    </div>
+    <?php endif; ?>
 
     <!-- Bulk Selection Toolbar for Research -->
     <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchTable" hidden style="display: none;">

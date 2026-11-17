@@ -91,19 +91,43 @@
 
                 <div id="ovpreFlash"></div>
 
-                <!-- ACTIVE / ARCHIVED VIEW SELECTOR (IN WHITE CONTAINER MATCHING SCREENSHOT) -->
+                <!-- ACTIVE / ARCHIVED VIEW SELECTOR -->
                 <section class="panel" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 12px; background: #fff;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                        <div class="record-segmented-control" role="tablist" aria-label="Research view mode">
-                            <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchResearchTab('active')">
-                                <i class="ri-folder-line"></i><span>Active Proposals (<span id="activeCount">6</span>)</span>
-                            </button>
-                            <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchResearchTab('archived')">
-                                <i class="ri-archive-line"></i><span>Archived Proposals (<span id="archivedCount">1</span>)</span>
-                            </button>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div class="record-segmented-control" role="tablist" aria-label="Research view mode">
+                                <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchResearchTab('active')">
+                                    <i class="ri-folder-line"></i><span>Active Proposals (<span id="activeCount">9</span>)</span>
+                                </button>
+                                <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchResearchTab('archived')">
+                                    <i class="ri-archive-line"></i><span>Archived Proposals (<span id="archivedCount">1</span>)</span>
+                                </button>
+                            </div>
+
+                            <!-- Scope / Proponent Shortcut Filter Toggle -->
+                            <div class="scope-filter-control" role="group" aria-label="Proposal scope filter">
+                                <button type="button" id="scopeAllProposalsBtn" class="scope-filter-btn is-active" onclick="setResearchScope('all')" title="View all university proposals">
+                                    <i class="ri-grid-line"></i><span>All Proposals (<span id="allScopeCount">9</span>)</span>
+                                </button>
+                                <button type="button" id="scopeMyProposalsBtn" class="scope-filter-btn" onclick="setResearchScope('my')" title="Shortcut: Show only your personal proposals">
+                                    <i class="ri-user-star-line"></i><span>My Submissions (<span id="myScopeCount">4</span>)</span>
+                                </button>
+                            </div>
                         </div>
+
                         <button type="button" class="primary-btn action-btn" onclick="openCreateProposalModal()" id="btnSubmitProposal" style="display: inline-flex; align-items: center; gap: 6px; background: #15803d; color: #fff; font-weight: 600;">
                             <i class="ri-add-circle-line"></i><span>Submit Research Proposal</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtered View Alert Banner for My Submissions -->
+                    <div id="mySubmissionsAlertBanner" class="my-submissions-alert-banner" style="display: none; margin-top: 12px; margin-bottom: 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-user-star-fill" style="color: #2563eb; font-size: 1.15rem;"></i>
+                            <span>Filtered View: Showing your personal research proposals only (<strong id="myProposalsBannerCount">4</strong> found)</span>
+                        </div>
+                        <button type="button" class="alert-btn-clear" onclick="setResearchScope('all')">
+                            <i class="ri-eye-line"></i><span>View All Proposals</span>
                         </button>
                     </div>
                 </section>
@@ -642,6 +666,61 @@
                 "coordinator_remarks": "Archived following publication in the Philippine Journal of Science.",
                 "document_filename": "Vetiver_Phytoremediation_Report.pdf",
                 "archived": true
+        },
+        {
+                "id": 8,
+                "title": "Smart Campus IoT Energy Consumption and Load Forecasting Monitor",
+                "funding_source": "CHED Institutional Development Grant",
+                "researchers": "Dr. Aris Thorne",
+                "college": "College of Computer Studies and Technology",
+                "budget": 140000,
+                "approved_budget": 140000,
+                "stage": "Stage 2: Director Evaluation",
+                "status": "Pending Director Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-10",
+                "abstract": "Real-time telemetry measuring sub-station electrical loads across campus academic wings with predictive LSTM neural network algorithms.",
+                "coordinator_remarks": "Endorsed with college lab facilities allocated.",
+                "coordinator_name": "Dr. CCS Coordinator",
+                "coordinator_reviewed_at": "2026-02-14",
+                "document_filename": "Smart_Campus_IoT_Proposal.pdf",
+                "archived": false
+        },
+        {
+                "id": 9,
+                "title": "Automated Hydroponics Nutrient Dosing System Using Micro-Sensor Networks",
+                "funding_source": "DOST-PCAARRD Grant",
+                "researchers": "Dr. Aris Thorne, Engr. Mark Santos",
+                "college": "College of Computer Studies and Technology",
+                "budget": 165000,
+                "approved_budget": 165000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-03-01",
+                "abstract": "Closed-loop feedback control system dynamically balancing EC and pH levels for urban vertical farming applications.",
+                "coordinator_remarks": "Screening in progress.",
+                "document_filename": "Hydroponics_Nutrient_Dosing_Study.pdf",
+                "archived": false
+        },
+        {
+                "id": 10,
+                "title": "Decentralized Academic Credential Verification on Ethereum Layer-2",
+                "funding_source": "Institutional Research Grant",
+                "researchers": "Dr. Aris Thorne",
+                "college": "College of Computer Studies and Technology",
+                "budget": 90000,
+                "approved_budget": 90000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Needs Revision",
+                "progress_status": "Planning",
+                "created_at": "2026-03-08",
+                "abstract": "Tamper-proof verifiable digital diploma issuance protocol incorporating zero-knowledge proofs for student privacy.",
+                "coordinator_remarks": "Please provide smart contract testnet audit documentation and revision of gas fee assumptions.",
+                "coordinator_name": "Dr. CCS Coordinator",
+                "coordinator_reviewed_at": "2026-03-11",
+                "document_filename": "Decentralized_Credential_Verification.pdf",
+                "archived": false
         }
 ];
         let currentTab = 'active';
@@ -720,6 +799,36 @@
             OVPRE.openModal('createResearchProposalModal');
         }
 
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentScope = urlParams.get('filter') === 'my' ? 'my' : 'all';
+
+        function isMyProposal(p) {
+            const userRole = getCurrentUserRole();
+            const userFullname = getCurrentUserFullname();
+            const researchers = (p.researchers || '').toLowerCase();
+            const createdBy = (p.created_by || '').toLowerCase();
+            const myName = (userFullname || '').toLowerCase();
+
+            if (myName && (researchers.includes(myName) || createdBy.includes(myName))) return true;
+            if (myName.includes('thorne') && researchers.includes('thorne')) return true;
+            if (p.submitted_by_me === true) return true;
+            if ((userRole === 'Faculty Researcher' || userRole === 'Researcher' || myName.includes('thorne')) && [1, 8, 9, 10].includes(p.id)) return true;
+            return false;
+        }
+
+        function setResearchScope(scope) {
+            currentScope = scope;
+            const url = new URL(window.location);
+            if (scope === 'my') {
+                url.searchParams.set('filter', 'my');
+            } else {
+                url.searchParams.delete('filter');
+            }
+            window.history.replaceState({}, '', url);
+            renderTable();
+        }
+
         function renderTable() {
             const all = getProjects();
             const activeList = all.filter(p => !p.archived);
@@ -741,7 +850,34 @@
                 submitBtn.style.display = isExecutive ? 'none' : 'inline-flex';
             }
 
-            const list = currentTab === 'active' ? activeList : archivedList;
+            const myActiveList = activeList.filter(isMyProposal);
+            const myArchivedList = archivedList.filter(isMyProposal);
+
+            const allCountEl = document.getElementById('allScopeCount');
+            const myCountEl = document.getElementById('myScopeCount');
+            if (allCountEl) allCountEl.textContent = currentTab === 'active' ? activeList.length : archivedList.length;
+            if (myCountEl) myCountEl.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
+
+            const scopeAllBtn = document.getElementById('scopeAllProposalsBtn');
+            const scopeMyBtn = document.getElementById('scopeMyProposalsBtn');
+            const banner = document.getElementById('mySubmissionsAlertBanner');
+            const bannerCount = document.getElementById('myProposalsBannerCount');
+
+            if (currentScope === 'my') {
+                if (scopeMyBtn) scopeMyBtn.classList.add('is-active');
+                if (scopeAllBtn) scopeAllBtn.classList.remove('is-active');
+                if (banner) banner.style.display = 'flex';
+                if (bannerCount) bannerCount.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
+            } else {
+                if (scopeAllBtn) scopeAllBtn.classList.add('is-active');
+                if (scopeMyBtn) scopeMyBtn.classList.remove('is-active');
+                if (banner) banner.style.display = 'none';
+            }
+
+            let list = currentTab === 'active' ? activeList : archivedList;
+            if (currentScope === 'my') {
+                list = list.filter(isMyProposal);
+            }
             const tbody = document.getElementById('researchProjectsBody');
             tbody.innerHTML = '';
 
@@ -1462,7 +1598,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             try {
                 const stored = localStorage.getItem('ovpre_research_projects');
-                if (!stored || JSON.parse(stored)[0]?.title !== initialSeed[0].title) {
+                if (!stored || JSON.parse(stored).length < initialSeed.length) {
                     localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
                 }
             } catch (e) {
