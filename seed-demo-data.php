@@ -121,7 +121,10 @@ try {
         6 => 'College of Human Kinetics',
         7 => 'College of Teacher Education',
         8 => 'College of Tourism and Hospitality Management',
-        9 => 'College of Accountancy'
+        9 => 'College of Accountancy',
+        10 => 'College of Criminal Justice Education',
+        11 => 'College of Public Administration and Governance',
+        12 => 'College of Agriculture'
     ];
     foreach ($defaultDepartments as $dId => $dName) {
         $foundId = array_search($dName, $existingDepts, true);
