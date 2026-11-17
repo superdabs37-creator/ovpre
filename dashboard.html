@@ -275,15 +275,15 @@
                                 <label for="submissionKindFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">College:</label>
                                 <select id="submissionKindFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
                                     <option value="all">All College Departments</option>
-                                    <option value="college-0">College of Teacher Education</option>
-                                    <option value="college-1">College of Business Administration</option>
-                                    <option value="college-2">College of Arts and Sciences</option>
-                                    <option value="college-3">College of Accountancy</option>
-                                    <option value="college-4">College of Computer Studies and Technology</option>
-                                    <option value="college-5">College of Tourism and Hospitality Management</option>
-                                    <option value="college-6">College of Engineering</option>
-                                    <option value="college-7">College of Nursing and Allied Health Sciences</option>
-                                    <option value="college-8">College of Human Kinetics</option>
+                                    <option value="college-0">College of Teacher Education (CTE)</option>
+                                    <option value="college-1">College of Business Administration (CBA)</option>
+                                    <option value="college-2">College of Arts and Sciences (CAS)</option>
+                                    <option value="college-3">College of Accountancy (COA)</option>
+                                    <option value="college-4">College of Computer Studies and Technology (CCST)</option>
+                                    <option value="college-5">College of Tourism and Hospitality Management (CTHM)</option>
+                                    <option value="college-6">College of Engineering (COE)</option>
+                                    <option value="college-7">College of Nursing and Allied Health Sciences (CNAHS)</option>
+                                    <option value="college-8">College of Human Kinetics (CHK)</option>
                                 </select>
                             </div>
                             <span id="deptSubmissionsBadge" class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
@@ -292,7 +292,31 @@
                         </div>
                     </div>
                     <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
-                        <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Horizontal bar chart of submissions by college and program"></canvas>
+                        <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Bar chart of submissions by college and program"></canvas>
+                    </div>
+
+                    <!-- College Acronym Guide Ribbon -->
+                    <div id="collegeAcronymGuide" style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: center; margin-top: 10px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                        <span style="font-size: 0.70rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="ri-key-line" style="color: #15803d;"></i> College Key:
+                        </span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CTE:</strong> Teacher Ed.</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CBA:</strong> Business Admin.</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CAS:</strong> Arts &amp; Sciences</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">COA:</strong> Accountancy</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #166534; background: #dcfce7; padding: 2px 7px; border-radius: 5px; font-weight: 700;"><strong style="color: #15803d;">CCST:</strong> Computer Studies &amp; Tech</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CTHM:</strong> Tourism &amp; Hosp.</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">COE:</strong> Engineering</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CNAHS:</strong> Nursing &amp; Allied</span>
+                        <span style="color: #cbd5e1;">•</span>
+                        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CHK:</strong> Human Kinetics</span>
                     </div>
                     <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
                         <div>
@@ -1875,7 +1899,38 @@
             // 1. Differentiated Submissions Chart
             const diffCanvas = document.getElementById('differentiatedSubmissionsChart');
             const kindFilter = document.getElementById('submissionKindFilter');
+            const collegeGuideEl = document.getElementById('collegeAcronymGuide');
             let diffChartInstance = null;
+
+            const collegeAcronymMap = {
+                'College of Computer Studies and Technology': 'CCST',
+                'Computer Studies and Technology': 'CCST',
+                'College of Teacher Education': 'CTE',
+                'Teacher Education': 'CTE',
+                'College of Business Administration': 'CBA',
+                'Business Administration': 'CBA',
+                'College of Arts and Sciences': 'CAS',
+                'Arts and Sciences': 'CAS',
+                'College of Accountancy': 'COA',
+                'Accountancy': 'COA',
+                'College of Tourism and Hospitality Management': 'CTHM',
+                'Tourism and Hospitality Management': 'CTHM',
+                'College of Engineering': 'COE',
+                'Engineering': 'COE',
+                'College of Nursing and Allied Health Sciences': 'CNAHS',
+                'Nursing and Allied Health Sciences': 'CNAHS',
+                'College of Human Kinetics': 'CHK',
+                'Human Kinetics': 'CHK'
+            };
+
+            function getCollegeAcronym(name) {
+                if (!name) return '';
+                const trimmed = name.trim();
+                if (collegeAcronymMap[trimmed]) return collegeAcronymMap[trimmed];
+                const stripped = trimmed.replace(/^College of\s+/i, '');
+                if (collegeAcronymMap[stripped]) return collegeAcronymMap[stripped];
+                return stripped;
+            }
 
             function renderDiffChart(selectedKind) {
                 if (!diffCanvas) return;
@@ -1886,9 +1941,14 @@
                 let pubData = [];
                 let extData = [];
                 let accData = [];
+                const isAll = selectedKind === 'all';
 
-                if (selectedKind === 'all') {
-                    labels = submissionsBreakdown.map(c => c.department_name.replace('College of ', ''));
+                if (collegeGuideEl) {
+                    collegeGuideEl.style.display = isAll ? 'flex' : 'none';
+                }
+
+                if (isAll) {
+                    labels = submissionsBreakdown.map(c => getCollegeAcronym(c.department_name));
                     resData = submissionsBreakdown.map(c => c.res_proposals);
                     pubData = submissionsBreakdown.map(c => c.res_publications);
                     extData = submissionsBreakdown.map(c => c.ext_proposals);
@@ -1906,17 +1966,17 @@
                 }
 
                 const diffDatasets = isResearchOnlyRole ? [
-                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
-                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 },
-                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
+                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderColor: '#166534', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderColor: '#6d28d9', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 }
                 ] : isExtensionOnlyRole ? [
-                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
-                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
+                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderColor: '#0369a1', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 }
                 ] : [
-                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderRadius: 4 },
-                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderRadius: 4 },
-                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderRadius: 4 },
-                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderRadius: 4 }
+                    { label: 'Research Proposals', data: resData, backgroundColor: '#15803d', borderColor: '#166534', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
+                    { label: 'Research Publications', data: pubData, backgroundColor: '#7c3aed', borderColor: '#6d28d9', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
+                    { label: 'Extension Proposals', data: extData, backgroundColor: '#0284c7', borderColor: '#0369a1', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 },
+                    { label: 'Accomplishment Reports', data: accData, backgroundColor: '#ea580c', borderColor: '#c2410c', borderWidth: 1, borderRadius: 6, maxBarThickness: 34 }
                 ];
 
                 diffChartInstance = new Chart(diffCanvas, {
@@ -1929,11 +1989,81 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10, weight: 600 }, color: '#334155' } },
-                            y: { stacked: true, beginAtZero: true, grid: { color: '#eef2f7' }, ticks: { precision: 0, color: '#64748b' } }
+                            x: {
+                                stacked: true,
+                                grid: { display: false },
+                                ticks: {
+                                    font: { size: 12, weight: 700, family: "'Inter', sans-serif" },
+                                    color: '#0f172a',
+                                    maxRotation: 0,
+                                    minRotation: 0,
+                                    autoSkip: false,
+                                    padding: 8,
+                                    callback: function(val) {
+                                        const lbl = this.getLabelForValue(val);
+                                        if (isAll) return lbl;
+                                        // Word wrap for long program names
+                                        const words = lbl.split(/\s+/);
+                                        const lines = [];
+                                        let cur = '';
+                                        words.forEach(w => {
+                                            if (cur && `${cur} ${w}`.length > 16) {
+                                                lines.push(cur);
+                                                cur = w;
+                                            } else {
+                                                cur = cur ? `${cur} ${w}` : w;
+                                            }
+                                        });
+                                        if (cur) lines.push(cur);
+                                        return lines;
+                                    }
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9' },
+                                ticks: { precision: 0, stepSize: 1, color: '#64748b', font: { size: 10.5, weight: '500' } }
+                            }
                         },
                         plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 600 } } }
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'rectRounded',
+                                    boxWidth: 8,
+                                    boxHeight: 8,
+                                    padding: 12,
+                                    font: { size: 11, weight: '600' },
+                                    color: '#334155'
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                                titleColor: '#ffffff',
+                                titleFont: { size: 12, weight: '700' },
+                                bodyColor: '#e2e8f0',
+                                bodyFont: { size: 11, weight: '500' },
+                                padding: 12,
+                                cornerRadius: 10,
+                                borderColor: 'rgba(255, 255, 255, 0.12)',
+                                borderWidth: 1,
+                                callbacks: {
+                                    title: (items) => {
+                                        if (!items.length) return '';
+                                        const idx = items[0].dataIndex;
+                                        if (isAll) {
+                                            const col = submissionsBreakdown[idx];
+                                            const acronym = labels[idx];
+                                            return col ? `${col.department_name} (${acronym})` : acronym;
+                                        }
+                                        return labels[idx];
+                                    }
+                                }
+                            }
                         }
                     }
                 });

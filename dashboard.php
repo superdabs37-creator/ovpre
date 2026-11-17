@@ -719,8 +719,23 @@ renderHeader('Dashboard', 'dashboard');
                 <label for="submissionKindFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">College:</label>
                 <select id="submissionKindFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
                     <option value="all">All College Departments</option>
-                    <?php $selectCollegeIndex = 0; foreach ($programsByCollege as $collegeName => $programNames): ?>
-                        <option value="college-<?php echo $selectCollegeIndex++; ?>"><?php echo h($collegeName); ?></option>
+                    <?php 
+                    $collegeAcronymLookup = [
+                        'College of Teacher Education' => 'CTE',
+                        'College of Business Administration' => 'CBA',
+                        'College of Arts and Sciences' => 'CAS',
+                        'College of Accountancy' => 'COA',
+                        'College of Computer Studies and Technology' => 'CCST',
+                        'College of Tourism and Hospitality Management' => 'CTHM',
+                        'College of Engineering' => 'COE',
+                        'College of Nursing and Allied Health Sciences' => 'CNAHS',
+                        'College of Human Kinetics' => 'CHK',
+                    ];
+                    $selectCollegeIndex = 0; 
+                    foreach ($programsByCollege as $collegeName => $programNames): 
+                        $acr = $collegeAcronymLookup[$collegeName] ?? '';
+                    ?>
+                        <option value="college-<?php echo $selectCollegeIndex++; ?>"><?php echo h($collegeName . ($acr ? " ($acr)" : '')); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -729,8 +744,32 @@ renderHeader('Dashboard', 'dashboard');
             </span>
         </div>
     </div>
-    <div style="position: relative; height: 660px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
-        <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Horizontal bar chart of submissions by college and program"></canvas>
+    <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
+        <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Bar chart of submissions by college and program"></canvas>
+    </div>
+
+    <!-- College Acronym Guide Ribbon -->
+    <div id="collegeAcronymGuide" style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: center; margin-top: 10px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+        <span style="font-size: 0.70rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px;">
+            <i class="ri-key-line" style="color: #15803d;"></i> College Key:
+        </span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CTE:</strong> Teacher Ed.</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CBA:</strong> Business Admin.</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CAS:</strong> Arts &amp; Sciences</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">COA:</strong> Accountancy</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #166534; background: #dcfce7; padding: 2px 7px; border-radius: 5px; font-weight: 700;"><strong style="color: #15803d;">CCST:</strong> Computer Studies &amp; Tech</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CTHM:</strong> Tourism &amp; Hosp.</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">COE:</strong> Engineering</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CNAHS:</strong> Nursing &amp; Allied</span>
+        <span style="color: #cbd5e1;">•</span>
+        <span style="font-size: 0.74rem; color: #334155;"><strong style="color: #0f172a;">CHK:</strong> Human Kinetics</span>
     </div>
     <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
         <div>
@@ -1965,6 +2004,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterSelect = document.getElementById('submissionKindFilter');
     const titleEl = document.getElementById('deptChartTitle');
     const subtitleEl = document.getElementById('deptChartSubtitle');
+    const acronymGuideEl = document.getElementById('collegeAcronymGuide');
 
     if (diffSubCanvas) {
         const allCollegeRows = <?php echo json_encode($submissionsBreakdown); ?>;
@@ -1973,27 +2013,68 @@ document.addEventListener('DOMContentLoaded', () => {
         let showingAllColleges = true;
         const chartWrap = diffSubCanvas.parentElement;
         const updateChartHeight = () => {
-            if (chartWrap) chartWrap.style.height = '370px';
+            if (chartWrap) chartWrap.style.height = '380px';
         };
         updateChartHeight(visibleRows);
+
+        const collegeAcronymMap = {
+            'College of Computer Studies and Technology': 'CCST',
+            'Computer Studies and Technology': 'CCST',
+            'College of Teacher Education': 'CTE',
+            'Teacher Education': 'CTE',
+            'College of Business Administration': 'CBA',
+            'Business Administration': 'CBA',
+            'College of Arts and Sciences': 'CAS',
+            'Arts and Sciences': 'CAS',
+            'College of Accountancy': 'COA',
+            'Accountancy': 'COA',
+            'College of Tourism and Hospitality Management': 'CTHM',
+            'Tourism and Hospitality Management': 'CTHM',
+            'College of Engineering': 'COE',
+            'Engineering': 'COE',
+            'College of Nursing and Allied Health Sciences': 'CNAHS',
+            'Nursing and Allied Health Sciences': 'CNAHS',
+            'College of Human Kinetics': 'CHK',
+            'Human Kinetics': 'CHK'
+        };
+
+        const getCollegeAcronym = (name) => {
+            if (!name) return '';
+            const trimmed = name.trim();
+            if (collegeAcronymMap[trimmed]) return collegeAcronymMap[trimmed];
+            const stripped = trimmed.replace(/^College of\s+/i, '');
+            if (collegeAcronymMap[stripped]) return collegeAcronymMap[stripped];
+            return stripped;
+        };
+
         const chartLabels = () => showingAllColleges
-            ? visibleRows.map(row => row.department_name)
+            ? visibleRows.map(row => getCollegeAcronym(row.department_name))
             : visibleRows.map(row => row.program_name);
+
         const chartScales = () => {
             const valueScale = {
+                stacked: true,
                 beginAtZero: true,
-                grid: { color: '#e9eef3', drawBorder: false },
+                grid: { color: '#f1f5f9', drawBorder: false },
                 border: { display: false },
-                ticks: { precision: 0, color: '#64748b', stepSize: 1, padding: 7, font: { size: 10, weight: 500 } }
+                ticks: { precision: 0, color: '#64748b', stepSize: 1, padding: 7, font: { size: 10.5, weight: 500 } }
             };
             const categoryScale = {
+                stacked: true,
                 grid: { display: false },
                 border: { display: false },
-                ticks: { color: '#1e293b', padding: 9, font: { size: 11, weight: 700 } }
+                ticks: {
+                    color: '#0f172a',
+                    padding: 9,
+                    font: { size: 12, weight: 700, family: "'Inter', sans-serif" },
+                    maxRotation: 0,
+                    minRotation: 0,
+                    autoSkip: false
+                }
             };
-            categoryScale.ticks.callback = function(value) {
-                const label = this.getLabelForValue(value);
-                if (!showingAllColleges) {
+            if (!showingAllColleges) {
+                categoryScale.ticks.callback = function(value) {
+                    const label = this.getLabelForValue(value);
                     const words = label.split(/\s+/);
                     const programLines = [];
                     let programLine = '';
@@ -2007,28 +2088,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     if (programLine) programLines.push(programLine);
                     return programLines;
-                }
-                const words = label.replace(/^College of\s*/i, '').split(/\s+/);
-                const lines = ['College of'];
-                let line = '';
-                words.forEach(word => {
-                    if (line && `${line} ${word}`.length > 17) {
-                        lines.push(line);
-                        line = word;
-                    } else {
-                        line = line ? `${line} ${word}` : word;
-                    }
-                });
-                if (line) lines.push(line);
-                return lines;
-            };
-            if (showingAllColleges) {
-                categoryScale.ticks.maxRotation = 0;
-                categoryScale.ticks.minRotation = 0;
-                categoryScale.ticks.autoSkip = false;
-                categoryScale.ticks.padding = 10;
-                categoryScale.ticks.font = { size: 9, weight: 700 };
-                return { x: categoryScale, y: valueScale };
+                };
             }
             return { x: categoryScale, y: valueScale };
         };
@@ -2039,18 +2099,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 backgroundColor: '#0284c7',
                 borderColor: '#0369a1',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 6,
                 borderSkipped: false,
-                maxBarThickness: 20
+                maxBarThickness: 34
             },
             ext_accomplishments: {
                 label: 'Accomplishment Reports',
                 backgroundColor: '#ea580c',
                 borderColor: '#c2410c',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 6,
                 borderSkipped: false,
-                maxBarThickness: 20
+                maxBarThickness: 34
             }
         }<?php else: ?>{
             res_proposals: {
@@ -2058,36 +2118,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 backgroundColor: '#15803d',
                 borderColor: '#166534',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 6,
                 borderSkipped: false,
-                maxBarThickness: 20
+                maxBarThickness: 34
             },
             res_publications: {
                 label: 'Research Publications',
                 backgroundColor: '#7c3aed',
                 borderColor: '#6d28d9',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 6,
                 borderSkipped: false,
-                maxBarThickness: 20
+                maxBarThickness: 34
             },
             ext_proposals: {
                 label: 'Extension Proposals',
                 backgroundColor: '#0284c7',
                 borderColor: '#0369a1',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 6,
                 borderSkipped: false,
-                maxBarThickness: 20
+                maxBarThickness: 34
             },
             ext_accomplishments: {
                 label: 'Accomplishment Reports',
                 backgroundColor: '#ea580c',
                 borderColor: '#c2410c',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 6,
                 borderSkipped: false,
-                maxBarThickness: 20
+                maxBarThickness: 34
             }
         }<?php endif; ?>;
 
@@ -2121,15 +2181,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         mode: 'index',
                         intersect: false,
                         backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                        titleColor: '#ffffff',
                         titleFont: { size: 12, weight: '700' },
-                        bodyFont: { size: 11 },
-                        padding: 11,
-                        cornerRadius: 8,
+                        bodyColor: '#e2e8f0',
+                        bodyFont: { size: 11, weight: '500' },
+                        padding: 12,
+                        cornerRadius: 10,
+                        borderColor: 'rgba(255, 255, 255, 0.12)',
+                        borderWidth: 1,
                         callbacks: {
                             title: items => {
+                                if (!items.length) return '';
                                 const row = visibleRows[items[0].dataIndex];
+                                if (!row) return '';
                                 return showingAllColleges
-                                    ? row.department_name
+                                    ? `${row.department_name} (${getCollegeAcronym(row.department_name)})`
                                     : `${row.department_name} - ${row.program_name}`;
                             }
                         }
@@ -2152,6 +2218,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 deptChart.options.indexAxis = 'x';
                 deptChart.options.interaction.axis = 'x';
                 deptChart.options.scales = chartScales();
+                if (acronymGuideEl) {
+                    acronymGuideEl.style.display = showingAllColleges ? 'flex' : 'none';
+                }
                 if (titleEl && subtitleEl) {
                     const selectedProgram = visibleRows.length === 1 && val.startsWith('program-') ? visibleRows[0] : null;
                     const selectedCollege = val.startsWith('college-') ? (visibleRows[0]?.department_name ?? null) : null;
