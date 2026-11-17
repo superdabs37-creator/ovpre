@@ -89,6 +89,7 @@
                 <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                 <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                 <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-storage.html" title="Storage Analytics"><i class="ri-hard-drive-2-line"></i><span>Storage Analytics</span></a>
                 <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
                 <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
                 <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
@@ -158,6 +159,21 @@
                         <div id="kpiAcademicRecordsCount" style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">25</div>
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
                             <small id="kpiAcademicRecordsSub" style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cataloged in repository</small>
+                            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+                        </div>
+                    </a>
+
+                    <!-- Cloud Storage (Super Admin / OVPRE Admin Only) -->
+                    <a href="admin-storage.html" id="kpiStorageCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-storage super-admin-only hide-for-faculty-coor-director" role="button" aria-label="Open Storage Utilization Analytics" title="Click to view live Supabase cloud storage metrics and capacity">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cloud Storage</span>
+                            <span class="kpi-icon-pill">
+                                <i class="ri-hard-drive-2-line"></i>
+                            </span>
+                        </div>
+                        <div id="kpiStorageCount" style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">77.0 MB</div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Supabase: 7.5% of 1.0 GB</small>
                             <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
                         </div>
                     </a>

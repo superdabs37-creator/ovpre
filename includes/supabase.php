@@ -104,6 +104,39 @@ function supabase_storage_signed_url(string $objectPath, int $expiresIn = 300): 
     return str_starts_with($signed, 'http') ? $signed : SUPABASE_URL . '/storage/v1' . (str_starts_with($signed, '/') ? $signed : '/' . $signed);
 }
 
+function supabase_storage_get_bucket(?string $bucketName = null): ?array
+{
+    $bucket = $bucketName ?: SUPABASE_STORAGE_BUCKET;
+    if (SUPABASE_URL === '' || SUPABASE_SECRET_KEY === '' || !function_exists('curl_init')) {
+        return null;
+    }
+    try {
+        return supabase_request('GET', '/storage/v1/bucket/' . rawurlencode($bucket), null, null, true);
+    } catch (Throwable $e) {
+        error_log('Supabase bucket check failed: ' . $e->getMessage());
+        return null;
+    }
+}
+
+function supabase_storage_list_objects(string $prefix = '', int $limit = 100, int $offset = 0): array
+{
+    $bucket = SUPABASE_STORAGE_BUCKET;
+    if (SUPABASE_URL === '' || SUPABASE_SECRET_KEY === '' || !function_exists('curl_init')) {
+        return [];
+    }
+    try {
+        return supabase_request('POST', '/storage/v1/object/list/' . rawurlencode($bucket), [
+            'prefix' => $prefix,
+            'limit' => $limit,
+            'offset' => $offset,
+            'sortBy' => ['column' => 'created_at', 'order' => 'desc']
+        ], null, true);
+    } catch (Throwable $e) {
+        error_log('Supabase object list failed for prefix "' . $prefix . '": ' . $e->getMessage());
+        return [];
+    }
+}
+
 function supabase_auth_user(string $accessToken): array
 {
     return supabase_request('GET', '/auth/v1/user', null, $accessToken);

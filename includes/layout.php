@@ -59,6 +59,7 @@ function renderHeader($pageTitle, $currentPage)
                         <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                         <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('storage', $currentPage); ?>" href="admin-storage.php" title="Storage Analytics"><i class="ri-hard-drive-2-line"></i><span>Storage Analytics</span></a>
                         <a class="<?php echo activePage('users', $currentPage); ?>" href="admin-users.php" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
                         <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
                         <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
@@ -72,6 +73,7 @@ function renderHeader($pageTitle, $currentPage)
                         <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
                         <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('storage', $currentPage); ?>" href="admin-storage.php" title="Storage Analytics"><i class="ri-hard-drive-2-line"></i><span>Storage Analytics</span></a>
                         <a class="<?php echo activePage('audit', $currentPage); ?>" href="system-activity.php" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
                         <a class="<?php echo activePage('backup', $currentPage); ?>" href="system-backup.php" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
                     <?php elseif ($isResearchDirector): ?>
@@ -81,12 +83,14 @@ function renderHeader($pageTitle, $currentPage)
                         <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                         <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('storage', $currentPage); ?>" href="admin-storage.php" title="Storage Analytics"><i class="ri-hard-drive-2-line"></i><span>Storage Analytics</span></a>
                     <?php elseif ($isExtensionDirector): ?>
                         <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="dashboard.php" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
                         <a class="<?php echo activePage('extension', $currentPage); ?>" href="extension.php" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
                         <a class="<?php echo activePage('announcements', $currentPage); ?>" href="announcements.php" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
                         <a class="<?php echo activePage('activities', $currentPage); ?>" href="activities.php" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
                         <a class="<?php echo activePage('reports', $currentPage); ?>" href="admin-reports.php" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                        <a class="<?php echo activePage('storage', $currentPage); ?>" href="admin-storage.php" title="Storage Analytics"><i class="ri-hard-drive-2-line"></i><span>Storage Analytics</span></a>
                     <?php else: ?>
                         <?php $rolePortalPath = role_dashboard_path($userRole) ?? 'dashboard.php'; ?>
                         <a class="<?php echo activePage('dashboard', $currentPage); ?>" href="<?php echo h($rolePortalPath); ?>" title="My Portal Dashboard"><i class="ri-dashboard-line"></i><span>My Portal</span></a>

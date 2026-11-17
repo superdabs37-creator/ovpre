@@ -595,6 +595,20 @@ renderHeader('Dashboard', 'dashboard');
             <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
         </div>
     </a>
+    <!-- Cloud Storage Analytics (Super Admin & OVPRE Admin) -->
+    <a href="admin-storage.php" id="kpiStorageCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-storage" role="button" aria-label="Open Storage Utilization Analytics" title="Click to view live Supabase cloud storage metrics and capacity">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cloud Storage</span>
+            <span class="kpi-icon-pill">
+                <i class="ri-hard-drive-2-line"></i>
+            </span>
+        </div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">77.0 MB</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Supabase: 7.5% of 1.0 GB</small>
+            <span class="kpi-card-action"><i class="ri-arrow-right-up-line"></i></span>
+        </div>
+    </a>
     <?php endif; ?>
 
     <?php if (!$isFacultyExtensionist): ?>
