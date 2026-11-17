@@ -6803,7 +6803,10 @@ body.register-body .stepper-nav {
     }
 }
 
-/* Solid KPI Cards hover effect & Rock-Solid Alignment */
+/* =========================================================
+   PREMIUM GLASSMORPHIC KPI CAPSULES WITH DECORATIVE ACCENTS
+   (Matching Second Picture: Translucent Overlapping Circles & Frosted Badges)
+   ========================================================= */
 .kpi-capsules-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
@@ -6833,27 +6836,70 @@ body.register-body .stepper-nav {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    min-height: 116px !important;
+    min-height: 122px !important;
     height: 100% !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+    border-radius: 18px !important;
+    padding: 18px 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+}
+
+/* Decorative Translucent Concentric Circles (Matching Second Picture) */
+.kpi-solid-card::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -45px !important;
+    right: -25px !important;
+    width: 150px !important;
+    height: 150px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.10) !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.kpi-solid-card::after {
+    content: "" !important;
+    position: absolute !important;
+    top: -20px !important;
+    right: 35px !important;
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.kpi-solid-card > * {
+    position: relative !important;
+    z-index: 2 !important;
 }
 
 .kpi-solid-card:hover {
     transform: translateY(-4px) !important;
 }
 
+.kpi-solid-card:hover::before {
+    transform: scale(1.10) translate(2px, -2px) !important;
+}
+
+.kpi-solid-card:hover::after {
+    transform: scale(1.08) translate(-2px, 1px) !important;
+}
+
 .kpi-interactive-card {
     text-decoration: none !important;
     cursor: pointer !important;
-    position: relative;
     user-select: none;
     outline: none !important;
-}
-
-.kpi-interactive-card:hover {
-    filter: brightness(1.05);
 }
 
 .kpi-interactive-card:active {
@@ -6864,17 +6910,120 @@ body.register-body .stepper-nav {
     box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px rgba(15, 23, 42, 0.6) !important;
 }
 
+/* Frosted Glassmorphism Icon Pill */
+.kpi-icon-pill {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 11px !important;
+    background: rgba(255, 255, 255, 0.22) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.kpi-icon-pill i {
+    font-size: 1.25rem !important;
+    color: #ffffff !important;
+    line-height: 1 !important;
+}
+
 .kpi-interactive-card:hover .kpi-icon-pill {
-    background: rgba(255, 255, 255, 0.32) !important;
+    background: rgba(255, 255, 255, 0.35) !important;
+    border-color: rgba(255, 255, 255, 0.48) !important;
     transform: scale(1.08) !important;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Bottom Action Arrow Pill */
+.kpi-card-action {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 7px !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    font-size: 0.85rem !important;
+    opacity: 0.88 !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
 }
 
 .kpi-interactive-card:hover .kpi-card-action {
     opacity: 1 !important;
-    background: rgba(255, 255, 255, 0.35) !important;
+    background: rgba(255, 255, 255, 0.34) !important;
     transform: translate(2px, -2px) !important;
 }
 
+/* Card-Specific Rich Gradients & Color Glow Shadows */
+.kpi-card-academic,
+#kpiAcademicRecordsCard {
+    background: linear-gradient(135deg, #15803d 0%, #166534 60%, #14532d 100%) !important;
+    box-shadow: 0 10px 24px -4px rgba(21, 128, 61, 0.42), 0 4px 8px -2px rgba(21, 128, 61, 0.2) !important;
+}
+.kpi-card-academic:hover,
+#kpiAcademicRecordsCard:hover {
+    box-shadow: 0 14px 28px -4px rgba(21, 128, 61, 0.52), 0 6px 12px -2px rgba(21, 128, 61, 0.25) !important;
+}
+
+.kpi-card-research,
+#kpiResearchCard {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%) !important;
+    box-shadow: 0 10px 24px -4px rgba(2, 132, 199, 0.42), 0 4px 8px -2px rgba(2, 132, 199, 0.2) !important;
+}
+.kpi-card-research:hover,
+#kpiResearchCard:hover {
+    box-shadow: 0 14px 28px -4px rgba(2, 132, 199, 0.52), 0 6px 12px -2px rgba(2, 132, 199, 0.25) !important;
+}
+
+.kpi-card-activities,
+#kpiUpcomingActivitiesCard {
+    background: linear-gradient(135deg, #059669 0%, #047857 60%, #064e3b 100%) !important;
+    box-shadow: 0 10px 24px -4px rgba(5, 150, 105, 0.42), 0 4px 8px -2px rgba(5, 150, 105, 0.2) !important;
+}
+.kpi-card-activities:hover,
+#kpiUpcomingActivitiesCard:hover {
+    box-shadow: 0 14px 28px -4px rgba(5, 150, 105, 0.52), 0 6px 12px -2px rgba(5, 150, 105, 0.25) !important;
+}
+
+.kpi-card-extension,
+#kpiExtensionCard {
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 60%, #115e59 100%) !important;
+    box-shadow: 0 10px 24px -4px rgba(13, 148, 136, 0.42), 0 4px 8px -2px rgba(13, 148, 136, 0.2) !important;
+}
+.kpi-card-extension:hover,
+#kpiExtensionCard:hover {
+    box-shadow: 0 14px 28px -4px rgba(13, 148, 136, 0.52), 0 6px 12px -2px rgba(13, 148, 136, 0.25) !important;
+}
+
+.kpi-card-colleges,
+#kpiCollegesCard,
+#kpiCollegesCardPhp {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%) !important;
+    box-shadow: 0 10px 24px -4px rgba(124, 58, 237, 0.42), 0 4px 8px -2px rgba(124, 58, 237, 0.2) !important;
+}
+.kpi-card-colleges:hover,
+#kpiCollegesCard:hover,
+#kpiCollegesCardPhp:hover {
+    box-shadow: 0 14px 28px -4px rgba(124, 58, 237, 0.52), 0 6px 12px -2px rgba(124, 58, 237, 0.25) !important;
+}
+
+.kpi-card-users,
+#kpiUsersCard {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 60%, #9a3412 100%) !important;
+    box-shadow: 0 10px 24px -4px rgba(234, 88, 12, 0.42), 0 4px 8px -2px rgba(234, 88, 12, 0.2) !important;
+}
+.kpi-card-users:hover,
+#kpiUsersCard:hover {
+    box-shadow: 0 14px 28px -4px rgba(234, 88, 12, 0.52), 0 6px 12px -2px rgba(234, 88, 12, 0.25) !important;
+}
 
 @media (max-width: 1200px) {
     .kpi-capsules-grid {
