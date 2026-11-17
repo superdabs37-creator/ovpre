@@ -346,73 +346,170 @@
                 </article>
 
                 <!-- =========================================================
-                     ROW 2: SUBMISSION COMPLETION INTELLIGENCE (3 CARDS)
+                     ROW 2: SUBMISSION STATUS & COMPLETION INTELLIGENCE
                 ========================================================= -->
                 <div style="margin-bottom: 24px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                            <i class="ri-pie-chart-2-line" style="color: #15803d; font-size: 1.3rem;"></i> Submission Status Distribution
-                        </h3>
-                        <span id="statusDistributionSubtitle" style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Distribution of pending, review, revision, and approved research and extension submissions</span>
+                    <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                                <i class="ri-pie-chart-2-line" style="color: #16a34a; font-size: 0.75rem;"></i>
+                                <span>Submission Intelligence</span>
+                            </div>
+                            <h2 style="margin: 0; font-size: clamp(1.2rem, 1.8vw, 1.35rem); font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                                Submission Status &amp; Completion Analytics
+                            </h2>
+                            <span id="statusDistributionSubtitle" style="font-size: 0.82rem; color: #64748b; font-weight: 450; display: block; margin-top: 3px;">
+                                Distribution of pending, review, revision, and approved research and extension submissions.
+                            </span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge" style="background: #ffffff; border: 1px solid #e2e8f0; color: #334155; font-weight: 700; font-size: 0.80rem; padding: 6px 12px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                                <i class="ri-pulse-line" style="color: #15803d; margin-right: 4px;"></i> Live Workflow Tracking
+                            </span>
+                        </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; align-items: stretch;">
+                        
                         <!-- Card 1: Project Status Breakdown -->
-                        <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
-                            <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
-                                <div>
-                                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
-                                        <i class="ri-pie-chart-2-line" style="color: #15803d;"></i> Project Status Breakdown
-                                    </h2>
-                                    <span style="font-size: 0.8rem; color: #64748b;">Submissions by current review status</span>
+                        <article class="panel chart-panel" style="margin: 0; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; padding: 0;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="width: 36px; height: 36px; border-radius: 10px; background: #ecfdf5; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.1);">
+                                            <i class="ri-pie-chart-2-line"></i>
+                                        </span>
+                                        <div>
+                                            <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                                                Project Status Breakdown
+                                            </h2>
+                                            <span style="font-size: 0.78rem; color: #64748b;">Submissions by current review status</span>
+                                        </div>
+                                    </div>
+                                    <span id="statusTrackedBadge" class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.76rem; padding: 4px 10px; border-radius: 999px; border: 1px solid #bbf7d0; white-space: nowrap;">
+                                        23 Tracked Submissions
+                                    </span>
                                 </div>
-                                <span id="statusTrackedBadge" class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
-                                    23 Tracked Submissions
-                                </span>
+
+                                <div style="position: relative; height: 210px; width: 100%; max-width: 420px; margin: 6px auto 16px;">
+                                    <canvas id="submissionStatusDonutChart" role="img" aria-label="Radial segmented doughnut chart showing submissions by review status"></canvas>
+                                </div>
                             </div>
-                            <div style="position: relative; height: 270px; width: 100%; max-width: 480px; margin: 0 auto;">
-                                <canvas id="submissionStatusDonutChart" role="img" aria-label="Radial segmented doughnut chart showing submissions by review status"></canvas>
+
+                            <!-- Sleek Status Metrics Micro-Grid -->
+                            <div id="statusMetricsGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                                <div style="padding: 7px 11px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #166534;">
+                                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #15803d;"></span> Approved
+                                    </span>
+                                    <strong id="statusApprovedCount" style="font-size: 0.82rem; color: #15803d; font-weight: 800;">
+                                        11 <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(47.8%)</small>
+                                    </strong>
+                                </div>
+                                <div style="padding: 7px 11px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #0369a1;">
+                                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #0284c7;"></span> Review
+                                    </span>
+                                    <strong id="statusReviewCount" style="font-size: 0.82rem; color: #0284c7; font-weight: 800;">
+                                        5 <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(21.7%)</small>
+                                    </strong>
+                                </div>
+                                <div style="padding: 7px 11px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #b45309;">
+                                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b;"></span> Pending
+                                    </span>
+                                    <strong id="statusPendingCount" style="font-size: 0.82rem; color: #b45309; font-weight: 800;">
+                                        4 <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(17.4%)</small>
+                                    </strong>
+                                </div>
+                                <div style="padding: 7px 11px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #be123c;">
+                                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #f43f5e;"></span> Revision
+                                    </span>
+                                    <strong id="statusRevisionCount" style="font-size: 0.82rem; color: #be123c; font-weight: 800;">
+                                        3 <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(13.0%)</small>
+                                    </strong>
+                                </div>
                             </div>
                         </article>
 
-                        <!-- Card 2: Completed Colleges List -->
-                        <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
-                            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
-                                <div>
-                                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
-                                        <i class="ri-checkbox-circle-line" style="color: #15803d;"></i> Completed Colleges
-                                    </h2>
-                                    <span style="font-size: 0.8rem; color: #64748b;">Colleges with projects marked Completed</span>
+                        <!-- Card 2: Completed Colleges List (Showcase & Clean Directory) -->
+                        <article class="panel chart-panel" style="margin: 0; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px; display: flex; flex-direction: column;">
+                            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; padding: 0;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="width: 36px; height: 36px; border-radius: 10px; background: #ecfdf5; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.1);">
+                                        <i class="ri-checkbox-circle-line"></i>
+                                    </span>
+                                    <div>
+                                        <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                                            Completed Colleges
+                                        </h2>
+                                        <span style="font-size: 0.78rem; color: #64748b;">Colleges with projects marked Completed</span>
+                                    </div>
                                 </div>
-                                <label style="display: flex; align-items: center; gap: 7px; color: #475569; font-size: 0.78rem; font-weight: 700;">
-                                    Project Type
-                                    <select id="completedProjectTypeFilter" class="filter-select compact-select" style="padding: 6px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; font-size: 0.78rem;">
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 8px;">
+                                    <label for="completedProjectTypeFilter" style="color: #64748b; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Type:</label>
+                                    <select id="completedProjectTypeFilter" class="filter-select compact-select" style="padding: 2px 4px; border: none; background: transparent; color: #1e293b; font-size: 0.78rem; font-weight: 600; outline: none; cursor: pointer;">
                                         <option value="all">All Projects</option>
                                         <option value="research">Research</option>
                                         <option value="extension">Extension</option>
                                     </select>
-                                </label>
+                                </div>
                             </div>
-                            <div id="completedCollegesList" style="display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 260px; overflow-y: auto; padding-right: 4px;">
-                                <!-- Populated by JS -->
+
+                            <!-- Custom Clean Scroll Container -->
+                            <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; max-height: 250px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
+                                <!-- Populated dynamically by JS with clean cards -->
+                            </div>
+
+                            <!-- Card Bottom Bar -->
+                            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 0.74rem; color: #64748b;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;"><i class="ri-award-line" style="color: #15803d;"></i> Institutional Completion Registry</span>
+                                <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 700;">5 Active Colleges</strong>
                             </div>
                         </article>
 
                         <!-- Card 3: Completion by Stream Bar Chart -->
-                        <article class="panel chart-panel" style="margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff; padding: 20px;">
-                            <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 14px;">
-                                <div>
-                                    <h2 id="streamChartTitle" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
-                                        <i class="ri-git-branch-line" style="color: #7c3aed;"></i> Completion by Stream
-                                    </h2>
-                                    <span id="streamChartSubtitle" style="font-size: 0.8rem; color: #64748b;">Research vs. Extension completion</span>
+                        <article class="panel chart-panel" style="margin: 0; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; padding: 0;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="width: 36px; height: 36px; border-radius: 10px; background: #f3e8ff; color: #7c3aed; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(124, 58, 237, 0.1);">
+                                            <i class="ri-git-branch-line"></i>
+                                        </span>
+                                        <div>
+                                            <h2 id="streamChartTitle" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                                                Completion by Stream
+                                            </h2>
+                                            <span id="streamChartSubtitle" style="font-size: 0.78rem; color: #64748b;">Research vs. Extension completion</span>
+                                        </div>
+                                    </div>
+                                    <span id="streamChartBadge" class="badge" style="background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; font-weight: 800; font-size: 0.76rem; padding: 4px 10px; border-radius: 999px; white-space: nowrap;">
+                                        Research &amp; Extension
+                                    </span>
                                 </div>
-                                <span id="streamChartBadge" class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
-                                    Research &amp; Extension
-                                </span>
+
+                                <div style="position: relative; height: 210px; width: 100%; margin: 6px auto 16px;">
+                                    <canvas id="completionByWingBarChart"></canvas>
+                                </div>
                             </div>
-                            <div style="position: relative; height: 260px; width: 100%;">
-                                <canvas id="completionByWingBarChart"></canvas>
+
+                            <!-- Stream Performance Comparative Capsules -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                                <div style="padding: 7px 11px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="min-width: 0;">
+                                        <span style="display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #166534; letter-spacing: 0.4px;">Research</span>
+                                        <span style="font-size: 0.78rem; font-weight: 600; color: #0f172a;"><strong>11</strong> done <small style="color: #64748b;">/ 5 active</small></span>
+                                    </div>
+                                    <span style="background: #15803d; color: #ffffff; font-weight: 800; font-size: 0.70rem; padding: 2px 6px; border-radius: 5px;">68.8%</span>
+                                </div>
+                                <div style="padding: 7px 11px; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="min-width: 0;">
+                                        <span style="display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #0369a1; letter-spacing: 0.4px;">Extension</span>
+                                        <span style="font-size: 0.78rem; font-weight: 600; color: #0f172a;"><strong>5</strong> done <small style="color: #64748b;">/ 2 active</small></span>
+                                    </div>
+                                    <span style="background: #0284c7; color: #ffffff; font-weight: 800; font-size: 0.70rem; padding: 2px 6px; border-radius: 5px;">71.4%</span>
+                                </div>
                             </div>
                         </article>
                     </div>
@@ -1103,29 +1200,63 @@
                 if (!filteredProjects.length) return;
                 visibleCount++;
 
-                const card = document.createElement('section');
-                card.style.cssText = 'padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;';
-                card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
-                        <h4 style="margin: 0; color: #166534; font-size: 0.85rem; font-weight: 800;">${col.department_name}</h4>
-                        <span style="white-space: nowrap; color: #166534; font-size: 0.72rem; font-weight: 700;">${filteredProjects.length} completed</span>
-                    </div>
-                    <ul style="margin: 0; padding-left: 16px; color: #334155; font-size: 0.78rem; line-height: 1.5;">
-                        ${filteredProjects.map(p => `
-                            <li style="margin-bottom: 3px;">
-                                <span style="color: ${p.type === 'Research' ? '#15803d' : '#7c3aed'}; font-weight: 700;">${p.type}:</span>
-                                <a href="${p.type === 'Research' ? 'research.html' : 'extension.html'}" style="color: #1e293b; text-decoration: none; font-weight: 500;">
-                                    ${p.title}
-                                </a>
-                            </li>
-                        `).join('')}
-                    </ul>
-                `;
+                const card = document.createElement('div');
+                card.className = 'completed-college-card';
+                card.style.cssText = 'padding:10px 13px;border:1px solid #e2e8f0;border-radius:11px;background:#f8fafc;';
+
+                const heading = document.createElement('div');
+                heading.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;';
+
+                const collegeLeft = document.createElement('div');
+                collegeLeft.style.cssText = 'display:flex;align-items:center;gap:6px;min-width:0;';
+                const bIcon = document.createElement('i');
+                bIcon.className = 'ri-building-line';
+                bIcon.style.cssText = 'color:#15803d;font-size:0.90rem;flex-shrink:0;';
+
+                const collegeName = document.createElement('h3');
+                collegeName.textContent = col.department_name;
+                collegeName.style.cssText = 'margin:0;color:#0f172a;font-size:0.84rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                collegeLeft.append(bIcon, collegeName);
+
+                const projectCount = document.createElement('span');
+                projectCount.textContent = `${filteredProjects.length} completed`;
+                projectCount.style.cssText = 'white-space:nowrap;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;font-size:0.70rem;font-weight:700;padding:2px 7px;border-radius:999px;flex-shrink:0;';
+                heading.append(collegeLeft, projectCount);
+
+                const projectContainer = document.createElement('div');
+                projectContainer.style.cssText = 'display:flex;flex-direction:column;gap:5px;';
+
+                filteredProjects.forEach(project => {
+                    const isResearch = project.type === 'Research';
+                    const link = document.createElement('a');
+                    link.className = 'completed-project-pill';
+                    link.href = isResearch ? `research.html#proposal-${project.id}` : `extension.html#project-${project.id}`;
+                    link.title = project.title;
+                    link.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;background:#ffffff;border:1px solid #e2e8f0;border-radius:7px;text-decoration:none;';
+
+                    const typeBadge = document.createElement('span');
+                    typeBadge.className = 'badge';
+                    typeBadge.textContent = project.type;
+                    typeBadge.style.cssText = `background:${isResearch ? '#dcfce7' : '#e0f2fe'};color:${isResearch ? '#15803d' : '#0284c7'};font-size:0.67rem;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;flex-shrink:0;`;
+
+                    const titleSpan = document.createElement('span');
+                    titleSpan.textContent = project.title;
+                    titleSpan.style.cssText = 'color:#334155;font-size:0.78rem;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+
+                    const arrowIcon = document.createElement('i');
+                    arrowIcon.className = 'ri-arrow-right-up-line';
+                    arrowIcon.style.cssText = 'font-size:0.75rem;color:#94a3b8;flex-shrink:0;';
+
+                    link.append(typeBadge, titleSpan, arrowIcon);
+                    projectContainer.appendChild(link);
+                });
+
+                card.append(heading, projectContainer);
                 completedCollegesList.appendChild(card);
             });
 
             if (!visibleCount) {
-                completedCollegesList.innerHTML = '<p style="margin: 12px 0; color: #64748b; text-align: center; font-size: 0.85rem;">No completed projects found.</p>';
+                completedCollegesList.innerHTML = '<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-inbox-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects matching selected criteria.</div>';
             }
         }
         if (completedProjectFilter) {
@@ -2077,7 +2208,7 @@
                 new Chart(donutCanvas, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Pending Review', 'Under Review', 'For Revision', 'Approved'],
+                        labels: ['Pending', 'Under Review', 'For Revision', 'Approved'],
                         datasets: [{
                             data: isResearchOnlyRole ? [2, 3, 1, 10] : (isExtensionOnlyRole ? [1, 2, 1, 3] : [3, 5, 2, 13]),
                             backgroundColor: ['#f59e0b', '#0284c7', '#ea580c', '#15803d'],
@@ -2091,7 +2222,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: '72%',
+                        cutout: '74%',
                         animation: {
                             animateRotate: true,
                             animateScale: true,
@@ -2099,16 +2230,7 @@
                         },
                         plugins: {
                             legend: {
-                                position: 'bottom',
-                                labels: {
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    boxWidth: 8,
-                                    boxHeight: 8,
-                                    padding: 16,
-                                    color: '#334155',
-                                    font: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 11.5, weight: '600' }
-                                }
+                                display: false
                             },
                             tooltip: {
                                 enabled: true,
@@ -2144,31 +2266,59 @@
                 new Chart(wingCanvas, {
                     type: 'bar',
                     data: {
-                        labels: ['Research Wing', 'Extension Wing'],
+                        labels: isExtensionOnlyRole ? ['Extension Wing'] : ['Research Wing', 'Extension Wing'],
                         datasets: [
                             {
                                 label: 'Completed',
-                                data: [11, 5],
-                                backgroundColor: '#15803d',
-                                borderRadius: 6
+                                data: isExtensionOnlyRole ? [5] : [11, 5],
+                                backgroundColor: '#16a34a',
+                                borderColor: '#15803d',
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                barPercentage: 0.55
                             },
                             {
                                 label: 'In Progress / Ongoing',
-                                data: [5, 2],
-                                backgroundColor: '#ea580c',
-                                borderRadius: 6
+                                data: isExtensionOnlyRole ? [2] : [5, 2],
+                                backgroundColor: '#f97316',
+                                borderColor: '#ea580c',
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                barPercentage: 0.55
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 11, weight: 700 }, color: '#334155' } },
-                            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0, color: '#64748b' } }
-                        },
                         plugins: {
-                            legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10.5, weight: 600 } } }
+                            legend: {
+                                position: 'top',
+                                labels: { boxWidth: 12, padding: 8, font: { size: 10.5, weight: 600 } }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: (ctx) => {
+                                        const isResearch = !isExtensionOnlyRole && ctx.dataIndex === 0;
+                                        const total = isResearch ? 16 : 7;
+                                        const pct = Math.round((ctx.raw / total) * 100);
+                                        return ` ${ctx.dataset.label}: ${ctx.raw} (${pct}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { weight: 700, size: 11 }, color: '#334155' }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9' },
+                                ticks: { precision: 0, stepSize: 1, color: '#64748b' }
+                            }
                         }
                     }
                 });

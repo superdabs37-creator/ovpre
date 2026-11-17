@@ -818,48 +818,116 @@ renderHeader('Dashboard', 'dashboard');
 </article>
 
 <!-- =========================================================
-     ROW 2: SUBMISSION COMPLETION INTELLIGENCE (COMPLETED VS. IN-PROGRESS)
+     ROW 2: SUBMISSION STATUS & COMPLETION INTELLIGENCE
 ========================================================= -->
+<?php
+$researchTotal = max(1, $researchTotalCompleted + $researchTotalOngoing);
+$researchCompRate = round(($researchTotalCompleted / $researchTotal) * 100, 1);
+$extensionTotal = max(1, $extensionTotalCompleted + $extensionTotalOngoing);
+$extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1);
+?>
 <div style="margin-bottom: 24px;">
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-            <i class="ri-pie-chart-2-line" style="color: #15803d; font-size: 1.3rem;"></i> Submission Status Distribution
-        </h3>
-        <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Distribution of pending, review, revision, and approved research and extension submissions</span>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                <i class="ri-pie-chart-2-line" style="color: #16a34a; font-size: 0.75rem;"></i>
+                <span>Submission Intelligence</span>
+            </div>
+            <h2 style="margin: 0; font-size: clamp(1.2rem, 1.8vw, 1.35rem); font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                Submission Status &amp; Completion Analytics
+            </h2>
+            <span style="font-size: 0.82rem; color: #64748b; font-weight: 450; display: block; margin-top: 3px;">
+                Distribution of pending, review, revision, and approved research and extension submissions.
+            </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge" style="background: #ffffff; border: 1px solid #e2e8f0; color: #334155; font-weight: 700; font-size: 0.80rem; padding: 6px 12px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                <i class="ri-pulse-line" style="color: #15803d; margin-right: 4px;"></i> Live Workflow Tracking
+            </span>
+        </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; align-items: stretch;">
         
-        <!-- Card 1: Research and extension status distribution -->
-        <article class="panel chart-panel" style="order: 2; margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff;">
-            <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-                <div>
-                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
-                        <i class="ri-pie-chart-2-line" style="color: #15803d;"></i> Project Status Breakdown
-                    </h2>
-                    <span style="font-size: 0.8rem; color: #64748b;">Research and extension submissions by current review status</span>
+        <!-- Card 1: Project Status Breakdown -->
+        <article class="panel chart-panel" style="margin: 0; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; padding: 0;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 36px; height: 36px; border-radius: 10px; background: #ecfdf5; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.1);">
+                            <i class="ri-pie-chart-2-line"></i>
+                        </span>
+                        <div>
+                            <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                                Project Status Breakdown
+                            </h2>
+                            <span style="font-size: 0.78rem; color: #64748b;">Submissions by current review status</span>
+                        </div>
+                    </div>
+                    <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.76rem; padding: 4px 10px; border-radius: 999px; border: 1px solid #bbf7d0; white-space: nowrap;">
+                        <?php echo $trackedSubmissionStatusTotal; ?> Tracked Submissions
+                    </span>
                 </div>
-                <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
-                    <?php echo $trackedSubmissionStatusTotal; ?> Tracked Submissions
-                </span>
+
+                <div style="position: relative; height: 210px; width: 100%; max-width: 420px; margin: 6px auto 16px;">
+                    <canvas id="submissionStatusDonutChart" aria-label="Donut chart of pending, under review, for revision, and approved submissions"></canvas>
+                </div>
             </div>
-            <div style="position: relative; height: 270px; width: 100%; max-width: 520px; margin: 0 auto;">
-                <canvas id="submissionStatusDonutChart" aria-label="Donut chart of pending, under review, for revision, and approved submissions"></canvas>
+
+            <!-- Sleek Status Metrics Micro-Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                <div style="padding: 7px 11px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #166534;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #15803d;"></span> Approved
+                    </span>
+                    <strong style="font-size: 0.82rem; color: #15803d; font-weight: 800;">
+                        <?php echo $submissionStatusCounts['Approved']; ?> <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(<?php echo $trackedSubmissionStatusTotal > 0 ? round(($submissionStatusCounts['Approved'] / $trackedSubmissionStatusTotal) * 100) : 0; ?>%)</small>
+                    </strong>
+                </div>
+                <div style="padding: 7px 11px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #0369a1;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #0284c7;"></span> Review
+                    </span>
+                    <strong style="font-size: 0.82rem; color: #0284c7; font-weight: 800;">
+                        <?php echo $submissionStatusCounts['Under Review']; ?> <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(<?php echo $trackedSubmissionStatusTotal > 0 ? round(($submissionStatusCounts['Under Review'] / $trackedSubmissionStatusTotal) * 100) : 0; ?>%)</small>
+                    </strong>
+                </div>
+                <div style="padding: 7px 11px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #b45309;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b;"></span> Pending
+                    </span>
+                    <strong style="font-size: 0.82rem; color: #b45309; font-weight: 800;">
+                        <?php echo $submissionStatusCounts['Pending']; ?> <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(<?php echo $trackedSubmissionStatusTotal > 0 ? round(($submissionStatusCounts['Pending'] / $trackedSubmissionStatusTotal) * 100) : 0; ?>%)</small>
+                    </strong>
+                </div>
+                <div style="padding: 7px 11px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; color: #be123c;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #f43f5e;"></span> Revision
+                    </span>
+                    <strong style="font-size: 0.82rem; color: #be123c; font-weight: 800;">
+                        <?php echo $submissionStatusCounts['For Revision']; ?> <small style="font-size: 0.70rem; font-weight: 600; opacity: 0.85;">(<?php echo $trackedSubmissionStatusTotal > 0 ? round(($submissionStatusCounts['For Revision'] / $trackedSubmissionStatusTotal) * 100) : 0; ?>%)</small>
+                    </strong>
+                </div>
             </div>
         </article>
 
-        <!-- Card 2: Colleges with actually completed projects -->
-        <article class="panel chart-panel" style="order: 1; margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff;">
-            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px;">
-                <div>
-                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
-                        <i class="ri-checkbox-circle-line" style="color: #15803d;"></i> Completed Colleges
-                    </h2>
-                    <span style="font-size: 0.8rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Colleges with extension projects marked Completed' : 'Colleges with research or extension projects marked Completed'; ?></span>
+        <!-- Card 2: Completed Colleges (Showcase & Clean Directory) -->
+        <article class="panel chart-panel" style="margin: 0; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px; display: flex; flex-direction: column;">
+            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; padding: 0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 36px; height: 36px; border-radius: 10px; background: #ecfdf5; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.1);">
+                        <i class="ri-checkbox-circle-line"></i>
+                    </span>
+                    <div>
+                        <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                            Completed Colleges
+                        </h2>
+                        <span style="font-size: 0.78rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Colleges with extension projects marked Completed' : 'Colleges with projects marked Completed'; ?></span>
+                    </div>
                 </div>
-                <label style="display: flex; align-items: center; gap: 7px; color: #475569; font-size: 0.78rem; font-weight: 700;">
-                    Project Type
-                    <select id="completedProjectTypeFilter" class="filter-select compact-select" style="padding: 6px 9px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #1e293b; font-size: 0.78rem;">
+                <div style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 8px;">
+                    <label for="completedProjectTypeFilter" style="color: #64748b; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Type:</label>
+                    <select id="completedProjectTypeFilter" class="filter-select compact-select" style="padding: 2px 4px; border: none; background: transparent; color: #1e293b; font-size: 0.78rem; font-weight: 600; outline: none; cursor: pointer;">
                         <?php if ($isFacultyExtensionist): ?>
                             <option value="extension">Extension Only</option>
                         <?php else: ?>
@@ -868,19 +936,27 @@ renderHeader('Dashboard', 'dashboard');
                             <option value="extension">Extension</option>
                         <?php endif; ?>
                     </select>
-                </label>
+                </div>
             </div>
-            <div id="completedCollegesList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; padding-top: 12px;">
+
+            <!-- Custom Clean Scroll Container -->
+            <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; max-height: 250px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
                 <?php if (empty($completedColleges)): ?>
-                    <p style="grid-column: 1 / -1; margin: 8px 0; color: #64748b; text-align: center;">No completed projects found</p>
+                    <div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;">
+                        <i class="ri-inbox-line" style="font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
+                        No completed projects found
+                    </div>
                 <?php else: ?>
                     <?php foreach ($completedColleges as $completedCollege): ?>
-                        <section style="padding: 11px 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 7px;">
-                                <h3 style="margin: 0; color: #166534; font-size: 0.86rem; font-weight: 800;"><?php echo h($completedCollege['department_name']); ?></h3>
-                                <span style="white-space: nowrap; color: #166534; font-size: 0.72rem; font-weight: 700;"><?php echo count($completedCollege['projects']); ?> completed</span>
+                        <div class="completed-college-card" style="padding: 10px 13px; border: 1px solid #e2e8f0; border-radius: 11px; background: #f8fafc;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                                    <i class="ri-building-line" style="color: #15803d; font-size: 0.90rem; flex-shrink: 0;"></i>
+                                    <h3 style="margin: 0; color: #0f172a; font-size: 0.84rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo h($completedCollege['department_name']); ?></h3>
+                                </div>
+                                <span style="white-space: nowrap; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-size: 0.70rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; flex-shrink: 0;"><?php echo count($completedCollege['projects']); ?> completed</span>
                             </div>
-                            <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 0.78rem; line-height: 1.6;">
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
                                 <?php foreach ($completedCollege['projects'] as $completedProject): ?>
                                     <?php
                                         $isResearch = ($completedProject['type'] ?? '') === 'Research';
@@ -888,36 +964,72 @@ renderHeader('Dashboard', 'dashboard');
                                             ? 'research.php#proposal-' . (int) ($completedProject['id'] ?? 0)
                                             : 'extension.php#project-' . (int) ($completedProject['id'] ?? 0);
                                     ?>
-                                    <li style="margin-bottom: 4px;">
-                                        <span style="color: <?php echo $isResearch ? '#15803d' : '#7c3aed'; ?>; font-weight: 700;"><?php echo h($completedProject['type']); ?>:</span>
-                                        <a href="<?php echo h($targetUrl); ?>" style="color: #1e293b; text-decoration: none; font-weight: 500; transition: color 0.15s;" onmouseover="this.style.color='#15803d';this.style.textDecoration='underline';" onmouseout="this.style.color='#1e293b';this.style.textDecoration='none';" title="View completed work">
+                                    <a href="<?php echo h($targetUrl); ?>" class="completed-project-pill" style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 7px; text-decoration: none;" title="<?php echo h($completedProject['title']); ?>">
+                                        <span class="badge" style="background: <?php echo $isResearch ? '#dcfce7' : '#e0f2fe'; ?>; color: <?php echo $isResearch ? '#15803d' : '#0284c7'; ?>; font-size: 0.67rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; flex-shrink: 0;">
+                                            <?php echo h($completedProject['type']); ?>
+                                        </span>
+                                        <span style="color: #334155; font-size: 0.78rem; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             <?php echo h($completedProject['title']); ?>
-                                            <i class="ri-external-link-line" style="font-size: 0.72rem; color: #94a3b8; vertical-align: middle; margin-left: 2px;"></i>
-                                        </a>
-                                    </li>
+                                        </span>
+                                        <i class="ri-arrow-right-up-line" style="font-size: 0.75rem; color: #94a3b8; flex-shrink: 0;"></i>
+                                    </a>
                                 <?php endforeach; ?>
-                            </ul>
-                        </section>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
+
+            <!-- Card Bottom Bar -->
+            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 0.74rem; color: #64748b;">
+                <span style="display: inline-flex; align-items: center; gap: 4px;"><i class="ri-award-line" style="color: #15803d;"></i> Institutional Completion Registry</span>
+                <strong style="color: #0f172a; font-weight: 700;"><?php echo count($completedColleges); ?> Active Colleges</strong>
+            </div>
         </article>
 
-        <!-- Card 3: Research vs Extension Breakdown -->
-        <article class="panel chart-panel" style="order: 3; margin: 0; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: #ffffff;">
-            <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-                <div>
-                    <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; margin: 0;">
-                        <i class="ri-git-branch-line" style="color: #7c3aed;"></i> Completion by Stream
-                    </h2>
-                    <span style="font-size: 0.8rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Extension community projects status' : 'Research proposals vs. extension community projects'; ?></span>
+        <!-- Card 3: Completion by Stream -->
+        <article class="panel chart-panel" style="margin: 0; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; padding: 0;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 36px; height: 36px; border-radius: 10px; background: #f3e8ff; color: #7c3aed; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(124, 58, 237, 0.1);">
+                            <i class="ri-git-branch-line"></i>
+                        </span>
+                        <div>
+                            <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
+                                Completion by Stream
+                            </h2>
+                            <span style="font-size: 0.78rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Extension community projects status' : 'Research vs. Extension completion'; ?></span>
+                        </div>
+                    </div>
+                    <span class="badge" style="background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; font-weight: 800; font-size: 0.76rem; padding: 4px 10px; border-radius: 999px; white-space: nowrap;">
+                        <?php echo $isFacultyExtensionist ? 'Extension Stream' : 'Research &amp; Extension'; ?>
+                    </span>
                 </div>
-                <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">
-                    <?php echo $isFacultyExtensionist ? 'Extension Stream' : 'Research &amp; Extension'; ?>
-                </span>
+
+                <div style="position: relative; height: 210px; width: 100%; margin: 6px auto 16px;">
+                    <canvas id="completionByWingBarChart"></canvas>
+                </div>
             </div>
-            <div style="position: relative; height: 260px; width: 100%;">
-                <canvas id="completionByWingBarChart"></canvas>
+
+            <!-- Stream Performance Comparative Capsules -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                <?php if (!$isFacultyExtensionist): ?>
+                <div style="padding: 7px 11px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="min-width: 0;">
+                        <span style="display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #166534; letter-spacing: 0.4px;">Research</span>
+                        <span style="font-size: 0.78rem; font-weight: 600; color: #0f172a;"><strong><?php echo (int) $researchTotalCompleted; ?></strong> done <small style="color: #64748b;">/ <?php echo (int) $researchTotalOngoing; ?> active</small></span>
+                    </div>
+                    <span style="background: #15803d; color: #ffffff; font-weight: 800; font-size: 0.70rem; padding: 2px 6px; border-radius: 5px;"><?php echo $researchCompRate; ?>%</span>
+                </div>
+                <?php endif; ?>
+                <div style="padding: 7px 11px; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 9px; display: flex; align-items: center; justify-content: space-between; <?php echo $isFacultyExtensionist ? 'grid-column: 1 / -1;' : ''; ?>">
+                    <div style="min-width: 0;">
+                        <span style="display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #0369a1; letter-spacing: 0.4px;">Extension</span>
+                        <span style="font-size: 0.78rem; font-weight: 600; color: #0f172a;"><strong><?php echo (int) $extensionTotalCompleted; ?></strong> done <small style="color: #64748b;">/ <?php echo (int) $extensionTotalOngoing; ?> active</small></span>
+                    </div>
+                    <span style="background: #0284c7; color: #ffffff; font-weight: 800; font-size: 0.70rem; padding: 2px 6px; border-radius: 5px;"><?php echo $extensionCompRate; ?>%</span>
+                </div>
             </div>
         </article>
 
@@ -1664,7 +1776,7 @@ document.addEventListener('DOMContentLoaded', () => {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '72%',
+                cutout: '74%',
                 animation: {
                     animateRotate: true,
                     animateScale: true,
@@ -1672,16 +1784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 plugins: {
                     legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                            boxWidth: 8,
-                            boxHeight: 8,
-                            padding: 16,
-                            color: '#334155',
-                            font: { family: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", size: 11.5, weight: '600' }
-                        }
+                        display: false
                     },
                     tooltip: {
                         enabled: true,
@@ -1727,52 +1830,65 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!projects.length) return;
                 visibleCollegeCount++;
 
-                const card = document.createElement('section');
-                card.style.cssText = 'padding:11px 12px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;';
+                const card = document.createElement('div');
+                card.className = 'completed-college-card';
+                card.style.cssText = 'padding:10px 13px;border:1px solid #e2e8f0;border-radius:11px;background:#f8fafc;';
+                
                 const heading = document.createElement('div');
-                heading.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;';
+                heading.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;';
+                
+                const collegeLeft = document.createElement('div');
+                collegeLeft.style.cssText = 'display:flex;align-items:center;gap:6px;min-width:0;';
+                const bIcon = document.createElement('i');
+                bIcon.className = 'ri-building-line';
+                bIcon.style.cssText = 'color:#15803d;font-size:0.90rem;flex-shrink:0;';
+                
                 const collegeName = document.createElement('h3');
                 collegeName.textContent = college.department_name;
-                collegeName.style.cssText = 'margin:0;color:#166534;font-size:.86rem;font-weight:800;';
+                collegeName.style.cssText = 'margin:0;color:#0f172a;font-size:0.84rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+                collegeLeft.append(bIcon, collegeName);
+
                 const projectCount = document.createElement('span');
                 projectCount.textContent = `${projects.length} completed`;
-                projectCount.style.cssText = 'white-space:nowrap;color:#166534;font-size:.72rem;font-weight:700;';
-                heading.append(collegeName, projectCount);
+                projectCount.style.cssText = 'white-space:nowrap;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;font-size:0.70rem;font-weight:700;padding:2px 7px;border-radius:999px;flex-shrink:0;';
+                heading.append(collegeLeft, projectCount);
 
-                const projectList = document.createElement('ul');
-                projectList.style.cssText = 'margin:0;padding-left:18px;color:#334155;font-size:.78rem;line-height:1.5;';
+                const projectContainer = document.createElement('div');
+                projectContainer.style.cssText = 'display:flex;flex-direction:column;gap:5px;';
+                
                 projects.forEach(project => {
-                    const item = document.createElement('li');
-                    item.style.cssText = 'margin-bottom:4px;';
                     const isResearch = project.type === 'Research';
-                    const typeLabel = document.createElement('span');
-                    typeLabel.textContent = `${project.type}: `;
-                    typeLabel.style.cssText = `color:${isResearch ? '#15803d' : '#7c3aed'};font-weight:700;`;
-
                     const link = document.createElement('a');
+                    link.className = 'completed-project-pill';
                     link.href = isResearch ? `research.php#proposal-${project.id}` : `extension.php#project-${project.id}`;
-                    link.title = 'View completed work';
-                    link.style.cssText = 'color:#1e293b;text-decoration:none;font-weight:500;transition:color 0.15s;';
-                    link.onmouseover = () => { link.style.color = '#15803d'; link.style.textDecoration = 'underline'; };
-                    link.onmouseout = () => { link.style.color = '#1e293b'; link.style.textDecoration = 'none'; };
+                    link.title = project.title;
+                    link.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;background:#ffffff;border:1px solid #e2e8f0;border-radius:7px;text-decoration:none;';
 
-                    const titleText = document.createTextNode(project.title + ' ');
-                    const icon = document.createElement('i');
-                    icon.className = 'ri-external-link-line';
-                    icon.style.cssText = 'font-size:0.72rem;color:#94a3b8;vertical-align:middle;margin-left:2px;';
+                    const typeBadge = document.createElement('span');
+                    typeBadge.className = 'badge';
+                    typeBadge.textContent = project.type;
+                    typeBadge.style.cssText = `background:${isResearch ? '#dcfce7' : '#e0f2fe'};color:${isResearch ? '#15803d' : '#0284c7'};font-size:0.67rem;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;flex-shrink:0;`;
 
-                    link.append(titleText, icon);
-                    item.append(typeLabel, link);
-                    projectList.appendChild(item);
+                    const titleSpan = document.createElement('span');
+                    titleSpan.textContent = project.title;
+                    titleSpan.style.cssText = 'color:#334155;font-size:0.78rem;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+
+                    const arrowIcon = document.createElement('i');
+                    arrowIcon.className = 'ri-arrow-right-up-line';
+                    arrowIcon.style.cssText = 'font-size:0.75rem;color:#94a3b8;flex-shrink:0;';
+
+                    link.append(typeBadge, titleSpan, arrowIcon);
+                    projectContainer.appendChild(link);
                 });
-                card.append(heading, projectList);
+
+                card.append(heading, projectContainer);
                 completedCollegesList.appendChild(card);
             });
 
             if (!visibleCollegeCount) {
-                const emptyMessage = document.createElement('p');
-                emptyMessage.textContent = 'No completed projects found';
-                emptyMessage.style.cssText = 'grid-column:1/-1;margin:8px 0;color:#64748b;text-align:center;';
+                const emptyMessage = document.createElement('div');
+                emptyMessage.style.cssText = 'padding:30px 10px;text-align:center;color:#64748b;font-size:0.85rem;';
+                emptyMessage.innerHTML = '<i class="ri-inbox-line" style="font-size:1.8rem;color:#cbd5e1;display:block;margin-bottom:6px;"></i>No completed projects found';
                 completedCollegesList.appendChild(emptyMessage);
             }
         };
@@ -1790,20 +1906,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         label: 'Completed',
                         data: <?php echo json_encode($isFacultyExtensionist ? [(int) $extensionTotalCompleted] : [(int) $researchTotalCompleted, (int) $extensionTotalCompleted]); ?>,
-                        backgroundColor: '#15803d',
-                        borderColor: '#166534',
+                        backgroundColor: '#16a34a',
+                        borderColor: '#15803d',
                         borderWidth: 1,
-                        borderRadius: 6,
-                        barPercentage: 0.6
+                        borderRadius: 8,
+                        barPercentage: 0.55
                     },
                     {
                         label: 'In Progress / Ongoing',
                         data: <?php echo json_encode($isFacultyExtensionist ? [(int) $extensionTotalOngoing] : [(int) $researchTotalOngoing, (int) $extensionTotalOngoing]); ?>,
-                        backgroundColor: '#ea580c',
-                        borderColor: '#c2410c',
+                        backgroundColor: '#f97316',
+                        borderColor: '#ea580c',
                         borderWidth: 1,
-                        borderRadius: 6,
-                        barPercentage: 0.6
+                        borderRadius: 8,
+                        barPercentage: 0.55
                     }
                 ]
             },
