@@ -311,15 +311,17 @@
                 <!-- =========================================================
                      MONTHLY SUBMISSION TRENDS
                 ========================================================= -->
-                <article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 20px 22px;">
-                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                <article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px;">
+                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
                         <div>
-                            <h2 style="margin: 0; color: #166534; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                                <i class="ri-line-chart-line" style="font-size: 1.4rem;"></i> Monthly Submission Trends
+                            <h2 style="margin: 0; color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px;">
+                                <i class="ri-line-chart-line" style="font-size: 1.3rem; color: #15803d;"></i> Monthly Submission Trends
                             </h2>
-                            <span id="monthlySubmissionSubtitle" style="display: block; margin-top: 4px; color: #64748b; font-size: 0.85rem;">Research proposals, extension programs, and accomplishment reports submitted each month</span>
+                            <span id="monthlySubmissionSubtitle" style="display: block; margin-top: 4px; color: #64748b; font-size: 0.82rem; font-weight: 450; line-height: 1.45;">Research proposals, extension programs, and accomplishment reports submitted each month</span>
                         </div>
-                        <span class="badge" style="background: #f0fdf4; color: #166534; padding: 6px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">Last 12 months</span>
+                        <span class="badge" style="display: inline-flex; align-items: center; gap: 5px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                            <i class="ri-calendar-line" style="font-size: 0.8rem; color: #16a34a;"></i> Last 12 months
+                        </span>
                     </div>
                     <div style="position: relative; width: 100%; height: 330px;">
                         <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Modern multi-series area chart showing monthly research proposals, extension programs, and accomplishment reports"></canvas>
@@ -403,16 +405,17 @@
                 <!-- =========================================================
                      UPCOMING ACTIVITIES & SCHEDULE ANALYTICS
                 ========================================================= -->
-                <article id="upcomingActivitiesSection" class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 22px 24px;">
-                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 20px;">
+                <article id="upcomingActivitiesSection" class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px;">
+                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 18px;">
                         <div>
-                            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; color: #047857; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-                                <i class="ri-calendar-check-line"></i> Institutional Event Intelligence
+                            <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                                <i class="ri-calendar-check-line" style="color: #16a34a; font-size: 0.75rem;"></i>
+                                <span>Institutional Event Intelligence</span>
                             </div>
-                            <h2 style="color: #166534; font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 800; display: flex; align-items: center; gap: 9px; margin: 0;">
-                                <i class="ri-calendar-event-line" style="color: #15803d; font-size: 1.4rem;"></i> Upcoming Activities &amp; Schedule Analytics
+                            <h2 style="color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px; margin: 0;">
+                                <i class="ri-calendar-event-line" style="color: #15803d; font-size: 1.3rem;"></i> Upcoming Activities &amp; Schedule Analytics
                             </h2>
-                            <span style="font-size: 0.84rem; color: #64748b; font-weight: 500; display: block; margin-top: 4px;">
+                            <span style="font-size: 0.82rem; color: #64748b; font-weight: 450; display: block; margin-top: 4px; line-height: 1.45;">
                                 Real-time monitoring of scheduled academic colloquiums, capacity building workshops, community outreach missions, and defense panels.
                             </span>
                         </div>

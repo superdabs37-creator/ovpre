@@ -751,25 +751,26 @@ renderHeader('Dashboard', 'dashboard');
 
 
 
-<article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #dbe7df; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); background: #ffffff; padding: 22px 24px;">
+<article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px;">
     <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px;">
         <div>
-            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 999px; color: #15803d; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-                <i class="ri-pulse-line"></i> Annual Performance
+            <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                <i class="ri-pulse-line" style="color: #16a34a; font-size: 0.75rem;"></i>
+                <span>Annual Performance</span>
             </div>
-            <h2 style="margin: 0; color: #166534; font-size: clamp(1.15rem, 2vw, 1.35rem); font-weight: 800; display: flex; align-items: center; gap: 9px;">
-                <i class="ri-line-chart-line" style="font-size: 1.45rem; color: #15803d;"></i> Monthly Submission Trends
+            <h2 style="margin: 0; color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px;">
+                <i class="ri-line-chart-line" style="font-size: 1.3rem; color: #15803d;"></i> Monthly Submission Trends
             </h2>
             <span style="display: block; margin-top: 5px; color: #64748b; font-size: 0.84rem; font-weight: 500;">
                 <?php echo $isFacultyExtensionist ? 'Extension programs and accomplishment reports submitted each month' : 'Research proposals, extension programs, and accomplishment reports submitted each month'; ?>
             </span>
         </div>
         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <span class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; font-weight: 700; font-size: 0.82rem; padding: 7px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
+            <span class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; font-weight: 600; font-size: 0.80rem; padding: 5px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
                 <i class="ri-file-list-3-line" style="color: #15803d;"></i> <?php echo $annualTrendTotal; ?> Total Submissions
             </span>
-            <span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 7px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-                <i class="ri-calendar-line"></i> Last 12 months
+            <span class="badge" style="display: inline-flex; align-items: center; gap: 5px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                <i class="ri-calendar-line" style="font-size: 0.8rem; color: #16a34a;"></i> Last 12 months
             </span>
         </div>
     </div>
