@@ -405,8 +405,8 @@
                 <!-- =========================================================
                      UPCOMING ACTIVITIES & SCHEDULE ANALYTICS
                 ========================================================= -->
-                <article id="upcomingActivitiesSection" class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px;">
-                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 18px;">
+                <article id="upcomingActivitiesSection" class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 22px 24px;">
+                    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 20px;">
                         <div>
                             <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
                                 <i class="ri-calendar-check-line" style="color: #16a34a; font-size: 0.75rem;"></i>
@@ -419,10 +419,10 @@
                                 Real-time monitoring of scheduled academic colloquiums, capacity building workshops, community outreach missions, and defense panels.
                             </span>
                         </div>
-                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <label for="activityCategoryFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">Type:</label>
-                                <select id="activityCategoryFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 7px 11px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px 8px;">
+                                <label for="activityCategoryFilter" style="font-size: 0.74rem; font-weight: 600; color: #64748b;">Type:</label>
+                                <select id="activityCategoryFilter" class="filter-select compact-select" style="font-size: 0.80rem; font-weight: 600; padding: 4px 6px; border-radius: 6px; border: none; background: transparent; color: #1e293b; cursor: pointer; outline: none;">
                                     <option value="all">All Event Types</option>
                                     <option value="Seminar">Seminar</option>
                                     <option value="Workshop">Workshop</option>
@@ -431,17 +431,17 @@
                                     <option value="Project Defense">Project Defense</option>
                                 </select>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <label for="activityTimeframeFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">Window:</label>
-                                <select id="activityTimeframeFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 7px 11px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px 8px;">
+                                <label for="activityTimeframeFilter" style="font-size: 0.74rem; font-weight: 600; color: #64748b;">Window:</label>
+                                <select id="activityTimeframeFilter" class="filter-select compact-select" style="font-size: 0.80rem; font-weight: 600; padding: 4px 6px; border-radius: 6px; border: none; background: transparent; color: #1e293b; cursor: pointer; outline: none;">
                                     <option value="all">All Scheduled</option>
                                     <option value="30">Next 30 Days</option>
                                     <option value="60">Next 60 Days</option>
                                     <option value="month">This Month</option>
                                 </select>
                             </div>
-                            <a href="activities.html" class="primary-btn compact-btn" style="padding: 7px 14px; font-size: 0.82rem; background: #15803d; color: #ffffff; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                                <i class="ri-calendar-2-line"></i><span>Open Calendar View</span>
+                            <a href="activities.html" class="primary-btn compact-btn" style="padding: 7px 14px; font-size: 0.80rem; background: #15803d; color: #ffffff; border-radius: 8px; border: 1px solid #166534; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 2px 4px rgba(21, 128, 61, 0.15); transition: all 0.2s ease;">
+                                <i class="ri-calendar-2-line" style="font-size: 0.88rem;"></i><span>Open Calendar View</span>
                             </a>
                         </div>
                     </div>
@@ -451,51 +451,51 @@
                         <!-- KPI 1: Total Scheduled -->
                         <div class="act-micro-kpi">
                             <div style="min-width: 0;">
-                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Scheduled Activities</div>
-                                <div id="actKpiTotalCount" style="font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.15;">5</div>
-                                <small id="actKpiTotalSub" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active on calendar</small>
+                                <div style="font-size: 0.70rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Scheduled Activities</div>
+                                <div id="actKpiTotalCount" style="font-size: 1.45rem; font-weight: 700; color: #0f172a; line-height: 1.2; letter-spacing: -0.02em;">5</div>
+                                <small id="actKpiTotalSub" style="color: #64748b; font-size: 0.74rem; font-weight: 450; display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active on calendar</small>
                             </div>
-                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #ecfdf5; border: 1px solid #a7f3d0; display: inline-grid; place-items: center; flex-shrink: 0;">
-                                <i class="ri-calendar-schedule-line" style="font-size: 1.25rem; color: #059669;"></i>
+                            <span class="act-kpi-icon-wrap" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                                <i class="ri-calendar-schedule-line" style="color: #15803d;"></i>
                             </span>
                         </div>
 
                         <!-- KPI 2: Nearest Activity -->
                         <div class="act-micro-kpi">
                             <div style="min-width: 0;">
-                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Nearest Event</div>
-                                <div id="actKpiNextDays" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; line-height: 1.15; display: flex; align-items: center; gap: 6px;">
+                                <div style="font-size: 0.70rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Nearest Event</div>
+                                <div id="actKpiNextDays" style="font-size: 1.15rem; font-weight: 700; color: #0f172a; line-height: 1.2; display: flex; align-items: center; gap: 6px; letter-spacing: -0.01em;">
                                     In 2 days
-                                    <span id="actKpiNextDateBadge" style="font-size: 0.72rem; font-weight: 700; background: #cffafe; color: #0891b2; padding: 2px 6px; border-radius: 6px;">Nov 15</span>
+                                    <span id="actKpiNextDateBadge" style="font-size: 0.70rem; font-weight: 600; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 6px;">Nov 15</span>
                                 </div>
-                                <small id="actKpiNextTitle" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Grant Proposal Writing Workshop">Grant Proposal Writing</small>
+                                <small id="actKpiNextTitle" style="color: #64748b; font-size: 0.74rem; font-weight: 450; display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Grant Proposal Writing Workshop">Grant Proposal Writing</small>
                             </div>
-                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #ecfeff; border: 1px solid #a5f3fc; display: inline-grid; place-items: center; flex-shrink: 0;">
-                                <i class="ri-timer-flash-line" style="font-size: 1.25rem; color: #0891b2;"></i>
+                            <span class="act-kpi-icon-wrap" style="background: #f0f9ff; border: 1px solid #bae6fd;">
+                                <i class="ri-timer-flash-line" style="color: #0284c7;"></i>
                             </span>
                         </div>
 
                         <!-- KPI 3: Dominant Category -->
                         <div class="act-micro-kpi">
                             <div style="min-width: 0;">
-                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Primary Category</div>
-                                <div id="actKpiDominantCat" style="font-size: 1.15rem; font-weight: 800; color: #0f172a; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Seminar &amp; Workshop</div>
-                                <small id="actKpiDominantShare" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">40% share of upcoming</small>
+                                <div style="font-size: 0.70rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Primary Category</div>
+                                <div id="actKpiDominantCat" style="font-size: 1.15rem; font-weight: 700; color: #0f172a; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em;">Seminar &amp; Workshop</div>
+                                <small id="actKpiDominantShare" style="color: #64748b; font-size: 0.74rem; font-weight: 450; display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">40% share of upcoming</small>
                             </div>
-                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #f3e8ff; border: 1px solid #d8b4fe; display: inline-grid; place-items: center; flex-shrink: 0;">
-                                <i class="ri-pie-chart-2-line" style="font-size: 1.25rem; color: #7c3aed;"></i>
+                            <span class="act-kpi-icon-wrap" style="background: #faf5ff; border: 1px solid #e9d5ff;">
+                                <i class="ri-pie-chart-2-line" style="color: #7c3aed;"></i>
                             </span>
                         </div>
 
                         <!-- KPI 4: Venues Engaged -->
                         <div class="act-micro-kpi">
                             <div style="min-width: 0;">
-                                <div style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Reserved Venues</div>
-                                <div id="actKpiVenuesCount" style="font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1.15;">5 Venues</div>
-                                <small id="actKpiVenuesSub" style="color: #64748b; font-size: 0.74rem; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Campus &amp; community sites</small>
+                                <div style="font-size: 0.70rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Reserved Venues</div>
+                                <div id="actKpiVenuesCount" style="font-size: 1.45rem; font-weight: 700; color: #0f172a; line-height: 1.2; letter-spacing: -0.02em;">5 Venues</div>
+                                <small id="actKpiVenuesSub" style="color: #64748b; font-size: 0.74rem; font-weight: 450; display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Campus &amp; community sites</small>
                             </div>
-                            <span style="width: 38px; height: 38px; border-radius: 10px; background: #fef3c7; border: 1px solid #fde68a; display: inline-grid; place-items: center; flex-shrink: 0;">
-                                <i class="ri-map-pin-range-line" style="font-size: 1.25rem; color: #d97706;"></i>
+                            <span class="act-kpi-icon-wrap" style="background: #fffbeb; border: 1px solid #fde68a;">
+                                <i class="ri-map-pin-range-line" style="color: #d97706;"></i>
                             </span>
                         </div>
                     </div>
@@ -506,14 +506,14 @@
                         <div class="act-feed-container">
                             <div class="act-feed-header">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px;">
-                                        <i class="ri-list-check" style="color: #15803d;"></i> Upcoming Event Schedule
+                                    <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px; letter-spacing: -0.01em;">
+                                        <i class="ri-list-check" style="color: #15803d; font-size: 1.15rem;"></i> Upcoming Event Schedule
                                     </h3>
-                                    <span id="actListCountBadge" class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.78rem; padding: 3px 9px; border-radius: 999px;">
+                                    <span id="actListCountBadge" class="badge" style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 600; font-size: 0.72rem; padding: 2px 8px; border-radius: 999px;">
                                         5 Events
                                     </span>
                                 </div>
-                                <span style="font-size: 0.78rem; color: #64748b; font-weight: 600;">Chronological Order</span>
+                                <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 500;">Chronological Order</span>
                             </div>
                             <div id="upcomingActivitiesFeedList" class="act-feed-list">
                                 <!-- Populated dynamically by JS -->
@@ -524,13 +524,13 @@
                         <div class="act-analytics-container">
                             <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
                                 <div>
-                                    <h3 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px;">
-                                        <i class="ri-pie-chart-line" style="color: #15803d;"></i> Activity Type Analytics
+                                    <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px; letter-spacing: -0.01em;">
+                                        <i class="ri-pie-chart-line" style="color: #15803d; font-size: 1.15rem;"></i> Activity Type Analytics
                                     </h3>
-                                    <span style="font-size: 0.8rem; color: #64748b;">Distribution by categorical classification</span>
+                                    <span style="font-size: 0.78rem; color: #64748b; font-weight: 450;">Distribution by categorical classification</span>
                                 </div>
-                                <span class="badge" style="background: #f8fafc; color: #334155; font-weight: 700; font-size: 0.76rem; border: 1px solid #e2e8f0; padding: 4px 8px; border-radius: 6px;">
-                                    Real-time
+                                <span class="badge" style="background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.70rem; border: 1px solid #e2e8f0; padding: 3px 8px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);"></span> Real-time
                                 </span>
                             </div>
 
@@ -546,16 +546,16 @@
 
                             <!-- Operational Metrics Strip -->
                             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 10px 12px;">
-                                    <span style="display: block; font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Approval Health</span>
-                                    <div style="font-size: 0.98rem; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
-                                        <i class="ri-checkbox-circle-fill"></i> 100% Approved
+                                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);">
+                                    <span style="display: block; font-size: 0.68rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;">Approval Health</span>
+                                    <div style="font-size: 0.95rem; font-weight: 700; color: #15803d; display: flex; align-items: center; gap: 5px; margin-top: 3px;">
+                                        <i class="ri-checkbox-circle-fill" style="color: #16a34a; font-size: 1.05rem;"></i> 100% Approved
                                     </div>
                                 </div>
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 10px 12px;">
-                                    <span style="display: block; font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Avg Event Span</span>
-                                    <div id="actAvgSpanMetric" style="font-size: 0.98rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
-                                        <i class="ri-time-line" style="color: #0284c7;"></i> 2.8 Days
+                                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);">
+                                    <span style="display: block; font-size: 0.68rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;">Avg Event Span</span>
+                                    <div id="actAvgSpanMetric" style="font-size: 0.95rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 5px; margin-top: 3px;">
+                                        <i class="ri-time-line" style="color: #0284c7; font-size: 1.05rem;"></i> 2.8 Days
                                     </div>
                                 </div>
                             </div>
@@ -563,7 +563,7 @@
                     </div>
                 </article>
 
-<!-- =========================================================
+                <!-- =========================================================
                      ROW 3: SUBMISSION PERFORMANCE BY PERSON
                 ========================================================= -->
                 <section class="panel" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
@@ -1285,11 +1285,11 @@
         }
 
         const activityCategoryMeta = {
-            'Seminar': { color: '#15803d', bg: '#dcfce7', text: '#166534', border: '#86efac' },
-            'Workshop': { color: '#0891b2', bg: '#cffafe', text: '#0e7490', border: '#67e8f9' },
-            'Training': { color: '#2563eb', bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
-            'Community Outreach': { color: '#d97706', bg: '#fef3c7', text: '#92400e', border: '#fde68a' },
-            'Project Defense': { color: '#7c3aed', bg: '#f3e8ff', text: '#6b21a8', border: '#d8b4fe' }
+            'Seminar': { color: '#15803d', bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
+            'Workshop': { color: '#0284c7', bg: '#f0f9ff', text: '#0369a1', border: '#bae6fd' },
+            'Training': { color: '#2563eb', bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+            'Community Outreach': { color: '#d97706', bg: '#fffbeb', text: '#b45309', border: '#fde68a' },
+            'Project Defense': { color: '#7c3aed', bg: '#faf5ff', text: '#6d28d9', border: '#e9d5ff' }
         };
 
         function getDaysDifference(targetDateStr) {
@@ -1305,18 +1305,18 @@
             const endDiff = activity.date_to ? getDaysDifference(activity.date_to) : startDiff;
 
             if (startDiff <= 0 && endDiff >= 0) {
-                return { label: 'Ongoing', isOngoing: true, badgeBg: '#dcfce7', badgeText: '#15803d', diff: 0 };
+                return { label: 'Ongoing', isOngoing: true, badgeBg: '#ecfdf5', badgeText: '#047857', badgeBorder: '#a7f3d0', diff: 0 };
             }
             if (startDiff === 0) {
-                return { label: 'Today', isOngoing: false, badgeBg: '#fef3c7', badgeText: '#92400e', diff: 0 };
+                return { label: 'Today', isOngoing: false, badgeBg: '#fffbeb', badgeText: '#b45309', badgeBorder: '#fde68a', diff: 0 };
             }
             if (startDiff === 1) {
-                return { label: 'Tomorrow', isOngoing: false, badgeBg: '#e0f2fe', badgeText: '#0369a1', diff: 1 };
+                return { label: 'Tomorrow', isOngoing: false, badgeBg: '#f0f9ff', badgeText: '#0284c7', badgeBorder: '#bae6fd', diff: 1 };
             }
             if (startDiff > 1) {
-                return { label: 'In ' + startDiff + ' days', isOngoing: false, badgeBg: '#f1f5f9', badgeText: '#334155', diff: startDiff };
+                return { label: 'In ' + startDiff + ' days', isOngoing: false, badgeBg: '#f8fafc', badgeText: '#475569', badgeBorder: '#e2e8f0', diff: startDiff };
             }
-            return { label: 'Concluded', isOngoing: false, badgeBg: '#f1f5f9', badgeText: '#64748b', diff: startDiff };
+            return { label: 'Concluded', isOngoing: false, badgeBg: '#f8fafc', badgeText: '#94a3b8', badgeBorder: '#e2e8f0', diff: startDiff };
         }
 
         function formatActDateRange(dateFromStr, dateToStr) {
@@ -1332,9 +1332,9 @@
             const day2 = String(d2.getDate()).padStart(2, '0');
             const y2 = d2.getFullYear();
             if (m1 === m2 && y1 === y2) {
-                return m1 + ' ' + day1 + ' – ' + day2 + ', ' + y1;
+                return m1 + ' ' + day1 + ' \u2013 ' + day2 + ', ' + y1;
             }
-            return m1 + ' ' + day1 + ', ' + y1 + ' – ' + m2 + ' ' + day2 + ', ' + y2;
+            return m1 + ' ' + day1 + ', ' + y1 + ' \u2013 ' + m2 + ' ' + day2 + ', ' + y2;
         }
 
         function getActDurationDays(dateFromStr, dateToStr) {
@@ -1354,11 +1354,12 @@
 
         function openActivityPreviewModal(activity) {
             if (!actPreviewModal) return;
-            const meta = activityCategoryMeta[activity.activity_type] || { color: '#15803d', bg: '#dcfce7', text: '#166534' };
+            const meta = activityCategoryMeta[activity.activity_type] || { color: '#15803d', bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' };
             const typeBadge = document.getElementById('actModalTypeBadge');
             typeBadge.textContent = activity.activity_type || 'Event';
             typeBadge.style.background = meta.bg;
             typeBadge.style.color = meta.text;
+            typeBadge.style.border = '1px solid ' + meta.border;
 
             document.getElementById('actModalTitle').textContent = activity.title || 'Untitled Activity';
             
@@ -1367,6 +1368,7 @@
             const relBadge = document.getElementById('actModalRelativeBadge');
             relBadge.style.background = timing.badgeBg;
             relBadge.style.color = timing.badgeText;
+            relBadge.style.border = '1px solid ' + (timing.badgeBorder || '#bbf7d0');
 
             document.getElementById('actModalDate').textContent = formatActDateRange(activity.date, activity.date_to);
             document.getElementById('actModalVenue').textContent = activity.venue || 'TBA';
@@ -1534,36 +1536,37 @@
                         const d = new Date(activity.date + 'T00:00:00');
                         const dayNum = String(d.getDate()).padStart(2, '0');
                         const monShort = d.toLocaleString('en-US', { month: 'short' });
-                        const meta = activityCategoryMeta[activity.activity_type] || { color: '#15803d', bg: '#dcfce7', text: '#166534', border: '#86efac' };
+                        const meta = activityCategoryMeta[activity.activity_type] || { color: '#15803d', bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' };
                         const timing = getActivityTiming(activity);
                         const duration = getActDurationDays(activity.date, activity.date_to);
-                        const durationBadge = duration > 1 ? '<span style="font-size: 0.68rem; background: #e0f2fe; color: #0369a1; padding: 1px 6px; border-radius: 4px; font-weight: 700;">' + duration + ' Days</span>' : '';
+                        const durationBadge = duration > 1 ? '<span style="font-size: 0.69rem; background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; padding: 2px 7px; border-radius: 999px; font-weight: 550; display: inline-flex; align-items: center; gap: 3px;"><i class="ri-time-line" style="font-size: 0.72rem; color: #64748b;"></i> ' + duration + ' Days</span>' : '';
 
                         return '<div class="act-timeline-item" data-act-id="' + activity.id + '">' +
                             '<div class="act-date-capsule">' +
-                                '<div class="act-day">' + dayNum + '</div>' +
                                 '<div class="act-mon">' + monShort + '</div>' +
+                                '<div class="act-day">' + dayNum + '</div>' +
                             '</div>' +
                             '<div style="min-width: 0;">' +
-                                '<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">' +
-                                    '<span class="badge" style="background: ' + meta.bg + '; color: ' + meta.text + '; border: 1px solid ' + meta.border + '; font-weight: 700; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">' +
+                                '<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 5px;">' +
+                                    '<span class="badge" style="background: ' + meta.bg + '; color: ' + meta.text + '; border: 1px solid ' + meta.border + '; font-weight: 600; font-size: 0.70rem; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">' +
+                                        '<span style="width: 5px; height: 5px; border-radius: 50%; background: ' + meta.color + ';"></span>' +
                                         escapeActHtml(activity.activity_type) +
                                     '</span>' +
-                                    '<span class="badge" style="background: ' + timing.badgeBg + '; color: ' + timing.badgeText + '; font-weight: 700; font-size: 0.72rem; padding: 2px 7px; border-radius: 999px;">' +
+                                    '<span class="badge" style="background: ' + timing.badgeBg + '; color: ' + timing.badgeText + '; border: 1px solid ' + (timing.badgeBorder || '#e2e8f0') + '; font-weight: 600; font-size: 0.70rem; padding: 2px 8px; border-radius: 999px;">' +
                                         timing.label +
                                     '</span>' +
                                     durationBadge +
                                 '</div>' +
-                                '<h4 style="margin: 0 0 3px; font-size: 0.95rem; font-weight: 800; color: #0f172a; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + escapeActHtml(activity.title) + '">' +
+                                '<h4 class="act-item-title" style="margin: 0 0 4px; font-size: 0.90rem; font-weight: 650; color: #0f172a; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; transition: color 0.2s ease;" title="' + escapeActHtml(activity.title) + '">' +
                                     escapeActHtml(activity.title) +
                                 '</h4>' +
-                                '<div style="font-size: 0.78rem; color: #64748b; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + escapeActHtml(activity.venue) + '">' +
-                                    '<i class="ri-map-pin-2-fill" style="color: #15803d; font-size: 0.85rem; flex-shrink: 0;"></i> ' + escapeActHtml(activity.venue || 'Campus Venue') +
+                                '<div style="font-size: 0.77rem; color: #64748b; font-weight: 450; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' + escapeActHtml(activity.venue) + '">' +
+                                    '<i class="ri-map-pin-2-line" style="color: #94a3b8; font-size: 0.85rem; flex-shrink: 0;"></i> ' + escapeActHtml(activity.venue || 'Campus Venue') +
                                 '</div>' +
                             '</div>' +
-                            '<div class="act-timeline-actions" style="display: flex; align-items: center; gap: 6px;">' +
-                                '<button type="button" class="btn act-view-btn" data-preview-act="' + activity.id + '" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">' +
-                                    '<i class="ri-eye-line"></i> <span>Details</span>' +
+                            '<div class="act-timeline-actions">' +
+                                '<button type="button" class="act-view-btn" data-preview-act="' + activity.id + '">' +
+                                    '<i class="ri-eye-line" style="font-size: 0.82rem; color: #64748b;"></i> <span>Details</span>' +
                                 '</button>' +
                             '</div>' +
                         '</div>';
@@ -1598,11 +1601,11 @@
                     const pct = filtered.length ? Math.round((count / filtered.length) * 100) : 0;
                     return '<div class="act-category-bar-row">' +
                         '<div class="act-category-bar-header">' +
-                            '<span style="font-weight: 700; color: #334155; display: inline-flex; align-items: center; gap: 6px;">' +
-                                '<span style="width: 8px; height: 8px; border-radius: 50%; background: ' + meta.color + '; display: inline-block;"></span>' +
+                            '<span style="font-weight: 600; font-size: 0.78rem; color: #334155; display: inline-flex; align-items: center; gap: 6px;">' +
+                                '<span style="width: 7px; height: 7px; border-radius: 50%; background: ' + meta.color + '; display: inline-block;"></span>' +
                                 cat +
                             '</span>' +
-                            '<span style="font-weight: 800; color: #0f172a;">' + count + ' <span style="font-size: 0.74rem; font-weight: 500; color: #64748b;">(' + pct + '%)</span></span>' +
+                            '<span style="font-weight: 700; font-size: 0.80rem; color: #0f172a;">' + count + ' <span style="font-size: 0.72rem; font-weight: 500; color: #64748b;">(' + pct + '%)</span></span>' +
                         '</div>' +
                         '<div class="act-category-bar-track">' +
                             '<div class="act-category-bar-fill" style="width: ' + pct + '%; background: ' + meta.color + ';"></div>' +
@@ -1631,21 +1634,24 @@
                             datasets: [{
                                 data: counts,
                                 backgroundColor: colors,
-                                borderWidth: 3,
-                                borderColor: '#ffffff'
+                                borderWidth: 2,
+                                borderColor: '#ffffff',
+                                hoverOffset: 4
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            cutout: '68%',
+                            cutout: '72%',
                             plugins: {
                                 legend: {
                                     position: 'bottom',
                                     labels: {
                                         usePointStyle: true,
-                                        boxWidth: 8,
-                                        font: { size: 10.5, weight: 600 }
+                                        boxWidth: 7,
+                                        font: { size: 10.5, weight: '500' },
+                                        color: '#475569',
+                                        padding: 12
                                     }
                                 },
                                 tooltip: {
