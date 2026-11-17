@@ -123,9 +123,14 @@
 
                 <!-- SUBMISSION FOLDERS (EXACT PHP DETAILS ACCORDIONS) -->
                 <section class="panel submission-folders">
-                    <div class="panel-heading">
-                        <h2 id="submissionFoldersTitle">Submission Folders</h2>
-                        <span id="submissionFoldersSubtitle">Research, extension, and activity submissions</span>
+                    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                            <h2 id="submissionFoldersTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                                <i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                                <span>Submission Folders</span>
+                            </h2>
+                            <span id="submissionFoldersSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;">Research, extension, and activity submissions</span>
+                        </div>
                     </div>
 
                     <!-- 1. Research Submissions Folder -->
@@ -506,9 +511,14 @@
 
                 <!-- MAIN RECORDS TABLE PANEL (EXACT PHP TABLE & COLUMNS) -->
                 <section class="panel">
-                    <div class="panel-heading">
-                        <h2 id="recordsPanelTitle">All Records</h2>
-                        <span id="recordsPanelSubtitle">Open a category card above to view its documents.</span>
+                    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                            <h2 id="recordsPanelTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                                <i class="ri-file-list-3-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                                <span>All Records</span>
+                            </h2>
+                            <span id="recordsPanelSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;">Open a category card above to view its documents.</span>
+                        </div>
                     </div>
                     <div class="table-scroll">
                         <div class="table-selection-toolbar is-hidden" data-selection-toolbar="recordsTable" hidden style="display: none;">
@@ -1525,7 +1535,7 @@
             // Update Folders Headings
             const sfTitle = document.getElementById('submissionFoldersTitle');
             const sfSub = document.getElementById('submissionFoldersSubtitle');
-            if (sfTitle) sfTitle.textContent = isArchived ? 'Archived Submission Folders' : 'Submission Folders';
+            if (sfTitle) sfTitle.innerHTML = `<i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i><span>${isArchived ? 'Archived Submission Folders' : 'Submission Folders'}</span>`;
             if (sfSub) sfSub.textContent = isArchived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions';
 
             const rfTitle = document.getElementById('researchFolderTitle');
@@ -1543,7 +1553,7 @@
 
             // Update Records Panel Title
             const pTitle = document.getElementById('recordsPanelTitle');
-            if (pTitle) pTitle.textContent = isArchived ? 'Archived Records' : 'All Records';
+            if (pTitle) pTitle.innerHTML = `<i class="ri-file-list-3-line" style="color: #15803d; font-size: 1.25rem;"></i><span>${isArchived ? 'Archived Records' : 'All Records'}</span>`;
 
             // Show / Hide Archived Announcements Panel
             const annPanel = document.getElementById('archivedAnnouncementsPanel');

@@ -283,7 +283,15 @@ renderHeader('Record Management', 'documents');
 </section>
 
 <section class="panel submission-folders">
-    <div class="panel-heading"><h2><?php echo $archived ? 'Archived Submission Folders' : 'Submission Folders'; ?></h2><span><?php echo $archived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions'; ?></span></div>
+    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h2 id="submissionFoldersTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                <i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                <span><?php echo $archived ? 'Archived Submission Folders' : 'Submission Folders'; ?></span>
+            </h2>
+            <span id="submissionFoldersSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;"><?php echo $archived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions'; ?></span>
+        </div>
+    </div>
 
     <details class="submission-folder" <?php echo !$archived ? 'open' : ''; ?>>
         <summary><span><i class="ri-flask-line"></i> <?php echo $archived ? 'Archived Research Submissions' : 'Research Management Submissions'; ?></span><strong><?php echo count($researchSubmissions); ?></strong></summary>
@@ -373,7 +381,15 @@ renderHeader('Record Management', 'documents');
 </section>
 
 <section class="panel">
-    <div class="panel-heading"><h2 id="recordsPanelTitle"><?php echo $archived ? 'Archived Records' : 'All Records'; ?></h2><span id="recordsPanelSubtitle">Open a category card above to view its documents.</span></div>
+    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h2 id="recordsPanelTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                <i class="ri-file-list-3-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                <span><?php echo $archived ? 'Archived Records' : 'All Records'; ?></span>
+            </h2>
+            <span id="recordsPanelSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;">Open a category card above to view its documents.</span>
+        </div>
+    </div>
     <div class="table-scroll">
         <?php render_record_selection('recordsTable', 'document', $archived ? ['unarchive' => 'Unarchive Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="recordsTable">

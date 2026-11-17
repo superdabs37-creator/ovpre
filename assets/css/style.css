@@ -1447,17 +1447,19 @@ button {
 
 .panel-heading h2 {
     margin: 0;
-    color: var(--green-600);
-    font-size: clamp(1.6rem, 2.8vw, 2rem);
-    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
 }
 
 .panel-heading > span,
 .panel-heading > div > span,
 .panel-heading a:not(.primary-btn):not(.ghost-btn):not(.action-btn):not([class*="btn"]) {
-    color: var(--muted);
-    font-size: 0.9rem;
-    font-weight: 700;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .invite-account-launcher .panel-heading > div {
