@@ -6842,57 +6842,14 @@ body.register-body .stepper-nav {
     min-width: 0 !important;
     position: relative !important;
     overflow: hidden !important;
-    isolation: isolate !important;
     border-radius: 18px !important;
     padding: 18px 20px !important;
     border: 1px solid rgba(255, 255, 255, 0.16) !important;
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
 }
 
-/* Decorative Translucent Concentric Circles (Matching Second Picture) */
-.kpi-solid-card::before {
-    content: "" !important;
-    position: absolute !important;
-    top: -45px !important;
-    right: -25px !important;
-    width: 150px !important;
-    height: 150px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.10) !important;
-    pointer-events: none !important;
-    z-index: 1 !important;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.kpi-solid-card::after {
-    content: "" !important;
-    position: absolute !important;
-    top: -20px !important;
-    right: 35px !important;
-    width: 120px !important;
-    height: 120px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    pointer-events: none !important;
-    z-index: 1 !important;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.kpi-solid-card > * {
-    position: relative !important;
-    z-index: 2 !important;
-}
-
 .kpi-solid-card:hover {
     transform: translateY(-4px) !important;
-}
-
-.kpi-solid-card:hover::before {
-    transform: scale(1.10) translate(2px, -2px) !important;
-}
-
-.kpi-solid-card:hover::after {
-    transform: scale(1.08) translate(-2px, 1px) !important;
 }
 
 .kpi-interactive-card {
