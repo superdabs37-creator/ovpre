@@ -373,10 +373,37 @@ renderHeader('Record Management', 'documents');
     </details>
 </section>
 
+<?php
+$catIcons = [
+    'Research Paper' => 'ri-article-line',
+    'Extension Project' => 'ri-hand-heart-line',
+    'Institutional Report' => 'ri-bar-chart-box-line',
+    'Special Order / Policy' => 'ri-file-shield-line',
+    'Minutes of Meeting' => 'ri-team-line',
+    'Technical Report' => 'ri-file-settings-line',
+];
+?>
 <section class="summary-grid">
-    <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All" aria-pressed="true"><div class="summary-icon"><i class="ri-folder-open-line"></i></div><div><p>All Records</p><h3><?php echo array_sum(array_map(fn($row) => (int) $row['total'], $categoryAnalytics)); ?></h3><span>Open all records</span></div></article>
-    <?php foreach ($categoryAnalytics as $row): ?>
-        <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="<?php echo h($row['category_name']); ?>" aria-pressed="false"><div class="summary-icon"><i class="ri-folder-3-line"></i></div><div><p><?php echo h($row['category_name']); ?></p><h3><?php echo (int) $row['total']; ?></h3><span>Open category records</span></div></article>
+    <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All" aria-pressed="true">
+        <div class="summary-icon"><i class="ri-folders-line"></i></div>
+        <div>
+            <p>All Records</p>
+            <h3><?php echo array_sum(array_map(fn($row) => (int) $row['total'], $categoryAnalytics)); ?></h3>
+            <span>Open all records</span>
+        </div>
+    </article>
+    <?php foreach ($categoryAnalytics as $row): 
+        $catName = $row['category_name'];
+        $iconClass = $catIcons[$catName] ?? 'ri-folder-3-line';
+    ?>
+        <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="<?php echo h($catName); ?>" aria-pressed="false">
+            <div class="summary-icon"><i class="<?php echo $iconClass; ?>"></i></div>
+            <div>
+                <p><?php echo h($catName); ?></p>
+                <h3><?php echo (int) $row['total']; ?></h3>
+                <span>Open category records</span>
+            </div>
+        </article>
     <?php endforeach; ?>
 </section>
 

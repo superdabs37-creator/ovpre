@@ -237,7 +237,6 @@ button {
 .login-copy p,
 .topbar-title p,
 .welcome-panel p,
-.summary-card p,
 .file-card p,
 .folder-card p {
     margin: 0;
@@ -1323,29 +1322,198 @@ button {
     font-weight: 700;
 }
 
-.category-filter-card {
+/* =========================================================
+   CATEGORY SUMMARY FILTER CARDS (MODERN ENTERPRISE STYLE)
+   ========================================================= */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.summary-card.category-filter-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     cursor: pointer;
-    border-color: var(--line);
+    user-select: none;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
 }
 
-.category-filter-card:hover,
-.category-filter-card.active {
-    border-color: rgba(21, 128, 61, 0.35);
-    box-shadow: 0 14px 30px rgba(15, 61, 36, 0.13);
+.summary-card.category-filter-card:hover {
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
 }
 
-.category-filter-card.active {
-    background: linear-gradient(135deg, var(--white), var(--green-100));
+.summary-card.category-filter-card:focus-visible {
+    outline: 2px solid #15803d;
+    outline-offset: 2px;
 }
 
-.category-filter-card.active .summary-icon {
-    color: var(--green-900);
-    background: var(--yellow-500);
+/* Icon container */
+.summary-card.category-filter-card .summary-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
 }
 
-.category-filter-card:focus-visible {
-    outline: 3px solid rgba(250, 204, 21, 0.55);
-    outline-offset: 3px;
+/* Category-specific color accents when inactive */
+.category-filter-card[data-category-filter="All"] .summary-icon {
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #e2e8f0;
+}
+.category-filter-card[data-category-filter="Research Paper"] .summary-icon {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #dbeafe;
+}
+.category-filter-card[data-category-filter="Extension Project"] .summary-icon {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #dcfce7;
+}
+.category-filter-card[data-category-filter="Institutional Report"] .summary-icon {
+    background: #fffbeb;
+    color: #d97706;
+    border-color: #fef3c7;
+}
+.category-filter-card[data-category-filter="Special Order / Policy"] .summary-icon {
+    background: #faf5ff;
+    color: #9333ea;
+    border-color: #f3e8ff;
+}
+.category-filter-card[data-category-filter="Minutes of Meeting"] .summary-icon {
+    background: #f0fdfa;
+    color: #0d9488;
+    border-color: #ccfbf1;
+}
+.category-filter-card[data-category-filter="Technical Report"] .summary-icon {
+    background: #fff1f2;
+    color: #e11d48;
+    border-color: #ffe4e6;
+}
+
+/* Card content */
+.summary-card.category-filter-card > div {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card.category-filter-card p {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.18s ease;
+}
+
+.summary-card.category-filter-card h3 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 3px 0 1px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.18s ease;
+}
+
+.summary-card.category-filter-card span {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-top: 2px;
+    line-height: 1.2;
+    transition: color 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* Hover state on texts */
+.summary-card.category-filter-card:hover p {
+    color: #0f172a;
+}
+.summary-card.category-filter-card:hover span {
+    color: #15803d;
+}
+
+/* ACTIVE STATE - Crisp enterprise selection */
+.summary-card.category-filter-card.active {
+    background: #ffffff;
+    border-color: #15803d;
+    box-shadow: 0 0 0 1.5px #15803d, 0 6px 18px rgba(21, 128, 61, 0.1);
+}
+
+.summary-card.category-filter-card.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #15803d;
+    border-radius: 4px 0 0 4px;
+}
+
+.summary-card.category-filter-card.active .summary-icon {
+    background: #15803d !important;
+    color: #ffffff !important;
+    border-color: #15803d !important;
+    box-shadow: 0 2px 6px rgba(21, 128, 61, 0.28);
+}
+
+.summary-card.category-filter-card.active p {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.summary-card.category-filter-card.active h3 {
+    color: #15803d;
+}
+
+.summary-card.category-filter-card.active span {
+    color: #15803d;
+    font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 580px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
 }
 
 .quick-actions {
