@@ -1560,8 +1560,8 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                         <td><strong><?php echo $prop['grant_amount'] ? 'PHP ' . number_format((float)$prop['grant_amount'], 2) : 'Under Review'; ?></strong></td>
                         <td><span class="status-pill status-pending-executive-approval">Pending Executive Approval</span></td>
                         <td>
-                            <a class="primary-btn compact-btn" href="<?php echo $prop['proposal_type'] === 'Research' ? 'research.php?highlight=' . (int) $prop['id'] . '#proposal-' . (int) $prop['id'] : 'extension.php?highlight=' . (int) $prop['id'] . '#project-' . (int) $prop['id']; ?>" style="padding: 6px 12px; font-size: 0.82rem; background: #15803d;">
-                                <i class="ri-checkbox-circle-line"></i><span>Sign-off / Review</span>
+                            <a class="action-btn signoff-review-btn" href="<?php echo $prop['proposal_type'] === 'Research' ? 'research.php?highlight=' . (int) $prop['id'] . '#proposal-' . (int) $prop['id'] : 'extension.php?highlight=' . (int) $prop['id'] . '#project-' . (int) $prop['id']; ?>" style="padding: 6px 12px; font-size: 0.82rem; background: #15803d;">
+                                <i class="ri-shield-check-line"></i><span>Sign-off / Review</span><i class="ri-arrow-right-up-line signoff-arrow"></i>
                             </a>
                         </td>
                     </tr>

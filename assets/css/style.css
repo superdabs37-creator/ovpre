@@ -8259,3 +8259,47 @@ body.register-body .stepper-nav {
     border-color: #fecaca;
     --pill-dot: #ef4444;
 }
+/* Modern Sign-off / Review action pill button */
+.signoff-review-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    min-height: 32px !important;
+    padding: 5px 12px !important;
+    border-radius: 999px !important;
+    background: #f0fdf4 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0 !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease !important;
+}
+
+.signoff-review-btn i {
+    font-size: 0.92rem !important;
+    line-height: 1 !important;
+    transition: transform 0.18s ease !important;
+}
+
+.signoff-review-btn .signoff-arrow {
+    font-size: 0.85rem !important;
+    opacity: 0.75;
+}
+
+.signoff-review-btn:hover {
+    background: #16a34a !important;
+    color: #ffffff !important;
+    border-color: #15803d !important;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.22) !important;
+    transform: translateY(-1px) !important;
+}
+
+.signoff-review-btn:hover .signoff-arrow {
+    opacity: 1;
+    transform: translate(1px, -1px) !important;
+}
