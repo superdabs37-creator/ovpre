@@ -1863,3 +1863,36 @@ if (document.readyState === 'loading') {
     setTimeout(handleLocationHashTarget, 250);
 }
 window.addEventListener('hashchange', handleLocationHashTarget);
+
+/* Fullscreen toggle button in topbar */
+(function () {
+    function initFullscreenToggle() {
+        const bell = document.querySelector('.topbar .topbar-icon');
+        if (!bell || document.getElementById('fullscreenToggle')) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'fullscreenToggle';
+        btn.className = 'topbar-icon fullscreen-toggle';
+        btn.setAttribute('aria-label', 'Toggle fullscreen');
+        btn.title = 'Fullscreen';
+        btn.innerHTML = '<i class="ri-fullscreen-line"></i>';
+        bell.parentNode.insertBefore(btn, bell);
+        btn.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        });
+        document.addEventListener('fullscreenchange', () => {
+            const on = !!document.fullscreenElement;
+            btn.innerHTML = '<i class="' + (on ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line') + '"></i>';
+            btn.title = on ? 'Exit fullscreen' : 'Fullscreen';
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFullscreenToggle);
+    } else {
+        initFullscreenToggle();
+    }
+})();

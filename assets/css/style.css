@@ -8259,3 +8259,14 @@ body.register-body .stepper-nav {
     border-color: #fecaca;
     --pill-dot: #ef4444;
 }
+.topbar .fullscreen-toggle {
+    cursor: pointer;
+    font: inherit;
+}
+.topbar .fullscreen-toggle {
+    margin-left: auto;
+}
+
+.topbar .fullscreen-toggle + .topbar-icon {
+    margin-left: 0;
+}
