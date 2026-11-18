@@ -1048,11 +1048,11 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9px;
+    border-radius: 50%;
     border: 1px solid #e2e8f0;
     background: #ffffff;
     color: #475569;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
     padding: 0;
@@ -1061,10 +1061,10 @@ button {
 
 .icon-btn.menu-toggle:hover,
 .menu-toggle:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    color: #0f172a;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #15803d;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.18);
     transform: translateY(-1px);
 }
 
@@ -1080,7 +1080,7 @@ button {
     height: 20px;
     display: block;
     stroke: currentColor;
-    stroke-width: 2;
+    stroke-width: 1.75;
     fill: none;
 }
 
