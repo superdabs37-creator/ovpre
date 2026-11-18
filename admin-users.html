@@ -157,7 +157,7 @@
                                     <th style="padding: 12px;">College</th>
                                     <th style="padding: 12px;">Registered</th>
                                     <th style="padding: 12px;">Status</th>
-                                    <th style="padding: 12px; text-align: right;">Manage</th>
+                                    <th style="padding: 12px; text-align: right; white-space: nowrap; min-width: 120px;">Manage</th>
                                 </tr>
                             </thead>
                             <tbody id="userTableBody">
@@ -298,15 +298,17 @@
                     <td style="padding: 14px 12px; font-size: 0.86rem; color: #334155;">${u.college || u.department || 'CCST'}</td>
                     <td style="padding: 14px 12px; font-size: 0.82rem; color: #64748b;">${u.created_at ? u.created_at.slice(0,10) : '2026-11-01'}</td>
                     <td style="padding: 14px 12px;"><span style="background: ${u.status === 'Inactive' ? '#fee2e2; color: #dc2626;' : '#dcfce7; color: #15803d;'} padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;">${u.status || 'Active'}</span></td>
-                    <td style="padding: 14px 12px; text-align: right;">
-                        <button type="button" onclick="editUser(${u.id})" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-size: 0.82rem; font-weight: 600; margin-right: 4px;">
-                            <i class="ri-edit-line"></i> Edit
-                        </button>
-                        ${u.role !== 'Super Admin' ? `
-                            <button type="button" onclick="deleteUser(${u.id})" style="padding: 5px 8px; border-radius: 6px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer; font-size: 0.82rem;">
-                                <i class="ri-delete-bin-line"></i>
+                    <td style="padding: 14px 12px; text-align: right; white-space: nowrap; vertical-align: middle;">
+                        <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: nowrap;">
+                            <button type="button" onclick="editUser('${u.id}')" style="display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 32px; padding: 0 11px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #0f172a; cursor: pointer; font-size: 0.78rem; font-weight: 700; white-space: nowrap; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03); transition: all 0.15s ease;" onmouseover="this.style.borderColor='#94a3b8';this.style.background='#f8fafc';" onmouseout="this.style.borderColor='#cbd5e1';this.style.background='#ffffff';">
+                                <i class="ri-edit-line" style="font-size: 0.88rem; color: #15803d;"></i><span>Edit</span>
                             </button>
-                        ` : ''}
+                            ${u.role !== 'Super Admin' ? `
+                                <button type="button" onclick="deleteUser('${u.id}')" title="Delete account" aria-label="Delete account" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer; font-size: 0.9rem; flex-shrink: 0; transition: all 0.15s ease;" onmouseover="this.style.background='#fee2e2';this.style.borderColor='#fca5a5';" onmouseout="this.style.background='#fef2f2';this.style.borderColor='#fecaca';">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            ` : ''}
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -341,14 +343,14 @@
         window.handleBulkUsersSubmit = function(e) {
             e.preventDefault();
             const checkedBoxes = Array.from(document.querySelectorAll('#usersTable [data-row-select]:checked'));
-            const ids = checkedBoxes.map(c => Number(c.value));
+            const ids = checkedBoxes.map(c => String(c.value));
             if (!ids.length) {
                 if (window.OVPRE && OVPRE.toast) OVPRE.toast('Please select at least one user account.', 'error');
                 return;
             }
             let users = getUsers();
             ids.forEach(id => {
-                const u = users.find(item => item.id === id);
+                const u = users.find(item => String(item.id) === id);
                 if (u && u.role !== 'Super Admin') {
                     u.status = (u.status === 'Inactive') ? 'Active' : 'Inactive';
                     u.archived = (u.status === 'Inactive');
@@ -378,7 +380,7 @@
 
         function editUser(id) {
             const users = getUsers();
-            const user = users.find(u => u.id === id);
+            const user = users.find(u => String(u.id) === String(id));
             if (!user) return;
 
             document.getElementById('editUserId').value = user.id;
@@ -398,9 +400,9 @@
 
         function saveUserChanges(e) {
             e.preventDefault();
-            const id = parseInt(document.getElementById('editUserId').value);
+            const id = document.getElementById('editUserId').value;
             let users = getUsers();
-            const idx = users.findIndex(u => u.id === id);
+            const idx = users.findIndex(u => String(u.id) === String(id));
             if (idx !== -1) {
                 users[idx].fullname = document.getElementById('editFullName').value;
                 users[idx].username = document.getElementById('editUsername').value;
@@ -417,7 +419,7 @@
         function deleteUser(id) {
             if (confirm('Are you sure you want to remove this account from the user directory?')) {
                 let users = getUsers();
-                users = users.filter(u => u.id !== id);
+                users = users.filter(u => String(u.id) !== String(id));
                 localStorage.setItem('irecord_registered_users', JSON.stringify(users));
                 renderUsers();
             }
