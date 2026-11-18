@@ -787,142 +787,171 @@ renderHeader('Dashboard', 'dashboard');
     <?php endif; ?>
 </section>
 
+<style>
+.dash-hero-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+    align-items: stretch;
+}
+@media (max-width: 1024px) {
+    .dash-hero-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
 <!-- =========================================================
-     TOP SPOTLIGHT: SUBMISSIONS BY ACADEMIC DEPARTMENT (HIGHLIGHTED HERO)
+     HERO CHARTS GRID: SUBMISSIONS BY DEPT & MONTHLY TRENDS SIDE BY SIDE
 ========================================================= -->
-<article class="panel chart-panel featured-spotlight-card" style="margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px;">
-    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px;">
+<div class="dash-hero-charts-grid">
+    <!-- Column 1: Submissions by Academic Department -->
+    <article class="panel chart-panel featured-spotlight-card" style="margin-bottom: 0; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; height: 100%;">
         <div>
-            <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
-                <i class="ri-sparkling-fill" style="color: #16a34a; font-size: 0.75rem;"></i>
-                <span>Primary University Benchmark</span>
+            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px;">
+                <div>
+                    <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                        <i class="ri-sparkling-fill" style="color: #16a34a; font-size: 0.75rem;"></i>
+                        <span>Primary University Benchmark</span>
+                    </div>
+                    <h2 id="deptChartTitle" style="color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <i class="ri-building-line" style="color: #15803d; font-size: 1.3rem;"></i> <?php echo ($isDeptScoped && !empty($userDeptName)) ? 'Submission Analytics - ' . h($userDeptName) : ($isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'); ?>
+                    </h2>
+                </div>
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <label for="submissionKindFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">College:</label>
+                        <select id="submissionKindFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                            <?php 
+                            $collegeAcronymLookup = [
+                                'College of Teacher Education' => 'CTE',
+                                'College of Business Administration' => 'CBA',
+                                'College of Arts and Sciences' => 'CAS',
+                                'College of Accountancy' => 'COA',
+                                'College of Computer Studies and Technology' => 'CCST',
+                                'College of Tourism and Hospitality Management' => 'CTHM',
+                                'College of Engineering' => 'COE',
+                                'College of Nursing and Allied Health Sciences' => 'CNAHS',
+                                'College of Human Kinetics' => 'CHK',
+                            ];
+                            ?>
+                            <?php if ($isDeptScoped && !empty($userDeptName)): ?>
+                                <?php $acr = $collegeAcronymLookup[$userDeptName] ?? ''; ?>
+                                <option value="college-0" selected><?php echo h($userDeptName . ($acr ? " ($acr)" : '')); ?></option>
+                            <?php else: ?>
+                                <option value="all">All College Departments</option>
+                                <?php 
+                                $selectCollegeIndex = 0; 
+                                foreach ($programsByCollege as $collegeName => $programNames): 
+                                    $acr = $collegeAcronymLookup[$collegeName] ?? '';
+                                ?>
+                                    <option value="college-<?php echo $selectCollegeIndex++; ?>"><?php echo h($collegeName . ($acr ? " ($acr)" : '')); ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
+                        <?php echo $overallSubmissionsCount; ?> Total Submissions
+                    </span>
+                </div>
             </div>
-            <h2 id="deptChartTitle" style="color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px; margin: 0;">
-                <i class="ri-building-line" style="color: #15803d; font-size: 1.3rem;"></i> <?php echo ($isDeptScoped && !empty($userDeptName)) ? 'Submission Analytics - ' . h($userDeptName) : ($isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'); ?>
-            </h2>
-        </div>
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <label for="submissionKindFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">College:</label>
-                <select id="submissionKindFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
-                    <?php 
-                    $collegeAcronymLookup = [
-                        'College of Teacher Education' => 'CTE',
-                        'College of Business Administration' => 'CBA',
-                        'College of Arts and Sciences' => 'CAS',
-                        'College of Accountancy' => 'COA',
-                        'College of Computer Studies and Technology' => 'CCST',
-                        'College of Tourism and Hospitality Management' => 'CTHM',
-                        'College of Engineering' => 'COE',
-                        'College of Nursing and Allied Health Sciences' => 'CNAHS',
-                        'College of Human Kinetics' => 'CHK',
-                    ];
-                    ?>
-                    <?php if ($isDeptScoped && !empty($userDeptName)): ?>
-                        <?php $acr = $collegeAcronymLookup[$userDeptName] ?? ''; ?>
-                        <option value="college-0" selected><?php echo h($userDeptName . ($acr ? " ($acr)" : '')); ?></option>
-                    <?php else: ?>
-                        <option value="all">All College Departments</option>
-                        <?php 
-                        $selectCollegeIndex = 0; 
-                        foreach ($programsByCollege as $collegeName => $programNames): 
-                            $acr = $collegeAcronymLookup[$collegeName] ?? '';
-                        ?>
-                            <option value="college-<?php echo $selectCollegeIndex++; ?>"><?php echo h($collegeName . ($acr ? " ($acr)" : '')); ?></option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </select>
+            <div style="position: relative; height: 350px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
+                <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Bar chart of submissions by college and program"></canvas>
             </div>
-            <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
-                <?php echo $overallSubmissionsCount; ?> Total Submissions
-            </span>
         </div>
-    </div>
-    <div style="position: relative; height: 380px; width: 100%; padding: 12px 14px 10px 4px; border: 1px solid #eef2f7; border-radius: 12px; background: #fcfdfc;">
-        <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Bar chart of submissions by college and program"></canvas>
-    </div>
-    <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
-        <div>
-            <h3 id="programsByCollegeHeading" style="margin: 0 0 3px; color: #0f172a; font-size: 1.05rem; font-weight: 800;">Programs by College</h3>
-        </div>
-        <button type="button" id="openProgramsModal" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 9px; background: #15803d; color: #ffffff; font-weight: 700; cursor: pointer;">
-            <i class="ri-list-check-3"></i> View Programs
-        </button>
-    </section>
-
-    <dialog id="programsByCollegeModal" aria-labelledby="programsModalTitle" style="width: min(900px, calc(100% - 32px)); max-width: 900px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3); padding: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 18px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+        <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
             <div>
-                <h3 id="programsModalTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Programs by College</h3>
+                <h3 id="programsByCollegeHeading" style="margin: 0 0 3px; color: #0f172a; font-size: 1.05rem; font-weight: 800;">Programs by College</h3>
             </div>
-            <button type="button" id="closeProgramsModal" aria-label="Close programs list" style="flex: 0 0 auto; width: 34px; height: 34px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #334155; font-size: 1.2rem; cursor: pointer;">&times;</button>
-        </div>
-        <div style="max-height: calc(85vh - 82px); overflow-y: auto; padding: 18px 22px;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-                <?php foreach ($programsByCollege as $collegeName => $programs): ?>
-                    <section style="padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;">
-                        <h4 style="margin: 0 0 8px; color: #166534; font-size: 0.86rem; font-weight: 800;"><?php echo h($collegeName); ?></h4>
-                        <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 0.8rem; line-height: 1.55;">
-                            <?php foreach ($programs as $programName): ?>
-                                <li><?php echo h($programName); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </section>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </dialog>
-    <script>
-        (() => {
-            const modal = document.getElementById('programsByCollegeModal');
-            const openButton = document.getElementById('openProgramsModal');
-            const closeButton = document.getElementById('closeProgramsModal');
-            const kpiCollegesCard = document.getElementById('kpiCollegesCardPhp');
-            if (!modal) return;
-            if (openButton) openButton.addEventListener('click', () => modal.showModal());
-            if (kpiCollegesCard) {
-                kpiCollegesCard.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    modal.showModal();
-                });
-            }
-            if (closeButton) closeButton.addEventListener('click', () => modal.close());
-            modal.addEventListener('click', event => {
-                if (event.target === modal) modal.close();
-            });
-        })();
-    </script>
-</article>
+            <button type="button" id="openProgramsModal" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 9px; background: #15803d; color: #ffffff; font-weight: 700; cursor: pointer;">
+                <i class="ri-list-check-3"></i> View Programs
+            </button>
+        </section>
+    </article>
 
-
-
-<article class="panel chart-panel" style="margin: 0 0 24px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px;">
-    <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px;">
+    <!-- Column 2: Monthly Submission Trends -->
+    <article class="panel chart-panel" style="margin: 0; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); background: #ffffff; padding: 20px 24px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; height: 100%;">
         <div>
-            <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
-                <i class="ri-pulse-line" style="color: #16a34a; font-size: 0.75rem;"></i>
-                <span>Annual Performance</span>
+            <div class="panel-heading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px;">
+                <div>
+                    <div class="benchmark-highlight-badge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; color: #15803d; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                        <i class="ri-pulse-line" style="color: #16a34a; font-size: 0.75rem;"></i>
+                        <span>Annual Performance</span>
+                    </div>
+                    <h2 style="margin: 0; color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-line-chart-line" style="font-size: 1.3rem; color: #15803d;"></i> Monthly Submission Trends
+                    </h2>
+                    <span style="display: block; margin-top: 5px; color: #64748b; font-size: 0.84rem; font-weight: 500;">
+                        <?php echo $isFacultyExtensionist ? 'Extension programs and accomplishment reports submitted each month' : 'Research proposals, extension programs, and accomplishment reports submitted each month'; ?>
+                    </span>
+                </div>
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <span class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; font-weight: 600; font-size: 0.80rem; padding: 5px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ri-file-list-3-line" style="color: #15803d;"></i> <?php echo $annualTrendTotal; ?> Total Submissions
+                    </span>
+                    <span class="badge" style="display: inline-flex; align-items: center; gap: 5px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
+                        <i class="ri-calendar-line" style="font-size: 0.8rem; color: #16a34a;"></i> Last 12 months
+                    </span>
+                </div>
             </div>
-            <h2 style="margin: 0; color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px;">
-                <i class="ri-line-chart-line" style="font-size: 1.3rem; color: #15803d;"></i> Monthly Submission Trends
-            </h2>
-            <span style="display: block; margin-top: 5px; color: #64748b; font-size: 0.84rem; font-weight: 500;">
-                <?php echo $isFacultyExtensionist ? 'Extension programs and accomplishment reports submitted each month' : 'Research proposals, extension programs, and accomplishment reports submitted each month'; ?>
+            <div style="position: relative; width: 100%; height: 350px;">
+                <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Area chart showing monthly <?php echo $isFacultyExtensionist ? 'extension programs and accomplishment reports' : 'research proposals, extension programs, and accomplishment reports'; ?>"></canvas>
+            </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 0.82rem; color: #64748b; font-weight: 600;">
+            <span style="display: inline-flex; align-items: center; gap: 5px;">
+                <i class="ri-history-line" style="color: #15803d;"></i> 12-Month Longitudinal Data
+            </span>
+            <span style="display: inline-flex; align-items: center; gap: 5px; color: #0f172a; font-weight: 700;">
+                <i class="ri-sparkling-fill" style="color: #16a34a; font-size: 0.75rem;"></i> Active Submission Trends
             </span>
         </div>
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <span class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; font-weight: 600; font-size: 0.80rem; padding: 5px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="ri-file-list-3-line" style="color: #15803d;"></i> <?php echo $annualTrendTotal; ?> Total Submissions
-            </span>
-            <span class="badge" style="display: inline-flex; align-items: center; gap: 5px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; box-shadow: 0 1px 2px rgba(21, 128, 61, 0.04);">
-                <i class="ri-calendar-line" style="font-size: 0.8rem; color: #16a34a;"></i> Last 12 months
-            </span>
+    </article>
+</div>
+
+<dialog id="programsByCollegeModal" aria-labelledby="programsModalTitle" style="width: min(900px, calc(100% - 32px)); max-width: 900px; max-height: 85vh; padding: 0; border: 0; border-radius: 16px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3); padding: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 18px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+        <div>
+            <h3 id="programsModalTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Programs by College</h3>
+        </div>
+        <button type="button" id="closeProgramsModal" aria-label="Close programs list" style="flex: 0 0 auto; width: 34px; height: 34px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #334155; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <div style="max-height: calc(85vh - 82px); overflow-y: auto; padding: 18px 22px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+            <?php foreach ($programsByCollege as $collegeName => $programs): ?>
+                <section style="padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;">
+                    <h4 style="margin: 0 0 8px; color: #166534; font-size: 0.86rem; font-weight: 800;"><?php echo h($collegeName); ?></h4>
+                    <ul style="margin: 0; padding-left: 18px; color: #334155; font-size: 0.8rem; line-height: 1.55;">
+                        <?php foreach ($programs as $programName): ?>
+                            <li><?php echo h($programName); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </section>
+            <?php endforeach; ?>
         </div>
     </div>
-    <div style="position: relative; width: 100%; height: 350px;">
-        <canvas id="monthlySubmissionTrendChart" role="img" aria-label="Area chart showing monthly <?php echo $isFacultyExtensionist ? 'extension programs and accomplishment reports' : 'research proposals, extension programs, and accomplishment reports'; ?>"></canvas>
-    </div>
-</article>
+</dialog>
+<script>
+    (() => {
+        const modal = document.getElementById('programsByCollegeModal');
+        const openButton = document.getElementById('openProgramsModal');
+        const closeButton = document.getElementById('closeProgramsModal');
+        const kpiCollegesCard = document.getElementById('kpiCollegesCardPhp');
+        if (!modal) return;
+        if (openButton) openButton.addEventListener('click', () => modal.showModal());
+        if (kpiCollegesCard) {
+            kpiCollegesCard.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.showModal();
+            });
+        }
+        if (closeButton) closeButton.addEventListener('click', () => modal.close());
+        modal.addEventListener('click', event => {
+            if (event.target === modal) modal.close();
+        });
+    })();
+</script>
 
 <!-- =========================================================
      ROW 2: SUBMISSION STATUS & COMPLETION INTELLIGENCE
@@ -2133,7 +2162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let showingAllColleges = !isDeptScopedUser;
         const chartWrap = diffSubCanvas.parentElement;
         const updateChartHeight = () => {
-            if (chartWrap) chartWrap.style.height = '380px';
+            if (chartWrap) chartWrap.style.height = '350px';
         };
         updateChartHeight(visibleRows);
 
