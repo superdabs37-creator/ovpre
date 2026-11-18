@@ -848,10 +848,10 @@
                                 <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 0.82rem; color: #64748b;">
                                     <th style="padding: 12px 10px;">College Name</th>
                                     <th style="padding: 12px 10px; text-align: center;">Faculty</th>
-                                    <th id="thMatrixResProposals" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
-                                    <th id="thMatrixResPublications" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
-                                    <th id="thMatrixExtProposals" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
-                                    <th id="thMatrixAccomplishments" style="padding: 12px 10px; text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
+                                    <th id="thMatrixResProposals" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;">Research Proposals</th>
+                                    <th id="thMatrixResPublications" class="hide-for-extension-director" style="padding: 12px 10px; text-align: center;">Research Publications</th>
+                                    <th id="thMatrixExtProposals" class="hide-for-research-director" style="padding: 12px 10px; text-align: center;">Extension Proposals</th>
+                                    <th id="thMatrixAccomplishments" style="padding: 12px 10px; text-align: center;">Accomplishments</th>
                                     <th style="padding: 12px 10px; text-align: center;">Total Submissions</th>
                                     <th style="padding: 12px 10px; text-align: center;">Activity Status</th>
                                 </tr>
@@ -1590,9 +1590,9 @@
                 tr.innerHTML = `
                     <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${person.submitter_name}</strong></td>
                     <td style="padding: 12px 14px; text-align: left; vertical-align: middle; color: #475569;">${person.department_name}</td>
-                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${person.research_count}</span></td>
-                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${person.extension_count}</span></td>
-                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${person.approved_count}</span></td>
+                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${person.research_count}</td>
+                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${person.extension_count}</td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${person.approved_count}</td>
                     <td style="padding: 12px 14px; text-align: center; vertical-align: middle;">
                         <button type="button" class="ghost-btn action-btn mini-btn" style="padding: 6px 14px; font-size: 0.82rem; border-radius: 8px; border: 1.5px solid #86efac !important; background: #f0fdf4 !important; color: #166534 !important; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; min-height: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
                             <i class="ri-eye-line" style="color: #166534 !important; font-size: 0.95rem;"></i> <span style="color: #166534 !important; font-weight: 700;">${viewBtnText}</span>
@@ -1654,11 +1654,11 @@
                 const totalSub = isResearchOnlyRole ? (col.res_proposals + col.res_publications + col.ext_accomplishments) : (isExtensionOnlyRole ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
                 row.innerHTML = `
                     <td style="padding: 12px 14px; text-align: left; vertical-align: middle;"><strong>${col.department_name}</strong></td>
-                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="font-weight: 700;">${col.total_faculty}</span></td>
-                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${col.res_proposals}</span></td>
-                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;">${col.res_publications}</span></td>
-                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${col.ext_proposals}</span></td>
-                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;">${col.ext_accomplishments}</span></td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${col.total_faculty}</td>
+                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${col.res_proposals}</td>
+                    <td class="hide-for-extension-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${col.res_publications}</td>
+                    <td class="hide-for-research-director" style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${col.ext_proposals}</td>
+                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle; color: #0f172a; font-weight: 700;">${col.ext_accomplishments}</td>
                     <td style="padding: 12px 14px; text-align: center; vertical-align: middle;"><strong style="color: #0f172a; font-size: 0.95rem;">${totalSub}</strong></td>
                     <td style="padding: 12px 10px; text-align: center;">
                         <span class="status-pill status-approved" style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">

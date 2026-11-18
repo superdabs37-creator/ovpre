@@ -1110,10 +1110,10 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                             <td><strong><?php echo h($person['submitter_name']); ?></strong></td>
                             <td><?php echo h($person['department_name'] !== '' ? $person['department_name'] : 'Unassigned'); ?></td>
                             <?php if (!$isFacultyExtensionist): ?>
-                                <td style="text-align: center;"><span class="badge" style="background: #dcfce7; color: #166534;"><?php echo (int) $person['research_count']; ?></span></td>
+                                <td style="text-align: center; color: #0f172a; font-weight: 700;"><?php echo (int) $person['research_count']; ?></td>
                             <?php endif; ?>
-                            <td style="text-align: center;"><span class="badge" style="background: #e0f2fe; color: #0369a1;"><?php echo (int) $person['extension_count']; ?></span></td>
-                            <td style="text-align: center;"><span class="badge" style="background: #f3e8ff; color: #6b21a8;"><?php echo (int) $person['approved_count']; ?></span></td>
+                            <td style="text-align: center; color: #0f172a; font-weight: 700;"><?php echo (int) $person['extension_count']; ?></td>
+                            <td style="text-align: center; color: #0f172a; font-weight: 700;"><?php echo (int) $person['approved_count']; ?></td>
                             <td style="text-align: center;">
                                 <button type="button" class="ghost-btn" data-person-submissions="<?php echo (int) $person['submitter_id']; ?>" style="padding: 6px 10px; font-size: 0.78rem;">
                                     <i class="ri-eye-line"></i> View all (<?php echo count($person['submissions']); ?>)
@@ -1451,11 +1451,11 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                     <th>College Name</th>
                     <th style="text-align: center;">Faculty</th>
                     <?php if (!$isFacultyExtensionist): ?>
-                        <th style="text-align: center;"><span style="color: #15803d; font-weight: 800;">●</span> Research Proposals</th>
-                        <th style="text-align: center;"><span style="color: #7c3aed; font-weight: 800;">●</span> Research Publications</th>
+                        <th style="text-align: center;">Research Proposals</th>
+                        <th style="text-align: center;">Research Publications</th>
                     <?php endif; ?>
-                    <th style="text-align: center;"><span style="color: #0284c7; font-weight: 800;">●</span> Extension Proposals</th>
-                    <th style="text-align: center;"><span style="color: #ea580c; font-weight: 800;">●</span> Accomplishments</th>
+                    <th style="text-align: center;">Extension Proposals</th>
+                    <th style="text-align: center;">Accomplishments</th>
                     <th style="text-align: center;">Total Submissions</th>
                     <th style="text-align: center;">Activity Status</th>
                 </tr>
@@ -1471,22 +1471,22 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                         <td>
                             <strong><?php echo h($col['department_name']); ?></strong>
                         </td>
-                        <td style="text-align: center;">
-                            <span class="badge" style="font-weight: 700;"><?php echo (int) $col['total_faculty']; ?></span>
+                        <td style="text-align: center; color: #0f172a; font-weight: 700;">
+                            <?php echo (int) $col['total_faculty']; ?>
                         </td>
                         <?php if (!$isFacultyExtensionist): ?>
-                            <td style="text-align: center;">
-                                <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;"><?php echo (int) $col['res_proposals']; ?></span>
+                            <td style="text-align: center; color: #0f172a; font-weight: 700;">
+                                <?php echo (int) $col['res_proposals']; ?>
                             </td>
-                            <td style="text-align: center;">
-                                <span class="badge" style="background: #f3e8ff; color: #6b21a8; font-weight: 700;"><?php echo (int) $col['res_publications']; ?></span>
+                            <td style="text-align: center; color: #0f172a; font-weight: 700;">
+                                <?php echo (int) $col['res_publications']; ?>
                             </td>
                         <?php endif; ?>
-                        <td style="text-align: center;">
-                            <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;"><?php echo (int) $col['ext_proposals']; ?></span>
+                        <td style="text-align: center; color: #0f172a; font-weight: 700;">
+                            <?php echo (int) $col['ext_proposals']; ?>
                         </td>
-                        <td style="text-align: center;">
-                            <span class="badge" style="background: #ffedd5; color: #9a3412; font-weight: 700;"><?php echo (int) $col['ext_accomplishments']; ?></span>
+                        <td style="text-align: center; color: #0f172a; font-weight: 700;">
+                            <?php echo (int) $col['ext_accomplishments']; ?>
                         </td>
                         <td style="text-align: center;">
                             <strong style="font-size: 0.95rem; color: #0f172a;"><?php echo $displayedSubmissions; ?></strong>
