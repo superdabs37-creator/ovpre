@@ -1886,14 +1886,14 @@ function addResearcherRow(name = '', role = '', isPrimary = false) {
     row.className = 'repeater-row';
 
     const isFirstRow = tbody.children.length === 0 || isPrimary;
-    const defaultRole = role !== undefined && role !== '' ? role : (isFirstRow ? 'Lead Researcher / Principal Investigator' : 'Co-Researcher');
+    const roleValue = role || '';
 
     row.innerHTML = `
         <td>
             <input type="text" class="repeater-input researcher-name-input" value="${escapeHtmlForRepeater(name)}" placeholder="Full Name (e.g. Dr. Maria Santos)" required oninput="handleResearcherChange()">
         </td>
         <td>
-            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(defaultRole)}" placeholder="e.g. Lead Researcher, Co-Author, Statistician" required oninput="handleResearcherChange()">
+            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(roleValue)}" placeholder="e.g. Lead Researcher, Co-Author, Statistician" oninput="handleResearcherChange()">
         </td>
         <td style="text-align: center;">
             <button type="button" class="btn-repeater-remove" onclick="removeResearcherRow(this)" title="Remove Entry" aria-label="Remove researcher row">
@@ -1983,7 +1983,7 @@ function initResearchersRepeater(defaultName) {
             name = existingInput.value;
         }
     }
-    addResearcherRow(name || 'Faculty Researcher', 'Lead Researcher / Principal Investigator', true);
+    addResearcherRow(name || 'Faculty Researcher', '', true);
 }
 
 // --- BUDGET BREAKDOWN REPEATER ---
