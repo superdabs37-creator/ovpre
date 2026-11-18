@@ -1539,62 +1539,6 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
 </section>
 
 <!-- =========================================================
-     ROW 4: OPERATIONAL ACTION QUEUE (EXECUTIVE APPROVALS)
-========================================================= -->
-<?php if (!empty($pendingExecutiveProposals)): ?>
-<section class="panel" style="margin-bottom: 24px; border-left: 4px solid #15803d;">
-    <div class="panel-heading">
-        <div>
-            <h2><i class="ri-shield-check-line" style="color: #15803d;"></i> Executive Proposal Approval Queue (Stage 4 Final Sign-off)</h2>
-        </div>
-        <span class="status-pill status-pending-executive-approval" style="font-weight: 700;">
-            <?php echo count($pendingExecutiveProposals); ?> Awaiting Decision
-        </span>
-    </div>
-    <div class="table-scroll">
-        <table class="data-table portal-table">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Proposal Title</th>
-                    <th>Proponent</th>
-                    <th>College</th>
-                    <th>Endorsed By</th>
-                    <th>Grant Amount</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($pendingExecutiveProposals as $prop): ?>
-                    <tr>
-                        <td>
-                            <strong><span class="status-pill status-<?php echo $prop['proposal_type'] === 'Research' ? 'approved' : 'planning'; ?>">
-                                <?php echo h($prop['proposal_type']); ?>
-                            </span></strong>
-                        </td>
-                        <td>
-                            <strong><?php echo h($prop['title']); ?></strong>
-                        </td>
-                        <td><?php echo h($prop['fullname']); ?></td>
-                        <td><span class="dept-pill"><?php echo h($prop['department_name'] ?? 'Unassigned'); ?></span></td>
-                        <td><?php echo h($prop['director_name'] ?? 'Director'); ?></td>
-                        <td><strong><?php echo $prop['grant_amount'] ? 'PHP ' . number_format((float)$prop['grant_amount'], 2) : 'Under Review'; ?></strong></td>
-                        <td><span class="status-pill status-pending-executive-approval">Pending Executive Approval</span></td>
-                        <td>
-                            <a class="action-btn signoff-review-btn" href="<?php echo $prop['proposal_type'] === 'Research' ? 'research.php?highlight=' . (int) $prop['id'] . '#proposal-' . (int) $prop['id'] : 'extension.php?highlight=' . (int) $prop['id'] . '#project-' . (int) $prop['id']; ?>" style="padding: 6px 12px; font-size: 0.82rem; background: #15803d;">
-                                <i class="ri-shield-check-line"></i><span>Sign-off / Review</span><i class="ri-arrow-right-up-line signoff-arrow"></i>
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</section>
-<?php endif; ?>
-
-<!-- =========================================================
      CLIENT-SIDE CHART.JS ANALYTICS ENGINE
 ========================================================= -->
 <script>
