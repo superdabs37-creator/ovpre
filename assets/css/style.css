@@ -1118,10 +1118,16 @@ button {
     min-height: 46px;
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 4px 12px 4px 5px;
+    padding: 4px;
     background: var(--white);
     color: var(--green-900);
     font-weight: 700;
+    cursor: pointer;
+}
+
+.profile-button span:not(.avatar),
+.profile-button i {
+    display: none;
 }
 
 .avatar {
