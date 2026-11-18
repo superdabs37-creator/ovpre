@@ -39,7 +39,12 @@ function role_access_group(string $role): string {
 function announcement_audience_roles(string $audience): ?array {
     return match ($audience) {
         'All' => [],
+        'All Faculty' => [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST],
+        'Research Director' => [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR],
+        'Extension Director' => [ROLE_EXTENSION_DIRECTOR],
         'Directors' => [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR],
+        'Research Coordinators' => [ROLE_RESEARCH_COORDINATOR],
+        'Extension Coordinators' => [ROLE_EXTENSION_COORDINATOR],
         'Coordinators' => [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR],
         'Faculty Extensionists' => [ROLE_FACULTY_EXTENSIONIST],
         'OVPRE Staff' => [ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT],
@@ -50,8 +55,10 @@ function announcement_audience_roles(string $audience): ?array {
 
 function announcement_audience_for_role(string $role): ?string {
     return match ($role) {
-        ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR => 'Directors',
-        ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR => 'Coordinators',
+        ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR => 'Research Director',
+        ROLE_EXTENSION_DIRECTOR => 'Extension Director',
+        ROLE_RESEARCH_COORDINATOR => 'Research Coordinators',
+        ROLE_EXTENSION_COORDINATOR => 'Extension Coordinators',
         ROLE_FACULTY_EXTENSIONIST => 'Faculty Extensionists',
         ROLE_OVPRE_ADMIN, ROLE_OVPRE_SECRETARIAT => 'OVPRE Staff',
         ROLE_RESEARCHER => 'Faculty Researchers',
@@ -61,8 +68,10 @@ function announcement_audience_for_role(string $role): ?string {
 
 function announcement_viewable_audiences(string $role): array {
     $validEnumValues = [
-        'All', 'Directors', 'Coordinators', 'Faculty Extensionists',
-        'OVPRE Staff', 'Faculty Researchers', 'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'
+        'All', 'All Faculty', 'Research Director', 'Extension Director', 'Directors',
+        'Research Coordinators', 'Extension Coordinators', 'Coordinators',
+        'Faculty Extensionists', 'OVPRE Staff', 'Faculty Researchers',
+        'Other Authorized Users', 'Faculty', 'Researchers', 'Staff'
     ];
     if (in_array($role, [ROLE_SUPER_ADMIN, ROLE_OVPRE_ADMIN], true)) {
         return $validEnumValues;

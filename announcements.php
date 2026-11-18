@@ -191,7 +191,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                     <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Audience</label>
                     <select name="audience" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
                         <option value="" selected disabled>Choose audience</option>
-                        <?php foreach (['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Faculty Researchers'] as $audienceOption): ?>
+                        <?php foreach (['All', 'All Faculty', 'Research Director', 'Extension Director', 'Research Coordinators', 'Extension Coordinators', 'Faculty Researchers', 'Faculty Extensionists'] as $audienceOption): ?>
                             <option value="<?php echo h($audienceOption); ?>"><?php echo h($audienceOption); ?></option>
                         <?php endforeach; ?>
                     </select>
@@ -431,7 +431,7 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
                 <div>
                     <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Audience</label>
                     <select name="audience" required style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                        <?php foreach (['All', 'Directors', 'Coordinators', 'Faculty Extensionists', 'OVPRE Staff', 'Faculty Researchers'] as $audienceOption): ?>
+                        <?php foreach (['All', 'All Faculty', 'Research Director', 'Extension Director', 'Research Coordinators', 'Extension Coordinators', 'Faculty Researchers', 'Faculty Extensionists'] as $audienceOption): ?>
                             <option value="<?php echo h($audienceOption); ?>" <?php echo $item['audience'] === $audienceOption ? 'selected' : ''; ?>><?php echo h($audienceOption); ?></option>
                         <?php endforeach; ?>
                     </select>

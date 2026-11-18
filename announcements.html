@@ -213,7 +213,7 @@
             <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Event</span>
         </td>
         <td style="padding: 14px 14px; vertical-align: middle;">
-            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> General Academic Community</span>
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> All Faculty</span>
         </td>
         <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
             <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.8rem;"></i> Urgent</span>
@@ -307,11 +307,14 @@
                     <div>
                         <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Audience</label>
                         <select id="annAudience" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
-                            <option value="All Faculty">All Faculty</option>
-                            <option value="Extension Coordinators">Extension Coordinators</option>
-                            <option value="Faculty Extensionists">Faculty Extensionists</option>
-                            <option value="General Academic Community">General Academic Community</option>
                             <option value="All">All</option>
+                            <option value="All Faculty">All Faculty</option>
+                            <option value="Research Director">Research Director</option>
+                            <option value="Extension Director">Extension Director</option>
+                            <option value="Research Coordinators">Research Coordinators</option>
+                            <option value="Extension Coordinators">Extension Coordinators</option>
+                            <option value="Faculty Researchers">Faculty Researchers</option>
+                            <option value="Faculty Extensionists">Faculty Extensionists</option>
                         </select>
                     </div>
                     <div>
@@ -441,7 +444,7 @@
                 "title": "Annual University Research Colloquium & Best Paper Awards 2026",
                 "content": "The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are welcome across all nine academic colleges.",
                 "category": "Event",
-                "audience": "General Academic Community",
+                "audience": "All Faculty",
                 "priority": "Urgent",
                 "date": "Oct 28, 2026",
                 "expiry": "Dec 10, 2026",
@@ -480,7 +483,22 @@
         function getStoredAnnouncements() {
             try {
                 const s = localStorage.getItem('ovpre_announcements');
-                if (s) return JSON.parse(s);
+                if (s) {
+                    const parsed = JSON.parse(s);
+                    if (Array.isArray(parsed)) {
+                        let migrated = false;
+                        parsed.forEach(item => {
+                            if (item && item.audience === 'General Academic Community') {
+                                item.audience = 'All Faculty';
+                                migrated = true;
+                            }
+                        });
+                        if (migrated) {
+                            localStorage.setItem('ovpre_announcements', JSON.stringify(parsed));
+                        }
+                        return parsed;
+                    }
+                }
             } catch (e) {}
             localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
             return initialAnnouncements;
