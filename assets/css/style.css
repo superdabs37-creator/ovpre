@@ -1000,13 +1000,7 @@ button {
 }
 
 .topbar-breadcrumb {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: #64748b;
-    line-height: 1;
+    display: none !important;
 }
 
 .topbar-breadcrumb .breadcrumb-home {
