@@ -2215,6 +2215,53 @@
                     activityDonutChartInstance.data.datasets[0].data = counts;
                     activityDonutChartInstance.update();
                 } else {
+                    const activityCenterTextPlugin = {
+                        id: 'activityCenterText',
+                        afterDraw(chart) {
+                            const { ctx, chartArea } = chart;
+                            if (!chartArea) return;
+                            const cx = (chartArea.left + chartArea.right) / 2;
+                            const cy = (chartArea.top + chartArea.bottom) / 2;
+
+                            ctx.save();
+                            const active = chart.getActiveElements();
+                            const dataset = chart.data.datasets[0];
+                            const data = dataset.data || [];
+                            const total = data.reduce((acc, v) => acc + (Number(v) || 0), 0);
+
+                            let mainVal = String(total);
+                            let subLbl = total === 1 ? 'TOTAL EVENT' : 'TOTAL EVENTS';
+                            let mainColor = '#0f172a';
+                            let subColor = '#64748b';
+
+                            if (active.length > 0) {
+                                const idx = active[0].index;
+                                const val = Number(data[idx]) || 0;
+                                const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                                const label = chart.data.labels[idx] || '';
+                                const color = Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor[idx] : '#15803d';
+
+                                mainVal = String(val);
+                                subLbl = `${label.toUpperCase()} (${pct}%)`;
+                                mainColor = color;
+                                subColor = color;
+                            }
+
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+
+                            ctx.font = "800 1.75rem 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+                            ctx.fillStyle = mainColor;
+                            ctx.fillText(mainVal, cx, cy - 7);
+
+                            ctx.font = "700 0.62rem 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+                            ctx.fillStyle = subColor;
+                            ctx.fillText(subLbl, cx, cy + 13);
+
+                            ctx.restore();
+                        }
+                    };
+
                     activityDonutChartInstance = new Chart(chartCanvas, {
                         type: 'doughnut',
                         data: {
@@ -2253,7 +2300,8 @@
                                     }
                                 }
                             }
-                        }
+                        },
+                        plugins: [activityCenterTextPlugin]
                     });
                 }
             }
