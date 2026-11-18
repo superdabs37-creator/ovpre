@@ -1893,7 +1893,7 @@ function addResearcherRow(name = '', role = '', isPrimary = false) {
             <input type="text" class="repeater-input researcher-name-input" value="${escapeHtmlForRepeater(name)}" placeholder="Full Name (e.g. Dr. Maria Santos)" required oninput="handleResearcherChange()">
         </td>
         <td>
-            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(defaultRole)}" placeholder="e.g. Lead Researcher, Co-Author, Statistician" required oninput="handleResearcherChange()" list="researcherRolesDatalist">
+            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(defaultRole)}" placeholder="e.g. Lead Researcher, Co-Author, Statistician" required oninput="handleResearcherChange()">
         </td>
         <td style="text-align: center;">
             <button type="button" class="btn-repeater-remove" onclick="removeResearcherRow(this)" title="Remove Entry" aria-label="Remove researcher row">
