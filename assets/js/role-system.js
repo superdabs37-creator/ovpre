@@ -205,11 +205,16 @@
     window.switchRole = function (targetRole) {
         const normalized = normalizeRole(targetRole);
         const currentUser = getCurrentUser();
+        currentUser.id = 'demo_' + normalized.toLowerCase().replace(/\s+/g, '_');
+        currentUser.username = normalized.toLowerCase().replace(/\s+/g, '_');
+        currentUser.email = normalized.toLowerCase().replace(/\s+/g, '.') + '@plsp.edu.ph';
         currentUser.role = normalized;
         currentUser.fullname = ROLE_DEMO_NAMES[normalized] || (normalized + ' User');
         currentUser.department = ROLE_DEMO_DEPARTMENTS[normalized] !== undefined
             ? ROLE_DEMO_DEPARTMENTS[normalized]
             : '';
+        currentUser.is_demo = true;
+        currentUser.is_registered = false;
 
         sessionStorage.setItem('irecord_user', JSON.stringify(currentUser));
         localStorage.setItem('irecord_user', JSON.stringify(currentUser));

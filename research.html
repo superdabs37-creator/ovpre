@@ -723,7 +723,7 @@
                 const raw = localStorage.getItem('ovpre_research_projects');
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length && parsed[0].title === initialSeed[0].title) return parsed;
+                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) return parsed;
                 }
             } catch (e) {}
             localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
@@ -777,42 +777,100 @@
             return 'Super Administrator';
         }
 
+        function getCurrentUserObj() {
+            try {
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            return { id: 1, username: 'admin', fullname: 'Super Administrator', role: 'Super Admin' };
+        }
+
+        function isRegisteredAccount(u) {
+            if (!u) return false;
+            if (u.is_registered === true) return true;
+            if (u.is_demo === true) return false;
+            try {
+                const regList = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+                if (regList.some(r =>
+                    (u.id && r.id && String(r.id) === String(u.id)) ||
+                    (u.username && r.username && r.username.toLowerCase() === u.username.toLowerCase()) ||
+                    (u.email && r.email && r.email.toLowerCase() === u.email.toLowerCase())
+                )) {
+                    return true;
+                }
+            } catch (e) {}
+            const demoNames = [
+                'super administrator', 'ovpre admin office', 'dr. aris ramos', 'dr. aris thorne',
+                'dr. maricel gomez', 'prof. engr. mark santos', 'prof. elena cruz',
+                'prof. juan dela cruz', 'prof. maria bautista'
+            ];
+            const fn = (u.fullname || '').trim().toLowerCase();
+            return Boolean(fn && !demoNames.includes(fn));
+        }
+
         function openCreateProposalModal() {
             const role = getCurrentUserRole();
             if (role === 'Super Admin' || role === 'OVPRE Admin') {
                 OVPRE.toast('System Admin accounts cannot submit research proposals.', 'error');
                 return;
             }
-            const fullname = getCurrentUserFullname();
+            const u = getCurrentUserObj();
+            const fullname = u.fullname || getCurrentUserFullname();
             const resInput = document.getElementById('createResearchers');
-            if (resInput && (!resInput.value || resInput.value.includes('Dr. Juan Dela Cruz'))) {
+            if (resInput) {
                 resInput.value = fullname || 'Faculty Researcher';
+            }
+            const colSelect = document.getElementById('createCollege');
+            if (colSelect && u.department) {
+                const deptClean = u.department.split('(')[0].trim().toLowerCase();
+                Array.from(colSelect.options).forEach(opt => {
+                    if (opt.value.toLowerCase().includes(deptClean) || deptClean.includes(opt.value.toLowerCase())) {
+                        colSelect.value = opt.value;
+                    }
+                });
             }
             OVPRE.openModal('createResearchProposalModal');
         }
 
-        
         const urlParams = new URLSearchParams(window.location.search);
         let currentScope = urlParams.get('filter') === 'my' ? 'my' : 'all';
 
         function isMyProposal(p) {
-            const userRole = getCurrentUserRole();
-            const userFullname = getCurrentUserFullname();
+            const u = getCurrentUserObj();
+            const myId = u.id ? String(u.id) : '';
+            const myUsername = (u.username || '').trim().toLowerCase();
+            const myEmail = (u.email || '').trim().toLowerCase();
+            const myName = (u.fullname || '').trim().toLowerCase();
+
+            // 1. Strict account-level ownership check for any submitted proposal
+            if (p.submitted_by_id || p.submitted_by_username || p.submitted_by_email) {
+                if (myId && p.submitted_by_id && String(p.submitted_by_id) === myId) return true;
+                if (myUsername && p.submitted_by_username && String(p.submitted_by_username).toLowerCase() === myUsername) return true;
+                if (myEmail && p.submitted_by_email && String(p.submitted_by_email).toLowerCase() === myEmail) return true;
+                return false;
+            }
+
+            // 2. Newly registered / custom faculty accounts start with their own clean slate (never inherit pre-seeded demo items)
+            if (isRegisteredAccount(u)) {
+                const createdBy = (p.created_by || '').trim().toLowerCase();
+                if (myName && createdBy && createdBy === myName) return true;
+                return false;
+            }
+
+            // 3. Built-in demo Faculty Researcher account
             const researchers = (p.researchers || '').toLowerCase();
             const createdBy = (p.created_by || '').toLowerCase();
-            const myName = (userFullname || '').toLowerCase();
-
             if (myName && (researchers.includes(myName) || createdBy.includes(myName))) return true;
-            if (myName.includes('thorne') && researchers.includes('thorne')) return true;
-            if (p.submitted_by_me === true) return true;
-            if ((userRole === 'Faculty Researcher' || userRole === 'Researcher' || myName.includes('thorne')) && [1, 8, 9, 10].includes(p.id)) return true;
+            if ((myName === 'prof. juan dela cruz' || myName.includes('thorne')) && [1, 8, 9, 10].includes(Number(p.id))) return true;
             return false;
         }
 
         function setResearchScope(scope) {
-            currentScope = scope;
+            const userRole = getCurrentUserRole();
+            const isFaculty = (userRole === 'Faculty Researcher' || userRole === 'Researcher');
+            currentScope = isFaculty ? 'my' : scope;
             const url = new URL(window.location);
-            if (scope === 'my') {
+            if (currentScope === 'my') {
                 url.searchParams.set('filter', 'my');
             } else {
                 url.searchParams.delete('filter');
@@ -823,11 +881,6 @@
 
         function renderTable() {
             const all = getProjects();
-            const activeList = all.filter(p => !p.archived);
-            const archivedList = all.filter(p => p.archived);
-            document.getElementById('activeCount').textContent = activeList.length;
-            document.getElementById('archivedCount').textContent = archivedList.length;
-
             const userRole = getCurrentUserRole();
             const isSuperAdmin = (userRole === 'Super Admin');
             const isOVPREAdmin = (userRole === 'OVPRE Admin');
@@ -835,6 +888,13 @@
             const isCoordinator = (userRole === 'Research Coordinator');
             const isDirector = (userRole === 'Research Director');
             const isFaculty = (userRole === 'Faculty Researcher' || userRole === 'Researcher');
+
+            // Faculty accounts strictly see ONLY their own submitted research papers
+            const scopedAll = isFaculty ? all.filter(isMyProposal) : all;
+            const activeList = scopedAll.filter(p => !p.archived);
+            const archivedList = scopedAll.filter(p => p.archived);
+            document.getElementById('activeCount').textContent = activeList.length;
+            document.getElementById('archivedCount').textContent = archivedList.length;
 
             // System Admin accounts cannot submit proposals - hide button for Admin / Executive
             const submitBtn = document.getElementById('btnSubmitProposal');
@@ -846,19 +906,27 @@
             const myArchivedList = archivedList.filter(isMyProposal);
 
             const scopeCtrl = document.querySelector('.scope-filter-control');
+            const scopeAllBtn = document.getElementById('scopeAllProposalsBtn');
+            const clearBtn = document.querySelector('#mySubmissionsAlertBanner .alert-btn-clear');
             if (scopeCtrl) {
                 scopeCtrl.style.display = isFaculty ? 'inline-flex' : 'none';
             }
-            if (!isFaculty) {
+            if (scopeAllBtn) {
+                scopeAllBtn.style.display = isFaculty ? 'none' : '';
+            }
+            if (clearBtn) {
+                clearBtn.style.display = isFaculty ? 'none' : '';
+            }
+            if (isFaculty) {
+                currentScope = 'my';
+            } else {
                 currentScope = 'all';
             }
-
             const allCountEl = document.getElementById('allScopeCount');
             const myCountEl = document.getElementById('myScopeCount');
             if (allCountEl) allCountEl.textContent = currentTab === 'active' ? activeList.length : archivedList.length;
             if (myCountEl) myCountEl.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
 
-            const scopeAllBtn = document.getElementById('scopeAllProposalsBtn');
             const scopeMyBtn = document.getElementById('scopeMyProposalsBtn');
             const banner = document.getElementById('mySubmissionsAlertBanner');
             const bannerCount = document.getElementById('myProposalsBannerCount');
@@ -1062,6 +1130,7 @@
             const all = getProjects();
             const newId = (all.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0)) + 1;
 
+            const currentUser = getCurrentUserObj();
             const newProposal = {
                 id: newId,
                 title,
@@ -1077,6 +1146,10 @@
                 abstract,
                 document_filename: docFilename,
                 document_url: docUrl,
+                submitted_by_id: currentUser.id || '',
+                submitted_by_username: (currentUser.username || '').toLowerCase(),
+                submitted_by_email: (currentUser.email || '').toLowerCase(),
+                created_by: currentUser.fullname || researchers,
                 archived: false
             };
 
@@ -1611,6 +1684,9 @@
                 localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
             }
             renderTable();
+            if (urlParams.get('action') === 'new') {
+                setTimeout(openCreateProposalModal, 150);
+            }
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

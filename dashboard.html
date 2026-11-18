@@ -994,14 +994,114 @@
             kpiAcademicRecordsCard.style.display = 'none';
         }
 
+        function getCurrentDashboardUser() {
+            try {
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            return { id: 1, username: 'admin', fullname: 'Super Administrator', role: 'Super Admin' };
+        }
+
+        function isRegisteredDashboardUser(u) {
+            if (!u) return false;
+            if (u.is_registered === true) return true;
+            if (u.is_demo === true) return false;
+            try {
+                const regList = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+                if (regList.some(r =>
+                    (u.id && r.id && String(r.id) === String(u.id)) ||
+                    (u.username && r.username && r.username.toLowerCase() === u.username.toLowerCase()) ||
+                    (u.email && r.email && r.email.toLowerCase() === u.email.toLowerCase())
+                )) {
+                    return true;
+                }
+            } catch (e) {}
+            const demoNames = [
+                'super administrator', 'ovpre admin office', 'dr. aris ramos', 'dr. aris thorne',
+                'dr. maricel gomez', 'prof. engr. mark santos', 'prof. elena cruz',
+                'prof. juan dela cruz', 'prof. maria bautista'
+            ];
+            const fn = (u.fullname || '').trim().toLowerCase();
+            return Boolean(fn && !demoNames.includes(fn));
+        }
+
+        function isMyDashboardResearch(p, u) {
+            const myId = u.id ? String(u.id) : '';
+            const myUsername = (u.username || '').trim().toLowerCase();
+            const myEmail = (u.email || '').trim().toLowerCase();
+            const myName = (u.fullname || '').trim().toLowerCase();
+            if (p.submitted_by_id || p.submitted_by_username || p.submitted_by_email) {
+                if (myId && p.submitted_by_id && String(p.submitted_by_id) === myId) return true;
+                if (myUsername && p.submitted_by_username && String(p.submitted_by_username).toLowerCase() === myUsername) return true;
+                if (myEmail && p.submitted_by_email && String(p.submitted_by_email).toLowerCase() === myEmail) return true;
+                return false;
+            }
+            if (isRegisteredDashboardUser(u)) {
+                const createdBy = (p.created_by || '').trim().toLowerCase();
+                return Boolean(myName && createdBy && createdBy === myName);
+            }
+            const researchers = (p.researchers || '').toLowerCase();
+            const createdBy = (p.created_by || '').toLowerCase();
+            if (myName && (researchers.includes(myName) || createdBy.includes(myName))) return true;
+            if ((myName === 'prof. juan dela cruz' || myName.includes('thorne')) && [1, 8, 9, 10].includes(Number(p.id))) return true;
+            return false;
+        }
+
+        function isMyDashboardExtension(p, u) {
+            const myId = u.id ? String(u.id) : '';
+            const myUsername = (u.username || '').trim().toLowerCase();
+            const myEmail = (u.email || '').trim().toLowerCase();
+            const myName = (u.fullname || '').trim().toLowerCase();
+            if (p.submitted_by_id || p.submitted_by_username || p.submitted_by_email) {
+                if (myId && p.submitted_by_id && String(p.submitted_by_id) === myId) return true;
+                if (myUsername && p.submitted_by_username && String(p.submitted_by_username).toLowerCase() === myUsername) return true;
+                if (myEmail && p.submitted_by_email && String(p.submitted_by_email).toLowerCase() === myEmail) return true;
+                return false;
+            }
+            if (isRegisteredDashboardUser(u)) {
+                const createdBy = (p.created_by || '').trim().toLowerCase();
+                return Boolean(myName && createdBy && createdBy === myName);
+            }
+            const coord = (p.coordinator || '').toLowerCase();
+            const createdBy = (p.created_by || '').toLowerCase();
+            if (myName && (coord.includes(myName) || createdBy.includes(myName))) return true;
+            if ((myName === 'prof. maria bautista' || myName.includes('santos')) && [2, 6].includes(Number(p.id))) return true;
+            return false;
+        }
+
+        function getDashboardMySubmissions(u) {
+            let resList = null;
+            let extList = null;
+            try { resList = JSON.parse(localStorage.getItem('ovpre_research_projects') || 'null'); } catch (e) {}
+            try { extList = JSON.parse(localStorage.getItem('ovpre_extension_projects') || 'null'); } catch (e) {}
+
+            let myRes = [];
+            let myExt = [];
+            if (Array.isArray(resList)) {
+                myRes = resList.filter(p => !p.archived && isMyDashboardResearch(p, u));
+            } else if (!isRegisteredDashboardUser(u) && isFacultyResearcher) {
+                myRes = [{ id: 1, title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming', status: 'Approved', created_at: '2026-01-15' }, { id: 8 }, { id: 9 }, { id: 10 }];
+            }
+            if (Array.isArray(extList)) {
+                myExt = extList.filter(p => !p.archived && isMyDashboardExtension(p, u));
+            } else if (!isRegisteredDashboardUser(u) && isFacultyExtensionist) {
+                myExt = [{ id: 2, title: 'Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors', status: 'Pending Coordinator Review', created_at: '2026-02-05' }, { id: 6 }];
+            }
+            return { myRes, myExt };
+        }
+
         // Personalize Research & Extension KPI Capsules for Faculty Proponents
         (function personalizeFacultyCards() {
+            const u = getCurrentDashboardUser();
+            const { myRes, myExt } = getDashboardMySubmissions(u);
+
             const resCard = document.getElementById('kpiResearchCard');
             const resTitle = document.getElementById('kpiResearchTitle');
             const resBadge = document.getElementById('kpiResearchMyBadge');
             const resCount = document.getElementById('kpiResearchCount');
             const resSub = document.getElementById('kpiResearchSub');
             const resMyPill = document.getElementById('kpiResearchMyPill');
+            const resMyNum = document.getElementById('kpiResearchMyNum');
 
             const extCard = document.getElementById('kpiExtensionCard');
             const extTitle = document.getElementById('kpiExtensionTitle');
@@ -1009,6 +1109,10 @@
             const extCount = document.getElementById('kpiExtensionCount');
             const extSub = document.getElementById('kpiExtensionSub');
             const extMyPill = document.getElementById('kpiExtensionMyPill');
+            const extMyNum = document.getElementById('kpiExtensionMyNum');
+
+            if (resMyNum) resMyNum.textContent = String(myRes.length);
+            if (extMyNum) extMyNum.textContent = String(myExt.length);
 
             if (isFacultyResearcher) {
                 if (resCard) {
@@ -1017,7 +1121,7 @@
                 }
                 if (resTitle) resTitle.textContent = 'My Research Proposals';
                 if (resBadge) resBadge.style.display = 'inline-flex';
-                if (resCount) resCount.innerHTML = '4 <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ 16 total</span>';
+                if (resCount) resCount.innerHTML = `${myRes.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">submitted</span>`;
                 if (resSub) resSub.textContent = 'My submitted proposals (Click to open)';
                 if (resMyPill) resMyPill.style.display = 'none';
             }
@@ -1029,12 +1133,11 @@
                 }
                 if (extTitle) extTitle.textContent = 'My Extension Projects';
                 if (extBadge) extBadge.style.display = 'inline-flex';
-                if (extCount) extCount.innerHTML = '2 <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ 7 total</span>';
+                if (extCount) extCount.innerHTML = `${myExt.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">submitted</span>`;
                 if (extSub) extSub.textContent = 'My submitted initiatives (Click to open)';
                 if (extMyPill) extMyPill.style.display = 'none';
             }
         })();
-
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
             'College of Business Administration': ['Bachelor of Science in Business Administration', 'Bachelor of Science in Entrepreneurship', 'Bachelor of Science in Office Administration'],
@@ -1374,7 +1477,45 @@
         }
 
         if (personTableBody) {
-            submissionPerformance.forEach(person => {
+            const currentUser = getCurrentDashboardUser();
+            let perfRows = submissionPerformance;
+            if (isFacultyResearcher || isFacultyExtensionist) {
+                const { myRes, myExt } = getDashboardMySubmissions(currentUser);
+                const mappedSubs = [
+                    ...myRes.map(r => ({
+                        id: r.id,
+                        type: 'Research',
+                        title: r.title || 'Research Proposal',
+                        status: r.status || 'Pending Coordinator Review',
+                        submitted_at: r.created_at || new Date().toISOString().slice(0, 10),
+                        description: r.abstract || 'Submitted research proposal.',
+                        extra_info: r.researchers || currentUser.fullname || 'Faculty Researcher',
+                        document_url: r.document_url || '#'
+                    })),
+                    ...myExt.map(e => ({
+                        id: e.id,
+                        type: 'Extension',
+                        title: e.title || 'Extension Project',
+                        status: e.status || 'Pending Coordinator Review',
+                        submitted_at: e.created_at || e.start_date || new Date().toISOString().slice(0, 10),
+                        description: e.description || 'Submitted extension project.',
+                        extra_info: e.coordinator || currentUser.fullname || 'Faculty Extensionist',
+                        document_url: e.document_url || '#'
+                    }))
+                ];
+                const approvedCount = mappedSubs.filter(s => s.status === 'Approved' || s.status === 'Completed').length;
+                perfRows = [{
+                    submitter_id: currentUser.id || 999,
+                    submitter_name: currentUser.fullname || 'Faculty Member',
+                    department_name: (currentUser.department || 'Assigned College').split('(')[0].trim(),
+                    research_count: myRes.length,
+                    extension_count: myExt.length,
+                    approved_count: approvedCount,
+                    submissions: mappedSubs
+                }];
+            }
+
+            perfRows.forEach(person => {
                 const tr = document.createElement('tr');
                 tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
                 const userSubs = isResearchOnlyRole ? person.submissions.filter(s => s.type === 'Research') : (isExtensionOnlyRole ? person.submissions.filter(s => s.type === 'Extension') : person.submissions);
@@ -1397,25 +1538,31 @@
                     personDialogTitle.textContent = isResearchOnlyRole ? `Research Submissions - ${person.submitter_name}` : (isExtensionOnlyRole ? `Extension Submissions - ${person.submitter_name}` : `All Submissions - ${person.submitter_name}`);
                     personSubTableBody.replaceChildren();
 
-                    userSubs.forEach(sub => {
-                        const subRow = document.createElement('tr');
-                        subRow.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.84rem;';
-                        subRow.innerHTML = `
-                            <td style="padding: 10px 12px;"><span class="badge" style="background: ${sub.type === 'Research' ? '#f0fdf4' : '#f3e8ff'}; color: ${sub.type === 'Research' ? '#15803d' : '#7c3aed'}; font-weight: 700;">${sub.type}</span></td>
-                            <td style="padding: 10px 12px; font-weight: 600; color: #0f172a;">${sub.title}</td>
-                            <td style="padding: 10px 12px; text-align: center;"><span class="status-pill ${sub.status === 'Approved' ? 'status-approved' : 'status-review'}" style="font-size: 0.76rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;">${sub.status}</span></td>
-                            <td style="padding: 10px 12px; text-align: center; color: #64748b;">${sub.submitted_at}</td>
-                            <td style="padding: 10px 12px; text-align: center;">
-                                <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.78rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 6px; cursor: pointer; font-weight: 700;">
-                                    View
-                                </button>
-                            </td>
-                        `;
-                        subRow.querySelector('button').addEventListener('click', () => {
-                            openQuickPreview(sub, person.submitter_name, person.department_name);
+                    if (!userSubs.length) {
+                        const emptyRow = document.createElement('tr');
+                        emptyRow.innerHTML = `<td colspan="5" style="padding: 20px; text-align: center; color: #64748b;">No submissions yet under your account.</td>`;
+                        personSubTableBody.appendChild(emptyRow);
+                    } else {
+                        userSubs.forEach(sub => {
+                            const subRow = document.createElement('tr');
+                            subRow.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.84rem;';
+                            subRow.innerHTML = `
+                                <td style="padding: 10px 12px;"><span class="badge" style="background: ${sub.type === 'Research' ? '#f0fdf4' : '#f3e8ff'}; color: ${sub.type === 'Research' ? '#15803d' : '#7c3aed'}; font-weight: 700;">${sub.type}</span></td>
+                                <td style="padding: 10px 12px; font-weight: 600; color: #0f172a;">${sub.title}</td>
+                                <td style="padding: 10px 12px; text-align: center;"><span class="status-pill ${sub.status === 'Approved' ? 'status-approved' : 'status-review'}" style="font-size: 0.76rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;">${sub.status}</span></td>
+                                <td style="padding: 10px 12px; text-align: center; color: #64748b;">${sub.submitted_at}</td>
+                                <td style="padding: 10px 12px; text-align: center;">
+                                    <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.78rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 6px; cursor: pointer; font-weight: 700;">
+                                        View
+                                    </button>
+                                </td>
+                            `;
+                            subRow.querySelector('button').addEventListener('click', () => {
+                                openQuickPreview(sub, person.submitter_name, person.department_name);
+                            });
+                            personSubTableBody.appendChild(subRow);
                         });
-                        personSubTableBody.appendChild(subRow);
-                    });
+                    }
 
                     if (window.OVPRE && OVPRE.reloadTable) {
                         OVPRE.reloadTable(personSubTableBody.closest('table'));
@@ -1427,7 +1574,6 @@
                 personTableBody.appendChild(tr);
             });
         }
-
         if (closePersonDialog && personDialog) {
             closePersonDialog.addEventListener('click', () => { if (window.OVPRE && OVPRE.closeModal) OVPRE.closeModal('personSubmissionsDialog'); else personDialog.classList.remove('open'); });
             personDialog.addEventListener('click', (e) => { if (e.target === personDialog) personDialog.close(); });

@@ -278,11 +278,47 @@
             renderFiles();
         }
 
+        function isMySubmittedFile(f) {
+            let u = {};
+            try {
+                u = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user') || '{}');
+            } catch (e) {}
+            const role = (u.role || 'Super Admin').toLowerCase();
+            const isFaculty = role.includes('faculty') || role === 'researcher' || role === 'extensionist';
+            if (!isFaculty) return true;
+
+            const myId = u.id ? String(u.id) : '';
+            const myUsername = (u.username || '').trim().toLowerCase();
+            const myEmail = (u.email || '').trim().toLowerCase();
+            const myName = (u.fullname || '').trim().toLowerCase();
+
+            if (f.submitted_by_id || f.submitted_by_username || f.submitted_by_email) {
+                if (myId && f.submitted_by_id && String(f.submitted_by_id) === myId) return true;
+                if (myUsername && f.submitted_by_username && String(f.submitted_by_username).toLowerCase() === myUsername) return true;
+                if (myEmail && f.submitted_by_email && String(f.submitted_by_email).toLowerCase() === myEmail) return true;
+                return false;
+            }
+
+            let isReg = Boolean(u.is_registered);
+            if (!isReg && !u.is_demo) {
+                try {
+                    const regList = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+                    isReg = regList.some(r =>
+                        (u.id && r.id && String(r.id) === String(u.id)) ||
+                        (u.username && r.username && r.username.toLowerCase() === myUsername)
+                    );
+                } catch (e) {}
+            }
+            if (isReg) {
+                return false;
+            }
+            return Boolean(myName && (f.uploader || '').trim().toLowerCase() === myName);
+        }
+
         function renderFiles(customList) {
-            const all = getStoredFiles();
+            const all = getStoredFiles().filter(isMySubmittedFile);
             const activeList = all.filter(f => !f.archived);
             const archivedList = all.filter(f => f.archived);
-
             const activeBadge = document.getElementById('activeFilesBadge');
             const archBadge = document.getElementById('archivedFilesBadge');
             if (activeBadge) activeBadge.textContent = activeList.length;

@@ -191,6 +191,11 @@
             const fileInput = document.getElementById('docFile');
             const fileName = fileInput.files[0] ? fileInput.files[0].name : `${title.toLowerCase().replace(/\\s+/g, '_')}.pdf`;
 
+            let currentUser = {};
+            try {
+                currentUser = JSON.parse(localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user') || '{}');
+            } catch (e) {}
+
             const newDoc = {
                 id: Date.now(),
                 title: title,
@@ -200,9 +205,11 @@
                 college: department.includes('(') ? department.split('(')[1].replace(')', '') : department,
                 status: 'Under Review',
                 date: new Date(subDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                filename: fileName
+                filename: fileName,
+                submitted_by_id: currentUser.id || '',
+                submitted_by_username: (currentUser.username || '').toLowerCase(),
+                submitted_by_email: (currentUser.email || '').toLowerCase()
             };
-
             // Save to submitted files
             try {
                 let existing = JSON.parse(localStorage.getItem('irecord_submitted_files') || '[]');

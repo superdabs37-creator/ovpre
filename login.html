@@ -81,12 +81,14 @@
     <script>
         window.quickLogin = function(role, fullname, dept) {
             const userSession = {
-                id: Date.now(),
+                id: 'demo_' + role.toLowerCase().replace(/\s+/g, '_'),
                 username: role.toLowerCase().replace(/\s+/g, '_'),
                 fullname: fullname,
                 role: role,
                 email: role.toLowerCase().replace(/\s+/g, '.') + '@plsp.edu.ph',
                 department: dept || '',
+                is_demo: true,
+                is_registered: false,
                 logged_in: true
             };
             sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
@@ -154,12 +156,17 @@
                 let userSession;
                 if (matchedUser) {
                     userSession = {
-                        id: matchedUser.id || 1,
+                        id: matchedUser.id || ('usr_' + matchedUser.username.toLowerCase()),
                         username: matchedUser.username,
                         fullname: matchedUser.fullname,
                         role: matchedUser.role,
                         email: matchedUser.email,
+                        phone: matchedUser.phone || '',
+                        birthday: matchedUser.birthday || '',
+                        gender: matchedUser.gender || '',
+                        photo: matchedUser.photo || '',
                         department: matchedUser.department || '',
+                        is_registered: true,
                         logged_in: true
                     };
                 } else {
@@ -188,11 +195,12 @@
                     }
 
                     userSession = {
-                        id: 1,
+                        id: (lower === 'admin' || !usernameInput) ? 1 : ('usr_' + lower.replace(/[^a-z0-9_.-]/g, '_')),
                         username: usernameInput || 'admin',
                         fullname: fullname,
                         role: role,
                         email: (usernameInput || 'admin') + '@plsp.edu.ph',
+                        is_registered: (lower !== 'admin' && Boolean(usernameInput)),
                         logged_in: true
                     };
                 }
