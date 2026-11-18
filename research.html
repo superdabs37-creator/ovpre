@@ -348,8 +348,8 @@
                     </div>
 
                     <label class="field"><span>College / Department</span>
-                        <select name="college" id="createCollege" required>
-                            <option value="College of Computer Studies and Technology">College of Computer Studies and Technology</option>
+                        <select name="college" id="createCollege" required onchange="updateCoordinatorRoutingHint()">
+                            <option value="College of Computer Studies and Technology" selected>College of Computer Studies and Technology</option>
                             <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
                             <option value="College of Business Administration">College of Business Administration</option>
                             <option value="College of Engineering">College of Engineering</option>
@@ -360,6 +360,10 @@
                             <option value="College of Human Kinetics">College of Human Kinetics</option>
                             <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
                         </select>
+                        <div id="collegeCoordinatorRoutingBadge" style="font-size: 0.76rem; color: #15803d; margin-top: 5px; font-weight: 500; display: flex; align-items: center; gap: 5px;">
+                            <i class="ri-user-received-2-line"></i>
+                            <span>Routed to: <strong id="assignedCoordinatorName">Prof. Engr. Mark Santos</strong> (<span id="assignedCoordinatorDept">CCST Research Coordinator</span>)</span>
+                        </div>
                     </label>
                     <label class="field"><span>Target Funding Source</span><input name="funding_source" id="createFunding" value="Institutional Research Grant"></label>
                     <label class="field" style="grid-column: 1 / -1;"><span>Proposed Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="createBudget" placeholder="100000" required></label>
@@ -899,6 +903,29 @@
             return Boolean(fn && !demoNames.includes(fn));
         }
 
+        function updateCoordinatorRoutingHint() {
+            const colSelect = document.getElementById('createCollege');
+            const nameEl = document.getElementById('assignedCoordinatorName');
+            const deptEl = document.getElementById('assignedCoordinatorDept');
+            if (!colSelect || !nameEl) return;
+            const coordMap = {
+                'CCST': { name: 'Prof. Engr. Mark Santos', title: 'CCST Research Coordinator' },
+                'COE': { name: 'Engr. Paolo Mendoza', title: 'COE Research Coordinator' },
+                'CONAHS': { name: 'Prof. Lorna De Guzman', title: 'CONAHS Research Coordinator' },
+                'CBA': { name: 'Prof. Noel Villanueva', title: 'CBA Research Coordinator' },
+                'CAS': { name: 'Dr. Clara Soriano', title: 'CAS Research Coordinator' },
+                'CTE': { name: 'Prof. Evelyn Salazar', title: 'CTE Research Coordinator' },
+                'CTHM': { name: 'Prof. Marco Reyes', title: 'CTHM Research Coordinator' },
+                'CPAG': { name: 'Prof. Diana Lim', title: 'CPAG Research Coordinator' },
+                'CHK': { name: 'Prof. Rico Fernandez', title: 'CHK Research Coordinator' },
+                'OVPRE': { name: 'Dr. Aris Ramos', title: 'Research Director' }
+            };
+            const code = normalizeDepartmentCode(colSelect.value);
+            const info = coordMap[code] || { name: 'College Coordinator', title: `${code} Research Coordinator` };
+            nameEl.textContent = info.name;
+            if (deptEl) deptEl.textContent = info.title;
+        }
+
         function openCreateProposalModal() {
             const role = getCurrentUserRole();
             if (role === 'Super Admin' || role === 'OVPRE Admin') {
@@ -915,19 +942,29 @@
                 initResearchersRepeater(fullname);
             }
             const colSelect = document.getElementById('createCollege');
-            const userDeptCode = normalizeDepartmentCode(u.department || u.college || '');
-            if (colSelect && userDeptCode) {
+            if (colSelect) {
+                // Ensure all college options are active and selectable
+                Array.from(colSelect.options).forEach(opt => { opt.disabled = false; });
+
+                // Align with Research Coordinator perspective:
+                // 1. If user is a Research Coordinator, match their assigned college
+                // 2. If user is Zyrus or default faculty, align to CCST (primary Research Coordinator perspective)
+                let targetCode = 'CCST';
+                if (role === 'Research Coordinator') {
+                    targetCode = normalizeDepartmentCode(u.department || u.college || 'CCST') || 'CCST';
+                } else if ((u.username && u.username.toLowerCase().includes('zyrus')) || (u.fullname && u.fullname.toLowerCase().includes('zyrus'))) {
+                    targetCode = 'CCST';
+                } else if (u.department || u.college) {
+                    targetCode = normalizeDepartmentCode(u.department || u.college || 'CCST') || 'CCST';
+                }
+
                 Array.from(colSelect.options).forEach(opt => {
                     const optCode = normalizeDepartmentCode(opt.value);
-                    if (optCode === userDeptCode) {
+                    if (optCode === targetCode) {
                         colSelect.value = opt.value;
-                        opt.disabled = false;
-                    } else {
-                        opt.disabled = true;
                     }
                 });
-            } else if (colSelect) {
-                Array.from(colSelect.options).forEach(opt => { opt.disabled = false; });
+                updateCoordinatorRoutingHint();
             }
             OVPRE.openModal('createResearchProposalModal');
         }
