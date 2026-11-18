@@ -1886,21 +1886,14 @@ function addResearcherRow(name = '', role = '', isPrimary = false) {
     row.className = 'repeater-row';
 
     const isFirstRow = tbody.children.length === 0 || isPrimary;
-    const defaultRole = role || (isFirstRow ? 'Lead Researcher / Principal Investigator' : 'Co-Researcher');
+    const defaultRole = role !== undefined && role !== '' ? role : (isFirstRow ? 'Lead Researcher / Principal Investigator' : 'Co-Researcher');
 
     row.innerHTML = `
         <td>
             <input type="text" class="repeater-input researcher-name-input" value="${escapeHtmlForRepeater(name)}" placeholder="Full Name (e.g. Dr. Maria Santos)" required oninput="handleResearcherChange()">
         </td>
         <td>
-            <select class="repeater-input researcher-role-select" onchange="handleResearcherChange()">
-                <option value="Lead Researcher / Principal Investigator" ${defaultRole.includes('Lead') || defaultRole.includes('Principal') ? 'selected' : ''}>Lead Researcher / Principal Investigator</option>
-                <option value="Co-Lead Researcher" ${defaultRole === 'Co-Lead Researcher' ? 'selected' : ''}>Co-Lead Researcher</option>
-                <option value="Co-Researcher" ${defaultRole === 'Co-Researcher' ? 'selected' : ''}>Co-Researcher</option>
-                <option value="Technical Assistant" ${defaultRole === 'Technical Assistant' ? 'selected' : ''}>Technical Assistant</option>
-                <option value="Data Analyst / Statistician" ${defaultRole === 'Data Analyst / Statistician' ? 'selected' : ''}>Data Analyst / Statistician</option>
-                <option value="Project Consultant / Adviser" ${defaultRole === 'Project Consultant / Adviser' ? 'selected' : ''}>Project Consultant / Adviser</option>
-            </select>
+            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(defaultRole)}" placeholder="e.g. Lead Researcher, Co-Author, Statistician" required oninput="handleResearcherChange()" list="researcherRolesDatalist">
         </td>
         <td style="text-align: center;">
             <button type="button" class="btn-repeater-remove" onclick="removeResearcherRow(this)" title="Remove Entry" aria-label="Remove researcher row">
@@ -1961,9 +1954,9 @@ function updateResearchersState() {
     const parts = [];
     rows.forEach(r => {
         const nameInput = r.querySelector('.researcher-name-input');
-        const roleSelect = r.querySelector('.researcher-role-select');
+        const roleInput = r.querySelector('.researcher-role-input, .researcher-role-select');
         const name = nameInput ? nameInput.value.trim() : '';
-        const role = roleSelect ? roleSelect.value.trim() : '';
+        const role = roleInput ? roleInput.value.trim() : '';
         if (name) {
             parts.push(role ? `${name} (${role})` : name);
         }
