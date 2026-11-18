@@ -401,21 +401,6 @@ renderHeader('Research Management', 'research');
                     <input type="hidden" name="researchers" id="createResearchers" value="<?php echo h($user['fullname']); ?>" required>
                 </div>
 
-                <label class="field"><span>College / Department</span>
-                    <select name="college" id="createCollege" required>
-                        <option value="College of Computer Studies and Technology" selected>College of Computer Studies and Technology</option>
-                        <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
-                        <option value="College of Business Administration">College of Business Administration</option>
-                        <option value="College of Engineering">College of Engineering</option>
-                        <option value="College of Arts and Sciences">College of Arts and Sciences</option>
-                        <option value="College of Teacher Education">College of Teacher Education</option>
-                        <option value="College of Tourism and Hospitality Management">College of Tourism and Hospitality Management</option>
-                        <option value="College of Public Administration and Governance">College of Public Administration and Governance</option>
-                        <option value="College of Human Kinetics">College of Human Kinetics</option>
-                        <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
-                    </select>
-                </label>
-
                 <label class="field"><span>Target Funding Source</span><input name="funding_source" value="Institutional Research Grant"></label>
             </div>
             <label class="field"><span>Abstract</span><textarea rows="5" name="abstract" required placeholder="State research problem, objectives, methodology, and expected institutional outcomes..."></textarea></label>

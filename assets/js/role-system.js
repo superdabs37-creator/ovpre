@@ -262,33 +262,14 @@
             if (!Array.isArray(list)) list = [];
             let changed = false;
 
-            const zIdx = list.findIndex(u =>
+            const hasZyrus = list.some(u =>
                 (u.username && String(u.username).toLowerCase().includes('zyrus')) ||
                 (u.fullname && String(u.fullname).toLowerCase().includes('zyrus'))
             );
-            if (zIdx !== -1) {
-                if (!list[zIdx].department || !list[zIdx].department.includes('CCST')) {
-                    list[zIdx].department = 'College of Computer Studies and Technology (CCST)';
-                    list[zIdx].college = 'CCST';
-                    changed = true;
-                }
-            } else {
+            if (!hasZyrus) {
                 list.push({ ...ZYRUS_DEFAULT_ACCOUNT });
                 changed = true;
             }
-
-            // Synchronize active session if current user is Zyrus to align with Research Coordinator
-            try {
-                const cur = JSON.parse(localStorage.getItem('irecord_user') || '{}');
-                if (cur && ((cur.username && cur.username.toLowerCase().includes('zyrus')) || (cur.fullname && cur.fullname.toLowerCase().includes('zyrus')))) {
-                    if (cur.department !== 'College of Computer Studies and Technology (CCST)') {
-                        cur.department = 'College of Computer Studies and Technology (CCST)';
-                        cur.college = 'CCST';
-                        localStorage.setItem('irecord_user', JSON.stringify(cur));
-                        sessionStorage.setItem('irecord_user', JSON.stringify(cur));
-                    }
-                }
-            } catch (e) {}
 
             DEPARTMENT_COORDINATOR_ACCOUNTS.forEach(coordAcc => {
                 const exists = list.some(u => u && u.username && String(u.username).toLowerCase() === coordAcc.username.toLowerCase());
