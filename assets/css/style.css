@@ -8183,3 +8183,79 @@ body.register-body .stepper-nav {
 .record-focus-toast .toast-close:hover {
     color: #ffffff;
 }
+
+/* ===== Modern status badges ===== */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 26px;
+    padding: 3px 11px 3px 9px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    white-space: nowrap;
+    --pill-dot: currentColor;
+}
+
+.status-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+    background: var(--pill-dot);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pill-dot) 18%, transparent);
+}
+
+.status-pill.status-approved,
+.status-pill.status-active,
+.status-pill.status-read {
+    color: #15803d;
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+    --pill-dot: #22c55e;
+}
+
+.status-pill.status-pending,
+.status-pill.status-under-review,
+.status-pill.status-unread,
+.status-pill.status-pending-coordinator-review {
+    color: #a16207;
+    background: #fffbeb;
+    border-color: #fde68a;
+    --pill-dot: #f59e0b;
+}
+
+.status-pill.status-pending-director-review {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    --pill-dot: #3b82f6;
+}
+
+.status-pill.status-pending-executive-approval {
+    color: #7e22ce;
+    background: #faf5ff;
+    border-color: #e9d5ff;
+    --pill-dot: #a855f7;
+}
+
+.status-pill.status-needs-revision {
+    color: #c2410c;
+    background: #fff7ed;
+    border-color: #fed7aa;
+    --pill-dot: #f97316;
+}
+
+.status-pill.status-rejected,
+.status-pill.status-declined,
+.status-pill.status-locked {
+    color: #b91c1c;
+    background: #fef2f2;
+    border-color: #fecaca;
+    --pill-dot: #ef4444;
+}
