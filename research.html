@@ -303,7 +303,7 @@
     <!-- CREATE PROPOSAL MODAL -->
     <div class="modal" id="createResearchProposalModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createResearchProposalTitle">
         <div class="modal-backdrop" data-close-modal></div>
-        <article class="modal-card simple-submit-modal" style="max-width: 680px;">
+        <article class="modal-card simple-submit-modal" style="max-width: 740px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
             <div class="activity-modal-head">
                 <span class="category-badge">Research</span>
@@ -312,8 +312,41 @@
             </div>
             <form class="editor-panel" id="createResearchProposalForm" onsubmit="handleCreateResearchProposal(event)">
                 <div class="form-grid">
-                    <label class="field"><span>Title</span><input name="title" id="createTitle" maxlength="220" required placeholder="e.g. AI-Powered Early Blight Detection..."></label>
-                    <label class="field"><span>Researchers</span><input name="researchers" id="createResearchers" required placeholder="Dr. Juan Dela Cruz, Prof. Maria Santos"></label>
+                    <label class="field" style="grid-column: 1 / -1;"><span>Title</span><input name="title" id="createTitle" maxlength="220" required placeholder="e.g. AI-Powered Early Blight Detection..."></label>
+
+                    <!-- DYNAMIC TABLE ROW / REPEATER FIELD FOR RESEARCHERS -->
+                    <div class="field repeater-container" style="grid-column: 1 / -1;">
+                        <div class="repeater-header">
+                            <span class="repeater-title">
+                                <i class="ri-team-line" style="color: #15803d; font-size: 1.1rem;"></i>
+                                <span>Researchers &amp; Proponents</span>
+                                <span id="researcherCountBadge" class="repeater-count-badge">1 Proponent</span>
+                            </span>
+                            <button type="button" class="btn-repeater-add" id="btnAddResearcherRow" onclick="addResearcherRow()">
+                                <i class="ri-add-line"></i> Add Row
+                            </button>
+                        </div>
+                        <div class="repeater-table-wrapper">
+                            <table class="repeater-table" id="researchersRepeaterTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 48%;">Researcher Name</th>
+                                        <th style="width: 40%;">Project Role / Designation</th>
+                                        <th style="width: 12%; text-align: center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="researchersRepeaterBody">
+                                    <!-- Dynamic Rows rendered via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="repeater-footer-hint">
+                            <span><i class="ri-information-line"></i> Click <strong>"Add Row"</strong> to dynamically create more researcher entries.</span>
+                            <span class="repeater-badge-type">Dynamic Repeater Table</span>
+                        </div>
+                        <input type="hidden" name="researchers" id="createResearchers" required>
+                    </div>
+
                     <label class="field"><span>College / Department</span>
                         <select name="college" id="createCollege" required>
                             <option value="College of Computer Studies and Technology">College of Computer Studies and Technology</option>
@@ -329,7 +362,43 @@
                         </select>
                     </label>
                     <label class="field"><span>Target Funding Source</span><input name="funding_source" id="createFunding" value="Institutional Research Grant"></label>
-                    <label class="field"><span>Proposed Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="createBudget" placeholder="100000" required></label>
+                    <label class="field" style="grid-column: 1 / -1;"><span>Proposed Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="createBudget" placeholder="100000" required></label>
+
+                    <!-- ITEMIZED BUDGET BREAKDOWN (OPTIONAL DYNAMIC REPEATER) -->
+                    <div class="field" style="grid-column: 1 / -1; margin-top: -6px;">
+                        <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem;" id="budgetBreakdownDetails">
+                            <summary style="cursor: pointer; font-weight: 600; color: #334155; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+                                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="ri-calculator-line" style="color: #0284c7; font-size: 1.05rem;"></i>
+                                    <span>Itemized Budget Breakdown (Dynamic Table / Optional)</span>
+                                    <span id="budgetItemsCountBadge" style="font-size: 0.7rem; font-weight: 600; color: #0284c7; background: #e0f2fe; padding: 1px 7px; border-radius: 10px;">0 items</span>
+                                </span>
+                                <span style="font-size: 0.75rem; color: #0284c7; font-weight: 500;">Expand to breakdown budget &plus;</span>
+                            </summary>
+                            <div style="margin-top: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="font-size: 0.78rem; color: #64748b;">Dynamic rows automatically sum into the Proposed Budget total above</span>
+                                    <button type="button" class="btn-repeater-add" onclick="addBudgetBreakdownRow()" style="font-size: 0.78rem; padding: 4px 12px; background: #0284c7;">
+                                        <i class="ri-add-line"></i> Add Row
+                                    </button>
+                                </div>
+                                <div class="repeater-table-wrapper">
+                                    <table class="repeater-table" id="budgetRepeaterTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 45%;">Expense Item / Description</th>
+                                                <th style="width: 30%;">Category</th>
+                                                <th style="width: 17%;">Amount (PHP)</th>
+                                                <th style="width: 8%; text-align: center;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="budgetRepeaterBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
                 </div>
                 <label class="field"><span>Abstract</span><textarea rows="5" name="abstract" id="createAbstract" required placeholder="State research problem, objectives, methodology, and expected institutional outcomes..."></textarea></label>
                 <label class="field"><span>Research Document (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="createFile" accept=".pdf,.doc,.docx,.zip"></label>
@@ -842,6 +911,9 @@
             if (resInput) {
                 resInput.value = fullname || 'Faculty Researcher';
             }
+            if (typeof initResearchersRepeater === 'function') {
+                initResearchersRepeater(fullname);
+            }
             const colSelect = document.getElementById('createCollege');
             const userDeptCode = normalizeDepartmentCode(u.department || u.college || '');
             if (colSelect && userDeptCode) {
@@ -1161,8 +1233,16 @@
                 return;
             }
 
+            if (typeof updateResearchersState === 'function') {
+                updateResearchersState();
+            }
+
             const title = document.getElementById('createTitle').value.trim();
             const researchers = document.getElementById('createResearchers').value.trim();
+            if (!researchers) {
+                OVPRE.toast('Please provide at least one researcher / proponent name.', 'warning');
+                return;
+            }
             const college = document.getElementById('createCollege').value;
             const funding = document.getElementById('createFunding').value.trim();
             const budget = parseFloat(document.getElementById('createBudget').value) || 0;
@@ -1224,6 +1304,9 @@
 
             OVPRE.closeModal('createResearchProposalModal');
             document.getElementById('createResearchProposalForm').reset();
+            if (typeof initResearchersRepeater === 'function') {
+                initResearchersRepeater();
+            }
             const routedDept = normalizeDepartmentCode(college || currentUser.department || 'CCST') || 'College'; OVPRE.toast('Research proposal submitted successfully! Routed exclusively to ' + routedDept + ' Research Coordinator.', 'success');
             renderTable();
         }

@@ -1864,3 +1864,232 @@ if (document.readyState === 'loading') {
     setTimeout(handleLocationHashTarget, 250);
 }
 window.addEventListener('hashchange', handleLocationHashTarget);
+
+/* ==========================================================================
+   DYNAMIC TABLE ROW / REPEATER FIELD CONTROLLER
+   ========================================================================== */
+function escapeHtmlForRepeater(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function addResearcherRow(name = '', role = '', isPrimary = false) {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+
+    const row = document.createElement('tr');
+    row.className = 'repeater-row';
+
+    const isFirstRow = tbody.children.length === 0 || isPrimary;
+    const defaultRole = role || (isFirstRow ? 'Lead Researcher / Principal Investigator' : 'Co-Researcher');
+
+    row.innerHTML = `
+        <td>
+            <input type="text" class="repeater-input researcher-name-input" value="${escapeHtmlForRepeater(name)}" placeholder="Full Name (e.g. Dr. Maria Santos)" required oninput="handleResearcherChange()">
+        </td>
+        <td>
+            <select class="repeater-input researcher-role-select" onchange="handleResearcherChange()">
+                <option value="Lead Researcher / Principal Investigator" ${defaultRole.includes('Lead') || defaultRole.includes('Principal') ? 'selected' : ''}>Lead Researcher / Principal Investigator</option>
+                <option value="Co-Lead Researcher" ${defaultRole === 'Co-Lead Researcher' ? 'selected' : ''}>Co-Lead Researcher</option>
+                <option value="Co-Researcher" ${defaultRole === 'Co-Researcher' ? 'selected' : ''}>Co-Researcher</option>
+                <option value="Technical Assistant" ${defaultRole === 'Technical Assistant' ? 'selected' : ''}>Technical Assistant</option>
+                <option value="Data Analyst / Statistician" ${defaultRole === 'Data Analyst / Statistician' ? 'selected' : ''}>Data Analyst / Statistician</option>
+                <option value="Project Consultant / Adviser" ${defaultRole === 'Project Consultant / Adviser' ? 'selected' : ''}>Project Consultant / Adviser</option>
+            </select>
+        </td>
+        <td style="text-align: center;">
+            <button type="button" class="btn-repeater-remove" onclick="removeResearcherRow(this)" title="Remove Entry" aria-label="Remove researcher row">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+    updateResearchersState();
+
+    if (!isFirstRow && !name) {
+        const input = row.querySelector('.researcher-name-input');
+        if (input) input.focus();
+    }
+}
+
+function removeResearcherRow(btn) {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+    if (tbody.children.length <= 1) {
+        if (window.OVPRE && typeof OVPRE.toast === 'function') {
+            OVPRE.toast('At least one Lead Researcher is required.', 'warning');
+        } else {
+            alert('At least one Lead Researcher is required.');
+        }
+        return;
+    }
+    const row = btn.closest('tr');
+    if (row) {
+        row.remove();
+        updateResearchersState();
+    }
+}
+
+function handleResearcherChange() {
+    updateResearchersState();
+}
+
+function updateResearchersState() {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    const badge = document.getElementById('researcherCountBadge');
+    if (badge) {
+        badge.textContent = rows.length === 1 ? '1 Proponent' : `${rows.length} Proponents`;
+    }
+
+    rows.forEach(r => {
+        const btn = r.querySelector('.btn-repeater-remove');
+        if (btn) {
+            btn.disabled = rows.length <= 1;
+            btn.title = rows.length <= 1 ? 'At least 1 proponent required' : 'Remove Entry';
+        }
+    });
+
+    const parts = [];
+    rows.forEach(r => {
+        const nameInput = r.querySelector('.researcher-name-input');
+        const roleSelect = r.querySelector('.researcher-role-select');
+        const name = nameInput ? nameInput.value.trim() : '';
+        const role = roleSelect ? roleSelect.value.trim() : '';
+        if (name) {
+            parts.push(role ? `${name} (${role})` : name);
+        }
+    });
+
+    const hidden = document.getElementById('createResearchers');
+    if (hidden) {
+        hidden.value = parts.join(', ');
+    }
+}
+
+function initResearchersRepeater(defaultName) {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    let name = defaultName;
+    if (!name && typeof getCurrentUserObj === 'function') {
+        const u = getCurrentUserObj();
+        name = u.fullname || (typeof getCurrentUserFullname === 'function' ? getCurrentUserFullname() : '');
+    }
+    if (!name) {
+        const existingInput = document.getElementById('createResearchers');
+        if (existingInput && existingInput.value) {
+            name = existingInput.value;
+        }
+    }
+    addResearcherRow(name || 'Faculty Researcher', 'Lead Researcher / Principal Investigator', true);
+}
+
+// --- BUDGET BREAKDOWN REPEATER ---
+function addBudgetBreakdownRow(desc = '', category = 'MOOE', amount = '') {
+    const tbody = document.getElementById('budgetRepeaterBody');
+    if (!tbody) return;
+
+    const row = document.createElement('tr');
+    row.className = 'repeater-row';
+
+    row.innerHTML = `
+        <td>
+            <input type="text" class="repeater-input budget-desc-input" value="${escapeHtmlForRepeater(desc)}" placeholder="e.g. Laboratory Chemicals / Consumables" oninput="calcBudgetTotal()">
+        </td>
+        <td>
+            <select class="repeater-input budget-cat-select" onchange="calcBudgetTotal()">
+                <option value="MOOE" ${category === 'MOOE' ? 'selected' : ''}>MOOE (Supplies / Materials)</option>
+                <option value="Personnel" ${category === 'Personnel' ? 'selected' : ''}>Personnel Services</option>
+                <option value="Equipment" ${category === 'Equipment' ? 'selected' : ''}>Capital Outlay / Equipment</option>
+                <option value="Travel" ${category === 'Travel' ? 'selected' : ''}>Travel & Fieldwork</option>
+                <option value="Dissemination" ${category === 'Dissemination' ? 'selected' : ''}>Publication & Dissemination</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" step="0.01" min="0" class="repeater-input budget-amount-input" value="${amount}" placeholder="0.00" oninput="calcBudgetTotal()">
+        </td>
+        <td style="text-align: center;">
+            <button type="button" class="btn-repeater-remove" onclick="removeBudgetRow(this)" title="Remove Line Item">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+    calcBudgetTotal();
+
+    const descInput = row.querySelector('.budget-desc-input');
+    if (descInput && !desc) descInput.focus();
+}
+
+function removeBudgetRow(btn) {
+    const row = btn.closest('tr');
+    if (row) {
+        row.remove();
+        calcBudgetTotal();
+    }
+}
+
+function calcBudgetTotal() {
+    const tbody = document.getElementById('budgetRepeaterBody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    let total = 0;
+    let hasItems = false;
+
+    rows.forEach(r => {
+        const amtInput = r.querySelector('.budget-amount-input');
+        const val = parseFloat(amtInput ? amtInput.value : 0) || 0;
+        if (val > 0) {
+            total += val;
+            hasItems = true;
+        }
+    });
+
+    const badge = document.getElementById('budgetItemsCountBadge');
+    if (badge) {
+        badge.textContent = rows.length === 1 ? '1 item' : `${rows.length} items`;
+    }
+
+    if (hasItems) {
+        const budgetInput = document.getElementById('createBudget');
+        if (budgetInput) {
+            budgetInput.value = total.toFixed(2);
+        }
+    }
+}
+
+window.addResearcherRow = addResearcherRow;
+window.removeResearcherRow = removeResearcherRow;
+window.handleResearcherChange = handleResearcherChange;
+window.updateResearchersState = updateResearchersState;
+window.initResearchersRepeater = initResearchersRepeater;
+window.addBudgetBreakdownRow = addBudgetBreakdownRow;
+window.removeBudgetRow = removeBudgetRow;
+window.calcBudgetTotal = calcBudgetTotal;
+
+// Auto-initialize repeater if present on page load
+function autoInitRepeaters() {
+    const resTbody = document.getElementById('researchersRepeaterBody');
+    if (resTbody && resTbody.children.length === 0) {
+        initResearchersRepeater();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInitRepeaters);
+} else {
+    autoInitRepeaters();
+}
+
+

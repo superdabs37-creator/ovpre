@@ -355,22 +355,55 @@ renderHeader('Research Management', 'research');
 <?php if (!$isSuperAdmin): ?>
 <div class="modal" id="createResearchProposalModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createResearchProposalTitle">
     <div class="modal-backdrop" data-close-modal></div>
-    <article class="modal-card simple-submit-modal">
+    <article class="modal-card simple-submit-modal" style="max-width: 740px;">
         <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
         <div class="activity-modal-head">
             <span class="category-badge">Research</span>
             <h2 id="createResearchProposalTitle">Submit Research Proposal</h2>
             <p>Stage 1: Proposal Writing & Submission (Routed to College Coordinator for Initial Screening)</p>
         </div>
-        <form class="editor-panel" method="post" enctype="multipart/form-data">
+        <form class="editor-panel" method="post" enctype="multipart/form-data" onsubmit="if(typeof updateResearchersState==='function')updateResearchersState();">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="create">
             <div class="form-grid">
-                <label class="field"><span>Title</span><input name="title" maxlength="220" required></label>
-                <label class="field"><span>Researchers</span><input name="researchers" value="<?php echo h($user['fullname']); ?>" required></label>
+                <label class="field" style="grid-column: 1 / -1;"><span>Title</span><input name="title" maxlength="220" required placeholder="e.g. AI-Powered Early Blight Detection..."></label>
+
+                <!-- DYNAMIC TABLE ROW / REPEATER FIELD FOR RESEARCHERS -->
+                <div class="field repeater-container" style="grid-column: 1 / -1;">
+                    <div class="repeater-header">
+                        <span class="repeater-title">
+                            <i class="ri-team-line" style="color: #15803d; font-size: 1.1rem;"></i>
+                            <span>Researchers &amp; Proponents</span>
+                            <span id="researcherCountBadge" class="repeater-count-badge">1 Proponent</span>
+                        </span>
+                        <button type="button" class="btn-repeater-add" id="btnAddResearcherRow" onclick="addResearcherRow()">
+                            <i class="ri-add-line"></i> Add Row
+                        </button>
+                    </div>
+                    <div class="repeater-table-wrapper">
+                        <table class="repeater-table" id="researchersRepeaterTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 48%;">Researcher Name</th>
+                                    <th style="width: 40%;">Project Role / Designation</th>
+                                    <th style="width: 12%; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="researchersRepeaterBody">
+                                <!-- Dynamic Rows rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="repeater-footer-hint">
+                        <span><i class="ri-information-line"></i> Click <strong>"Add Row"</strong> to dynamically create more researcher entries.</span>
+                        <span class="repeater-badge-type">Dynamic Repeater Table</span>
+                    </div>
+                    <input type="hidden" name="researchers" id="createResearchers" value="<?php echo h($user['fullname']); ?>" required>
+                </div>
+
                 <label class="field"><span>Target Funding Source</span><input name="funding_source" value="Institutional Research Grant"></label>
             </div>
-            <label class="field"><span>Abstract</span><textarea rows="5" name="abstract" required></textarea></label>
+            <label class="field"><span>Abstract</span><textarea rows="5" name="abstract" required placeholder="State research problem, objectives, methodology, and expected institutional outcomes..."></textarea></label>
             <label class="field"><span>Research Document (PDF, DOC, DOCX, ZIP; up to 15 MB)</span><input type="file" name="file" accept=".pdf,.doc,.docx,.zip" required></label>
             <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Research Coordinator</button>
         </form>
@@ -741,5 +774,13 @@ renderHeader('Research Management', 'research');
     <?php endif; ?>
 
 <?php endforeach; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof initResearchersRepeater === 'function') {
+        initResearchersRepeater(<?php echo json_encode($user['fullname'] ?? ''); ?>);
+    }
+});
+</script>
 
 <?php renderFooter(); ?>
