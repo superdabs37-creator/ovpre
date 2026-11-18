@@ -116,21 +116,6 @@ renderHeader('Reports Management', 'reports');
         box-shadow: var(--soft-shadow);
     }
 
-    .report-breadcrumb {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 14px;
-        color: var(--muted);
-        font-size: 0.88rem;
-        font-weight: 800;
-    }
-
-    .report-breadcrumb i,
-    .report-breadcrumb strong {
-        color: var(--green-800);
-    }
 
     .reports-hero h2 {
         margin: 0 0 8px;

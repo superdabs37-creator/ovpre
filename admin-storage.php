@@ -246,15 +246,8 @@ renderHeader('Storage Utilization Analytics', 'storage');
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="reports-page">
-    <!-- Breadcrumb & Header Hero -->
+    <!-- Header Hero -->
     <div class="reports-hero" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1px solid #bbf7d0;">
-        <div class="report-breadcrumb">
-            <a href="dashboard.php"><i class="ri-dashboard-line"></i> Dashboard</a>
-            <i class="ri-arrow-right-s-line"></i>
-            <a href="admin-documents.php">Records</a>
-            <i class="ri-arrow-right-s-line"></i>
-            <strong>Storage Analytics</strong>
-        </div>
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
             <div>
                 <h1 style="font-size: 1.7rem; font-weight: 800; color: #0f3d24; margin: 0 0 6px; display: flex; align-items: center; gap: 10px;">
