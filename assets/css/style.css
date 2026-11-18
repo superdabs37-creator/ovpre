@@ -8303,3 +8303,15 @@ body.register-body .stepper-nav {
     opacity: 1;
     transform: translate(1px, -1px) !important;
 }
+/* Hide redundant chart and section subtitles */
+#deptChartSubtitle,
+#monthlySubmissionSubtitle,
+#statusDistributionSubtitle,
+#streamChartSubtitle,
+#personTableSubtitle,
+#matrixSubtitle,
+#queueSubtitle,
+#submissionFoldersSubtitle,
+#recordsPanelSubtitle {
+    display: none !important;
+}

@@ -744,7 +744,6 @@ renderHeader('Dashboard', 'dashboard');
             <h2 id="deptChartTitle" style="color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px; margin: 0;">
                 <i class="ri-building-line" style="color: #15803d; font-size: 1.3rem;"></i> <?php echo $isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'; ?>
             </h2>
-            <span id="deptChartSubtitle" style="font-size: 0.82rem; color: #64748b; font-weight: 450; display: block; margin-top: 4px; line-height: 1.45;"><?php echo $isFacultyExtensionist ? 'Extension programs are grouped under their college; college submission totals repeat for each listed program' : 'Programs are grouped under their college; college submission totals repeat for each listed program'; ?></span>
         </div>
         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div style="display: flex; align-items: center; gap: 6px;">
@@ -782,7 +781,6 @@ renderHeader('Dashboard', 'dashboard');
     <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
         <div>
             <h3 id="programsByCollegeHeading" style="margin: 0 0 3px; color: #0f172a; font-size: 1.05rem; font-weight: 800;">Programs by College</h3>
-            <span style="font-size: 0.78rem; color: #64748b;">Programs are sorted under their college; majors are excluded</span>
         </div>
         <button type="button" id="openProgramsModal" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 9px; background: #15803d; color: #ffffff; font-weight: 700; cursor: pointer;">
             <i class="ri-list-check-3"></i> View Programs
@@ -793,7 +791,6 @@ renderHeader('Dashboard', 'dashboard');
         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 18px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
             <div>
                 <h3 id="programsModalTitle" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800;">Programs by College</h3>
-                <p style="margin: 4px 0 0; color: #64748b; font-size: 0.82rem;">Each program is listed under its appropriate college. Majors are not included.</p>
             </div>
             <button type="button" id="closeProgramsModal" aria-label="Close programs list" style="flex: 0 0 auto; width: 34px; height: 34px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #334155; font-size: 1.2rem; cursor: pointer;">&times;</button>
         </div>
@@ -883,9 +880,6 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
             <h2 style="margin: 0; font-size: clamp(1.2rem, 1.8vw, 1.35rem); font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
                 Submission Status &amp; Completion Analytics
             </h2>
-            <span style="font-size: 0.82rem; color: #64748b; font-weight: 450; display: block; margin-top: 3px;">
-                Distribution of pending, review, revision, and approved research and extension submissions.
-            </span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
             <span class="badge" style="background: #ffffff; border: 1px solid #e2e8f0; color: #334155; font-weight: 700; font-size: 0.80rem; padding: 6px 12px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
@@ -908,7 +902,6 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                             <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
                                 Project Status Breakdown
                             </h2>
-                            <span style="font-size: 0.78rem; color: #64748b;">Submissions by current review status</span>
                         </div>
                     </div>
                     <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; font-size: 0.76rem; padding: 4px 10px; border-radius: 999px; border: 1px solid #bbf7d0; white-space: nowrap;">
@@ -969,7 +962,6 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
                         <h2 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em;">
                             Completed Colleges
                         </h2>
-                        <span style="font-size: 0.78rem; color: #64748b;"><?php echo $isFacultyExtensionist ? 'Colleges with extension projects marked Completed' : 'Colleges with projects marked Completed'; ?></span>
                     </div>
                 </div>
                 <div style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 8px;">
@@ -1093,7 +1085,6 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
     <div class="panel-heading">
         <div>
             <h2><i class="ri-team-line"></i> Submission Performance by Person</h2>
-            <small style="color: #64748b;"><?php echo $isFacultyExtensionist ? 'Extension submissions grouped by submitter, with approved totals.' : 'Research and extension submissions grouped by submitter, with approved totals.'; ?></small>
         </div>
     </div>
     <div class="table-scroll">
@@ -1451,7 +1442,6 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
     <div class="panel-heading">
         <div>
             <h2><i class="ri-table-line"></i> Tactical Colleges Submissions Matrix</h2>
-            <small style="color: #64748b;"><?php echo $isFacultyExtensionist ? 'Granular breakdown of Extension Proposals and Accomplishment Reports per college.' : 'Granular breakdown differentiating Research Proposals, Publications, Extension Proposals, and Accomplishment Reports per college.'; ?></small>
         </div>
     </div>
     <div class="table-scroll">
@@ -1523,7 +1513,6 @@ $extensionCompRate = round(($extensionTotalCompleted / $extensionTotal) * 100, 1
     <div class="panel-heading">
         <div>
             <h2><i class="ri-shield-check-line" style="color: #15803d;"></i> Executive Proposal Approval Queue (Stage 4 Final Sign-off)</h2>
-            <small style="color: #64748b;">Proposals endorsed by College Coordinators and Directors awaiting Final Executive Grant Release &amp; Activation.</small>
         </div>
         <span class="status-pill status-pending-executive-approval" style="font-weight: 700;">
             <?php echo count($pendingExecutiveProposals); ?> Awaiting Decision
