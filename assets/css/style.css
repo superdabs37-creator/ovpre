@@ -8315,3 +8315,526 @@ body.register-body .stepper-nav {
 #recordsPanelSubtitle {
     display: none !important;
 }
+
+/* ==========================================================================
+   ACADEMIC ANALYTICS DASHBOARD: SUBMISSION STATUS & COMPLETION ANALYTICS
+   ========================================================================== */
+.acad-analytics-section {
+    margin-bottom: 26px;
+}
+
+.acad-analytics-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.acad-overline-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 999px;
+    color: #15803d;
+    font-size: 0.69rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+}
+
+.acad-overline-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.16);
+}
+
+.acad-analytics-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 1.8vw, 1.38rem);
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+
+.acad-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.acad-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 6px 13px;
+    border-radius: 999px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.acad-meta-pill strong {
+    color: #0f172a;
+    font-weight: 800;
+}
+
+.acad-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+    display: inline-block;
+}
+
+.acad-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+@media (max-width: 1180px) {
+    .acad-analytics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .acad-analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.acad-analytics-card {
+    margin: 0 !important;
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    padding: 20px 22px !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02), 0 8px 24px -6px rgba(15, 23, 42, 0.04) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.acad-analytics-card:hover {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04), 0 12px 28px -8px rgba(15, 23, 42, 0.06) !important;
+}
+
+.acad-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.acad-card-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.acad-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    border: 1px solid transparent;
+}
+
+.acad-card-icon.icon-emerald {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #dcfce7;
+}
+
+.acad-card-icon.icon-slate {
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #e2e8f0;
+}
+
+.acad-card-icon.icon-indigo {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border-color: #ede9fe;
+}
+
+.acad-card-title {
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+}
+
+.acad-card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    white-space: nowrap;
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+.acad-card-badge.badge-emerald {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.acad-card-badge.badge-indigo {
+    background: #f5f3ff;
+    color: #5b21b6;
+    border-color: #ddd6fe;
+}
+
+/* Status Breakdown 2x2 Grid */
+.acad-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.acad-status-item {
+    padding: 9px 11px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.acad-status-item:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+}
+
+.acad-status-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.acad-status-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.acad-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.acad-status-val {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+}
+
+.acad-status-val small {
+    font-size: 0.70rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-left: 2px;
+}
+
+.acad-progress-track {
+    width: 100%;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.acad-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Completed Colleges Directory */
+.acad-filter-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 3px 8px;
+}
+
+.acad-filter-box label {
+    color: #64748b;
+    font-size: 0.69rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.acad-filter-box select {
+    padding: 2px 4px;
+    border: none;
+    background: transparent;
+    color: #0f172a;
+    font-size: 0.76rem;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+}
+
+.acad-college-group {
+    padding: 11px 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.acad-college-group:hover {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.acad-college-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.acad-college-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.acad-college-acronym {
+    font-size: 0.66rem;
+    font-weight: 800;
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    padding: 2px 6px;
+    border-radius: 5px;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+}
+
+.acad-college-name {
+    margin: 0;
+    color: #0f172a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.acad-college-count {
+    white-space: nowrap;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    font-size: 0.69rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.acad-project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.acad-project-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 10px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.acad-project-row:hover {
+    border-color: #86efac;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.acad-project-type {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+}
+
+.acad-project-type.type-research {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.acad-project-type.type-extension {
+    background: #f0f9ff;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.acad-project-title {
+    color: #1e293b;
+    font-size: 0.77rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.acad-view-file-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    border-radius: 6px;
+    font-size: 0.69rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.acad-project-row:hover .acad-view-file-btn {
+    background: #15803d;
+    border-color: #15803d;
+    color: #ffffff;
+}
+
+.acad-card-footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.74rem;
+    color: #64748b;
+}
+
+/* Stream Comparative Cards */
+.acad-stream-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.acad-stream-card {
+    padding: 9px 11px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.acad-stream-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.acad-stream-name {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+}
+
+.acad-stream-rate {
+    font-size: 0.70rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.acad-stream-rate.rate-research {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.acad-stream-rate.rate-extension {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.acad-stream-stats {
+    font-size: 0.77rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.acad-stream-stats small {
+    color: #64748b;
+    font-weight: 500;
+}
