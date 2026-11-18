@@ -843,6 +843,52 @@
             return Boolean(fn && !demoNames.includes(fn));
         }
 
+        const ALL_COLLEGES_MAP_EXT = [
+            { value: 'College of Computer Studies', code: 'CCST' },
+            { value: 'College of Computer Studies and Technology', code: 'CCST' },
+            { value: 'College of Nursing and Allied Health Sciences', code: 'CONAHS' },
+            { value: 'College of Business Administration', code: 'CBA' },
+            { value: 'College of Engineering', code: 'COE' },
+            { value: 'College of Arts and Sciences', code: 'CAS' },
+            { value: 'College of Teacher Education', code: 'CTE' },
+            { value: 'College of Tourism and Hospitality Management', code: 'CTHM' },
+            { value: 'College of Public Administration and Governance', code: 'CPAG' },
+            { value: 'College of Human Kinetics', code: 'CHK' },
+            { value: 'Office of the Vice President for Research and Extension', code: 'OVPRE' }
+        ];
+
+        function filterCollegeOptionsForExtensionUser(u) {
+            const colSelect = document.getElementById('createCollege');
+            if (!colSelect) return;
+            const userDeptCode = normalizeDepartmentCode((u && (u.department || u.college)) || '');
+            
+            colSelect.innerHTML = '';
+            if (userDeptCode) {
+                // If user belongs to a department (e.g. CCST faculty), show ONLY their department!
+                const matched = ALL_COLLEGES_MAP_EXT.filter(c => c.code === userDeptCode);
+                if (matched.length > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = matched[0].value;
+                    opt.textContent = matched[0].value;
+                    opt.selected = true;
+                    colSelect.appendChild(opt);
+                } else {
+                    const opt = document.createElement('option');
+                    opt.value = u.department || u.college;
+                    opt.textContent = u.department || u.college;
+                    opt.selected = true;
+                    colSelect.appendChild(opt);
+                }
+            } else {
+                ALL_COLLEGES_MAP_EXT.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.value;
+                    opt.textContent = c.value;
+                    colSelect.appendChild(opt);
+                });
+            }
+        }
+
         function openCreateProjectModal() {
             const role = getCurrentUserRole();
             if (role === 'Super Admin' || role === 'OVPRE Admin') {
@@ -855,21 +901,7 @@
             if (coordInput) {
                 coordInput.value = fullname || 'Faculty Lead';
             }
-            const colSelect = document.getElementById('createCollege');
-            const userDeptCode = normalizeDepartmentCode(u.department || u.college || '');
-            if (colSelect && userDeptCode) {
-                Array.from(colSelect.options).forEach(opt => {
-                    const optCode = normalizeDepartmentCode(opt.value);
-                    if (optCode === userDeptCode) {
-                        colSelect.value = opt.value;
-                        opt.disabled = false;
-                    } else {
-                        opt.disabled = true;
-                    }
-                });
-            } else if (colSelect) {
-                Array.from(colSelect.options).forEach(opt => { opt.disabled = false; });
-            }
+            filterCollegeOptionsForExtensionUser(u);
             OVPRE.openModal('createExtensionProjectModal');
         }
 
@@ -1805,6 +1837,9 @@
                 localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
             }
             renderTable();
+            if (typeof filterCollegeOptionsForExtensionUser === 'function') {
+                filterCollegeOptionsForExtensionUser(getCurrentUserObj());
+            }
             if (urlParams.get('action') === 'new') {
                 setTimeout(openCreateProjectModal, 150);
             }
