@@ -1864,35 +1864,71 @@ if (document.readyState === 'loading') {
 }
 window.addEventListener('hashchange', handleLocationHashTarget);
 
-/* Fullscreen toggle button in topbar */
+/* Wide Layout Mode toggle button in topbar (persists across pages) */
 (function () {
-    function initFullscreenToggle() {
+    function applyWideMode(isWide) {
+        const shell = document.querySelector('.app-shell') || document.querySelector('#appShell');
+        const side = document.querySelector('#sidebar');
+        const sideToggle = document.querySelector('[data-toggle-sidebar]');
+        const btn = document.getElementById('fullscreenToggle');
+
+        if (shell) {
+            shell.classList.toggle('wide-mode', isWide);
+            shell.classList.toggle('sidebar-expanded', !isWide);
+        }
+        if (side) {
+            side.classList.toggle('expanded', !isWide);
+        }
+        if (sideToggle) {
+            sideToggle.setAttribute('aria-expanded', String(!isWide));
+        }
+        if (btn) {
+            btn.classList.toggle('active', isWide);
+            btn.innerHTML = isWide ? '<i class="ri-fullscreen-exit-line"></i>' : '<i class="ri-fullscreen-line"></i>';
+            btn.title = isWide ? 'Standard Mode (Show sidebar)' : 'Wide Mode (Expand content area)';
+            btn.setAttribute('aria-label', isWide ? 'Standard Mode' : 'Wide Mode');
+        }
+        try {
+            localStorage.setItem('ovpre_wide_mode', isWide ? '1' : '0');
+            localStorage.setItem('ovpre_admin_sidebar_expanded', isWide ? '0' : '1');
+        } catch (e) {}
+    }
+
+    function initWideModeToggle() {
         const bell = document.querySelector('.topbar .topbar-icon');
         if (!bell || document.getElementById('fullscreenToggle')) return;
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.id = 'fullscreenToggle';
-        btn.className = 'topbar-icon fullscreen-toggle';
-        btn.setAttribute('aria-label', 'Toggle fullscreen');
-        btn.title = 'Fullscreen';
+        btn.className = 'topbar-icon fullscreen-toggle wide-toggle';
+        btn.setAttribute('aria-label', 'Wide Mode');
+        btn.title = 'Wide Mode (Expand content area)';
         btn.innerHTML = '<i class="ri-fullscreen-line"></i>';
         bell.parentNode.insertBefore(btn, bell);
+
+        const isWide = localStorage.getItem('ovpre_wide_mode') === '1' || localStorage.getItem('ovpre_admin_sidebar_expanded') === '0';
+        applyWideMode(isWide);
+
         btn.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            }
-        });
-        document.addEventListener('fullscreenchange', () => {
-            const on = !!document.fullscreenElement;
-            btn.innerHTML = '<i class="' + (on ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line') + '"></i>';
-            btn.title = on ? 'Exit fullscreen' : 'Fullscreen';
+            const currentWide = localStorage.getItem('ovpre_wide_mode') === '1' || (document.querySelector('.app-shell') && !document.querySelector('.app-shell').classList.contains('sidebar-expanded'));
+            applyWideMode(!currentWide);
         });
     }
+
+    // Apply immediately so there is no layout jump on load
+    try {
+        if (localStorage.getItem('ovpre_wide_mode') === '1' || localStorage.getItem('ovpre_admin_sidebar_expanded') === '0') {
+            const shell = document.querySelector('.app-shell') || document.querySelector('#appShell');
+            if (shell) {
+                shell.classList.add('wide-mode');
+                shell.classList.remove('sidebar-expanded');
+            }
+        }
+    } catch (e) {}
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initFullscreenToggle);
+        document.addEventListener('DOMContentLoaded', initWideModeToggle);
     } else {
-        initFullscreenToggle();
+        initWideModeToggle();
     }
 })();
