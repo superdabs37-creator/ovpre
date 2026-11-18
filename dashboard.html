@@ -1090,9 +1090,39 @@
             return { myRes, myExt };
         }
 
-        // Personalize Research & Extension KPI Capsules for Faculty Proponents
+        function normalizeDashboardDept(dept) {
+            const s = String(dept || '').toLowerCase();
+            if (!s || s === 'institutional' || s === 'none') return '';
+            if (s.includes('ccst') || s.includes('computer studies')) return 'CCST';
+            if (s.includes('coe') || s.includes('engineering')) return 'COE';
+            if (s.includes('conahs') || s.includes('cnahs') || s.includes('nursing')) return 'CONAHS';
+            if (s.includes('cas') || s.includes('arts and sciences')) return 'CAS';
+            if (s.includes('cba') || s.includes('business')) return 'CBA';
+            if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
+            if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
+            if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
+            if (s.includes('chk') || s.includes('human kinetics')) return 'CHK';
+            return s.trim().toUpperCase();
+        }
+
+        function getDashboardDeptSubmissions(deptCode) {
+            let resList = null;
+            let extList = null;
+            try { resList = JSON.parse(localStorage.getItem('ovpre_research_projects') || 'null'); } catch (e) {}
+            try { extList = JSON.parse(localStorage.getItem('ovpre_extension_projects') || 'null'); } catch (e) {}
+            const deptRes = Array.isArray(resList)
+                ? resList.filter(p => !p.archived && normalizeDashboardDept(p.department_code || p.college) === deptCode)
+                : [];
+            const deptExt = Array.isArray(extList)
+                ? extList.filter(p => !p.archived && normalizeDashboardDept(p.department_code || p.college) === deptCode)
+                : [];
+            return { deptRes, deptExt };
+        }
+
+        // Personalize Research & Extension KPI Capsules for Faculty Proponents & Department Coordinators
         (function personalizeFacultyCards() {
             const u = getCurrentDashboardUser();
+            const userDeptCode = normalizeDashboardDept(u.department || u.college || '');
             const { myRes, myExt } = getDashboardMySubmissions(u);
 
             const resCard = document.getElementById('kpiResearchCard');
@@ -1122,8 +1152,19 @@
                 if (resTitle) resTitle.textContent = 'My Research Proposals';
                 if (resBadge) resBadge.style.display = 'inline-flex';
                 if (resCount) resCount.innerHTML = `${myRes.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">submitted</span>`;
-                if (resSub) resSub.textContent = 'My submitted proposals (Click to open)';
+                if (resSub) resSub.textContent = `Routed to ${userDeptCode || 'College'} Research Coordinator`;
                 if (resMyPill) resMyPill.style.display = 'none';
+            } else if (isResearchCoordinator && userDeptCode) {
+                const { deptRes } = getDashboardDeptSubmissions(userDeptCode);
+                if (resTitle) resTitle.textContent = `${userDeptCode} Research Proposals`;
+                if (resBadge) {
+                    resBadge.style.display = 'inline-flex';
+                    resBadge.innerHTML = `<i class="ri-building-2-line"></i> ${userDeptCode} Dept`;
+                }
+                if (resCount && deptRes.length) {
+                    resCount.innerHTML = `${deptRes.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">in ${userDeptCode}</span>`;
+                }
+                if (resSub) resSub.textContent = `Exclusively ${userDeptCode} faculty submissions`;
             }
 
             if (isFacultyExtensionist) {
@@ -1134,8 +1175,19 @@
                 if (extTitle) extTitle.textContent = 'My Extension Projects';
                 if (extBadge) extBadge.style.display = 'inline-flex';
                 if (extCount) extCount.innerHTML = `${myExt.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">submitted</span>`;
-                if (extSub) extSub.textContent = 'My submitted initiatives (Click to open)';
+                if (extSub) extSub.textContent = `Routed to ${userDeptCode || 'College'} Extension Coordinator`;
                 if (extMyPill) extMyPill.style.display = 'none';
+            } else if (isExtensionCoordinator && userDeptCode) {
+                const { deptExt } = getDashboardDeptSubmissions(userDeptCode);
+                if (extTitle) extTitle.textContent = `${userDeptCode} Extension Projects`;
+                if (extBadge) {
+                    extBadge.style.display = 'inline-flex';
+                    extBadge.innerHTML = `<i class="ri-building-2-line"></i> ${userDeptCode} Dept`;
+                }
+                if (extCount && deptExt.length) {
+                    extCount.innerHTML = `${deptExt.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">in ${userDeptCode}</span>`;
+                }
+                if (extSub) extSub.textContent = `Exclusively ${userDeptCode} faculty initiatives`;
             }
         })();
         const programsByCollege = {
@@ -1479,7 +1531,37 @@
         if (personTableBody) {
             const currentUser = getCurrentDashboardUser();
             let perfRows = submissionPerformance;
-            if (isFacultyResearcher || isFacultyExtensionist) {
+            if (isResearchCoordinator || isExtensionCoordinator) {
+                const coordDept = normalizeDashboardDept(currentUser.department || currentUser.college || '');
+                if (coordDept) {
+                    perfRows = submissionPerformance.filter(p => normalizeDashboardDept(p.department_name) === coordDept);
+                    const { deptRes, deptExt } = getDashboardDeptSubmissions(coordDept);
+                    const customSubmitters = {};
+                    deptRes.forEach(r => {
+                        const sName = r.created_by || r.researchers || 'Faculty Researcher';
+                        if (!perfRows.some(pr => pr.submitter_name.toLowerCase() === sName.toLowerCase())) {
+                            if (!customSubmitters[sName]) {
+                                customSubmitters[sName] = { submitter_id: r.id, submitter_name: sName, department_name: r.college || currentUser.department, research_count: 0, extension_count: 0, approved_count: 0, submissions: [] };
+                            }
+                            customSubmitters[sName].research_count++;
+                            if (r.status === 'Approved') customSubmitters[sName].approved_count++;
+                            customSubmitters[sName].submissions.push({ id: r.id, type: 'Research', title: r.title, status: r.status, submitted_at: r.created_at, description: r.abstract, extra_info: sName, document_url: r.document_url || '#' });
+                        }
+                    });
+                    deptExt.forEach(e => {
+                        const sName = e.created_by || e.coordinator || 'Faculty Extensionist';
+                        if (!perfRows.some(pr => pr.submitter_name.toLowerCase() === sName.toLowerCase())) {
+                            if (!customSubmitters[sName]) {
+                                customSubmitters[sName] = { submitter_id: e.id, submitter_name: sName, department_name: e.college || currentUser.department, research_count: 0, extension_count: 0, approved_count: 0, submissions: [] };
+                            }
+                            customSubmitters[sName].extension_count++;
+                            if (e.status === 'Approved') customSubmitters[sName].approved_count++;
+                            customSubmitters[sName].submissions.push({ id: e.id, type: 'Extension', title: e.title, status: e.status, submitted_at: e.created_at || e.start_date, description: e.description, extra_info: sName, document_url: e.document_url || '#' });
+                        }
+                    });
+                    perfRows = [...Object.values(customSubmitters), ...perfRows];
+                }
+            } else if (isFacultyResearcher || isFacultyExtensionist) {
                 const { myRes, myExt } = getDashboardMySubmissions(currentUser);
                 const mappedSubs = [
                     ...myRes.map(r => ({

@@ -798,6 +798,28 @@
             return { id: 1, username: 'admin', fullname: 'Super Administrator', role: 'Super Admin' };
         }
 
+        function normalizeDepartmentCode(dept) {
+            const s = String(dept || '').toLowerCase();
+            if (!s || s === 'institutional' || s === 'none') return '';
+            if (s.includes('ccst') || s.includes('computer studies')) return 'CCST';
+            if (s.includes('coe') || s.includes('engineering')) return 'COE';
+            if (s.includes('conahs') || s.includes('cnahs') || s.includes('nursing')) return 'CONAHS';
+            if (s.includes('cas') || s.includes('arts and sciences')) return 'CAS';
+            if (s.includes('cba') || s.includes('business')) return 'CBA';
+            if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
+            if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
+            if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
+            if (s.includes('chk') || s.includes('human kinetics')) return 'CHK';
+            return s.trim().toUpperCase();
+        }
+
+        function isSameDepartment(p, u) {
+            const userDept = normalizeDepartmentCode((u && (u.department || u.college)) || '');
+            if (!userDept) return true;
+            const propDept = normalizeDepartmentCode(p.department_code || p.college || '');
+            return propDept === userDept;
+        }
+
         function isRegisteredAccount(u) {
             if (!u) return false;
             if (u.is_registered === true) return true;
@@ -834,13 +856,19 @@
                 coordInput.value = fullname || 'Faculty Lead';
             }
             const colSelect = document.getElementById('createCollege');
-            if (colSelect && u.department) {
-                const deptClean = u.department.split('(')[0].trim().toLowerCase();
+            const userDeptCode = normalizeDepartmentCode(u.department || u.college || '');
+            if (colSelect && userDeptCode) {
                 Array.from(colSelect.options).forEach(opt => {
-                    if (opt.value.toLowerCase().includes(deptClean) || deptClean.includes(opt.value.toLowerCase())) {
+                    const optCode = normalizeDepartmentCode(opt.value);
+                    if (optCode === userDeptCode) {
                         colSelect.value = opt.value;
+                        opt.disabled = false;
+                    } else {
+                        opt.disabled = true;
                     }
                 });
+            } else if (colSelect) {
+                Array.from(colSelect.options).forEach(opt => { opt.disabled = false; });
             }
             OVPRE.openModal('createExtensionProjectModal');
         }
@@ -894,6 +922,7 @@
 
         function renderTable() {
             const all = getProjects();
+            const currentUser = getCurrentUserObj();
             const userRole = getCurrentUserRole();
             const isSuperAdmin = (userRole === 'Super Admin');
             const isOVPREAdmin = (userRole === 'OVPRE Admin');
@@ -901,24 +930,32 @@
             const isCoordinator = (userRole === 'Extension Coordinator');
             const isDirector = (userRole === 'Extension Director');
             const isFaculty = (userRole === 'Faculty Extensionist' || userRole === 'Extensionist');
+            const userDeptCode = normalizeDepartmentCode(currentUser.department || currentUser.college || '');
 
-            // Faculty accounts strictly see ONLY their own submitted extension projects
-            const scopedAll = isFaculty ? all.filter(isMyExtension) : all;
+            // Faculty see ONLY their own submitted projects; Coordinators see ONLY their assigned department's projects!
+            let scopedAll = all;
+            if (isFaculty) {
+                scopedAll = all.filter(isMyExtension);
+            } else if (isCoordinator) {
+                scopedAll = all.filter(p => isSameDepartment(p, currentUser));
+            }
+
             const activeList = scopedAll.filter(p => !p.archived);
             const archivedList = scopedAll.filter(p => p.archived);
             document.getElementById('activeCount').textContent = activeList.length;
             document.getElementById('archivedCount').textContent = archivedList.length;
 
-            // System Admin accounts cannot submit proposals - hide button for Admin / Executive
+            // System Admin and Coordinators cannot submit proposals - hide submit button for Admin / Executive / Coordinator
             const submitBtn = document.getElementById('btnSubmitProject');
             if (submitBtn) {
-                submitBtn.style.display = isExecutive ? 'none' : 'inline-flex';
+                submitBtn.style.display = (isExecutive || isCoordinator || isDirector) ? 'none' : 'inline-flex';
             }
 
             const myActiveList = activeList.filter(isMyExtension);
             const myArchivedList = archivedList.filter(isMyExtension);
 
             const scopeCtrl = document.querySelector('.scope-filter-control');
+            const scopeAllBtn = document.getElementById('scopeAllExtensionBtn');
             const clearBtn = document.querySelector('#mySubmissionsAlertBanner .alert-btn-clear');
             if (scopeCtrl) {
                 scopeCtrl.style.display = isFaculty ? 'inline-flex' : 'none';
@@ -943,11 +980,28 @@
             const banner = document.getElementById('mySubmissionsAlertBanner');
             const bannerCount = document.getElementById('myExtensionBannerCount');
 
-            if (currentScope === 'my') {
+            if (isFaculty) {
                 if (scopeMyBtn) scopeMyBtn.classList.add('is-active');
                 if (scopeAllBtn) scopeAllBtn.classList.remove('is-active');
-                if (banner) banner.style.display = 'flex';
-                if (bannerCount) bannerCount.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
+                if (banner) {
+                    banner.style.display = 'flex';
+                    banner.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
+                            <span>My Submissions (${OVPRE.h(currentUser.fullname || 'Faculty')}${userDeptCode ? ' • ' + userDeptCode : ''}): Showing only your personal extension projects (<strong>${currentTab === 'active' ? myActiveList.length : myArchivedList.length}</strong> found — routed to <strong>${userDeptCode || 'College'} Extension Coordinator</strong>)</span>
+                        </div>
+                    `;
+                }
+            } else if (isCoordinator) {
+                if (banner) {
+                    banner.style.display = 'flex';
+                    banner.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-building-2-fill" style="color: #d97706; font-size: 1.15rem;"></i>
+                            <span>Department Coordinator View (<strong>${userDeptCode || 'Assigned College'}</strong> — ${OVPRE.h(currentUser.fullname || 'Coordinator')}): Showing extension initiatives submitted exclusively under <strong>${OVPRE.h(currentUser.department || userDeptCode)}</strong> (<strong>${currentTab === 'active' ? activeList.length : archivedList.length}</strong> found)</span>
+                        </div>
+                    `;
+                }
             } else {
                 if (scopeAllBtn) scopeAllBtn.classList.add('is-active');
                 if (scopeMyBtn) scopeMyBtn.classList.remove('is-active');
@@ -964,7 +1018,12 @@
             if (!list.length) {
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-pagination-empty', 'true');
-                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension projects found.</td>';
+                const emptyMsg = isFaculty
+                    ? 'No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension initiatives found under your account. Click "Submit Extension Initiative" above to submit your proposal to your ' + (userDeptCode || 'College') + ' Coordinator.'
+                    : (isCoordinator
+                        ? 'No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension initiatives submitted yet for ' + (userDeptCode || 'your department') + '.'
+                        : 'No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension projects found.');
+                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">' + emptyMsg + '</td>';
                 tbody.appendChild(tr);
             } else {
                 list.forEach(p => {
@@ -987,13 +1046,12 @@
                     const bgt = Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     const stg = p.stage || 'Proposal';
                     const docName = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
-
                     let actionsHtml = '';
                     if (currentTab === 'active') {
                         let workflowBtns = '';
 
                         // Stage 1: STRICTLY College Coordinator ONLY (No override)
-                        if (isCoordinator && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
+                        if (isCoordinator && isSameDepartment(p, currentUser) && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse project to Extension Director">
                                     <i class="ri-check-double-line"></i><span>Endorse</span>
@@ -1020,7 +1078,7 @@
                             `;
                         }
                         // Revision: STRICTLY Faculty Proponent ONLY (No override)
-                        else if (isFaculty && pStatus === 'Needs Revision') {
+                        else if (isFaculty && isMyExtension(p) && pStatus === 'Needs Revision') {
                             workflowBtns += `
                                 <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised extension project">
                                     <i class="ri-refresh-line"></i><span>Resubmit</span>
@@ -1170,6 +1228,7 @@
                 partner,
                 location,
                 college,
+                department_code: normalizeDepartmentCode(college || currentUser.department || ''),
                 budget,
                 approved_budget: budget,
                 start_date: startDate || new Date().toISOString().slice(0, 10),
@@ -1200,7 +1259,7 @@
 
             OVPRE.closeModal('createExtensionProjectModal');
             document.getElementById('createExtensionProjectForm').reset();
-            OVPRE.toast('Extension proposal submitted successfully! Routed to College Coordinator.', 'success');
+            const routedDept = normalizeDepartmentCode(college || currentUser.department || 'CONAHS') || 'College'; OVPRE.toast('Extension proposal submitted successfully! Routed exclusively to ' + routedDept + ' Extension Coordinator.', 'success');
             renderTable();
         }
 
@@ -1317,9 +1376,10 @@
             renderTable();
         }
 
-        // --- COORDINATOR SCREENING ---
+        // --- COORDINATOR SCREENING (STRICTLY DEPARTMENT-SCOPED) ---
         function openCoordModal(id, isRevisionOnly) {
             const userRole = getCurrentUserRole();
+            const currentUser = getCurrentUserObj();
             if (userRole !== 'Extension Coordinator') {
                 OVPRE.toast('Access Denied: Only College Extension Coordinators can screen proposals.', 'error');
                 return;
@@ -1328,6 +1388,14 @@
             const all = getProjects();
             const p = all.find(item => item.id === Number(id));
             if (!p) return;
+
+            if (!isSameDepartment(p, currentUser)) {
+                const propDept = normalizeDepartmentCode(p.department_code || p.college) || 'that college';
+                OVPRE.toast('Access Denied: Only the assigned ' + propDept + ' Extension Coordinator can screen or approve this project.', 'error');
+                return;
+            }
+
+            const coordDept = normalizeDepartmentCode(currentUser.department || currentUser.college || '');
             document.getElementById('coordProjId').value = p.id;
             document.getElementById('coordProjTitle').textContent = p.title;
             document.getElementById('coordRemarks').value = p.coordinator_remarks || '';
@@ -1336,10 +1404,10 @@
             if (heading) {
                 if (isRevisionOnly) {
                     heading.style.color = '#c2410c';
-                    heading.innerHTML = '<i class="ri-arrow-go-back-line"></i> Return Project for Faculty Revision';
+                    heading.innerHTML = `<i class="ri-arrow-go-back-line"></i> Return Project for Revision (${coordDept || 'College'} Coordinator)`;
                 } else {
                     heading.style.color = '#15803d';
-                    heading.innerHTML = '<i class="ri-check-double-line"></i> College Extension Coordinator Screening';
+                    heading.innerHTML = `<i class="ri-check-double-line"></i> ${coordDept || 'College'} Extension Coordinator Screening`;
                 }
             }
             OVPRE.openModal('coordModal');
@@ -1348,6 +1416,7 @@
         async function handleCoordSubmit(event) {
             event.preventDefault();
             const userRole = getCurrentUserRole();
+            const currentUser = getCurrentUserObj();
             if (userRole !== 'Extension Coordinator') {
                 OVPRE.toast('Access Denied: Only College Extension Coordinators can screen proposals.', 'error');
                 return;
@@ -1362,9 +1431,16 @@
             const p = all.find(item => item.id === id);
             if (!p) return;
 
-            const fullname = getCurrentUserFullname();
+            if (!isSameDepartment(p, currentUser)) {
+                const propDept = normalizeDepartmentCode(p.department_code || p.college) || 'that college';
+                OVPRE.toast('Access Denied: Only the assigned ' + propDept + ' Extension Coordinator can screen or approve this project.', 'error');
+                return;
+            }
+
+            const coordDept = normalizeDepartmentCode(currentUser.department || currentUser.college || '');
+            const fullname = currentUser.fullname || getCurrentUserFullname();
             p.coordinator_remarks = remarks;
-            p.coordinator_name = fullname || "College Coordinator";
+            p.coordinator_name = fullname + (coordDept ? ` (${coordDept} Coordinator)` : '');
             p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
 
             let supabaseUpdates = {
@@ -1376,19 +1452,19 @@
                 p.stage = 'Stage 2: Director Evaluation';
                 supabaseUpdates.status = 'Pending Director Review';
                 supabaseUpdates.workflow_stage = 'Stage 2: Director Evaluation';
-                OVPRE.toast('Project endorsed to Extension Director!', 'success');
+                OVPRE.toast(`Endorsed by ${coordDept || 'College'} Extension Coordinator to Extension Director!`, 'success');
             } else if (action === 'revision') {
                 p.status = 'Needs Revision';
                 p.stage = 'Stage 1: Coordinator Screening';
                 supabaseUpdates.status = 'Needs Revision';
                 supabaseUpdates.workflow_stage = 'Stage 1: Coordinator Screening';
-                OVPRE.toast('Project returned to faculty for revision.', 'info');
+                OVPRE.toast(`Returned to ${coordDept || 'college'} faculty proponent for revision.`, 'info');
             } else if (action === 'decline') {
                 p.status = 'Declined';
                 p.stage = 'Terminated';
                 supabaseUpdates.status = 'Declined';
                 supabaseUpdates.workflow_stage = 'Terminated';
-                OVPRE.toast('Project declined at college screening stage.', 'error');
+                OVPRE.toast(`Project declined at ${coordDept || 'college'} screening stage.`, 'error');
             }
 
             saveProjects(all);
@@ -1404,7 +1480,6 @@
             OVPRE.closeModal('coordModal');
             renderTable();
         }
-
         // --- DIRECTOR EVALUATION ---
         function openDirModal(id) {
             const userRole = getCurrentUserRole();

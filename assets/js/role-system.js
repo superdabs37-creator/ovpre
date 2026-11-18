@@ -202,6 +202,46 @@
         return defaultUser;
     }
 
+    function normalizeDeptCode(dept) {
+        const s = String(dept || '').toLowerCase();
+        if (!s || s === 'institutional' || s === 'none') return '';
+        if (s.includes('ccst') || s.includes('computer studies')) return 'CCST';
+        if (s.includes('coe') || s.includes('engineering')) return 'COE';
+        if (s.includes('conahs') || s.includes('cnahs') || s.includes('nursing')) return 'CONAHS';
+        if (s.includes('cas') || s.includes('arts and sciences')) return 'CAS';
+        if (s.includes('cba') || s.includes('business')) return 'CBA';
+        if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
+        if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
+        if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
+        if (s.includes('chk') || s.includes('human kinetics')) return 'CHK';
+        return s.trim().toUpperCase();
+    }
+    window.OVPRE_normalizeDeptCode = normalizeDeptCode;
+
+    const DEPARTMENT_COORDINATOR_ACCOUNTS = [
+        // Research Coordinators by Department
+        { id: 'rc_ccst', username: 'rc_ccst', fullname: 'Prof. Engr. Mark Santos', role: 'Research Coordinator', email: 'rc.ccst@plsp.edu.ph', department: 'College of Computer Studies and Technology (CCST)', college: 'CCST', status: 'Active', is_registered: true },
+        { id: 'rc_coe', username: 'rc_coe', fullname: 'Engr. Paolo Mendoza', role: 'Research Coordinator', email: 'rc.coe@plsp.edu.ph', department: 'College of Engineering (COE)', college: 'COE', status: 'Active', is_registered: true },
+        { id: 'rc_conahs', username: 'rc_conahs', fullname: 'Prof. Lorna De Guzman', role: 'Research Coordinator', email: 'rc.conahs@plsp.edu.ph', department: 'College of Nursing and Allied Health Sciences (CONAHS)', college: 'CONAHS', status: 'Active', is_registered: true },
+        { id: 'rc_cba', username: 'rc_cba', fullname: 'Prof. Noel Villanueva', role: 'Research Coordinator', email: 'rc.cba@plsp.edu.ph', department: 'College of Business Administration (CBA)', college: 'CBA', status: 'Active', is_registered: true },
+        { id: 'rc_cas', username: 'rc_cas', fullname: 'Dr. Clara Soriano', role: 'Research Coordinator', email: 'rc.cas@plsp.edu.ph', department: 'College of Arts and Sciences (CAS)', college: 'CAS', status: 'Active', is_registered: true },
+        { id: 'rc_cte', username: 'rc_cte', fullname: 'Prof. Evelyn Salazar', role: 'Research Coordinator', email: 'rc.cte@plsp.edu.ph', department: 'College of Teacher Education (CTE)', college: 'CTE', status: 'Active', is_registered: true },
+        { id: 'rc_cthm', username: 'rc_cthm', fullname: 'Prof. Marco Reyes', role: 'Research Coordinator', email: 'rc.cthm@plsp.edu.ph', department: 'College of Tourism and Hospitality Management (CTHM)', college: 'CTHM', status: 'Active', is_registered: true },
+        { id: 'rc_cpag', username: 'rc_cpag', fullname: 'Prof. Diana Lim', role: 'Research Coordinator', email: 'rc.cpag@plsp.edu.ph', department: 'College of Public Administration and Governance (CPAG)', college: 'CPAG', status: 'Active', is_registered: true },
+        { id: 'rc_chk', username: 'rc_chk', fullname: 'Prof. Rico Fernandez', role: 'Research Coordinator', email: 'rc.chk@plsp.edu.ph', department: 'College of Human Kinetics (CHK)', college: 'CHK', status: 'Active', is_registered: true },
+
+        // Extension Coordinators by Department
+        { id: 'ec_ccst', username: 'ec_ccst', fullname: 'Prof. Kevin Navarro', role: 'Extension Coordinator', email: 'ec.ccst@plsp.edu.ph', department: 'College of Computer Studies and Technology (CCST)', college: 'CCST', status: 'Active', is_registered: true },
+        { id: 'ec_coe', username: 'ec_coe', fullname: 'Engr. Dennis Ramos', role: 'Extension Coordinator', email: 'ec.coe@plsp.edu.ph', department: 'College of Engineering (COE)', college: 'COE', status: 'Active', is_registered: true },
+        { id: 'ec_conahs', username: 'ec_conahs', fullname: 'Prof. Grace Aquino', role: 'Extension Coordinator', email: 'ec.conahs@plsp.edu.ph', department: 'College of Nursing and Allied Health Sciences (CONAHS)', college: 'CONAHS', status: 'Active', is_registered: true },
+        { id: 'ec_cba', username: 'ec_cba', fullname: 'Prof. Elena Cruz', role: 'Extension Coordinator', email: 'ec.cba@plsp.edu.ph', department: 'College of Business Administration (CBA)', college: 'CBA', status: 'Active', is_registered: true },
+        { id: 'ec_cas', username: 'ec_cas', fullname: 'Prof. Teresa Bautista', role: 'Extension Coordinator', email: 'ec.cas@plsp.edu.ph', department: 'College of Arts and Sciences (CAS)', college: 'CAS', status: 'Active', is_registered: true },
+        { id: 'ec_cte', username: 'ec_cte', fullname: 'Prof. Alma Mercado', role: 'Extension Coordinator', email: 'ec.cte@plsp.edu.ph', department: 'College of Teacher Education (CTE)', college: 'CTE', status: 'Active', is_registered: true },
+        { id: 'ec_cthm', username: 'ec_cthm', fullname: 'Prof. Sheila Dizon', role: 'Extension Coordinator', email: 'ec.cthm@plsp.edu.ph', department: 'College of Tourism and Hospitality Management (CTHM)', college: 'CTHM', status: 'Active', is_registered: true },
+        { id: 'ec_cpag', username: 'ec_cpag', fullname: 'Prof. Carlo Tan', role: 'Extension Coordinator', email: 'ec.cpag@plsp.edu.ph', department: 'College of Public Administration and Governance (CPAG)', college: 'CPAG', status: 'Active', is_registered: true },
+        { id: 'ec_chk', username: 'ec_chk', fullname: 'Prof. Allan Castillo', role: 'Extension Coordinator', email: 'ec.chk@plsp.edu.ph', department: 'College of Human Kinetics (CHK)', college: 'CHK', status: 'Active', is_registered: true }
+    ];
+
     const ZYRUS_DEFAULT_ACCOUNT = {
         id: 'usr_zyrus',
         username: 'zyrus',
@@ -220,24 +260,52 @@
         try {
             let list = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
             if (!Array.isArray(list)) list = [];
+            let changed = false;
+
             const hasZyrus = list.some(u =>
                 (u.username && String(u.username).toLowerCase().includes('zyrus')) ||
                 (u.fullname && String(u.fullname).toLowerCase().includes('zyrus'))
             );
             if (!hasZyrus) {
                 list.push({ ...ZYRUS_DEFAULT_ACCOUNT });
+                changed = true;
+            }
+
+            DEPARTMENT_COORDINATOR_ACCOUNTS.forEach(coordAcc => {
+                const exists = list.some(u => u && u.username && String(u.username).toLowerCase() === coordAcc.username.toLowerCase());
+                if (!exists) {
+                    list.push({ ...coordAcc });
+                    changed = true;
+                }
+            });
+
+            if (changed) {
                 localStorage.setItem('irecord_registered_users', JSON.stringify(list));
             }
             return list;
         } catch (e) {
-            return [{ ...ZYRUS_DEFAULT_ACCOUNT }];
+            return [{ ...ZYRUS_DEFAULT_ACCOUNT }, ...DEPARTMENT_COORDINATOR_ACCOUNTS];
         }
     }
 
-    function getCustomSwitchableAccounts() {
+    function getCustomFacultyAccounts() {
         const list = ensureZyrusInRegisteredUsers();
-        const defaultUsernames = ['admin', 'aramos_rd', 'mgomez_ed', 'msantos_ccst', 'ecruz_cba', 'jdelacruz', 'mbautista', 'lbautista'];
-        return list.filter(u => u && u.username && !defaultUsernames.includes(String(u.username).toLowerCase()));
+        const defaultUsernames = [
+            'admin', 'aramos_rd', 'mgomez_ed', 'msantos_ccst', 'ecruz_cba', 'jdelacruz', 'mbautista', 'lbautista',
+            ...DEPARTMENT_COORDINATOR_ACCOUNTS.map(a => a.username.toLowerCase())
+        ];
+        return list.filter(u => {
+            if (!u || !u.username) return false;
+            const uname = String(u.username).toLowerCase();
+            if (defaultUsernames.includes(uname)) return false;
+            const r = normalizeRole(u.role || 'Faculty Researcher');
+            return r === 'Faculty Researcher' || r === 'Faculty Extensionist';
+        });
+    }
+
+    function getDepartmentCoordinators(targetRole) {
+        const list = ensureZyrusInRegisteredUsers();
+        return list.filter(u => u && normalizeRole(u.role || '') === targetRole && normalizeDeptCode(u.department || u.college));
     }
 
     window.switchAccount = function (identifier) {
@@ -247,7 +315,7 @@
             String(u.id).toLowerCase() === key ||
             (u.username && String(u.username).toLowerCase() === key) ||
             (u.fullname && String(u.fullname).toLowerCase().includes(key))
-        ) || ZYRUS_DEFAULT_ACCOUNT;
+        ) || DEPARTMENT_COORDINATOR_ACCOUNTS.find(u => u.username.toLowerCase() === key) || ZYRUS_DEFAULT_ACCOUNT;
 
         const normalized = normalizeRole(target.role || 'Faculty Researcher');
         const nextUser = {
@@ -261,6 +329,7 @@
             gender: target.gender || '',
             photo: target.photo || '',
             department: target.department || target.college || ROLE_DEMO_DEPARTMENTS[normalized] || '',
+            college: normalizeDeptCode(target.department || target.college || ''),
             is_registered: true,
             is_demo: false,
             logged_in: true
@@ -293,6 +362,7 @@
         currentUser.department = ROLE_DEMO_DEPARTMENTS[normalized] !== undefined
             ? ROLE_DEMO_DEPARTMENTS[normalized]
             : '';
+        currentUser.college = normalizeDeptCode(currentUser.department);
         currentUser.is_demo = true;
         currentUser.is_registered = false;
         delete currentUser.photo;
@@ -317,7 +387,7 @@
     };
 
     function computeUserInitials(name, fallback) {
-        const clean = String(name || '').trim();
+        const clean = String(name || '').trim().replace(/^(prof\.|dr\.|engr\.)\s+/i, '');
         if (!clean) return fallback || 'U';
         const parts = clean.split(/\s+/).filter(Boolean);
         if (parts.length >= 2) {
@@ -331,6 +401,7 @@
         const user = getCurrentUser();
         const roleKey = user.role;
         const config = ROLE_PORTALS[roleKey] || ROLE_PORTALS['Super Admin'];
+        const userDeptCode = normalizeDeptCode(user.department || user.college || '');
 
         // 1. Update Profile identity in TopBar
         const nameDisplay = document.getElementById('userNameDisplay');
@@ -342,10 +413,7 @@
         const dropdownRole = document.getElementById('dropdownUserRole');
         if (dropdownRole) {
             const isInstitutional = ['Super Admin', 'OVPRE Admin', 'Research Director', 'Extension Director'].includes(roleKey);
-            const dept = isInstitutional ? '' : (user.department || '');
-            const deptText = (dept && dept !== 'Institutional' && dept !== 'None')
-                ? ` • ${dept.split('(')[1]?.replace(')', '') || dept}`
-                : '';
+            const deptText = (!isInstitutional && userDeptCode) ? ` • ${userDeptCode}` : '';
             dropdownRole.textContent = `${config.title}${deptText}`;
         }
 
@@ -378,35 +446,31 @@
             }
         }
 
-        // 2. Custom Role Switcher inside Profile Dropdown
+        // 2. Custom Role & Department Account Switcher inside Profile Dropdown
         const profileDropdown = document.getElementById('profileDropdown');
         if (profileDropdown && !document.getElementById('roleSwitcherBox')) {
             const switcherBox = document.createElement('div');
             switcherBox.id = 'roleSwitcherBox';
-            switcherBox.style.cssText = 'padding: 10px 14px; background: #f8fafc; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; margin: 4px 0;';
+            switcherBox.style.cssText = 'padding: 10px 12px; background: #f8fafc; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; margin: 4px 0; max-height: 350px; overflow-y: auto;';
 
             let switcherHTML = `
-                <div style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
-                    <span>Switch Role / Portal</span>
-                    <i class="ri-user-shared-line"></i>
+                <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between;">
+                    <span>Executive &amp; Directors</span>
+                    <i class="ri-shield-star-line"></i>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 3px;">
+                <div style="display: flex; flex-direction: column; gap: 2px;">
             `;
 
-            const rolesList = [
+            const execRoles = [
                 { role: 'Super Admin', label: 'Super Administrator', icon: 'ri-shield-star-line', color: '#15803d' },
-                { role: 'Research Director', label: 'Research Director', icon: 'ri-flask-line', color: '#0284c7' },
-                { role: 'Extension Director', label: 'Extension Director', icon: 'ri-community-line', color: '#0d9488' },
-                { role: 'Research Coordinator', label: 'Research Coordinator', icon: 'ri-user-settings-line', color: '#7c3aed' },
-                { role: 'Extension Coordinator', label: 'Extension Coordinator', icon: 'ri-user-shared-line', color: '#d97706' },
-                { role: 'Faculty Researcher', label: 'Faculty Researcher', icon: 'ri-file-text-line', color: '#2563eb' },
-                { role: 'Faculty Extensionist', label: 'Faculty Extensionist', icon: 'ri-team-line', color: '#16a34a' }
+                { role: 'Research Director', label: 'Research Director (RIUH)', icon: 'ri-flask-line', color: '#0284c7' },
+                { role: 'Extension Director', label: 'Extension Director', icon: 'ri-community-line', color: '#0d9488' }
             ];
 
-            rolesList.forEach(r => {
+            execRoles.forEach(r => {
                 const isActive = (!isCustomUser && r.role === roleKey);
                 switcherHTML += `
-                    <button type="button" onclick="window.switchRole('${r.role}')" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; border: none; background: ${isActive ? '#dcfce7' : 'transparent'}; color: ${isActive ? '#15803d' : '#334155'}; font-size: 0.8rem; font-weight: ${isActive ? '700' : '500'}; cursor: pointer; text-align: left; transition: background 0.15s;">
+                    <button type="button" onclick="window.switchRole('${r.role}')" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; border: none; background: ${isActive ? '#dcfce7' : 'transparent'}; color: ${isActive ? '#15803d' : '#334155'}; font-size: 0.78rem; font-weight: ${isActive ? '700' : '500'}; cursor: pointer; text-align: left;">
                         <span style="display: flex; align-items: center; gap: 6px;">
                             <i class="${r.icon}" style="color: ${r.color};"></i> ${r.label}
                         </span>
@@ -415,32 +479,98 @@
                 `;
             });
 
-            const customAccounts = getCustomSwitchableAccounts();
-            if (customAccounts.length) {
+            // Faculty Accounts Section (Zyrus + Demo Faculty + Custom Registered Faculty)
+            switcherHTML += `
+                <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 7px 0 3px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                    <span>Faculty Accounts (By Dept)</span>
+                    <i class="ri-user-star-line"></i>
+                </div>
+            `;
+
+            const customFaculty = getCustomFacultyAccounts();
+            customFaculty.forEach(acc => {
+                const isAccActive = isCustomUser && (
+                    (user.id && acc.id && String(user.id) === String(acc.id)) ||
+                    (user.username && acc.username && String(user.username).toLowerCase() === String(acc.username).toLowerCase())
+                );
+                const accRole = normalizeRole(acc.role || 'Faculty Researcher');
+                const shortRole = accRole === 'Faculty Extensionist' ? 'Extensionist' : 'Researcher';
+                const deptBadge = normalizeDeptCode(acc.department || acc.college || 'CCST') || 'CCST';
+                const safeKey = String(acc.username || acc.id).replace(/'/g, "\\'");
                 switcherHTML += `
-                    <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 6px 0 3px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                        <span>Faculty Account</span>
-                        <i class="ri-user-star-line"></i>
-                    </div>
+                    <button type="button" onclick="window.switchAccount('${safeKey}')" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; border: none; background: ${isAccActive ? '#dcfce7' : 'transparent'}; color: ${isAccActive ? '#15803d' : '#334155'}; font-size: 0.78rem; font-weight: ${isAccActive ? '700' : '600'}; cursor: pointer; text-align: left;">
+                        <span style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                            <i class="ri-user-follow-line" style="color: #2563eb; flex-shrink: 0;"></i>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${acc.fullname} <small style="color: #1d4ed8; background: #eff6ff; padding: 1px 5px; border-radius: 4px; font-weight: 700; font-size: 0.68rem;">${deptBadge} • ${shortRole}</small></span>
+                        </span>
+                        ${isAccActive ? '<i class="ri-check-line" style="font-weight: 800; color: #15803d; flex-shrink: 0;"></i>' : ''}
+                    </button>
                 `;
-                customAccounts.forEach(acc => {
-                    const isAccActive = isCustomUser && (
-                        (user.id && acc.id && String(user.id) === String(acc.id)) ||
-                        (user.username && acc.username && String(user.username).toLowerCase() === String(acc.username).toLowerCase())
-                    );
-                    const accRoleLabel = normalizeRole(acc.role || 'Faculty Researcher');
-                    const safeKey = String(acc.username || acc.id).replace(/'/g, "\\'");
-                    switcherHTML += `
-                        <button type="button" onclick="window.switchAccount('${safeKey}')" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; border: none; background: ${isAccActive ? '#dcfce7' : 'transparent'}; color: ${isAccActive ? '#15803d' : '#334155'}; font-size: 0.8rem; font-weight: ${isAccActive ? '700' : '600'}; cursor: pointer; text-align: left; transition: background 0.15s;">
-                            <span style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-                                <i class="ri-user-follow-line" style="color: #0284c7; flex-shrink: 0;"></i>
-                                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${acc.fullname} <small style="color: #64748b; font-weight: 500;">(${accRoleLabel.replace('Faculty ', '')})</small></span>
-                            </span>
-                            ${isAccActive ? '<i class="ri-check-line" style="font-weight: 800; color: #15803d; flex-shrink: 0;"></i>' : ''}
-                        </button>
-                    `;
-                });
-            }
+            });
+
+            // Built-in Demo Faculty options
+            const demoFaculty = [
+                { role: 'Faculty Researcher', label: 'Prof. Juan Dela Cruz', badge: 'CCST • Researcher', icon: 'ri-file-text-line', color: '#2563eb' },
+                { role: 'Faculty Extensionist', label: 'Prof. Maria Bautista', badge: 'CONAHS • Extensionist', icon: 'ri-team-line', color: '#16a34a' }
+            ];
+            demoFaculty.forEach(df => {
+                const isActive = (!isCustomUser && df.role === roleKey);
+                switcherHTML += `
+                    <button type="button" onclick="window.switchRole('${df.role}')" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; border: none; background: ${isActive ? '#dcfce7' : 'transparent'}; color: ${isActive ? '#15803d' : '#334155'}; font-size: 0.78rem; font-weight: ${isActive ? '700' : '500'}; cursor: pointer; text-align: left;">
+                        <span style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                            <i class="${df.icon}" style="color: ${df.color}; flex-shrink: 0;"></i>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${df.label} <small style="color: #64748b; font-size: 0.68rem;">(${df.badge})</small></span>
+                        </span>
+                        ${isActive ? '<i class="ri-check-line" style="font-weight: 800; color: #15803d; flex-shrink: 0;"></i>' : ''}
+                    </button>
+                `;
+            });
+
+            // Research Coordinators by Department
+            switcherHTML += `
+                <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 7px 0 3px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                    <span>Research Coordinators (By Dept)</span>
+                    <i class="ri-user-settings-line"></i>
+                </div>
+            `;
+            const resCoords = getDepartmentCoordinators('Research Coordinator');
+            resCoords.forEach(rc => {
+                const deptBadge = normalizeDeptCode(rc.department || rc.college);
+                const isRcActive = (roleKey === 'Research Coordinator' && userDeptCode === deptBadge && String(user.username || '').toLowerCase() === String(rc.username || '').toLowerCase());
+                const safeKey = String(rc.username || rc.id).replace(/'/g, "\\'");
+                switcherHTML += `
+                    <button type="button" onclick="window.switchAccount('${safeKey}')" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; border: none; background: ${isRcActive ? '#dcfce7' : 'transparent'}; color: ${isRcActive ? '#15803d' : '#334155'}; font-size: 0.77rem; font-weight: ${isRcActive ? '700' : '500'}; cursor: pointer; text-align: left;">
+                        <span style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                            <i class="ri-user-settings-line" style="color: #7c3aed; flex-shrink: 0;"></i>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><strong style="color: #6d28d9;">[${deptBadge}]</strong> ${rc.fullname}</span>
+                        </span>
+                        ${isRcActive ? '<i class="ri-check-line" style="font-weight: 800; color: #15803d; flex-shrink: 0;"></i>' : ''}
+                    </button>
+                `;
+            });
+
+            // Extension Coordinators by Department
+            switcherHTML += `
+                <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 7px 0 3px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                    <span>Extension Coordinators (By Dept)</span>
+                    <i class="ri-user-shared-line"></i>
+                </div>
+            `;
+            const extCoords = getDepartmentCoordinators('Extension Coordinator');
+            extCoords.forEach(ec => {
+                const deptBadge = normalizeDeptCode(ec.department || ec.college);
+                const isEcActive = (roleKey === 'Extension Coordinator' && userDeptCode === deptBadge && String(user.username || '').toLowerCase() === String(ec.username || '').toLowerCase());
+                const safeKey = String(ec.username || ec.id).replace(/'/g, "\\'");
+                switcherHTML += `
+                    <button type="button" onclick="window.switchAccount('${safeKey}')" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; border: none; background: ${isEcActive ? '#dcfce7' : 'transparent'}; color: ${isEcActive ? '#15803d' : '#334155'}; font-size: 0.77rem; font-weight: ${isEcActive ? '700' : '500'}; cursor: pointer; text-align: left;">
+                        <span style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                            <i class="ri-user-shared-line" style="color: #d97706; flex-shrink: 0;"></i>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><strong style="color: #b45309;">[${deptBadge}]</strong> ${ec.fullname}</span>
+                        </span>
+                        ${isEcActive ? '<i class="ri-check-line" style="font-weight: 800; color: #15803d; flex-shrink: 0;"></i>' : ''}
+                    </button>
+                `;
+            });
 
             switcherHTML += `</div>`;
             switcherBox.innerHTML = switcherHTML;
@@ -785,48 +915,53 @@
 
     function adaptResearchPage(config, user) {
         const headerEl = document.querySelector('.module-header') || document.querySelector('.welcome-panel');
+        const deptBadge = normalizeDeptCode((user && (user.department || user.college)) || '');
         if (headerEl) {
             const h2 = headerEl.querySelector('h2');
             const sub = headerEl.querySelector('span, p');
 
             if (config.roleName === 'Faculty Researcher') {
-                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Proponent View</span>`;
-                if (sub) sub.textContent = `Academic Pipeline: Submit Proposal &rarr; College Coordinator Screening &rarr; Director Evaluation &rarr; Executive Approval`;
+                const badgeLabel = deptBadge ? `${deptBadge} Proponent View` : 'Proponent View';
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">${badgeLabel}</span>`;
+                if (sub) sub.innerHTML = `Academic Pipeline: Submit Proposal &rarr; ${deptBadge || 'College'} Coordinator Screening &rarr; Director Evaluation &rarr; Executive Approval`;
             } else if (config.roleName === 'Research Coordinator') {
-                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #15803d; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Coordinator Screening</span>`;
-                if (sub) sub.textContent = `Stage 1: Screen proposals, endorse to Research Director, or return to faculty for revision.`;
+                const badgeLabel = deptBadge ? `${deptBadge} Coordinator Screening` : 'Coordinator Screening';
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #15803d; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">${badgeLabel}</span>`;
+                if (sub) sub.textContent = `Stage 1 (${deptBadge || 'Department'} Exclusive): Screen proposals submitted by ${deptBadge || 'your college'} faculty, endorse to Research Director, or return for revision.`;
             } else if (config.roleName === 'Research Director') {
                 if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #1d4ed8; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Director RIUH Review</span>`;
-                if (sub) sub.textContent = `Stage 2: Evaluate endorsed research proposals, enter RIUH rating and budget allocation, and endorse to Executive VP.`;
+                if (sub) sub.textContent = `Stage 2: Evaluate Coordinator-endorsed research proposals across all colleges, enter RIUH rating and budget allocation, and endorse to Executive VP.`;
             } else if (config.roleName === 'Super Admin' || config.roleName === 'OVPRE Admin') {
                 if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #7e22ce; background: #faf5ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Executive Oversight</span>`;
-                if (sub) sub.textContent = `Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (RIUH) &rarr; Executive Final Approval`;
+                if (sub) sub.innerHTML = `Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (RIUH) &rarr; Executive Final Approval`;
             }
         }
     }
 
     function adaptExtensionPage(config, user) {
         const headerEl = document.querySelector('.module-header') || document.querySelector('.welcome-panel');
+        const deptBadge = normalizeDeptCode((user && (user.department || user.college)) || '');
         if (headerEl) {
             const h2 = headerEl.querySelector('h2');
             const sub = headerEl.querySelector('span, p');
 
             if (config.roleName === 'Faculty Extensionist') {
-                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #16a34a; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Practitioner View</span>`;
-                if (sub) sub.textContent = `Academic Pipeline: Submit Proposal &rarr; College Coordinator Screening &rarr; Director Evaluation &rarr; Executive Approval`;
+                const badgeLabel = deptBadge ? `${deptBadge} Practitioner View` : 'Practitioner View';
+                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #16a34a; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">${badgeLabel}</span>`;
+                if (sub) sub.innerHTML = `Academic Pipeline: Submit Proposal &rarr; ${deptBadge || 'College'} Coordinator Screening &rarr; Director Evaluation &rarr; Executive Approval`;
             } else if (config.roleName === 'Extension Coordinator') {
-                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #d97706; background: #fffbeb; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Coordinator Screening</span>`;
-                if (sub) sub.textContent = `Stage 1: Screen community project proposals, verify partner viability, and endorse to Director.`;
+                const badgeLabel = deptBadge ? `${deptBadge} Coordinator Screening` : 'Coordinator Screening';
+                if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #d97706; background: #fffbeb; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">${badgeLabel}</span>`;
+                if (sub) sub.textContent = `Stage 1 (${deptBadge || 'Department'} Exclusive): Screen community proposals submitted by ${deptBadge || 'your college'} faculty and endorse to Extension Director.`;
             } else if (config.roleName === 'Extension Director') {
                 if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #0d9488; background: #f0fdfa; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Director Evaluation</span>`;
-                if (sub) sub.textContent = `Stage 2: Evaluate extension initiatives, assign rating and approved funding allocation, and endorse to Executive VP.`;
+                if (sub) sub.textContent = `Stage 2: Evaluate Coordinator-endorsed extension initiatives across all colleges, assign rating and approved funding allocation, and endorse to Executive VP.`;
             } else if (config.roleName === 'Super Admin' || config.roleName === 'OVPRE Admin') {
                 if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #7e22ce; background: #faf5ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Executive Oversight</span>`;
-                if (sub) sub.textContent = `Academic Pipeline: Faculty Extensionist &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval`;
+                if (sub) sub.innerHTML = `Academic Pipeline: Faculty Extensionist &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval`;
             }
         }
     }
-
     function adaptSettingsPage(config, user) {
         if (!config.canAccessSettings) {
             const contentArea = document.querySelector('.content-area');
