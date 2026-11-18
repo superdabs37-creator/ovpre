@@ -937,12 +937,13 @@ window.initAdminTablePagination = function(table) {
     lengthLabel.innerHTML = '<span>Show</span>';
     const lengthSelect = document.createElement('select');
     lengthSelect.setAttribute('aria-label', 'Rows per page');
-    [['10', '10'], ['25', '25'], ['50', '50'], ['100', '100'], ['all', 'All']].forEach(([value, label]) => {
+    [['5', '5'], ['10', '10'], ['25', '25'], ['all', 'All']].forEach(([value, label]) => {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = label;
         lengthSelect.append(option);
     });
+    lengthSelect.value = '10';
     lengthLabel.append(lengthSelect, document.createTextNode(' entries'));
     toolbar.append(lengthLabel);
     const exportButton = document.createElement('button');
