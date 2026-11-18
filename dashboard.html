@@ -868,7 +868,7 @@
                 <section class="panel" style="margin-bottom: 24px; border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
                     <div class="panel-heading" style="margin-bottom: 16px;">
                         <div>
-                            <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
+                            <h2 id="tacticalMatrixHeading" style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
                                 <i class="ri-table-line" style="color: #15803d;"></i> Tactical Colleges Submissions Matrix
                             </h2>
                         </div>
@@ -911,12 +911,13 @@
         const isSuperAdmin = currentUserRole === 'Super Admin';
         const isResearchDirector = currentUserRole === 'Research Director';
         const isResearchCoordinator = currentUserRole === 'Research Coordinator';
-        const isFacultyResearcher = currentUserRole === 'Faculty Researcher';
+        const isFacultyResearcher = currentUserRole === 'Faculty Researcher' || currentUserRole === 'Researcher';
         const isResearchOnlyRole = isResearchDirector || isResearchCoordinator || isFacultyResearcher;
         const isExtensionDirector = currentUserRole === 'Extension Director';
         const isExtensionCoordinator = currentUserRole === 'Extension Coordinator';
         const isFacultyExtensionist = currentUserRole === 'Faculty Extensionist';
         const isExtensionOnlyRole = isExtensionDirector || isExtensionCoordinator || isFacultyExtensionist;
+        const isDeptScopedRole = isFacultyResearcher || isFacultyExtensionist || isResearchCoordinator || isExtensionCoordinator;
 
         // Registered Users & Academic Records KPI capsules are exclusive to Super Admin
         const kpiUsersCard = document.getElementById('kpiUsersCard');
@@ -1123,6 +1124,20 @@
                 }
                 if (extSub) extSub.textContent = `Exclusively ${userDeptCode} faculty initiatives`;
             }
+
+            // Department-Scoped Colleges Active KPI Capsule
+            if (isDeptScopedRole && userDeptCode) {
+                const kpiCollegesCard = document.getElementById('kpiCollegesCard');
+                if (kpiCollegesCard) {
+                    const kpiCollegesTitle = kpiCollegesCard.querySelector('span[style*="font-size: 0.76rem"]');
+                    if (kpiCollegesTitle) kpiCollegesTitle.textContent = 'Department Active';
+                    const countDiv = kpiCollegesCard.querySelector('div[style*="font-size: 1.85rem"]');
+                    if (countDiv) countDiv.innerHTML = `1 <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ 1 Dept</span>`;
+                    const subText = kpiCollegesCard.querySelector('small');
+                    if (subText) subText.textContent = `Assigned Dept: ${userDeptCode}`;
+                    kpiCollegesCard.title = `Your assigned department: ${userDeptCode}. Click to view programs.`;
+                }
+            }
         })();
         const programsByCollege = {
             'College of Teacher Education': ['Bachelor of Elementary Education', 'Bachelor of Special Needs Education', 'Bachelor of Secondary Education', 'Bachelor of Technical-Vocational Teacher Education'],
@@ -1244,7 +1259,17 @@
         // Populate Programs Modal Content
         const programsModalContent = document.getElementById('programsModalContent');
         if (programsModalContent) {
-            Object.entries(programsByCollege).forEach(([collegeName, progs]) => {
+            const u = getCurrentDashboardUser();
+            const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+            let entries = Object.entries(programsByCollege);
+            if (userDeptCode) {
+                const filtered = entries.filter(([collegeName]) => normalizeDashboardDept(collegeName) === userDeptCode);
+                if (filtered.length > 0) entries = filtered;
+                const modalTitle = document.getElementById('programsModalTitle');
+                if (modalTitle) modalTitle.textContent = `${userDeptCode} Department Programs`;
+            }
+
+            entries.forEach(([collegeName, progs]) => {
                 const sec = document.createElement('section');
                 sec.style.cssText = 'padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;';
                 sec.innerHTML = `
@@ -1374,7 +1399,13 @@
             const filterVal = completedProjectFilter ? completedProjectFilter.value : 'all';
             completedCollegesList.replaceChildren();
 
-            const mergedColleges = buildMergedCompletedColleges();
+            const u = getCurrentDashboardUser();
+            const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+
+            let mergedColleges = buildMergedCompletedColleges();
+            if (userDeptCode) {
+                mergedColleges = mergedColleges.filter(col => normalizeDashboardDept(col.department_name) === userDeptCode);
+            }
             let visibleCount = 0;
             let totalCompletedProjects = 0;
 
@@ -1461,11 +1492,15 @@
             });
 
             if (completedTotalBadgeEl) {
-                completedTotalBadgeEl.textContent = `${visibleCount} Active College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed`;
+                if (userDeptCode) {
+                    completedTotalBadgeEl.textContent = `${userDeptCode} Department · ${totalCompletedProjects} Completed`;
+                } else {
+                    completedTotalBadgeEl.textContent = `${visibleCount} Active College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed`;
+                }
             }
 
             if (!visibleCount) {
-                completedCollegesList.innerHTML = '<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-inbox-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects matching selected criteria.</div>';
+                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-inbox-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects matching selected criteria${userDeptCode ? ' for ' + userDeptCode : ''}.</div>`;
             }
         }
         window.renderCompletedColleges = renderCompletedColleges;
@@ -1680,7 +1715,21 @@
         // Render Matrix Table
         const matrixTableBody = document.getElementById('matrixTableBody');
         if (matrixTableBody) {
-            submissionsBreakdown.forEach(col => {
+            const u = getCurrentDashboardUser();
+            const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+            let rowsToDisplay = submissionsBreakdown;
+            if (userDeptCode) {
+                const filtered = submissionsBreakdown.filter(col => normalizeDashboardDept(col.department_name) === userDeptCode);
+                if (filtered.length > 0) {
+                    rowsToDisplay = filtered;
+                    const matHeading = document.getElementById('tacticalMatrixHeading');
+                    if (matHeading) {
+                        matHeading.innerHTML = `<i class="ri-table-line" style="color: #15803d;"></i> Tactical Department Submissions Matrix (${userDeptCode})`;
+                    }
+                }
+            }
+
+            rowsToDisplay.forEach(col => {
                 const row = document.createElement('tr');
                 row.style.cssText = 'border-bottom: 1px solid #f1f5f9; font-size: 0.88rem;';
                 const totalSub = isResearchOnlyRole ? (col.res_proposals + col.res_publications + col.ext_accomplishments) : (isExtensionOnlyRole ? (col.ext_proposals + col.ext_accomplishments) : col.total_submissions);
@@ -2277,6 +2326,13 @@
                 if (!diffCanvas) return;
                 if (diffChartInstance) diffChartInstance.destroy();
 
+                const u = getCurrentDashboardUser();
+                const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+                const deptIndex = userDeptCode ? submissionsBreakdown.findIndex(c => normalizeDashboardDept(c.department_name) === userDeptCode) : -1;
+                if (userDeptCode && deptIndex !== -1 && (selectedKind === 'all' || !selectedKind)) {
+                    selectedKind = 'college-' + deptIndex;
+                }
+
                 let labels = [];
                 let resData = [];
                 let pubData = [];
@@ -2406,10 +2462,38 @@
                 });
             }
 
+            const u = getCurrentDashboardUser();
+            const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+            const deptIndex = userDeptCode ? submissionsBreakdown.findIndex(c => normalizeDashboardDept(c.department_name) === userDeptCode) : -1;
+
+            if (userDeptCode && deptIndex !== -1) {
+                const myCol = submissionsBreakdown[deptIndex];
+                const acronym = getCollegeAcronym(myCol.department_name);
+                if (kindFilter) {
+                    kindFilter.innerHTML = `<option value="college-${deptIndex}" selected>${myCol.department_name} (${acronym})</option>`;
+                    kindFilter.disabled = true;
+                }
+                const titleHeading = document.getElementById('deptChartTitle');
+                if (titleHeading) {
+                    titleHeading.innerHTML = `<i class="ri-building-line" style="color: #15803d; font-size: 1.3rem;"></i> Submission Analytics - ${userDeptCode} Department`;
+                }
+                const badgeEl = document.getElementById('deptSubmissionsBadge');
+                if (badgeEl) {
+                    const myTotal = isResearchOnlyRole
+                        ? (myCol.res_proposals + myCol.res_publications)
+                        : (isExtensionOnlyRole ? (myCol.ext_proposals + myCol.ext_accomplishments) : myCol.total_submissions);
+                    badgeEl.textContent = `${myTotal} Total Submissions (${userDeptCode})`;
+                }
+            }
+
             if (kindFilter) {
                 kindFilter.addEventListener('change', () => renderDiffChart(kindFilter.value));
             }
-            renderDiffChart('all');
+            if (userDeptCode && deptIndex !== -1) {
+                renderDiffChart('college-' + deptIndex);
+            } else {
+                renderDiffChart('all');
+            }
 
             // 2. Monthly Submission Trends Multi-Series Area Chart (Green, Yellow, Orange)
             const monthlyCanvas = document.getElementById('monthlySubmissionTrendChart');
@@ -2635,13 +2719,23 @@
                 try { resList = JSON.parse(localStorage.getItem('ovpre_research_projects') || 'null'); } catch (e) {}
                 try { extList = JSON.parse(localStorage.getItem('ovpre_extension_projects') || 'null'); } catch (e) {}
 
-                const hasStoredRes = Array.isArray(resList) && resList.length > 0;
-                const hasStoredExt = Array.isArray(extList) && extList.length > 0;
+                const u = getCurrentDashboardUser();
+                const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+
+                let hasStoredRes = Array.isArray(resList) && resList.length > 0;
+                let hasStoredExt = Array.isArray(extList) && extList.length > 0;
+
+                let activeRes = hasStoredRes ? resList.filter(r => !r.archived) : [];
+                let activeExt = hasStoredExt ? extList.filter(e => !e.archived) : [];
+
+                if (userDeptCode) {
+                    activeRes = activeRes.filter(r => normalizeDashboardDept(r.college || r.department_code || r.department || '') === userDeptCode);
+                    activeExt = activeExt.filter(e => normalizeDashboardDept(e.college || e.department_code || e.department || '') === userDeptCode);
+                    hasStoredRes = activeRes.length > 0;
+                    hasStoredExt = activeExt.length > 0;
+                }
 
                 if (hasStoredRes || hasStoredExt) {
-                    const activeRes = hasStoredRes ? resList.filter(r => !r.archived) : [];
-                    const activeExt = hasStoredExt ? extList.filter(e => !e.archived) : [];
-
                     let approved = 0, review = 0, pending = 0, revision = 0;
                     let resDone = 0, resActive = 0;
                     let extDone = 0, extActive = 0;
@@ -2666,20 +2760,35 @@
                         });
                     }
 
-                    // If only one stream was in localStorage so far, supplement the other stream if needed
-                    if (!hasStoredRes && !isExtensionOnlyRole) {
-                        resDone = 11; resActive = 5;
-                        approved += 7; review += 4; pending += 3; revision += 2;
-                    }
-                    if (!hasStoredExt && !isResearchOnlyRole) {
-                        extDone = 5; extActive = 2;
-                        approved += 4; review += 1; pending += 1; revision += 1;
-                    }
-
                     return { approved, review, pending, revision, resDone, resActive, extDone, extActive };
                 }
 
-                // Default baseline metrics before local/cloud storage sync
+                // If department scoped and no custom storage entries yet, derive baseline from their department row
+                if (userDeptCode) {
+                    const deptRow = submissionsBreakdown.find(c => normalizeDashboardDept(c.department_name) === userDeptCode);
+                    if (deptRow) {
+                        if (isResearchOnlyRole) {
+                            const rPub = deptRow.res_publications;
+                            const rRev = Math.floor(deptRow.res_proposals / 2);
+                            const rPen = Math.ceil(deptRow.res_proposals / 2);
+                            return { approved: rPub, review: rRev, pending: rPen, revision: 0, resDone: rPub, resActive: deptRow.res_proposals, extDone: 0, extActive: 0 };
+                        }
+                        if (isExtensionOnlyRole) {
+                            const eAcc = deptRow.ext_accomplishments;
+                            const eRev = Math.floor(deptRow.ext_proposals / 2);
+                            const ePen = Math.ceil(deptRow.ext_proposals / 2);
+                            return { approved: eAcc, review: eRev, pending: ePen, revision: 0, resDone: 0, resActive: 0, extDone: eAcc, extActive: deptRow.ext_proposals };
+                        }
+                        const app = deptRow.res_publications + deptRow.ext_accomplishments;
+                        const rRem = deptRow.res_proposals;
+                        const eRem = deptRow.ext_proposals;
+                        const rev = Math.floor((rRem + eRem) / 2);
+                        const pen = Math.ceil((rRem + eRem) / 2);
+                        return { approved: app, review: rev, pending: pen, revision: 0, resDone: deptRow.res_publications, resActive: rRem, extDone: deptRow.ext_accomplishments, extActive: eRem };
+                    }
+                }
+
+                // Default baseline metrics before local/cloud storage sync (Institutional / Super Admin / Directors)
                 if (isResearchOnlyRole) {
                     return { approved: 11, review: 3, pending: 1, revision: 1, resDone: 11, resActive: 5, extDone: 0, extActive: 0 };
                 }
@@ -2699,9 +2808,28 @@
                 const penPct = fmtPct(m.pending);
                 const rvsPct = fmtPct(m.revision);
 
+                // Department scope indicator
+                const u = getCurrentDashboardUser();
+                const userDeptCode = isDeptScopedRole ? normalizeDashboardDept(u.department || u.college || '') : '';
+                if (userDeptCode) {
+                    const secBadge = document.getElementById('overallCompletionRatePill');
+                    if (secBadge && !document.getElementById('userDeptScopeBadge')) {
+                        const pill = document.createElement('span');
+                        pill.id = 'userDeptScopeBadge';
+                        pill.className = 'acad-meta-pill';
+                        pill.style.background = '#f0fdf4';
+                        pill.style.borderColor = '#bbf7d0';
+                        pill.style.color = '#15803d';
+                        pill.innerHTML = `<i class="ri-building-2-line"></i> <span><strong>${userDeptCode}</strong> Dept Scoped</span>`;
+                        secBadge.parentNode.insertBefore(pill, secBadge);
+                    }
+                }
+
                 // Header & Card 1 Badges
                 const trackedBadge = document.getElementById('statusTrackedBadge');
-                if (trackedBadge) trackedBadge.textContent = `${total} Tracked Submission${total === 1 ? '' : 's'}`;
+                if (trackedBadge) {
+                    trackedBadge.textContent = `${total} Tracked Submission${total === 1 ? '' : 's'}${userDeptCode ? ' (' + userDeptCode + ')' : ''}`;
+                }
 
                 const overallRateEl = document.getElementById('overallApprovalRateVal');
                 if (overallRateEl) overallRateEl.textContent = `${appPct}%`;

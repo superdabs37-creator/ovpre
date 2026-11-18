@@ -13,6 +13,25 @@ $isFacultyExtensionist = in_array($role, [ROLE_FACULTY_EXTENSIONIST, 'faculty-ex
     || in_array((string) ($user['role'] ?? ''), [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist', 'Faculty Extensionists'], true)
     || (isset($_SESSION['active_role']) && in_array((string) $_SESSION['active_role'], [ROLE_FACULTY_EXTENSIONIST, 'faculty-extensionist', 'Faculty Extensionists'], true));
 
+$isResearchCoordinator = in_array($role, [ROLE_RESEARCH_COORDINATOR, 'research-coordinator'], true)
+    || in_array((string) ($user['role'] ?? ''), [ROLE_RESEARCH_COORDINATOR, 'Research Coordinator'], true)
+    || (isset($_SESSION['active_role']) && in_array((string) $_SESSION['active_role'], [ROLE_RESEARCH_COORDINATOR, 'Research Coordinator'], true));
+
+$isExtensionCoordinator = in_array($role, [ROLE_EXTENSION_COORDINATOR, 'extension-coordinator'], true)
+    || in_array((string) ($user['role'] ?? ''), [ROLE_EXTENSION_COORDINATOR, 'Extension Coordinator'], true)
+    || (isset($_SESSION['active_role']) && in_array((string) $_SESSION['active_role'], [ROLE_EXTENSION_COORDINATOR, 'Extension Coordinator'], true));
+
+$isDeptScoped = $isFacultyResearcher || $isFacultyExtensionist || $isResearchCoordinator || $isExtensionCoordinator;
+$userDeptId = (int) ($user['department_id'] ?? 0);
+$userDeptName = '';
+if ($userDeptId > 0) {
+    try {
+        $stmtDept = db()->prepare('SELECT department_name FROM departments WHERE id = ? LIMIT 1');
+        $stmtDept->execute([$userDeptId]);
+        $userDeptName = (string) ($stmtDept->fetchColumn() ?: '');
+    } catch (Throwable $e) {}
+}
+
 $myResearchCount = 0;
 $myExtensionCount = 0;
 if (!empty($user['id'])) {
@@ -283,6 +302,13 @@ try {
     ")->fetchAll(PDO::FETCH_ASSOC);
 }
 
+if ($isDeptScoped && $userDeptId > 0) {
+    $deptFilteredBreakdown = array_values(array_filter($submissionsBreakdown, fn($c) => (int)($c['id'] ?? 0) === $userDeptId || ($userDeptName && $c['department_name'] === $userDeptName)));
+    if (!empty($deptFilteredBreakdown)) {
+        $submissionsBreakdown = $deptFilteredBreakdown;
+    }
+}
+
 $totalResProposals = (int) array_sum(array_column($submissionsBreakdown, 'res_proposals'));
 $totalResPublications = (int) array_sum(array_column($submissionsBreakdown, 'res_publications'));
 $totalExtProposals = (int) array_sum(array_column($submissionsBreakdown, 'ext_proposals'));
@@ -302,6 +328,9 @@ $programsByCollege = [
     'College of Nursing and Allied Health Sciences' => ['Bachelor of Science in Nursing'],
     'College of Human Kinetics' => ['Bachelor of Physical Education'],
 ];
+if ($isDeptScoped && !empty($userDeptName) && isset($programsByCollege[$userDeptName])) {
+    $programsByCollege = [$userDeptName => $programsByCollege[$userDeptName]];
+}
 $departmentRowsByName = [];
 foreach ($submissionsBreakdown as $departmentRow) {
     $departmentRowsByName[(string) $departmentRow['department_name']] = $departmentRow;
@@ -334,6 +363,9 @@ $collegeMatrix = $submissionsBreakdown;
 // SUBMISSION COMPLETION STATUS ENGINE (TAPOS NA VS. HINDI PA TAPOS)
 // =========================================================
 $allDeptsList = db()->query("SELECT id, department_name FROM departments ORDER BY department_name ASC")->fetchAll(PDO::FETCH_ASSOC);
+if ($isDeptScoped && $userDeptId > 0) {
+    $allDeptsList = array_values(array_filter($allDeptsList, fn($d) => (int)$d['id'] === $userDeptId));
+}
 
 $completionByCollege = [];
 $totalAllCompleted = 0;
@@ -389,11 +421,19 @@ $grandSubmissionsTotal = $totalAllCompleted + $totalAllOngoing;
 $overallCompletionRate = $grandSubmissionsTotal > 0 ? round(($totalAllCompleted / $grandSubmissionsTotal) * 100, 1) : 0;
 
 // Status distribution for research and extension submissions.
-$submissionStatusRows = db()->query("
-    SELECT status FROM research_projects
-    UNION ALL
-    SELECT status FROM extension_projects
-")->fetchAll(PDO::FETCH_COLUMN);
+if ($isDeptScoped && $userDeptId > 0) {
+    $submissionStatusRows = db()->query("
+        SELECT r.status FROM research_projects r JOIN users u ON u.id = r.submitted_by WHERE u.department_id = {$userDeptId}
+        UNION ALL
+        SELECT e.status FROM extension_projects e JOIN users u ON u.id = e.submitted_by WHERE u.department_id = {$userDeptId}
+    ")->fetchAll(PDO::FETCH_COLUMN);
+} else {
+    $submissionStatusRows = db()->query("
+        SELECT status FROM research_projects
+        UNION ALL
+        SELECT status FROM extension_projects
+    ")->fetchAll(PDO::FETCH_COLUMN);
+}
 $submissionStatusCounts = ['Pending' => 0, 'Under Review' => 0, 'For Revision' => 0, 'Approved' => 0];
 foreach ($submissionStatusRows as $submissionStatus) {
     $normalizedStatus = strtolower(trim((string) $submissionStatus));
@@ -410,6 +450,7 @@ foreach ($submissionStatusRows as $submissionStatus) {
 $trackedSubmissionStatusTotal = array_sum($submissionStatusCounts);
 
 // Use actual project completion fields; approval status alone does not qualify.
+$completedProjectDeptFilter = ($isDeptScoped && $userDeptId > 0) ? "AND dep.id = {$userDeptId}" : "";
 $completedProjectRows = db()->query("
     SELECT
         dep.id AS department_id,
@@ -428,7 +469,7 @@ $completedProjectRows = db()->query("
     JOIN users u ON u.id = r.submitted_by
     JOIN departments dep ON dep.id = u.department_id
     LEFT JOIN documents d ON d.id = r.document_id
-    WHERE r.workflow_stage = 'Completed'
+    WHERE r.workflow_stage = 'Completed' {$completedProjectDeptFilter}
 
     UNION ALL
 
@@ -449,7 +490,7 @@ $completedProjectRows = db()->query("
     JOIN users u ON u.id = e.submitted_by
     JOIN departments dep ON dep.id = u.department_id
     LEFT JOIN documents d ON d.id = e.document_id
-    WHERE e.progress_status = 'Completed'
+    WHERE e.progress_status = 'Completed' {$completedProjectDeptFilter}
     ORDER BY department_name ASC, project_type ASC, project_title ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 $completedColleges = [];
@@ -489,10 +530,17 @@ foreach ($completedProjectRows as $completedProjectRow) {
 $completedColleges = array_values($completedColleges);
 
 // Wing-Specific Submissions
-$researchTotalCompleted = (int) db()->query("SELECT COUNT(*) FROM research_projects WHERE workflow_stage = 'Completed'")->fetchColumn();
-$researchTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM research_projects WHERE workflow_stage != 'Completed' OR workflow_stage IS NULL")->fetchColumn();
-$extensionTotalCompleted = (int) db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status = 'Completed'")->fetchColumn();
-$extensionTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status != 'Completed' OR progress_status IS NULL")->fetchColumn();
+if ($isDeptScoped && $userDeptId > 0) {
+    $researchTotalCompleted = (int) db()->query("SELECT COUNT(*) FROM research_projects r JOIN users u ON u.id = r.submitted_by WHERE u.department_id = {$userDeptId} AND r.workflow_stage = 'Completed'")->fetchColumn();
+    $researchTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM research_projects r JOIN users u ON u.id = r.submitted_by WHERE u.department_id = {$userDeptId} AND (r.workflow_stage != 'Completed' OR r.workflow_stage IS NULL)")->fetchColumn();
+    $extensionTotalCompleted = (int) db()->query("SELECT COUNT(*) FROM extension_projects e JOIN users u ON u.id = e.submitted_by WHERE u.department_id = {$userDeptId} AND e.progress_status = 'Completed'")->fetchColumn();
+    $extensionTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM extension_projects e JOIN users u ON u.id = e.submitted_by WHERE u.department_id = {$userDeptId} AND (e.progress_status != 'Completed' OR e.progress_status IS NULL)")->fetchColumn();
+} else {
+    $researchTotalCompleted = (int) db()->query("SELECT COUNT(*) FROM research_projects WHERE workflow_stage = 'Completed'")->fetchColumn();
+    $researchTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM research_projects WHERE workflow_stage != 'Completed' OR workflow_stage IS NULL")->fetchColumn();
+    $extensionTotalCompleted = (int) db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status = 'Completed'")->fetchColumn();
+    $extensionTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status != 'Completed' OR progress_status IS NULL")->fetchColumn();
+}
 
 // Operational Executive Queue
 $pendingExecutiveProposals = [];
@@ -701,14 +749,22 @@ renderHeader('Dashboard', 'dashboard');
     <!-- Colleges Participation -->
     <a href="#programsByCollegeModal" id="kpiCollegesCardPhp" class="panel kpi-solid-card kpi-interactive-card kpi-card-colleges" role="button" aria-label="View Programs and Colleges Breakdown" title="Click to view participating colleges and their academic programs">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges Active</span>
+            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo ($isDeptScoped && !empty($userDeptName)) ? 'Department Active' : 'Colleges Active'; ?></span>
             <span class="kpi-icon-pill">
                 <i class="ri-government-line"></i>
             </span>
         </div>
-        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;"><?php echo $activeCollegesCount; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ <?php echo $totalColleges; ?></span></div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em;">
+            <?php if ($isDeptScoped && !empty($userDeptName)): ?>
+                1 <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ 1 Dept</span>
+            <?php else: ?>
+                <?php echo $activeCollegesCount; ?> <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">/ <?php echo $totalColleges; ?></span>
+            <?php endif; ?>
+        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colleges with submissions</small>
+            <small style="color: rgba(255, 255, 255, 0.88); font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <?php echo ($isDeptScoped && !empty($userDeptName)) ? 'Assigned: ' . h($userDeptName) : 'Colleges with submissions'; ?>
+            </small>
             <span class="kpi-card-action"><i class="ri-list-check-3"></i></span>
         </div>
     </a>
@@ -742,14 +798,13 @@ renderHeader('Dashboard', 'dashboard');
                 <span>Primary University Benchmark</span>
             </div>
             <h2 id="deptChartTitle" style="color: #0f172a; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 700; letter-spacing: -0.015em; display: flex; align-items: center; gap: 8px; margin: 0;">
-                <i class="ri-building-line" style="color: #15803d; font-size: 1.3rem;"></i> <?php echo $isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'; ?>
+                <i class="ri-building-line" style="color: #15803d; font-size: 1.3rem;"></i> <?php echo ($isDeptScoped && !empty($userDeptName)) ? 'Submission Analytics - ' . h($userDeptName) : ($isFacultyExtensionist ? 'Extension Submission Analytics by College and Program' : 'Submission Analytics by College and Program'); ?>
             </h2>
         </div>
         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div style="display: flex; align-items: center; gap: 6px;">
                 <label for="submissionKindFilter" style="font-size: 0.8rem; font-weight: 700; color: #475569;">College:</label>
                 <select id="submissionKindFilter" class="filter-select compact-select" style="font-size: 0.82rem; font-weight: 600; padding: 8px 12px; border-radius: 9px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
-                    <option value="all">All College Departments</option>
                     <?php 
                     $collegeAcronymLookup = [
                         'College of Teacher Education' => 'CTE',
@@ -762,12 +817,20 @@ renderHeader('Dashboard', 'dashboard');
                         'College of Nursing and Allied Health Sciences' => 'CNAHS',
                         'College of Human Kinetics' => 'CHK',
                     ];
-                    $selectCollegeIndex = 0; 
-                    foreach ($programsByCollege as $collegeName => $programNames): 
-                        $acr = $collegeAcronymLookup[$collegeName] ?? '';
                     ?>
-                        <option value="college-<?php echo $selectCollegeIndex++; ?>"><?php echo h($collegeName . ($acr ? " ($acr)" : '')); ?></option>
-                    <?php endforeach; ?>
+                    <?php if ($isDeptScoped && !empty($userDeptName)): ?>
+                        <?php $acr = $collegeAcronymLookup[$userDeptName] ?? ''; ?>
+                        <option value="college-0" selected><?php echo h($userDeptName . ($acr ? " ($acr)" : '')); ?></option>
+                    <?php else: ?>
+                        <option value="all">All College Departments</option>
+                        <?php 
+                        $selectCollegeIndex = 0; 
+                        foreach ($programsByCollege as $collegeName => $programNames): 
+                            $acr = $collegeAcronymLookup[$collegeName] ?? '';
+                        ?>
+                            <option value="college-<?php echo $selectCollegeIndex++; ?>"><?php echo h($collegeName . ($acr ? " ($acr)" : '')); ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
             <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
@@ -1474,7 +1537,7 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
 <section class="panel" style="margin-bottom: 24px;">
     <div class="panel-heading">
         <div>
-            <h2><i class="ri-table-line"></i> Tactical Colleges Submissions Matrix</h2>
+            <h2><i class="ri-table-line"></i> <?php echo ($isDeptScoped && !empty($userDeptName)) ? 'Tactical Department Submissions Matrix (' . h($userDeptName) . ')' : 'Tactical Colleges Submissions Matrix'; ?></h2>
         </div>
     </div>
     <div class="table-scroll">
@@ -2065,8 +2128,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (diffSubCanvas) {
         const allCollegeRows = <?php echo json_encode($submissionsBreakdown); ?>;
         const programRows = <?php echo json_encode($programAnalyticsRows); ?>;
-        let visibleRows = allCollegeRows;
-        let showingAllColleges = true;
+        const isDeptScopedUser = <?php echo json_encode($isDeptScoped && !empty($userDeptName)); ?>;
+        let visibleRows = isDeptScopedUser ? programRows : allCollegeRows;
+        let showingAllColleges = !isDeptScopedUser;
         const chartWrap = diffSubCanvas.parentElement;
         const updateChartHeight = () => {
             if (chartWrap) chartWrap.style.height = '380px';
