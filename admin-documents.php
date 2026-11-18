@@ -293,7 +293,7 @@ renderHeader('Record Management', 'documents');
         </div>
     </div>
 
-    <details class="submission-folder" <?php echo !$archived ? 'open' : ''; ?>>
+    <details class="submission-folder">
         <summary><span><i class="ri-flask-line"></i> <?php echo $archived ? 'Archived Research Submissions' : 'Research Management Submissions'; ?></span><strong><?php echo count($researchSubmissions); ?></strong></summary>
     <div class="table-scroll">
         <?php render_record_selection('researchSubmissionTable', 'research', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
