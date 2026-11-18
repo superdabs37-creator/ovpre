@@ -68,6 +68,7 @@
                         <button type="button" onclick="quickLogin('Extension Coordinator', 'Prof. Elena Cruz', 'College of Business and Accountancy (CBA)')" style="background: #fef3c7; border: 1px solid #fde68a; color: #b45309; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Extension Coord</button>
                         <button type="button" onclick="quickLogin('Faculty Researcher', 'Prof. Juan Dela Cruz', 'College of Computer Studies and Technology (CCST)')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Faculty Researcher</button>
                         <button type="button" onclick="quickLogin('Faculty Extensionist', 'Prof. Maria Bautista', 'College of Nursing and Allied Health Sciences (CONAHS)')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Faculty Extensionist</button>
+                        <button type="button" onclick="quickLoginAccount('zyrus')" style="background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Zyrus (Account)</button>
                     </div>
                 </div>
 
@@ -79,6 +80,36 @@
     </main>
 
     <script>
+        window.quickLoginAccount = function(username) {
+            let registeredUsers = [];
+            try { registeredUsers = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]'); } catch(e) {}
+            const found = registeredUsers.find(u => u && u.username && String(u.username).toLowerCase() === String(username).toLowerCase()) || {
+                id: 'usr_zyrus',
+                username: 'zyrus',
+                fullname: 'Zyrus',
+                role: 'Faculty Researcher',
+                email: 'zyrus@plsp.edu.ph',
+                department: 'College of Computer Studies and Technology (CCST)',
+                is_registered: true,
+                is_demo: false
+            };
+            const userSession = {
+                id: found.id || 'usr_zyrus',
+                username: found.username || 'zyrus',
+                fullname: found.fullname || 'Zyrus',
+                role: found.role || 'Faculty Researcher',
+                email: found.email || 'zyrus@plsp.edu.ph',
+                department: found.department || found.college || 'College of Computer Studies and Technology (CCST)',
+                photo: found.photo || '',
+                is_registered: true,
+                is_demo: false,
+                logged_in: true
+            };
+            sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+            localStorage.setItem('irecord_user', JSON.stringify(userSession));
+            window.location.href = 'dashboard.html';
+        };
+
         window.quickLogin = function(role, fullname, dept) {
             const userSession = {
                 id: 'demo_' + role.toLowerCase().replace(/\s+/g, '_'),

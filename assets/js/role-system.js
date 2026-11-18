@@ -202,6 +202,86 @@
         return defaultUser;
     }
 
+    const ZYRUS_DEFAULT_ACCOUNT = {
+        id: 'usr_zyrus',
+        username: 'zyrus',
+        fullname: 'Zyrus',
+        role: 'Faculty Researcher',
+        email: 'zyrus@plsp.edu.ph',
+        department: 'College of Computer Studies and Technology (CCST)',
+        college: 'CCST',
+        status: 'Active',
+        is_registered: true,
+        is_demo: false,
+        logged_in: true
+    };
+
+    function ensureZyrusInRegisteredUsers() {
+        try {
+            let list = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+            if (!Array.isArray(list)) list = [];
+            const hasZyrus = list.some(u =>
+                (u.username && String(u.username).toLowerCase().includes('zyrus')) ||
+                (u.fullname && String(u.fullname).toLowerCase().includes('zyrus'))
+            );
+            if (!hasZyrus) {
+                list.push({ ...ZYRUS_DEFAULT_ACCOUNT });
+                localStorage.setItem('irecord_registered_users', JSON.stringify(list));
+            }
+            return list;
+        } catch (e) {
+            return [{ ...ZYRUS_DEFAULT_ACCOUNT }];
+        }
+    }
+
+    function getCustomSwitchableAccounts() {
+        const list = ensureZyrusInRegisteredUsers();
+        const defaultUsernames = ['admin', 'aramos_rd', 'mgomez_ed', 'msantos_ccst', 'ecruz_cba', 'jdelacruz', 'mbautista', 'lbautista'];
+        return list.filter(u => u && u.username && !defaultUsernames.includes(String(u.username).toLowerCase()));
+    }
+
+    window.switchAccount = function (identifier) {
+        const list = ensureZyrusInRegisteredUsers();
+        const key = String(identifier || '').toLowerCase();
+        const target = list.find(u =>
+            String(u.id).toLowerCase() === key ||
+            (u.username && String(u.username).toLowerCase() === key) ||
+            (u.fullname && String(u.fullname).toLowerCase().includes(key))
+        ) || ZYRUS_DEFAULT_ACCOUNT;
+
+        const normalized = normalizeRole(target.role || 'Faculty Researcher');
+        const nextUser = {
+            id: target.id || ('usr_' + (target.username || 'zyrus').toLowerCase()),
+            username: target.username || 'zyrus',
+            fullname: target.fullname || 'Zyrus',
+            role: normalized,
+            email: target.email || 'zyrus@plsp.edu.ph',
+            phone: target.phone || '',
+            birthday: target.birthday || '',
+            gender: target.gender || '',
+            photo: target.photo || '',
+            department: target.department || target.college || ROLE_DEMO_DEPARTMENTS[normalized] || '',
+            is_registered: true,
+            is_demo: false,
+            logged_in: true
+        };
+
+        sessionStorage.setItem('irecord_user', JSON.stringify(nextUser));
+        localStorage.setItem('irecord_user', JSON.stringify(nextUser));
+
+        const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+        const roleConf = ROLE_PORTALS[normalized] || ROLE_PORTALS['Faculty Researcher'];
+        if (currentPage === 'admin-settings.html' && !roleConf.canAccessSettings) {
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        if (currentPage === 'admin-documents.html' && !roleConf.canAccessRecords) {
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        window.location.reload();
+    };
+
     window.switchRole = function (targetRole) {
         const normalized = normalizeRole(targetRole);
         const currentUser = getCurrentUser();
@@ -215,6 +295,7 @@
             : '';
         currentUser.is_demo = true;
         currentUser.is_registered = false;
+        delete currentUser.photo;
 
         sessionStorage.setItem('irecord_user', JSON.stringify(currentUser));
         localStorage.setItem('irecord_user', JSON.stringify(currentUser));
@@ -235,7 +316,18 @@
         window.location.reload();
     };
 
+    function computeUserInitials(name, fallback) {
+        const clean = String(name || '').trim();
+        if (!clean) return fallback || 'U';
+        const parts = clean.split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return clean.slice(0, 2).toUpperCase();
+    }
+
     function initRoleUI() {
+        ensureZyrusInRegisteredUsers();
         const user = getCurrentUser();
         const roleKey = user.role;
         const config = ROLE_PORTALS[roleKey] || ROLE_PORTALS['Super Admin'];
@@ -257,6 +349,9 @@
             dropdownRole.textContent = `${config.title}${deptText}`;
         }
 
+        const isCustomUser = Boolean(user.is_registered && !user.is_demo);
+        const avatarText = isCustomUser ? computeUserInitials(user.fullname, config.avatar) : config.avatar;
+
         const avatarElements = document.querySelectorAll('.avatar');
         avatarElements.forEach(el => {
             if (user.photo) {
@@ -266,17 +361,21 @@
                 img.alt = user.fullname || 'Profile photo';
                 el.appendChild(img);
             } else {
-                el.textContent = config.avatar;
+                el.textContent = avatarText;
             }
         });
 
         const dropdownAvatar = document.querySelector('.profile-dropdown-avatar');
-        if (dropdownAvatar && user.photo) {
-            dropdownAvatar.innerHTML = '';
-            const img = document.createElement('img');
-            img.src = user.photo;
-            img.alt = user.fullname || 'Profile photo';
-            dropdownAvatar.appendChild(img);
+        if (dropdownAvatar) {
+            if (user.photo) {
+                dropdownAvatar.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = user.photo;
+                img.alt = user.fullname || 'Profile photo';
+                dropdownAvatar.appendChild(img);
+            } else {
+                dropdownAvatar.innerHTML = '<i class="ri-user-3-fill"></i>';
+            }
         }
 
         // 2. Custom Role Switcher inside Profile Dropdown
@@ -305,7 +404,7 @@
             ];
 
             rolesList.forEach(r => {
-                const isActive = (r.role === roleKey);
+                const isActive = (!isCustomUser && r.role === roleKey);
                 switcherHTML += `
                     <button type="button" onclick="window.switchRole('${r.role}')" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; border: none; background: ${isActive ? '#dcfce7' : 'transparent'}; color: ${isActive ? '#15803d' : '#334155'}; font-size: 0.8rem; font-weight: ${isActive ? '700' : '500'}; cursor: pointer; text-align: left; transition: background 0.15s;">
                         <span style="display: flex; align-items: center; gap: 6px;">
@@ -315,6 +414,33 @@
                     </button>
                 `;
             });
+
+            const customAccounts = getCustomSwitchableAccounts();
+            if (customAccounts.length) {
+                switcherHTML += `
+                    <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 6px 0 3px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                        <span>Faculty Account</span>
+                        <i class="ri-user-star-line"></i>
+                    </div>
+                `;
+                customAccounts.forEach(acc => {
+                    const isAccActive = isCustomUser && (
+                        (user.id && acc.id && String(user.id) === String(acc.id)) ||
+                        (user.username && acc.username && String(user.username).toLowerCase() === String(acc.username).toLowerCase())
+                    );
+                    const accRoleLabel = normalizeRole(acc.role || 'Faculty Researcher');
+                    const safeKey = String(acc.username || acc.id).replace(/'/g, "\\'");
+                    switcherHTML += `
+                        <button type="button" onclick="window.switchAccount('${safeKey}')" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; border: none; background: ${isAccActive ? '#dcfce7' : 'transparent'}; color: ${isAccActive ? '#15803d' : '#334155'}; font-size: 0.8rem; font-weight: ${isAccActive ? '700' : '600'}; cursor: pointer; text-align: left; transition: background 0.15s;">
+                            <span style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+                                <i class="ri-user-follow-line" style="color: #0284c7; flex-shrink: 0;"></i>
+                                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${acc.fullname} <small style="color: #64748b; font-weight: 500;">(${accRoleLabel.replace('Faculty ', '')})</small></span>
+                            </span>
+                            ${isAccActive ? '<i class="ri-check-line" style="font-weight: 800; color: #15803d; flex-shrink: 0;"></i>' : ''}
+                        </button>
+                    `;
+                });
+            }
 
             switcherHTML += `</div>`;
             switcherBox.innerHTML = switcherHTML;
@@ -327,7 +453,6 @@
                 profileDropdown.appendChild(switcherBox);
             }
         }
-
         // 3. Filter Sidebar Navigation according to Role Permissions
         const sidebarNav = document.querySelector('.sidebar-nav');
         if (sidebarNav) {
