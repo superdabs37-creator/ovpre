@@ -254,8 +254,25 @@
 
         const avatarElements = document.querySelectorAll('.avatar');
         avatarElements.forEach(el => {
-            el.textContent = config.avatar;
+            if (user.photo) {
+                el.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = user.photo;
+                img.alt = user.fullname || 'Profile photo';
+                el.appendChild(img);
+            } else {
+                el.textContent = config.avatar;
+            }
         });
+
+        const dropdownAvatar = document.querySelector('.profile-dropdown-avatar');
+        if (dropdownAvatar && user.photo) {
+            dropdownAvatar.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = user.photo;
+            img.alt = user.fullname || 'Profile photo';
+            dropdownAvatar.appendChild(img);
+        }
 
         // 2. Custom Role Switcher inside Profile Dropdown
         const profileDropdown = document.getElementById('profileDropdown');

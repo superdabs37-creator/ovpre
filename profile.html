@@ -11,6 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<style>
+        .profile-avatar-upload { position: relative; width: 104px; height: 104px; margin: 0 auto 14px; }
+        .profile-avatar-big { width: 104px; height: 104px; border-radius: 50%; background: #dcfce7; color: #15803d; border: 3px solid #86efac; display: grid; place-items: center; font-size: 2.4rem; font-weight: 800; overflow: hidden; }
+        .profile-avatar-big img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .profile-avatar-edit { position: absolute; right: 2px; bottom: 2px; width: 32px; height: 32px; border-radius: 50%; background: #16a34a; color: #fff; display: grid; place-items: center; font-size: 1rem; cursor: pointer; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(15,23,42,.2); transition: transform .15s ease, background .15s ease; }
+        .profile-avatar-edit:hover { background: #15803d; transform: scale(1.08); }
+        .profile-photo-remove { display: block; margin: -4px auto 10px; background: none; border: none; color: #b91c1c; font-size: .78rem; font-weight: 600; cursor: pointer; }
+        .profile-photo-remove:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <div class="app-shell sidebar-expanded" id="appShell">
@@ -84,9 +93,12 @@
                 <div style="display: grid; grid-template-columns: minmax(280px, 320px) 1fr; gap: 24px; align-items: flex-start;">
                     <!-- User Identity Badge Card -->
                     <article class="panel" style="margin: 0; padding: 26px 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df; text-align: center;">
-                        <div style="width: 88px; height: 88px; border-radius: 50%; background: #dcfce7; color: #15803d; border: 3px solid #86efac; display: inline-grid; place-items: center; font-size: 2.2rem; font-weight: 800; margin-bottom: 14px;" id="profileAvatarBig">
-                            SA
+                        <div class="profile-avatar-upload">
+                            <div id="profileAvatarBig" class="profile-avatar-big">SA</div>
+                            <label class="profile-avatar-edit" for="profilePhotoFile" title="Change profile photo"><i class="ri-camera-fill"></i></label>
+                            <input type="file" id="profilePhotoFile" accept="image/jpeg,image/png,image/webp" hidden>
                         </div>
+                        <button type="button" id="profilePhotoRemove" class="profile-photo-remove" style="display:none;" onclick="removeProfilePhoto()">Remove photo</button>
                         <h3 id="profileNameBig" style="margin: 0 0 4px; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Super Administrator</h3>
                         <p id="profileRoleBig" style="margin: 0 0 8px; font-size: 0.88rem; color: #15803d; font-weight: 700;">Executive Administrator</p>
                         <span id="profileCollegeBig" class="dept-pill" style="display: inline-block; padding: 4px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px; font-size: 0.78rem; color: #475569; font-weight: 600;">Office of the Vice President</span>
@@ -174,7 +186,17 @@
                     document.getElementById('profileCollegeBig').textContent = u.department || 'Office of the Vice President';
 
                     const initials = (u.fullname || 'SA').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                    document.getElementById('profileAvatarBig').textContent = initials;
+                    const bigAvatar = document.getElementById('profileAvatarBig');
+                    if (u.photo) {
+                        bigAvatar.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = u.photo;
+                        img.alt = 'Profile photo';
+                        bigAvatar.appendChild(img);
+                    } else {
+                        bigAvatar.textContent = initials;
+                    }
+                    document.getElementById('profilePhotoRemove').style.display = u.photo ? 'block' : 'none';
                 } catch(e) {}
             }
         }
@@ -199,6 +221,44 @@
                 loadProfile();
             } catch(e) {}
         }
+
+        function saveUserPhoto(photo) {
+            const userJson = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user') || '{}';
+            try {
+                const u = JSON.parse(userJson);
+                if (photo) { u.photo = photo; } else { delete u.photo; }
+                sessionStorage.setItem('irecord_user', JSON.stringify(u));
+                localStorage.setItem('irecord_user', JSON.stringify(u));
+                window.location.reload();
+            } catch (e) {}
+        }
+
+        function removeProfilePhoto() {
+            saveUserPhoto(null);
+        }
+
+        document.getElementById('profilePhotoFile').addEventListener('change', (event) => {
+            const file = event.target.files && event.target.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            if (file.size > 5 * 1024 * 1024) { alert('Choose a photo smaller than 5 MB.'); return; }
+            const reader = new FileReader();
+            reader.onload = () => {
+                const image = new Image();
+                image.onload = () => {
+                    const size = 256;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size;
+                    canvas.height = size;
+                    const side = Math.min(image.width, image.height);
+                    const sx = (image.width - side) / 2;
+                    const sy = (image.height - side) / 2;
+                    canvas.getContext('2d').drawImage(image, sx, sy, side, side, 0, 0, size, size);
+                    saveUserPhoto(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                image.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
 
         document.addEventListener('DOMContentLoaded', loadProfile);
     </script>
