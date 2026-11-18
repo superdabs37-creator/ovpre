@@ -82,6 +82,10 @@
       "dest": "/system-backup.html"
     },
     {
+      "src": "^/admin-storage$",
+      "dest": "/admin-storage.html"
+    },
+    {
       "src": "^/admin-settings$",
       "dest": "/admin-settings.html"
     },
