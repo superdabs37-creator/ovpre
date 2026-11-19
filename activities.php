@@ -229,15 +229,18 @@ $eventColors = [
 ];
 $toCalendarEvent = static function (array $activity) use ($eventColors): array {
     $type = $activity['activity_type'];
+    $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $type));
+    $color = $eventColors[$type] ?? '#15803d';
     return [
         'id' => (string) $activity['id'],
         'title' => $activity['title'],
         'start' => $activity['date'],
         'end' => date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day')),
         'allDay' => true,
-        'backgroundColor' => $eventColors[$type] ?? '#15803d',
-        'borderColor' => $eventColors[$type] ?? '#15803d',
-        'textColor' => '#ffffff',
+        'backgroundColor' => '#ffffff',
+        'borderColor' => $color,
+        'textColor' => '#0f172a',
+        'classNames' => ['event-cat-' . $slug],
         'extendedProps' => [
             'type' => $type,
             'approvalStatus' => $activity['approval_status'],

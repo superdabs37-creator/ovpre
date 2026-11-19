@@ -4897,28 +4897,98 @@ button {
     background: #fcfdfe;
 }
 
-#activityCalendar .fc-event {
+/* =========================================================
+   MODERN MINIMALIST CALENDAR EVENT BARS
+   White background, subtle gray border, 3px category-colored
+   left border, dark text, slightly rounded corners.
+   ========================================================= */
+#activityCalendar .fc-event,
+#activityCalendar .fc-daygrid-event,
+#activityCalendar .fc-timegrid-event {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-left: 3px solid var(--fc-event-border-color, #15803d) !important;
+    color: #0f172a !important;
+    border-radius: 5px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
     cursor: pointer;
-    border-radius: 6px;
-    border: 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease !important;
+    overflow: hidden;
 }
 
-#activityCalendar .fc-event:hover {
+#activityCalendar .fc-event:hover,
+#activityCalendar .fc-daygrid-event:hover,
+#activityCalendar .fc-timegrid-event:hover {
+    background: #f8fafc !important;
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    border-left-color: var(--fc-event-border-color, #15803d) !important;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08) !important;
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
-    filter: brightness(1.03);
+}
+
+#activityCalendar .fc-event .fc-event-main,
+#activityCalendar .fc-event-title,
+#activityCalendar .fc-event-time {
+    color: #0f172a !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
 }
 
 #activityCalendar .fc-daygrid-event {
-    padding: 2px 7px;
-    margin: 2px 3px;
-    line-height: 1.35;
+    padding: 3px 8px !important;
+    margin: 2px 3px !important;
+    line-height: 1.35 !important;
 }
 
+#activityCalendar .fc-daygrid-event-dot {
+    display: none !important;
+}
+
+/* Category-specific left border color safeguards */
+#activityCalendar .fc-event.event-cat-seminar,
+#activityCalendar .fc-event[style*="#15803d"] {
+    border-left-color: #15803d !important;
+}
+
+#activityCalendar .fc-event.event-cat-training,
+#activityCalendar .fc-event[style*="#2563eb"] {
+    border-left-color: #2563eb !important;
+}
+
+#activityCalendar .fc-event.event-cat-workshop,
+#activityCalendar .fc-event[style*="#0891b2"] {
+    border-left-color: #0891b2 !important;
+}
+
+#activityCalendar .fc-event.event-cat-community-outreach,
+#activityCalendar .fc-event[style*="#b45309"],
+#activityCalendar .fc-event[style*="#d97706"] {
+    border-left-color: #b45309 !important;
+}
+
+#activityCalendar .fc-event.event-cat-project-defense,
+#activityCalendar .fc-event[style*="#7c3aed"] {
+    border-left-color: #7c3aed !important;
+}
+
+/* TimeGrid (Week & Day views) specific event styling */
+#activityCalendar .fc-timegrid-event {
+    padding: 4px 6px !important;
+}
+
+#activityCalendar .fc-timegrid-event .fc-event-time {
+    font-weight: 700 !important;
+    color: #475569 !important;
+    margin-bottom: 2px;
+}
+
+/* List view styling */
 #activityCalendar .fc-list {
     border-color: #e2e8f0;
     border-radius: 12px;
@@ -4930,6 +5000,41 @@ button {
     color: #0f172a;
     font-weight: 700;
     font-size: 0.84rem;
+}
+
+#activityCalendar .fc-list-event {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+#activityCalendar .fc-list-event:hover td {
+    background: #f8fafc !important;
+}
+
+#activityCalendar .fc-list-event td:first-child {
+    border-left: 3px solid var(--fc-event-border-color, #15803d);
+}
+
+#activityCalendar .fc-list-event.event-cat-seminar td:first-child { border-left-color: #15803d !important; }
+#activityCalendar .fc-list-event.event-cat-training td:first-child { border-left-color: #2563eb !important; }
+#activityCalendar .fc-list-event.event-cat-workshop td:first-child { border-left-color: #0891b2 !important; }
+#activityCalendar .fc-list-event.event-cat-community-outreach td:first-child { border-left-color: #b45309 !important; }
+#activityCalendar .fc-list-event.event-cat-project-defense td:first-child { border-left-color: #7c3aed !important; }
+
+#activityCalendar .fc-list-event-title,
+#activityCalendar .fc-list-event-title a {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+#activityCalendar .fc-list-event-time {
+    color: #64748b !important;
+    font-size: 0.8rem !important;
+}
+
+#activityCalendar .fc-list-event-dot {
+    border-color: var(--fc-event-border-color, #15803d) !important;
 }
 
 .fullcalendar-legend {
