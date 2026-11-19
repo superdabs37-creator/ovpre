@@ -173,10 +173,7 @@
                     <!-- Research Proposals -->
                     <a href="research.html" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-research hide-for-extension-director" role="button" aria-label="Open Research Proposals registry" title="Click to view faculty research proposals">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-                                <span id="kpiResearchTitle" style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
-                                <span id="kpiResearchMyBadge" class="kpi-role-tag" style="display: none;"><i class="ri-user-star-line"></i> My Submissions</span>
-                            </div>
+                            <span id="kpiResearchTitle" style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Research Proposals</span>
                             <span class="kpi-icon-pill">
                                 <i class="ri-flask-line"></i>
                             </span>
@@ -211,10 +208,7 @@
                     <!-- Extension Initiatives -->
                     <a href="extension.html" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-extension hide-for-research-director" role="button" aria-label="Open Extension Programs registry" title="Click to view community extension initiatives">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-                                <span id="kpiExtensionTitle" style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
-                                <span id="kpiExtensionMyBadge" class="kpi-role-tag" style="display: none;"><i class="ri-user-star-line"></i> My Submissions</span>
-                            </div>
+                            <span id="kpiExtensionTitle" style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Extension Initiatives</span>
                             <span class="kpi-icon-pill">
                                 <i class="ri-community-line"></i>
                             </span>
@@ -1089,7 +1083,6 @@
 
             const resCard = document.getElementById('kpiResearchCard');
             const resTitle = document.getElementById('kpiResearchTitle');
-            const resBadge = document.getElementById('kpiResearchMyBadge');
             const resCount = document.getElementById('kpiResearchCount');
             const resSub = document.getElementById('kpiResearchSub');
             const resMyPill = document.getElementById('kpiResearchMyPill');
@@ -1097,7 +1090,6 @@
 
             const extCard = document.getElementById('kpiExtensionCard');
             const extTitle = document.getElementById('kpiExtensionTitle');
-            const extBadge = document.getElementById('kpiExtensionMyBadge');
             const extCount = document.getElementById('kpiExtensionCount');
             const extSub = document.getElementById('kpiExtensionSub');
             const extMyPill = document.getElementById('kpiExtensionMyPill');
@@ -1112,17 +1104,12 @@
                     resCard.title = 'Shortcut: Click to view only your submitted research proposals';
                 }
                 if (resTitle) resTitle.textContent = 'My Research Proposals';
-                if (resBadge) resBadge.style.display = 'inline-flex';
                 if (resCount) resCount.innerHTML = `${myRes.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">submitted</span>`;
                 if (resSub) resSub.textContent = `Routed to ${userDeptCode || 'College'} Research Coordinator`;
                 if (resMyPill) resMyPill.style.display = 'none';
             } else if (isResearchCoordinator && userDeptCode) {
                 const { deptRes } = getDashboardDeptSubmissions(userDeptCode);
                 if (resTitle) resTitle.textContent = `${userDeptCode} Research Proposals`;
-                if (resBadge) {
-                    resBadge.style.display = 'inline-flex';
-                    resBadge.innerHTML = `<i class="ri-building-2-line"></i> ${userDeptCode} Dept`;
-                }
                 if (resCount && deptRes.length) {
                     resCount.innerHTML = `${deptRes.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">in ${userDeptCode}</span>`;
                 }
@@ -1135,17 +1122,12 @@
                     extCard.title = 'Shortcut: Click to view only your submitted extension initiatives';
                 }
                 if (extTitle) extTitle.textContent = 'My Extension Projects';
-                if (extBadge) extBadge.style.display = 'inline-flex';
                 if (extCount) extCount.innerHTML = `${myExt.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">submitted</span>`;
                 if (extSub) extSub.textContent = `Routed to ${userDeptCode || 'College'} Extension Coordinator`;
                 if (extMyPill) extMyPill.style.display = 'none';
             } else if (isExtensionCoordinator && userDeptCode) {
                 const { deptExt } = getDashboardDeptSubmissions(userDeptCode);
                 if (extTitle) extTitle.textContent = `${userDeptCode} Extension Projects`;
-                if (extBadge) {
-                    extBadge.style.display = 'inline-flex';
-                    extBadge.innerHTML = `<i class="ri-building-2-line"></i> ${userDeptCode} Dept`;
-                }
                 if (extCount && deptExt.length) {
                     extCount.innerHTML = `${deptExt.length} <span style="font-size: 1rem; font-weight: 600; opacity: 0.85;">in ${userDeptCode}</span>`;
                 }

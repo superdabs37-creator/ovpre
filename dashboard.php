@@ -681,12 +681,7 @@ renderHeader('Dashboard', 'dashboard');
     <!-- Research Proposals -->
     <a href="<?php echo $isFacultyResearcher ? 'research.php?filter=my' : 'research.php'; ?>" id="kpiResearchCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-research" role="button" aria-label="Open Research Proposals registry" title="<?php echo $isFacultyResearcher ? 'Shortcut: Click to view only your submitted research proposals' : 'Click to view ' . $totalResearch . ' faculty research proposals'; ?>">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-                <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyResearcher ? 'My Research Proposals' : 'Research Proposals'; ?></span>
-                <?php if ($isFacultyResearcher): ?>
-                <span class="kpi-role-tag"><i class="ri-user-star-line"></i> My Submissions</span>
-                <?php endif; ?>
-            </div>
+            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyResearcher ? 'My Research Proposals' : 'Research Proposals'; ?></span>
             <span class="kpi-icon-pill">
                 <i class="ri-flask-line"></i>
             </span>
@@ -723,12 +718,7 @@ renderHeader('Dashboard', 'dashboard');
     <!-- Extension Projects -->
     <a href="<?php echo $isFacultyExtensionist ? 'extension.php?filter=my' : 'extension.php'; ?>" id="kpiExtensionCard" class="panel kpi-solid-card kpi-interactive-card kpi-card-extension" role="button" aria-label="Open Extension Programs registry" title="<?php echo $isFacultyExtensionist ? 'Shortcut: Click to view only your submitted extension initiatives' : 'Click to view ' . $totalExtension . ' community extension initiatives'; ?>">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-                <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyExtensionist ? 'My Extension Projects' : 'Extension Initiatives'; ?></span>
-                <?php if ($isFacultyExtensionist): ?>
-                <span class="kpi-role-tag"><i class="ri-user-star-line"></i> My Submissions</span>
-                <?php endif; ?>
-            </div>
+            <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo $isFacultyExtensionist ? 'My Extension Projects' : 'Extension Initiatives'; ?></span>
             <span class="kpi-icon-pill">
                 <i class="ri-community-line"></i>
             </span>
