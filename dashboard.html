@@ -1767,8 +1767,8 @@
                     id: 1,
                     title: 'Annual University Research Colloquium 2026',
                     activity_type: 'Seminar',
-                    date: '2026-10-28',
-                    date_to: '2026-12-10',
+                    date: '2026-11-05',
+                    date_to: '2026-11-07',
                     venue: 'University Gymnasium & Performing Arts Auditorium',
                     description: 'Multi-college academic colloquium and peer review sessions for approved faculty and graduate research studies.',
                     approval_status: 'Approved',
@@ -1831,7 +1831,20 @@
                 const stored = localStorage.getItem(ACTIVITY_STORAGE_KEY);
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        let healed = false;
+                        parsed.forEach(function(item) {
+                            if (item.title && item.title.includes('Annual University Research Colloquium') && item.date === '2026-10-28' && item.date_to === '2026-12-10') {
+                                item.date = '2026-11-05';
+                                item.date_to = '2026-11-07';
+                                healed = true;
+                            }
+                        });
+                        if (healed) {
+                            try { localStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(parsed)); } catch (e) {}
+                        }
+                        return parsed;
+                    }
                 }
             } catch (e) {
                 console.warn('Could not read activities from localStorage', e);
