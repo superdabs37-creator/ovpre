@@ -362,12 +362,43 @@ renderHeader('Research Management', 'research');
             <h2 id="createResearchProposalTitle">Submit Research Proposal</h2>
             <p>Stage 1: Proposal Writing & Submission (Routed to College Coordinator for Initial Screening)</p>
         </div>
-        <form class="editor-panel" method="post" enctype="multipart/form-data">
+        <form class="editor-panel" method="post" enctype="multipart/form-data" onsubmit="if(typeof updateResearchersState==='function')updateResearchersState();">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="create">
             <div class="form-grid">
-                <label class="field"><span>Title of Research Proposal</span><input name="title" maxlength="220" required placeholder="e.g. AI-Powered Early Blight Detection..."></label>
-                <label class="field"><span>Researchers &amp; Proponents</span><input name="researchers" id="createResearchers" value="<?php echo h($user['fullname']); ?>" required placeholder="e.g. Dr. Juan Dela Cruz, Prof. Maria Santos" style="color: #0f172a;"></label>
+                <label class="field" style="grid-column: 1 / -1;"><span>Title</span><input name="title" maxlength="220" required placeholder="e.g. AI-Powered Early Blight Detection..."></label>
+
+                <!-- DYNAMIC TABLE ROW / REPEATER FIELD FOR RESEARCHERS -->
+                <div class="field repeater-container" style="grid-column: 1 / -1;">
+                    <div class="repeater-header">
+                        <span class="repeater-title">
+                            <i class="ri-team-line" style="color: #15803d; font-size: 1.15rem;"></i>
+                            <span>Researchers &amp; Proponents</span>
+                            <span id="researcherCountBadge" class="repeater-count-badge">1 Proponent</span>
+                        </span>
+                        <button type="button" class="btn-repeater-add" id="btnAddResearcherRow" onclick="addResearcherRow()" title="Add co-author or collaborating proponent">
+                            <i class="ri-add-line"></i> Add Row
+                        </button>
+                    </div>
+                    <div class="repeater-table-wrapper">
+                        <table class="repeater-table" id="researchersRepeaterTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 47%;">Researcher Name</th>
+                                    <th style="width: 47%;">Project Role / Designation</th>
+                                    <th style="width: 6%; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="researchersRepeaterBody">
+                                <!-- Dynamic Rows rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="repeater-footer-hint">
+                        <span><i class="ri-information-line"></i> Click <strong>"Add Row"</strong> to dynamically add co-authors or collaborating researchers.</span>
+                    </div>
+                    <input type="hidden" name="researchers" id="createResearchers" value="<?php echo h($user['fullname']); ?>" required>
+                </div>
 
                 <label class="field"><span>Target Funding Source</span><input name="funding_source" value="Institutional Research Grant"></label>
             </div>
@@ -742,5 +773,13 @@ renderHeader('Research Management', 'research');
     <?php endif; ?>
 
 <?php endforeach; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof initResearchersRepeater === 'function') {
+        initResearchersRepeater(<?php echo json_encode($user['fullname'] ?? ''); ?>);
+    }
+});
+</script>
 
 <?php renderFooter(); ?>
