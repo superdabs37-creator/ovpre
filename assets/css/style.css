@@ -8905,8 +8905,8 @@ body.register-body .stepper-nav {
 
 .repeater-title {
     font-size: 0.88rem;
-    font-weight: 600;
-    color: #1e293b;
+    font-weight: 700;
+    color: #0f172a;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -8914,11 +8914,11 @@ body.register-body .stepper-nav {
 
 .repeater-count-badge {
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #15803d;
     background: #dcfce7;
-    padding: 2px 8px;
-    border-radius: 12px;
+    padding: 2px 9px;
+    border-radius: 999px;
     border: 1px solid #bbf7d0;
 }
 
@@ -8926,21 +8926,21 @@ body.register-body .stepper-nav {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    padding: 6px 14px;
+    padding: 6px 13px;
     background: #15803d;
     color: #ffffff !important;
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(21, 128, 61, 0.2);
     transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
 .btn-repeater-add:hover {
     background: #166534;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 5px rgba(21, 128, 61, 0.28);
     transform: translateY(-1px);
 }
 
@@ -8950,31 +8950,38 @@ body.register-body .stepper-nav {
 
 .repeater-table-wrapper {
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    overflow: hidden;
+    border-radius: 9px;
+    overflow-x: auto;
     background: #ffffff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
 .repeater-table {
     width: 100%;
+    min-width: 480px;
     border-collapse: collapse;
     margin: 0;
+    table-layout: fixed;
 }
 
 .repeater-table th {
     background: #f8fafc;
-    padding: 9px 12px;
-    font-size: 0.76rem;
-    font-weight: 600;
+    padding: 10px 14px;
+    font-size: 0.73rem;
+    font-weight: 700;
     color: #475569;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.repeater-table th:last-child {
+    text-align: center;
 }
 
 .repeater-table td {
-    padding: 8px 10px;
+    padding: 8px 12px;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
 }
@@ -8989,15 +8996,20 @@ body.register-body .stepper-nav {
 
 .repeater-input {
     width: 100%;
-    padding: 7px 10px;
+    padding: 8px 12px;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    border-radius: 7px;
+    font-size: 0.88rem;
     background: #ffffff;
-    color: #1e293b;
+    color: #0f172a;
     outline: none;
     box-sizing: border-box;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.repeater-input::placeholder {
+    color: #94a3b8;
+    font-size: 0.82rem;
 }
 
 .repeater-input:focus {
@@ -9011,10 +9023,10 @@ body.register-body .stepper-nav {
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: 7px;
     border: 1px solid #fee2e2;
-    background: #fef2f2;
-    color: #dc2626;
+    background: #fff5f5;
+    color: #ef4444;
     cursor: pointer;
     font-size: 1rem;
     transition: all 0.15s ease;
@@ -9028,9 +9040,9 @@ body.register-body .stepper-nav {
 }
 
 .btn-repeater-remove:disabled {
-    opacity: 0.35;
+    opacity: 0.28;
     cursor: not-allowed;
-    background: #f1f5f9;
+    background: #f8fafc;
     border-color: #e2e8f0;
     color: #94a3b8;
 }
@@ -9039,18 +9051,9 @@ body.register-body .stepper-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.75rem;
+    font-size: 0.76rem;
     color: #64748b;
-    margin-top: 3px;
-}
-
-.repeater-badge-type {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: #0f766e;
-    background: #f0fdfa;
-    border: 1px solid #ccfbf1;
-    padding: 1px 7px;
-    border-radius: 10px;
+    margin-top: 4px;
+    padding: 0 2px;
 }
 

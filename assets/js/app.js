@@ -1887,13 +1887,16 @@ function addResearcherRow(name = '', role = '', isPrimary = false) {
 
     const isFirstRow = tbody.children.length === 0 || isPrimary;
     const roleValue = role || '';
+    const rolePlaceholder = isFirstRow 
+        ? "e.g. Lead Researcher / Principal Investigator" 
+        : "e.g. Co-Author / Research Member";
 
     row.innerHTML = `
         <td>
             <input type="text" class="repeater-input researcher-name-input" value="${escapeHtmlForRepeater(name)}" placeholder="Full Name (e.g. Dr. Maria Santos)" required oninput="handleResearcherChange()">
         </td>
         <td>
-            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(roleValue)}" placeholder="e.g. Lead Researcher, Co-Author, Statistician" oninput="handleResearcherChange()">
+            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(roleValue)}" placeholder="${rolePlaceholder}" oninput="handleResearcherChange()">
         </td>
         <td style="text-align: center;">
             <button type="button" class="btn-repeater-remove" onclick="removeResearcherRow(this)" title="Remove Entry" aria-label="Remove researcher row">
