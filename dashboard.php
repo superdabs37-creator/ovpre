@@ -850,14 +850,6 @@ renderHeader('Dashboard', 'dashboard');
                 <canvas id="differentiatedSubmissionsChart" role="img" aria-label="Bar chart of submissions by college and program"></canvas>
             </div>
         </div>
-        <section aria-labelledby="programsByCollegeHeading" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
-            <div>
-                <h3 id="programsByCollegeHeading" style="margin: 0 0 3px; color: #0f172a; font-size: 1.05rem; font-weight: 800;">Programs by College</h3>
-            </div>
-            <button type="button" id="openProgramsModal" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border: 0; border-radius: 9px; background: #15803d; color: #ffffff; font-weight: 700; cursor: pointer;">
-                <i class="ri-list-check-3"></i> View Programs
-            </button>
-        </section>
     </article>
 
     <!-- Column 2: Monthly Submission Trends -->
