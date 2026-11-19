@@ -286,7 +286,7 @@
                                             <option value="college-5">College of Tourism and Hospitality Management (CTHM)</option>
                                             <option value="college-6">College of Engineering (COE)</option>
                                             <option value="college-7">College of Nursing and Allied Health Sciences (CNAHS)</option>
-                                            <option value="college-8">College of Human Kinetics (CHK)</option>
+                                            <option value="college-8">College of Physical Education (CPE)</option>
                                         </select>
                                     </div>
                                     <span id="deptSubmissionsBadge" class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 0.82rem; padding: 8px 12px; border-radius: 999px;">
@@ -1049,7 +1049,7 @@
             if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
             if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
             if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
-            if (s.includes('chk') || s.includes('human kinetics')) return 'CHK';
+            if (s.includes('chk') || s.includes('human kinetics') || s.includes('cpe') || s.includes('physical education')) return 'CPE';
             return s.trim().toUpperCase();
         }
 
@@ -1149,6 +1149,7 @@
             'College of Tourism and Hospitality Management': ['Bachelor of Science in Hospitality Management', 'Bachelor of Science in Tourism Management'],
             'College of Engineering': ['Bachelor of Science in Computer Engineering'],
             'College of Nursing and Allied Health Sciences': ['Bachelor of Science in Nursing'],
+            'College of Physical Education': ['Bachelor of Physical Education'],
             'College of Human Kinetics': ['Bachelor of Physical Education']
         };
 
@@ -1161,7 +1162,7 @@
             { department_name: 'College of Tourism and Hospitality Management', total_faculty: 6, res_proposals: 2, res_publications: 1, ext_proposals: 1, ext_accomplishments: 1, total_submissions: 5 },
             { department_name: 'College of Engineering', total_faculty: 9, res_proposals: 4, res_publications: 2, ext_proposals: 2, ext_accomplishments: 1, total_submissions: 9 },
             { department_name: 'College of Nursing and Allied Health Sciences', total_faculty: 8, res_proposals: 3, res_publications: 1, ext_proposals: 1, ext_accomplishments: 1, total_submissions: 6 },
-            { department_name: 'College of Human Kinetics', total_faculty: 5, res_proposals: 1, res_publications: 0, ext_proposals: 1, ext_accomplishments: 0, total_submissions: 2 }
+            { department_name: 'College of Physical Education', total_faculty: 5, res_proposals: 1, res_publications: 0, ext_proposals: 1, ext_accomplishments: 0, total_submissions: 2 }
         ];
 
         const completedColleges = [
@@ -2325,8 +2326,10 @@
                 'Engineering': 'COE',
                 'College of Nursing and Allied Health Sciences': 'CNAHS',
                 'Nursing and Allied Health Sciences': 'CNAHS',
-                'College of Human Kinetics': 'CHK',
-                'Human Kinetics': 'CHK'
+                'College of Physical Education': 'CPE',
+                'College of Human Kinetics': 'CPE',
+                'Physical Education': 'CPE',
+                'Human Kinetics': 'CPE'
             };
 
             function getCollegeAcronym(name) {

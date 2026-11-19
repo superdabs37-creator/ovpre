@@ -326,6 +326,7 @@ $programsByCollege = [
     'College of Tourism and Hospitality Management' => ['Bachelor of Science in Hospitality Management', 'Bachelor of Science in Tourism Management'],
     'College of Engineering' => ['Bachelor of Science in Computer Engineering'],
     'College of Nursing and Allied Health Sciences' => ['Bachelor of Science in Nursing'],
+    'College of Physical Education' => ['Bachelor of Physical Education'],
     'College of Human Kinetics' => ['Bachelor of Physical Education'],
 ];
 if ($isDeptScoped && !empty($userDeptName) && isset($programsByCollege[$userDeptName])) {
@@ -823,7 +824,8 @@ renderHeader('Dashboard', 'dashboard');
                                 'College of Tourism and Hospitality Management' => 'CTHM',
                                 'College of Engineering' => 'COE',
                                 'College of Nursing and Allied Health Sciences' => 'CNAHS',
-                                'College of Human Kinetics' => 'CHK',
+                                'College of Physical Education' => 'CPE',
+                                'College of Human Kinetics' => 'CPE',
                             ];
                             ?>
                             <?php if ($isDeptScoped && !empty($userDeptName)): ?>
@@ -2165,8 +2167,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'Engineering': 'COE',
             'College of Nursing and Allied Health Sciences': 'CNAHS',
             'Nursing and Allied Health Sciences': 'CNAHS',
-            'College of Human Kinetics': 'CHK',
-            'Human Kinetics': 'CHK'
+            'College of Physical Education': 'CPE',
+            'College of Human Kinetics': 'CPE',
+            'Physical Education': 'CPE',
+            'Human Kinetics': 'CPE'
         };
 
         const getCollegeAcronym = (name) => {

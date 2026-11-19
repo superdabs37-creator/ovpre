@@ -213,7 +213,7 @@
         if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
         if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
         if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
-        if (s.includes('chk') || s.includes('human kinetics')) return 'CHK';
+        if (s.includes('chk') || s.includes('human kinetics') || s.includes('cpe') || s.includes('physical education')) return 'CPE';
         return s.trim().toUpperCase();
     }
     window.OVPRE_normalizeDeptCode = normalizeDeptCode;
@@ -228,7 +228,7 @@
         { id: 'rc_cte', username: 'rc_cte', fullname: 'Prof. Evelyn Salazar', role: 'Research Coordinator', email: 'rc.cte@plsp.edu.ph', department: 'College of Teacher Education (CTE)', college: 'CTE', status: 'Active', is_registered: true },
         { id: 'rc_cthm', username: 'rc_cthm', fullname: 'Prof. Marco Reyes', role: 'Research Coordinator', email: 'rc.cthm@plsp.edu.ph', department: 'College of Tourism and Hospitality Management (CTHM)', college: 'CTHM', status: 'Active', is_registered: true },
         { id: 'rc_cpag', username: 'rc_cpag', fullname: 'Prof. Diana Lim', role: 'Research Coordinator', email: 'rc.cpag@plsp.edu.ph', department: 'College of Public Administration and Governance (CPAG)', college: 'CPAG', status: 'Active', is_registered: true },
-        { id: 'rc_chk', username: 'rc_chk', fullname: 'Prof. Rico Fernandez', role: 'Research Coordinator', email: 'rc.chk@plsp.edu.ph', department: 'College of Human Kinetics (CHK)', college: 'CHK', status: 'Active', is_registered: true },
+        { id: 'rc_chk', username: 'rc_chk', fullname: 'Prof. Rico Fernandez', role: 'Research Coordinator', email: 'rc.chk@plsp.edu.ph', department: 'College of Physical Education (CPE)', college: 'CPE', status: 'Active', is_registered: true },
 
         // Extension Coordinators by Department
         { id: 'ec_ccst', username: 'ec_ccst', fullname: 'Prof. Kevin Navarro', role: 'Extension Coordinator', email: 'ec.ccst@plsp.edu.ph', department: 'College of Computer Studies and Technology (CCST)', college: 'CCST', status: 'Active', is_registered: true },
@@ -239,7 +239,7 @@
         { id: 'ec_cte', username: 'ec_cte', fullname: 'Prof. Alma Mercado', role: 'Extension Coordinator', email: 'ec.cte@plsp.edu.ph', department: 'College of Teacher Education (CTE)', college: 'CTE', status: 'Active', is_registered: true },
         { id: 'ec_cthm', username: 'ec_cthm', fullname: 'Prof. Sheila Dizon', role: 'Extension Coordinator', email: 'ec.cthm@plsp.edu.ph', department: 'College of Tourism and Hospitality Management (CTHM)', college: 'CTHM', status: 'Active', is_registered: true },
         { id: 'ec_cpag', username: 'ec_cpag', fullname: 'Prof. Carlo Tan', role: 'Extension Coordinator', email: 'ec.cpag@plsp.edu.ph', department: 'College of Public Administration and Governance (CPAG)', college: 'CPAG', status: 'Active', is_registered: true },
-        { id: 'ec_chk', username: 'ec_chk', fullname: 'Prof. Allan Castillo', role: 'Extension Coordinator', email: 'ec.chk@plsp.edu.ph', department: 'College of Human Kinetics (CHK)', college: 'CHK', status: 'Active', is_registered: true }
+        { id: 'ec_chk', username: 'ec_chk', fullname: 'Prof. Allan Castillo', role: 'Extension Coordinator', email: 'ec.chk@plsp.edu.ph', department: 'College of Physical Education (CPE)', college: 'CPE', status: 'Active', is_registered: true }
     ];
 
     const ZYRUS_DEFAULT_ACCOUNT = {

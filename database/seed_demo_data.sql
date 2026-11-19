@@ -22,7 +22,7 @@ INSERT INTO departments (id, department_name, created_at) VALUES
 (3, 'College of Nursing and Allied Health Sciences', NOW()),
 (4, 'College of Arts and Sciences', NOW()),
 (5, 'College of Business Administration', NOW()),
-(6, 'College of Human Kinetics', NOW()),
+(6, 'College of Physical Education', NOW()),
 (7, 'College of Teacher Education', NOW()),
 (8, 'College of Tourism and Hospitality Management', NOW()),
 (9, 'College of Accountancy', NOW())

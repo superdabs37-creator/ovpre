@@ -118,7 +118,7 @@ try {
         3 => 'College of Nursing and Allied Health Sciences',
         4 => 'College of Arts and Sciences',
         5 => 'College of Business Administration',
-        6 => 'College of Human Kinetics',
+        6 => 'College of Physical Education',
         7 => 'College of Teacher Education',
         8 => 'College of Tourism and Hospitality Management',
         9 => 'College of Accountancy',
@@ -360,7 +360,7 @@ try {
             ]
         ],
 
-        // CHK (Dept 6)
+        // CPE (Dept 6)
         [
             'dept_id' => 6,
             'cat' => 'Research Proposal',

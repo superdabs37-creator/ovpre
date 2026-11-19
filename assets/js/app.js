@@ -340,6 +340,7 @@ function renderMonthlySubmissionsChart() {
         'College of Nursing and Allied Health Sciences': '#0d9488',
         'College of Arts and Sciences': '#7c3aed',
         'College of Business Administration': '#d97706',
+        'College of Physical Education': '#e11d48',
         'College of Human Kinetics': '#e11d48',
         'College of Teacher Education': '#ea580c',
         'College of Tourism and Hospitality Management': '#0284c7',

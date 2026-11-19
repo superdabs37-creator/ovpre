@@ -362,7 +362,7 @@
                             <option value="College of Teacher Education">College of Teacher Education</option>
                             <option value="College of Tourism and Hospitality Management">College of Tourism and Hospitality Management</option>
                             <option value="College of Public Administration and Governance">College of Public Administration and Governance</option>
-                            <option value="College of Human Kinetics">College of Human Kinetics</option>
+                            <option value="College of Physical Education">College of Physical Education</option>
                             <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
                         </select>
                     </label>
@@ -411,7 +411,7 @@
                             <option value="College of Teacher Education">College of Teacher Education</option>
                             <option value="College of Tourism and Hospitality Management">College of Tourism and Hospitality Management</option>
                             <option value="College of Public Administration and Governance">College of Public Administration and Governance</option>
-                            <option value="College of Human Kinetics">College of Human Kinetics</option>
+                            <option value="College of Physical Education">College of Physical Education</option>
                             <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
                         </select>
                     </label>
@@ -809,7 +809,7 @@
             if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
             if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
             if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
-            if (s.includes('chk') || s.includes('human kinetics')) return 'CHK';
+            if (s.includes('chk') || s.includes('human kinetics') || s.includes('cpe') || s.includes('physical education')) return 'CPE';
             return s.trim().toUpperCase();
         }
 
@@ -853,7 +853,7 @@
             { value: 'College of Teacher Education', code: 'CTE' },
             { value: 'College of Tourism and Hospitality Management', code: 'CTHM' },
             { value: 'College of Public Administration and Governance', code: 'CPAG' },
-            { value: 'College of Human Kinetics', code: 'CHK' },
+            { value: 'College of Physical Education', code: 'CPE' },
             { value: 'Office of the Vice President for Research and Extension', code: 'OVPRE' }
         ];
 
