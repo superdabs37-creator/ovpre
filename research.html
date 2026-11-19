@@ -362,43 +362,6 @@
                         </select>
                     </label>
                     <label class="field"><span>Target Funding Source</span><input name="funding_source" id="createFunding" value="Institutional Research Grant"></label>
-                    <label class="field" style="grid-column: 1 / -1;"><span>Proposed Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="createBudget" placeholder="100000" required></label>
-
-                    <!-- ITEMIZED BUDGET BREAKDOWN (OPTIONAL DYNAMIC REPEATER) -->
-                    <div class="field" style="grid-column: 1 / -1; margin-top: -6px;">
-                        <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem;" id="budgetBreakdownDetails">
-                            <summary style="cursor: pointer; font-weight: 600; color: #334155; display: flex; align-items: center; justify-content: space-between; user-select: none;">
-                                <span style="display: inline-flex; align-items: center; gap: 6px;">
-                                    <i class="ri-calculator-line" style="color: #0284c7; font-size: 1.05rem;"></i>
-                                    <span>Itemized Budget Breakdown (Dynamic Table / Optional)</span>
-                                    <span id="budgetItemsCountBadge" style="font-size: 0.7rem; font-weight: 600; color: #0284c7; background: #e0f2fe; padding: 1px 7px; border-radius: 10px;">0 items</span>
-                                </span>
-                                <span style="font-size: 0.75rem; color: #0284c7; font-weight: 500;">Expand to breakdown budget &plus;</span>
-                            </summary>
-                            <div style="margin-top: 10px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <span style="font-size: 0.78rem; color: #64748b;">Dynamic rows automatically sum into the Proposed Budget total above</span>
-                                    <button type="button" class="btn-repeater-add" onclick="addBudgetBreakdownRow()" style="font-size: 0.78rem; padding: 4px 12px; background: #0284c7;">
-                                        <i class="ri-add-line"></i> Add Row
-                                    </button>
-                                </div>
-                                <div class="repeater-table-wrapper">
-                                    <table class="repeater-table" id="budgetRepeaterTable">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 45%;">Expense Item / Description</th>
-                                                <th style="width: 30%;">Category</th>
-                                                <th style="width: 17%;">Amount (PHP)</th>
-                                                <th style="width: 8%; text-align: center;">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="budgetRepeaterBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </details>
-                    </div>
                 </div>
                 <label class="field"><span>Abstract</span><textarea rows="5" name="abstract" id="createAbstract" required placeholder="State research problem, objectives, methodology, and expected institutional outcomes..."></textarea></label>
                 <label class="field"><span>Research Document (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="createFile" accept=".pdf,.doc,.docx,.zip"></label>
@@ -443,8 +406,7 @@
                             <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
                         </select>
                     </label>
-                    <label class="field"><span>Target Funding Source</span><input name="funding_source" id="resubmitFunding"></label>
-                    <label class="field"><span>Proposed Budget (PHP)</span><input type="number" step="0.01" min="0" name="budget" id="resubmitBudget" required></label>
+                    <label class="field" style="grid-column: 1 / -1;"><span>Target Funding Source</span><input name="funding_source" id="resubmitFunding"></label>
                 </div>
                 <label class="field"><span>Revised Abstract</span><textarea rows="5" name="abstract" id="resubmitAbstract" required></textarea></label>
                 <label class="field"><span>Upload Revised Document (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="resubmitFile" accept=".pdf,.doc,.docx,.zip"></label>
@@ -1279,7 +1241,8 @@
             }
             const college = document.getElementById('createCollege').value;
             const funding = document.getElementById('createFunding').value.trim();
-            const budget = parseFloat(document.getElementById('createBudget').value) || 0;
+            const budgetInput = document.getElementById('createBudget');
+            const budget = budgetInput ? (parseFloat(budgetInput.value) || 0) : 0;
             const abstract = document.getElementById('createAbstract').value.trim();
             const fileInput = document.getElementById('createFile');
             const file = fileInput && fileInput.files && fileInput.files[0];
@@ -1362,7 +1325,8 @@
             document.getElementById('resubmitResearchers').value = p.researchers || '';
             document.getElementById('resubmitCollege').value = p.college || 'College of Computer Studies and Technology';
             document.getElementById('resubmitFunding').value = p.funding_source || 'Institutional Research Grant';
-            document.getElementById('resubmitBudget').value = p.budget || '';
+            const resBudgetEl = document.getElementById('resubmitBudget');
+            if (resBudgetEl) resBudgetEl.value = p.budget || '';
             document.getElementById('resubmitAbstract').value = p.abstract || '';
 
             const feedback = p.director_remarks || p.coordinator_remarks || 'Please address reviewer comments and attach your revised research documentation.';
@@ -1386,7 +1350,8 @@
             const researchers = document.getElementById('resubmitResearchers').value.trim();
             const college = document.getElementById('resubmitCollege').value;
             const funding = document.getElementById('resubmitFunding').value.trim();
-            const budget = parseFloat(document.getElementById('resubmitBudget').value) || 0;
+            const resubmitBudgetInput = document.getElementById('resubmitBudget');
+            const budget = resubmitBudgetInput ? (parseFloat(resubmitBudgetInput.value) || 0) : (p.budget || 0);
             const abstract = document.getElementById('resubmitAbstract').value.trim();
             const fileInput = document.getElementById('resubmitFile');
             const file = fileInput && fileInput.files && fileInput.files[0];
@@ -1720,7 +1685,8 @@
             document.getElementById('detailTitle').textContent = p.title;
             document.getElementById('detailSubtitle').textContent = p.college + ' | Lead: ' + p.researchers;
             document.getElementById('detailFunding').textContent = p.funding_source || 'Institutional Research Grant';
-            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            const budgetNum = Number(p.approved_budget || p.budget || 0);
+            document.getElementById('detailBudget').textContent = budgetNum > 0 ? ('PHP ' + budgetNum.toLocaleString(undefined, { minimumFractionDigits: 2 })) : 'No Budget Required';
             document.getElementById('detailDate').textContent = OVPRE.date(p.created_at);
             document.getElementById('detailAbstract').textContent = p.abstract || 'No abstract provided.';
 
