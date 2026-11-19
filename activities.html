@@ -374,7 +374,6 @@
             const endDate = new Date(endBase + 'T00:00:00');
             endDate.setDate(endDate.getDate() + 1);
             const endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
-            const catSlug = type.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
             return {
                 id: String(activity.id),
@@ -382,10 +381,9 @@
                 start: activity.date,
                 end: endStr,
                 allDay: true,
-                backgroundColor: '#ffffff',
+                backgroundColor: color,
                 borderColor: color,
-                textColor: '#0f172a',
-                classNames: ['event-cat-' + catSlug],
+                textColor: '#ffffff',
                 extendedProps: {
                     type: type,
                     approvalStatus: activity.approval_status || 'Approved',
