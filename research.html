@@ -92,7 +92,7 @@
                         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                             <div class="record-segmented-control" role="tablist" aria-label="Research view mode">
                                 <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchResearchTab('active')">
-                                    <i class="ri-folder-line"></i><span>Active Proposals (<span id="activeCount">8</span>)</span>
+                                    <i class="ri-folder-line"></i><span>Active Proposals (<span id="activeCount">9</span>)</span>
                                 </button>
                                 <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchResearchTab('archived')">
                                     <i class="ri-archive-line"></i><span>Archived Proposals (<span id="archivedCount">1</span>)</span>
@@ -102,7 +102,7 @@
                             <!-- Scope / Proponent Shortcut Filter Toggle -->
                             <div class="scope-filter-control" role="group" aria-label="Proposal scope filter">
                                 <button type="button" id="scopeAllProposalsBtn" class="scope-filter-btn is-active" onclick="setResearchScope('all')" title="View all university proposals">
-                                    <i class="ri-grid-line"></i><span>All Proposals (<span id="allScopeCount">8</span>)</span>
+                                    <i class="ri-grid-line"></i><span>All Proposals (<span id="allScopeCount">9</span>)</span>
                                 </button>
                                 <button type="button" id="scopeMyProposalsBtn" class="scope-filter-btn" onclick="setResearchScope('my')" title="Shortcut: Show only your personal proposals">
                                     <i class="ri-user-star-line"></i><span>My Submissions (<span id="myScopeCount">4</span>)</span>
@@ -226,7 +226,27 @@
         </tr>
     
 
-
+        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Business Administration" id="proposal-4" data-id="4" data-proposal-id="4" data-alias-id="research-project-4">
+            <td data-sort-value="Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency">
+                <strong>Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</strong>
+                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DTI-University Partnership Grant</div>
+            </td>
+            <td data-sort-value="Prof. Raymond Cruz">Prof. Raymond Cruz</td>
+            <td data-sort-value="College of Business Administration"><span class="dept-pill">College of Business Administration</span></td>
+            <td data-sort-value="Stage 3: Executive Approval"><span style="font-weight: 600; color: #166534;">Stage 3: Executive Approval</span></td>
+            <td data-sort-value="Pending Executive Approval">
+                <span class="status-pill status-pending-executive-approval">
+                    Pending Executive Approval
+                </span>
+            </td>
+            <td data-sort-value="2026-02-18">Feb 18, 2026</td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(4)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
 
         <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="proposal-5" data-id="5" data-proposal-id="5" data-alias-id="research-project-5">
             <td data-sort-value="Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility">
@@ -587,6 +607,28 @@
                 "archived": false
         },
         {
+                "id": 4,
+                "title": "Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency",
+                "funding_source": "DTI-University Partnership Grant",
+                "researchers": "Prof. Raymond Cruz",
+                "college": "College of Business Administration",
+                "budget": 95000,
+                "approved_budget": 95000,
+                "stage": "Stage 3: Executive Approval",
+                "status": "Pending Executive Approval",
+                "progress_status": "Planning",
+                "created_at": "2026-02-18",
+                "abstract": "Empirical survey examining financial technology uptake, online logistics barriers, and inventory replenishment patterns among 250 local MSMEs.",
+                "coordinator_remarks": "College endorsed.",
+                "coordinator_name": "Prof. CBA Coordinator",
+                "director_remarks": "RIUH evaluation score: 94.00/100. Recommended for executive institutional authorization.",
+                "director_name": "Dr. Aris Thorne",
+                "director_reviewed_at": "2026-02-22",
+                "evaluation_rating": "94.00",
+                "document_filename": "MSME_Ecommerce_Resiliency.pdf",
+                "archived": false
+        },
+        {
                 "id": 5,
                 "title": "Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility",
                 "funding_source": "BSP Research Academy Grant",
@@ -704,13 +746,7 @@
                 const raw = localStorage.getItem('ovpre_research_projects');
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) {
-                        const sanitized = parsed.filter(item => item.id !== 4 && item.title !== 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency');
-                        if (sanitized.length !== parsed.length) {
-                            localStorage.setItem('ovpre_research_projects', JSON.stringify(sanitized));
-                        }
-                        return sanitized;
-                    }
+                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) return parsed;
                 }
             } catch (e) {}
             localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
