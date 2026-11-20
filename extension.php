@@ -259,7 +259,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             flash('success', count($ids) . ' extension project(s) restored.');
             redirect_to('extension.php?archived=1');
+        } elseif ($bulkAction === 'delete') {
+            $stmt = db()->prepare("DELETE FROM extension_projects WHERE id IN ($marks)");
+            $stmt->execute($ids);
+            foreach ($ids as $pId) {
+                log_action((int) $user['id'], 'Bulk deleted extension project #' . $pId);
+            }
+            flash('success', count($ids) . ' extension project(s) permanently deleted.');
+            redirect_to('extension.php' . ($isArchivedRedirect ? '?archived=1' : ''));
         }
+    } elseif ($action === 'delete') {
+        $id = (int) $_POST['id'];
+        db()->prepare('DELETE FROM extension_projects WHERE id = ?')->execute([$id]);
+        log_action((int) $user['id'], 'Deleted extension project #' . $id);
+        flash('success', 'Extension project permanently deleted.');
+        redirect_to('extension.php');
     }
     redirect_to('extension.php');
 }
@@ -440,6 +454,9 @@ renderHeader('Extension Management', 'extension');
                     <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
+            <button class="action-btn" type="submit" name="bulk_action" value="delete" style="color: #dc2626; border: 1px solid #fecaca; background: #fef2f2; font-weight: 600;" onclick="return confirm('Are you sure you want to permanently delete the selected extension projects?');">
+                <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
+            </button>
         </form>
     </div>
 

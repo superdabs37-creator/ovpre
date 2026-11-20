@@ -131,10 +131,13 @@
                 <section class="panel">
                     <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchProjectsTable" id="researchSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 12px;">
                         <span data-selection-count id="researchSelectedCount" style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
-                        <form id="bulk-researchProjectsTable" onsubmit="handleBulkResearchSubmit(event)" style="margin: 0;">
-                            <span id="bulkResearchBtnContainer">
+                        <form id="bulk-researchProjectsTable" onsubmit="handleBulkResearchSubmit(event)" style="margin: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span id="bulkResearchBtnContainer" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                                 <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected research proposals?');">
                                     <i class="ri-download-2-line"></i><span>Archive Selected</span>
+                                </button>
+                                <button class="action-btn" type="submit" name="bulk_action" value="delete" style="color: #dc2626; border: 1px solid #fecaca; background: #fef2f2; font-weight: 600;" onclick="return confirm('Are you sure you want to permanently delete the selected research proposals?');">
+                                    <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
                                 </button>
                             </span>
                         </form>
@@ -510,7 +513,8 @@
                         <i class="ri-download-line"></i> <span>Download</span>
                     </a>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="action-btn" id="detailDeleteBtn" onclick="deleteProjectFromDetails()" style="color: #dc2626; border: 1px solid #fecaca; background: #fef2f2; font-weight: 600;"><i class="ri-delete-bin-line"></i> <span>Delete</span></button>
                     <button type="button" class="action-btn btn-archive-natural" id="detailArchiveBtn" onclick="toggleArchiveFromDetails()"><i class="ri-download-2-line"></i> <span>Archive Proposal</span></button>
                     <button type="button" class="modal-cancel-btn" data-close-modal>Close</button>
                 </div>
@@ -748,15 +752,24 @@
                     const parsed = JSON.parse(raw);
                     if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) {
                         let mutated = false;
-                        parsed.forEach(item => {
+                        const filtered = parsed.filter(item => {
+                            const title = (item.title || '').trim().toUpperCase();
+                            const researchers = (item.researchers || '').trim().toUpperCase();
+                            if (title.includes('OWBIWAN') || researchers.includes('OWVBI')) {
+                                mutated = true;
+                                return false;
+                            }
+                            return true;
+                        });
+                        filtered.forEach(item => {
                             if (item.status === 'Pending Executive Approval') {
                                 item.status = 'Approved';
                                 item.stage = 'Completed';
                                 mutated = true;
                             }
                         });
-                        if (mutated) localStorage.setItem('ovpre_research_projects', JSON.stringify(parsed));
-                        return parsed;
+                        if (mutated) localStorage.setItem('ovpre_research_projects', JSON.stringify(filtered));
+                        return filtered;
                     }
                 }
             } catch (e) {}
@@ -1204,6 +1217,20 @@
             const submitBtn = e.submitter || document.activeElement;
             const action = (submitBtn && submitBtn.value) ? submitBtn.value : (currentTab === 'archived' ? 'restore' : 'archive');
             const all = getProjects();
+
+            if (action === 'delete') {
+                const remaining = all.filter(p => !ids.includes(Number(p.id)));
+                saveProjects(remaining);
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    ids.forEach(id => {
+                        try { if (OVPRE_SUPABASE.deleteResearchProject) OVPRE_SUPABASE.deleteResearchProject(id); } catch (err) {}
+                    });
+                }
+                OVPRE.toast(`${ids.length} proposal(s) permanently deleted.`, 'success');
+                renderTable();
+                return;
+            }
+
             ids.forEach(id => {
                 const item = all.find(p => p.id === id);
                 if (item) item.archived = (action === 'archive');
@@ -1743,6 +1770,20 @@
             saveProjects(all);
             OVPRE.closeModal('detailsModal');
             OVPRE.toast(p.archived ? 'Proposal archived successfully.' : 'Proposal restored to active proposals.', 'success');
+            renderTable();
+        }
+
+        function deleteProjectFromDetails() {
+            if (!activeDetailId) return;
+            if (!confirm('Are you sure you want to permanently delete this research proposal?')) return;
+            const all = getProjects();
+            const remaining = all.filter(p => Number(p.id) !== Number(activeDetailId));
+            saveProjects(remaining);
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try { if (OVPRE_SUPABASE.deleteResearchProject) OVPRE_SUPABASE.deleteResearchProject(activeDetailId); } catch (e) {}
+            }
+            OVPRE.closeModal('detailsModal');
+            OVPRE.toast('Proposal permanently deleted.', 'success');
             renderTable();
         }
 
