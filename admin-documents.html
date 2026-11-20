@@ -812,16 +812,6 @@
                     <option value="Declined">Declined</option>
                 </select>
             </label>
-            <div class="field"><span>Assign Reviewer / Coordinator</span>
-                <select id="revAssignee">
-                    <option value="Unassigned">Unassigned</option>
-                    <option value="Dr. Research Director">Dr. Research Director - Research Director</option>
-                    <option value="Prof. Extension Director">Prof. Extension Director - Extension Director</option>
-                    <option value="Engr. Mark Ramos">Engr. Mark Ramos - Research Coordinator</option>
-                    <option value="Dr. Maricel Gomez">Dr. Maricel Gomez - Extension Coordinator</option>
-                    <option value="Dr. Aris Thorne">Dr. Aris Thorne - Super Administrator</option>
-                </select>
-            </div>
             <label class="field"><span>Approval / Rejection Remarks</span>
                 <textarea id="revRemarks" rows="4" placeholder="Enter remarks, conditions, or directives..."></textarea>
             </label>
@@ -1824,7 +1814,9 @@
             document.getElementById('revDocId').value = d.id;
             document.getElementById('revDocTitle').textContent = d.title;
             document.getElementById('revStatus').value = d.status || 'Approved';
-            document.getElementById('revAssignee').value = d.assignee || 'Unassigned';
+            if (document.getElementById('revAssignee')) {
+                document.getElementById('revAssignee').value = d.assignee || 'Unassigned';
+            }
             document.getElementById('revRemarks').value = d.status_remarks || '';
             OVPRE.openModal('reviewModal');
         }
@@ -1833,14 +1825,16 @@
             event.preventDefault();
             const id = Number(document.getElementById('revDocId').value);
             const status = document.getElementById('revStatus').value;
-            const assignee = document.getElementById('revAssignee').value;
+            const assigneeEl = document.getElementById('revAssignee');
             const remarks = document.getElementById('revRemarks').value.trim();
 
             const all = getDocs();
             const doc = all.find(d => Number(d.id) === id);
             if (doc) {
                 doc.status = status;
-                doc.assignee = assignee;
+                if (assigneeEl) {
+                    doc.assignee = assigneeEl.value;
+                }
                 doc.status_remarks = remarks;
                 doc.timeline = doc.timeline || [];
                 doc.timeline.unshift({
