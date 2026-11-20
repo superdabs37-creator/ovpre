@@ -83,7 +83,7 @@
     },
     {
       "src": "^/admin-storage$",
-      "dest": "/admin-storage.html"
+      "dest": "/dashboard.html"
     },
     {
       "src": "^/admin-settings$",
