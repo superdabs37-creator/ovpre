@@ -11,7 +11,7 @@ $isDirector = $isResearchDirector || $isExtensionDirector;
 if ($isExtensionCoordinator) {
     $scopeSql = !empty($user['department_id']) ? ' AND submitter.department_id = ?' : ' AND submitter.id = ?';
     $scopeId = !empty($user['department_id']) ? (int) $user['department_id'] : (int) $user['id'];
-    $statsStmt = db()->prepare("SELECT COUNT(*) AS total, COUNT(CASE WHEN COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) IN ('Pending', 'Pending Coordinator Review', 'Planning') THEN 1 END) AS planning, COUNT(CASE WHEN COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) IN ('Ongoing', 'Pending Director Review', 'Pending Executive Approval') THEN 1 END) AS ongoing, COUNT(CASE WHEN COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) = 'Approved' THEN 1 END) AS completed FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE 1=1" . $scopeSql);
+    $statsStmt = db()->prepare("SELECT COUNT(*) AS total, COUNT(CASE WHEN COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) IN ('Pending', 'Pending Coordinator Review', 'Planning') THEN 1 END) AS planning, COUNT(CASE WHEN COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) IN ('Ongoing', 'Pending Director Review') THEN 1 END) AS ongoing, COUNT(CASE WHEN COALESCE(e.status, CAST(e.progress_status AS VARCHAR)) = 'Approved' THEN 1 END) AS completed FROM extension_projects e JOIN users submitter ON submitter.id = e.submitted_by WHERE 1=1" . $scopeSql);
     $statsStmt->execute([$scopeId]);
     $stats = $statsStmt->fetch();
     $activities = db()->query("SELECT * FROM activities WHERE approval_status = 'Approved' AND archived_at IS NULL AND activity_type IN ('Training', 'Workshop', 'Community Outreach') ORDER BY date ASC LIMIT 6")->fetchAll();

@@ -275,7 +275,7 @@ function portal_header(string $title, string $current): array
                 return [
                     'research_total' => (int) db()->query('SELECT COUNT(*) FROM research_projects')->fetchColumn(),
                     'extension_total' => (int) db()->query('SELECT COUNT(*) FROM extension_projects WHERE archived_at IS NULL')->fetchColumn(),
-                    'pending_research' => (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE status IN ("Pending", "Pending Coordinator Review", "Pending Director Review", "Pending Executive Approval", "Under Review")')->fetchColumn(),
+                    'pending_research' => (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE status IN ("Pending", "Pending Coordinator Review", "Pending Director Review", "Under Review")')->fetchColumn(),
                     'approved_research' => (int) db()->query('SELECT COUNT(*) FROM research_projects WHERE archived_at IS NULL AND status = "Approved"')->fetchColumn(),
                     'pending_documents' => (int) db()->query('SELECT COUNT(*) FROM documents WHERE status IN ("Pending","Under Review") AND archived_at IS NULL')->fetchColumn(),
                     'approved_documents' => (int) db()->query('SELECT COUNT(*) FROM documents WHERE status = "Approved" AND archived_at IS NULL')->fetchColumn(),

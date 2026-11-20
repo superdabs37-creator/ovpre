@@ -214,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $approvedBudget = ($_POST['approved_budget'] ?? '') !== '' ? (float) $_POST['approved_budget'] : null;
             $remarks = trim((string) ($_POST['remarks'] ?? 'Extension proposal evaluated and recommended for executive approval.'));
 
-            db()->prepare("UPDATE extension_projects SET status = 'Pending Executive Approval', director_id = ?, director_remarks = ?, evaluation_rating = ?, approved_budget = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
+            db()->prepare("UPDATE extension_projects SET status = 'Approved', progress_status = 'Ongoing', workflow_stage = 'Completed', director_id = ?, director_remarks = ?, evaluation_rating = ?, approved_budget = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $rating, $approvedBudget, $remarks, $projectId]);
 
             $logDetails = "Evaluation Rating: " . ($rating ?? 'N/A') . "/100 | Recommended Budget: PHP " . number_format((float) $approvedBudget, 2) . "\n" . $remarks;
@@ -828,10 +828,6 @@ $projects = portal_extension_projects();
                                     <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
                                         <button class="primary-btn action-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;">
                                             <i class="ri-medal-line"></i><span>Evaluate Project</span>
-                                        </button>
-                                    <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
-                                        <button class="primary-btn action-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;">
-                                            <i class="ri-shield-check-line"></i><span>Final Approval</span>
                                         </button>
                                     <?php endif; ?>
 

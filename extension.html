@@ -244,7 +244,7 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Engineering" id="project-4" data-id="4" data-project-id="4" data-alias-id="ext-project-4">
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Engineering" id="project-4" data-id="4" data-project-id="4" data-alias-id="ext-project-4">
             <td data-sort-value="Community IoT Flood Early Warning System & SMS Evacuation Alert">
                 <strong>Community IoT Flood Early Warning System & SMS Evacuation Alert</strong>
                 <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
@@ -258,10 +258,10 @@
             </td>
             <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
             <td data-sort-value="135000"><strong>PHP 135,000.00</strong></td>
-            <td data-sort-value="Stage 3: Executive Approval"><span style="font-weight: 600; color: #166534;">Stage 3: Executive Approval</span></td>
-            <td data-sort-value="Pending Executive Approval">
-                <span class="status-pill status-pending-executive-approval">
-                    Pending Executive Approval
+            <td data-sort-value="Completed"><span style="font-weight: 600; color: #166534;">Completed</span></td>
+            <td data-sort-value="Approved">
+                <span class="status-pill status-approved">
+                    Approved
                 </span>
             </td>
             <td>
@@ -644,16 +644,16 @@
                 "beneficiaries": "350 Coastal & Lakeside Households",
                 "budget": 135000,
                 "approved_budget": 135000,
-                "stage": "Stage 3: Executive Approval",
-                "status": "Pending Executive Approval",
-                "progress_status": "Planning",
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Ongoing",
                 "created_at": "2026-03-01",
                 "start_date": "2026-03-01",
                 "end_date": "2026-06-30",
                 "description": "Deployment of solar-powered ultrasonic water level sensors linked to an automated SMS alert gateway.",
                 "coordinator_remarks": "Complete technical drawings, risk assessment, and barangay clearance submitted.",
                 "coordinator_name": "Engr. COE Coordinator",
-                "director_remarks": "Director evaluation rating: 94.00. Recommend immediate executive release.",
+                "director_remarks": "Director evaluation rating: 94.00. Approved for implementation.",
                 "director_name": "Dr. Maricel Gomez",
                 "director_reviewed_at": "2026-03-05",
                 "evaluation_rating": "94.00",
@@ -735,7 +735,19 @@
                 const raw = localStorage.getItem('ovpre_extension_projects');
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) return parsed;
+                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) {
+                        let mutated = false;
+                        parsed.forEach(item => {
+                            if (item.status === 'Pending Executive Approval') {
+                                item.status = 'Approved';
+                                item.stage = 'Completed';
+                                if (item.progress_status === 'Planning') item.progress_status = 'Ongoing';
+                                mutated = true;
+                            }
+                        });
+                        if (mutated) localStorage.setItem('ovpre_extension_projects', JSON.stringify(parsed));
+                        return parsed;
+                    }
                 }
             } catch (e) {}
             localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
@@ -1100,14 +1112,7 @@
                                 </button>
                             `;
                         }
-                        // Stage 3: STRICTLY Executive (Super Admin / OVPRE Admin) ONLY (No override)
-                        else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
-                            workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
-                                    <i class="ri-shield-check-line"></i><span>Approve</span>
-                                </button>
-                            `;
-                        }
+
                         // Revision: STRICTLY Faculty Proponent ONLY (No override)
                         else if (isFaculty && isMyExtension(p) && pStatus === 'Needs Revision') {
                             workflowBtns += `
@@ -1563,11 +1568,12 @@
             };
 
             if (action === 'endorse') {
-                p.status = 'Pending Executive Approval';
-                p.stage = 'Stage 3: Executive Approval';
-                supabaseUpdates.status = 'Pending Executive Approval';
-                supabaseUpdates.workflow_stage = 'Stage 3: Executive Approval';
-                OVPRE.toast('Extension Director evaluation completed. Endorsed to Executive VP!', 'success');
+                p.status = 'Approved';
+                p.stage = 'Completed';
+                p.progress_status = 'Ongoing';
+                supabaseUpdates.status = 'Approved';
+                supabaseUpdates.workflow_stage = 'Completed';
+                OVPRE.toast('Extension Director evaluation completed. Project Approved!', 'success');
             } else if (action === 'revision') {
                 p.status = 'Needs Revision';
                 p.stage = 'Stage 1: Coordinator Screening';

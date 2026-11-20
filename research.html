@@ -226,17 +226,17 @@
         </tr>
     
 
-        <tr data-table-row data-status="Pending Executive Approval" data-stage="Stage 3: Executive Approval" data-college="College of Business Administration" id="proposal-4" data-id="4" data-proposal-id="4" data-alias-id="research-project-4">
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Business Administration" id="proposal-4" data-id="4" data-proposal-id="4" data-alias-id="research-project-4">
             <td data-sort-value="Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency">
                 <strong>Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency</strong>
                 <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">DTI-University Partnership Grant</div>
             </td>
             <td data-sort-value="Prof. Raymond Cruz">Prof. Raymond Cruz</td>
             <td data-sort-value="College of Business Administration"><span class="dept-pill">College of Business Administration</span></td>
-            <td data-sort-value="Stage 3: Executive Approval"><span style="font-weight: 600; color: #166534;">Stage 3: Executive Approval</span></td>
-            <td data-sort-value="Pending Executive Approval">
-                <span class="status-pill status-pending-executive-approval">
-                    Pending Executive Approval
+            <td data-sort-value="Completed"><span style="font-weight: 600; color: #166534;">Completed</span></td>
+            <td data-sort-value="Approved">
+                <span class="status-pill status-approved">
+                    Approved
                 </span>
             </td>
             <td data-sort-value="2026-02-18">Feb 18, 2026</td>
@@ -614,14 +614,14 @@
                 "college": "College of Business Administration",
                 "budget": 95000,
                 "approved_budget": 95000,
-                "stage": "Stage 3: Executive Approval",
-                "status": "Pending Executive Approval",
+                "stage": "Completed",
+                "status": "Approved",
                 "progress_status": "Planning",
                 "created_at": "2026-02-18",
                 "abstract": "Empirical survey examining financial technology uptake, online logistics barriers, and inventory replenishment patterns among 250 local MSMEs.",
                 "coordinator_remarks": "College endorsed.",
                 "coordinator_name": "Prof. CBA Coordinator",
-                "director_remarks": "RIUH evaluation score: 94.00/100. Recommended for executive institutional authorization.",
+                "director_remarks": "RIUH evaluation score: 94.00/100. Approved for implementation under Institutional Research Program.",
                 "director_name": "Dr. Aris Thorne",
                 "director_reviewed_at": "2026-02-22",
                 "evaluation_rating": "94.00",
@@ -746,7 +746,18 @@
                 const raw = localStorage.getItem('ovpre_research_projects');
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) return parsed;
+                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) {
+                        let mutated = false;
+                        parsed.forEach(item => {
+                            if (item.status === 'Pending Executive Approval') {
+                                item.status = 'Approved';
+                                item.stage = 'Completed';
+                                mutated = true;
+                            }
+                        });
+                        if (mutated) localStorage.setItem('ovpre_research_projects', JSON.stringify(parsed));
+                        return parsed;
+                    }
                 }
             } catch (e) {}
             localStorage.setItem('ovpre_research_projects', JSON.stringify(initialSeed));
@@ -1112,14 +1123,7 @@
                                 </button>
                             `;
                         }
-                        // Stage 3: STRICTLY Executive (Super Admin / OVPRE Admin) ONLY (No override)
-                        else if (isExecutive && ['Pending Executive Approval'].includes(pStatus)) {
-                            workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openExecModal(${p.id})" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
-                                    <i class="ri-shield-check-line"></i><span>Approve</span>
-                                </button>
-                            `;
-                        }
+
                         // Revision: STRICTLY Faculty Proponent ONLY (No override)
                         else if (isFaculty && isMyProposal(p) && pStatus === 'Needs Revision') {
                             workflowBtns += `
@@ -1561,11 +1565,11 @@
             };
 
             if (action === 'endorse') {
-                p.status = 'Pending Executive Approval';
-                p.stage = 'Stage 3: Executive Approval';
-                supabaseUpdates.status = 'Pending Executive Approval';
-                supabaseUpdates.workflow_stage = 'Stage 3: Executive Approval';
-                OVPRE.toast('RIUH Director evaluation completed. Endorsed to Executive VP!', 'success');
+                p.status = 'Approved';
+                p.stage = 'Completed';
+                supabaseUpdates.status = 'Approved';
+                supabaseUpdates.workflow_stage = 'Completed';
+                OVPRE.toast('RIUH Director evaluation completed. Proposal Approved!', 'success');
             } else if (action === 'revision') {
                 p.status = 'Needs Revision';
                 p.stage = 'Stage 1: Coordinator Screening';

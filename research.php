@@ -133,18 +133,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $grantAmount = ($_POST['grant_amount'] ?? '') !== '' ? (float) $_POST['grant_amount'] : null;
         $remarks = trim($_POST['remarks'] ?? 'RIUH evaluation completed and grant recommended.');
 
-        db()->prepare('UPDATE research_projects SET status = "Pending Executive Approval", director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
+        db()->prepare('UPDATE research_projects SET status = "Approved", workflow_stage = "Completed", director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
             ->execute([(int) $user['id'], $remarks, $aihrStatus, $aihrScore, $grantAmount, $remarks, $id]);
 
-        $logDetails = "RIUH Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Rec. Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
-        log_review('research', $id, (int) $user['id'], 'Stage 3: Endorsed by Research Director', $logDetails);
-        log_action((int) $user['id'], "Research Director endorsed research #{$id}");
+        $logDetails = "RIUH Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Approved Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
+        log_review('research', $id, (int) $user['id'], 'Stage 3: Approved by Research Director', $logDetails);
+        log_action((int) $user['id'], "Research Director approved research #{$id}");
 
         $owner = db()->query("SELECT submitted_by, title FROM research_projects WHERE id = {$id}")->fetch();
         if ($owner) {
-            notify_user((int) $owner['submitted_by'], 'Your proposal passed RIUH review and is forwarded to OVPRE Executive for final approval.', 'research.php#proposal-' . $id);
+            notify_user((int) $owner['submitted_by'], '🎉 Congratulations! Your proposal passed RIUH review and has been Approved!', 'research.php#proposal-' . $id);
         }
-        flash('success', 'RIUH evaluation completed and endorsed to VP / OVPRE Executive.');
+        flash('success', 'RIUH evaluation completed and proposal has been Approved!');
     } elseif ($action === 'executive_approve') {
         $id = (int) $_POST['id'];
         $remarks = trim($_POST['remarks'] ?? 'Granted Final Institutional Approval.');
@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int) $_POST['id'];
         $orig = db()->query("SELECT submitted_by, title, assigned_to, status FROM research_projects WHERE id = {$id}")->fetch();
         $status = isset($_POST['status']) && in_array($_POST['status'], [
-            'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined',
+            'Pending Coordinator Review', 'Pending Director Review', 'Approved', 'Needs Revision', 'Declined',
             'Pending', 'Under Review'
         ], true) ? $_POST['status'] : ($orig['status'] ?? 'Pending Coordinator Review');
         $assignedTo = ($_POST['assigned_to'] ?? '') === '' ? null : (int) $_POST['assigned_to'];
@@ -521,11 +521,8 @@ renderHeader('Research Management', 'research');
                                     <button class="primary-btn action-btn" type="button" data-open-modal="dir-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;" title="Director RIUH & Policy Evaluation">
                                         <i class="ri-award-line"></i><span>RIUH</span>
                                     </button>
-                                <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
-                                    <button class="primary-btn action-btn" type="button" data-open-modal="exec-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
-                                        <i class="ri-shield-check-line"></i><span>Approve</span>
-                                    </button>
                                 <?php endif; ?>
+
 
                                 <button class="ghost-btn action-btn" type="button" data-open-modal="research-<?php echo (int) $project['id']; ?>">
                                     <i class="ri-eye-line"></i><span>Details</span>

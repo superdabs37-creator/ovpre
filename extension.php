@@ -134,18 +134,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $approvedBudget = ($_POST['approved_budget'] ?? '') !== '' ? (float) $_POST['approved_budget'] : null;
         $remarks = trim($_POST['remarks'] ?? 'Extension evaluation completed and recommended for executive approval.');
 
-        db()->prepare('UPDATE extension_projects SET status = "Pending Executive Approval", director_id = ?, director_remarks = ?, evaluation_rating = ?, approved_budget = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
+        db()->prepare('UPDATE extension_projects SET status = "Approved", progress_status = "Ongoing", workflow_stage = "Completed", director_id = ?, director_remarks = ?, evaluation_rating = ?, approved_budget = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
             ->execute([(int) $user['id'], $remarks, $rating, $approvedBudget, $remarks, $id]);
 
         $logDetails = "Rating: " . ($rating ?? 'N/A') . "/100 | Budget: PHP " . number_format((float) $approvedBudget, 2) . "\n" . $remarks;
-        log_review('extension', $id, (int) $user['id'], 'Stage 3: Endorsed by Extension Director', $logDetails);
-        log_action((int) $user['id'], "Extension Director endorsed extension #{$id}");
+        log_review('extension', $id, (int) $user['id'], 'Stage 3: Approved by Extension Director', $logDetails);
+        log_action((int) $user['id'], "Extension Director approved extension #{$id}");
 
         $owner = db()->query("SELECT submitted_by, project_title FROM extension_projects WHERE id = {$id}")->fetch();
         if ($owner) {
-            notify_user((int) $owner['submitted_by'], 'Your extension project was evaluated by the Director and forwarded to OVPRE Executive for final approval.', 'extension.php#project-' . $id);
+            notify_user((int) $owner['submitted_by'], '🎉 Congratulations! Your extension project was evaluated and approved by the Director!', 'extension.php#project-' . $id);
         }
-        flash('success', 'Extension evaluation completed and endorsed to VP / OVPRE Executive.');
+        flash('success', 'Extension project evaluation completed and Approved!');
     } elseif ($action === 'executive_approve') {
         $id = (int) $_POST['id'];
         $remarks = trim($_POST['remarks'] ?? 'Granted Final Institutional Approval.');
@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int) $_POST['id'];
         $orig = db()->query("SELECT submitted_by, project_title, assigned_to, status FROM extension_projects WHERE id = {$id}")->fetch();
         $status = isset($_POST['status']) && in_array($_POST['status'], [
-            'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined', 'Planning', 'Ongoing', 'Completed'
+            'Pending Coordinator Review', 'Pending Director Review', 'Approved', 'Needs Revision', 'Declined', 'Planning', 'Ongoing', 'Completed'
         ], true) ? $_POST['status'] : ($orig['status'] ?? 'Pending Coordinator Review');
         $progress = in_array($_POST['progress_status'] ?? 'Planning', ['Planning', 'Ongoing', 'Completed'], true) ? $_POST['progress_status'] : 'Planning';
         $assignedTo = ($_POST['assigned_to'] ?? '') === '' ? null : (int) $_POST['assigned_to'];
@@ -502,10 +502,6 @@ renderHeader('Extension Management', 'extension');
                                 <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
                                     <button class="primary-btn action-btn" type="button" data-open-modal="dir-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;" title="Director Project Evaluation">
                                         <i class="ri-award-line"></i><span>Evaluate</span>
-                                    </button>
-                                <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
-                                    <button class="primary-btn action-btn" type="button" data-open-modal="exec-ext-modal-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;" title="Executive Institutional Approval">
-                                        <i class="ri-shield-check-line"></i><span>Approve</span>
                                     </button>
                                 <?php endif; ?>
 

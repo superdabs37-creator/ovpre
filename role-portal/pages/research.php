@@ -182,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $grantAmount = ($_POST['grant_amount'] ?? '') !== '' ? (float) $_POST['grant_amount'] : null;
             $remarks = trim((string) ($_POST['remarks'] ?? 'Evaluated under university research guidelines and recommended for executive funding approval.'));
 
-            db()->prepare("UPDATE research_projects SET status = 'Pending Executive Approval', director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
+            db()->prepare("UPDATE research_projects SET status = 'Approved', workflow_stage = 'Completed', director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?")
                 ->execute([(int) $user['id'], $remarks, $aihrStatus, $aihrScore, $grantAmount, $remarks, $projectId]);
 
             $logDetails = "RIUH Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Recommended Grant: PHP " . number_format((float) ($grantAmount ?? 0), 2) . "\n" . $remarks;
@@ -309,7 +309,7 @@ $approvedCount = 0;
 foreach ($projects as $p) {
     if ($p['status'] === 'Pending Coordinator Review') $pendingCoordinatorCount++;
     elseif ($p['status'] === 'Pending Director Review') $pendingDirectorCount++;
-    elseif ($p['status'] === 'Pending Executive Approval') $pendingExecutiveCount++;
+    
     elseif ($p['status'] === 'Approved') $approvedCount++;
 }
 ?>
@@ -647,10 +647,6 @@ foreach ($projects as $p) {
                                     <?php elseif ($isDirector && in_array($pStatus, ['Pending Director Review', 'Under Review'], true)): ?>
                                         <button class="primary-btn action-btn" type="button" data-open-modal="director-review-<?php echo (int) $project['id']; ?>" style="background: #1d4ed8; color: #fff;">
                                             <i class="ri-medal-line"></i><span>RIUH Evaluation</span>
-                                        </button>
-                                    <?php elseif ($isExecutive && in_array($pStatus, ['Pending Executive Approval'], true)): ?>
-                                        <button class="primary-btn action-btn" type="button" data-open-modal="executive-review-<?php echo (int) $project['id']; ?>" style="background: #7e22ce; color: #fff;">
-                                            <i class="ri-shield-check-line"></i><span>Final Approval</span>
                                         </button>
                                     <?php endif; ?>
 

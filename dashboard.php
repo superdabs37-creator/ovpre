@@ -543,38 +543,8 @@ if ($isDeptScoped && $userDeptId > 0) {
     $extensionTotalOngoing = (int) db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status != 'Completed' OR progress_status IS NULL")->fetchColumn();
 }
 
-// Operational Executive Queue
+// Operational Executive Queue removed: Director evaluation now provides direct approval
 $pendingExecutiveProposals = [];
-try {
-    $resStmt = db()->query("
-        SELECT r.id, r.title, r.status, r.workflow_stage, r.grant_amount, r.created_at, 
-               u.fullname, dep.department_name, dir.fullname AS director_name, 'Research' AS proposal_type 
-        FROM research_projects r 
-        JOIN users u ON u.id = r.submitted_by 
-        LEFT JOIN departments dep ON dep.id = u.department_id 
-        LEFT JOIN users dir ON dir.id = r.director_id 
-        WHERE r.status = 'Pending Executive Approval' 
-        ORDER BY r.created_at DESC LIMIT 6
-    ");
-    if ($resStmt) {
-        foreach ($resStmt->fetchAll() as $row) { $pendingExecutiveProposals[] = $row; }
-    }
-    if ($role !== ROLE_RESEARCH_DIRECTOR) {
-        $extStmt = db()->query("
-            SELECT e.id, e.project_title AS title, e.status, e.workflow_stage, e.approved_budget AS grant_amount, e.created_at, 
-                   u.fullname, dep.department_name, dir.fullname AS director_name, 'Extension' AS proposal_type 
-            FROM extension_projects e 
-            JOIN users u ON u.id = e.submitted_by 
-            LEFT JOIN departments dep ON dep.id = u.department_id 
-            LEFT JOIN users dir ON dir.id = e.director_id 
-            WHERE e.status = 'Pending Executive Approval' 
-            ORDER BY e.created_at DESC LIMIT 6
-        ");
-        if ($extStmt) {
-            foreach ($extStmt->fetchAll() as $row) { $pendingExecutiveProposals[] = $row; }
-        }
-    }
-} catch (Throwable $e) {}
 
 // Submission counts and drill-down records for each submitter.
 $personSubmissionRows = db()->query("

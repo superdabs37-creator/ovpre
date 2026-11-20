@@ -104,13 +104,8 @@ flowchart TD
     UserAction -->|Role Assignment| ModifyRole["Update User Roles, Department, or Permissions"]
     UserAction -->|Security Action| LockAction["Unlock Account or Reset User Credentials"]
 
-    %% 2. Final Executive Approval
-    TaskSelect -->|Executive Pipeline| ExecQueue["Review Proposals in 'Pending Executive Approval'"]
-    ExecQueue --> ExecDecision{"Executive Decision"}
-    ExecDecision -->|Decline| DeclineProp["Set Status: Declined (Record Final Remarks)"]
-    ExecDecision -->|Grant Approval| ApproveProp["Set Status: Approved (Grant Released and Project Activated)"]
-    DeclineProp --> NotifyProponent["Send In-App Notification and Email to Proponent"]
-    ApproveProp --> NotifyProponent
+    %% 2. Executive Management
+    TaskSelect -->|Project Oversight| ExecQueue["Monitor Approved Research & Extension Projects"]
 
     %% 3. Document Repository Governance
     TaskSelect -->|Repository Control| DocControl["Manage Documents (admin-documents.php)"]
@@ -153,9 +148,9 @@ flowchart TD
     ResReturnNote --> NotifyResearcher["Notify Researcher via In-App Notification"]
 
     ResEvaluation -->|Qualifies for Institutional Funding| ResEndorse["Action: director_endorse"]
-    ResEndorse --> ResScore["Input RIUH Evaluation Score and Recommended Grant Amount"]
-    ResScore --> ResToExec["Set Status: Pending Executive Approval"]
-    ResToExec --> NotifyVP1["Route Proposal to Vice President / Super Admin"]
+    ResEndorse --> ResScore["Input RIUH Evaluation Score and Approved Grant Amount"]
+    ResScore --> ResToExec["Set Status: Approved (Workflow Completed)"]
+    ResToExec --> NotifyVP1["Notify Faculty Proponent of Approval"]
 
     %% Extension Track
     SelectDirTrack -->|Extension Track| ExtensionDirectorQueue["Open Extension Pipeline (extension.php)"]
@@ -166,9 +161,9 @@ flowchart TD
     ExtReturn --> ExtReturnNote["Add Community / Budget Amendment Remarks"]
     ExtReturnNote --> NotifyExtensionist["Notify Faculty Extensionist"]
 
-    ExtEvaluation -->|Endorse Project| ExtEndorse["Action: director_endorse"]
-    ExtEndorse --> ExtToExec["Set Status: Pending Executive Approval"]
-    ExtToExec --> NotifyVP2["Route Proposal to Vice President / Super Admin"]
+    ExtEvaluation -->|Approve Project| ExtEndorse["Action: director_endorse"]
+    ExtEndorse --> ExtToExec["Set Status: Approved (Project Activated / Ongoing)"]
+    ExtToExec --> NotifyVP2["Notify Faculty Extensionist of Approval"]
 
     %% Post-Approval Oversight
     DirDashboard -->|Ongoing Projects| TrackProjects["Monitor Active Institutional Projects"]
@@ -308,18 +303,8 @@ flowchart TD
     DirRevise --> NoticeRes2["Notify Researcher with RIUH Remarks"]
     NoticeRes2 --> ResubmitRes
 
-    DirectorEval -->|Endorsed| SetRIUH["Record RIUH Score and Recommended Grant Amount"]
-    SetRIUH --> Stage3["Status: Pending Executive Approval"]
-    Stage3 --> NoticeExec["Notify VP / Super Admin"]
-
-    %% Stage 3: Executive Approval
-    NoticeExec --> ExecDecision{"Vice President / Super Admin Review"}
-    
-    ExecDecision -->|Declined| DeclinedState["Status: Declined"]
-    DeclinedState --> NoticeDeclined["Notify Proponent of Decision"]
-    NoticeDeclined --> EndDeclined([Proposal Closed])
-
-    ExecDecision -->|Approved| ApprovedState["Status: Approved"]
+    DirectorEval -->|Approved| SetRIUH["Record RIUH Score and Approved Grant Amount"]
+    SetRIUH --> ApprovedState["Status: Approved"]
     ApprovedState --> NoticeApproved["Notify Proponent of Institutional Approval"]
     
     %% Post Approval Workflow
@@ -351,13 +336,7 @@ flowchart TD
     ExtDirReview -->|Needs Adjustment| ExtDirRev["Status: Needs Revision"]
     ExtDirRev --> ExtRevise
 
-    ExtDirReview -->|Director Endorsed| ExtStage3["Status: Pending Executive Approval"]
-    ExtStage3 --> ExtExec{"Vice President / Super Admin Approval"}
-
-    ExtExec -->|Declined| ExtDeclined["Status: Declined"]
-    ExtDeclined --> ExtEndClosed([Project Closed])
-
-    ExtExec -->|Executive Approved| ExtApproved["Status: Approved (Ongoing)"]
+    ExtDirReview -->|Director Approved| ExtApproved["Status: Approved (Ongoing)"]
     ExtApproved --> ExtNotify["Notify Coordinator and Extensionist"]
 
     ExtApproved --> CommunityWork["Community Outreach and Program Implementation"]

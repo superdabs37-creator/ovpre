@@ -20,7 +20,7 @@ $fromDateTime = $from . ' 00:00:00';
 $toDateTime = $to . ' 23:59:59';
 
 $departments = db()->query('SELECT id, department_name FROM departments ORDER BY department_name')->fetchAll();
-$statusOptions = ['Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Approved', 'Needs Revision', 'Declined', 'Pending', 'Under Review'];
+$statusOptions = ['Pending Coordinator Review', 'Pending Director Review', 'Approved', 'Needs Revision', 'Declined', 'Pending', 'Under Review'];
 $yearOptions = range((int) date('Y') + 1, (int) date('Y') - 5);
 
 $documentConditions = ['d.created_at BETWEEN ? AND ?'];
@@ -66,11 +66,11 @@ $extension = $extensionStmt->fetchAll();
 
 $totalResearch = (int) report_scalar('SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
 $publishedResearch = (int) report_scalar("SELECT COUNT(*) FROM documents d JOIN categories c ON c.id = d.category_id WHERE c.category_name = 'Publication' AND d.created_at BETWEEN ? AND ?", $rangeParams);
-$ongoingResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review', 'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Needs Revision')", $rangeParams);
+$ongoingResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review', 'Pending Coordinator Review', 'Pending Director Review', 'Needs Revision')", $rangeParams);
 $completedResearch = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status = 'Approved'", $rangeParams);
 
 $totalExtension = (int) report_scalar('SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
-$activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status IN ('Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval', 'Needs Revision') OR CAST(progress_status AS VARCHAR) = 'Ongoing')", $rangeParams);
+$activePrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status IN ('Pending Coordinator Review', 'Pending Director Review', 'Needs Revision') OR CAST(progress_status AS VARCHAR) = 'Ongoing')", $rangeParams);
 $completedPrograms = (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status = 'Approved' OR CAST(progress_status AS VARCHAR) = 'Completed')", $rangeParams);
 $upcomingActivities = (int) report_scalar("SELECT COUNT(*) FROM activities WHERE approval_status = 'Approved' AND archived_at IS NULL AND date >= CURRENT_DATE");
 
@@ -79,8 +79,8 @@ $extensionFunding = (int) report_scalar('SELECT COUNT(*) FROM extension_projects
 $totalGrants = $researchFunding + $extensionFunding;
 $approvedFunding = (float) report_scalar("SELECT COALESCE(SUM(COALESCE(approved_budget, budget)), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status = 'Approved' OR CAST(progress_status AS VARCHAR) IN ('Completed', 'Ongoing'))", $rangeParams);
 $requestedFunding = (float) report_scalar('SELECT COALESCE(SUM(budget), 0) FROM extension_projects WHERE created_at BETWEEN ? AND ?', $rangeParams);
-$pendingRequests = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review', 'Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval')", $rangeParams)
-    + (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status IN ('Pending Coordinator Review', 'Pending Director Review', 'Pending Executive Approval') OR CAST(progress_status AS VARCHAR) = 'Planning')", $rangeParams);
+$pendingRequests = (int) report_scalar("SELECT COUNT(*) FROM research_projects WHERE created_at BETWEEN ? AND ? AND status IN ('Pending', 'Under Review', 'Pending Coordinator Review', 'Pending Director Review')", $rangeParams)
+    + (int) report_scalar("SELECT COUNT(*) FROM extension_projects WHERE created_at BETWEEN ? AND ? AND (status IN ('Pending Coordinator Review', 'Pending Director Review') OR CAST(progress_status AS VARCHAR) = 'Planning')", $rangeParams);
 $fundingUtilization = $requestedFunding > 0 ? round(($approvedFunding / $requestedFunding) * 100) : 0;
 
 $totalAccomplishments = (int) report_scalar('SELECT COUNT(*) FROM accomplishment_reports WHERE created_at BETWEEN ? AND ?', $rangeParams);
