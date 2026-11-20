@@ -533,7 +533,6 @@
                     </a>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                    <button type="button" class="action-btn" id="detailDeleteBtn" onclick="deleteProjectFromDetails()" style="color: #dc2626; border: 1px solid #fecaca; background: #fef2f2; font-weight: 600;"><i class="ri-delete-bin-line"></i> <span>Delete</span></button>
                     <button type="button" class="action-btn btn-archive-natural" id="detailArchiveBtn" onclick="toggleArchiveFromDetails()"><i class="ri-download-2-line"></i> <span>Archive Project</span></button>
                     <button type="button" class="modal-cancel-btn" data-close-modal>Close</button>
                 </div>
@@ -1775,20 +1774,6 @@
             saveProjects(all);
             OVPRE.closeModal('detailsModal');
             OVPRE.toast(p.archived ? 'Project archived successfully.' : 'Project restored to active projects.', 'success');
-            renderTable();
-        }
-
-        function deleteProjectFromDetails() {
-            if (!activeDetailId) return;
-            if (!confirm('Are you sure you want to permanently delete this extension project?')) return;
-            const all = getProjects();
-            const remaining = all.filter(p => Number(p.id) !== Number(activeDetailId));
-            saveProjects(remaining);
-            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
-                try { if (OVPRE_SUPABASE.deleteExtensionProject) OVPRE_SUPABASE.deleteExtensionProject(activeDetailId); } catch (e) {}
-            }
-            OVPRE.closeModal('detailsModal');
-            OVPRE.toast('Project permanently deleted.', 'success');
             renderTable();
         }
 
