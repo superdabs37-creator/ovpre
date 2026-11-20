@@ -1262,9 +1262,6 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
                     </span>
                 </div>
             </div>
-            <a id="quickPreviewFullPageBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.78rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 7px; text-decoration: none; white-space: nowrap;">
-                <i class="ri-external-link-line"></i> <span>Open Full Proposal</span>
-            </a>
         </div>
         <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
             <a id="quickPreviewDownloadBtn" href="#" class="ghost-btn" style="display: none; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none;">
@@ -1455,10 +1452,6 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
                 downloadAcademicFile(fileUrl, fileName, submission.title, person.submitter_name, person.department_name, submission.description);
             };
         }
-
-        const fullPageBtn = document.getElementById('quickPreviewFullPageBtn');
-        fullPageBtn.href = targetUrl;
-        fullPageBtn.querySelector('span').textContent = isResearch ? 'Open Full Proposal' : 'Open Full Project';
 
         previewDialog.showModal();
     }
