@@ -118,6 +118,32 @@ function supabase_storage_get_bucket(?string $bucketName = null): ?array
     }
 }
 
+function supabase_storage_ensure_bucket(?string $bucketName = null): bool
+{
+    $bucket = $bucketName ?: SUPABASE_STORAGE_BUCKET;
+    if (SUPABASE_URL === '' || SUPABASE_SECRET_KEY === '' || !function_exists('curl_init')) {
+        return false;
+    }
+    try {
+        $info = supabase_storage_get_bucket($bucket);
+        if (!$info) {
+            supabase_request('POST', '/storage/v1/bucket', [
+                'id' => $bucket,
+                'name' => $bucket,
+                'public' => true
+            ], null, true);
+        } elseif (empty($info['public'])) {
+            supabase_request('PUT', '/storage/v1/bucket/' . rawurlencode($bucket), [
+                'public' => true
+            ], null, true);
+        }
+        return true;
+    } catch (Throwable $e) {
+        error_log('Supabase ensure bucket failed: ' . $e->getMessage());
+        return false;
+    }
+}
+
 function supabase_storage_list_objects(string $prefix = '', int $limit = 100, int $offset = 0): array
 {
     $bucket = SUPABASE_STORAGE_BUCKET;

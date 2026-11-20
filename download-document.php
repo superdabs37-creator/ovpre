@@ -66,27 +66,32 @@ $disposition = $isDownload ? 'attachment' : 'inline';
 
 if (str_starts_with($filename, 'storage:')) {
     $objectPath = substr($filename, 8);
-    $signedUrl = supabase_storage_signed_url($objectPath);
+    try {
+        $signedUrl = supabase_storage_signed_url($objectPath);
+        if (function_exists('curl_init')) {
+            $ch = curl_init($signedUrl);
+            curl_setopt_array($ch, [
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_RETURNTRANSFER => true,
+            ]);
+            $body = curl_exec($ch);
+            $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
-    header('Content-Type: ' . $mime);
-    header('Content-Disposition: ' . $disposition . '; filename="' . $safeName . '"');
-    header('X-Content-Type-Options: nosniff');
-    header('Cache-Control: private, no-store');
-
-    if (function_exists('curl_init')) {
-        $ch = curl_init($signedUrl);
-        curl_setopt_array($ch, [
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT => 60,
-            CURLOPT_HEADER => false,
-        ]);
-        curl_exec($ch);
-        curl_close($ch);
-    } else {
-        readfile($signedUrl);
-    }
-    exit;
+            if ($httpCode === 200 && $body !== false) {
+                header('Content-Type: ' . $mime);
+                header('Content-Disposition: ' . $disposition . '; filename="' . $safeName . '"');
+                header('X-Content-Type-Options: nosniff');
+                header('Cache-Control: private, no-store');
+                echo $body;
+                exit;
+            }
+        }
+    } catch (Throwable $e) {}
+    // Fall back to local file if remote storage object is not reachable
+    $filename = basename($objectPath);
 }
 
 $root = realpath(UPLOAD_DIR);
