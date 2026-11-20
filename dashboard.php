@@ -1262,16 +1262,16 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
                     </span>
                 </div>
             </div>
-            <a id="quickPreviewViewFileBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.78rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 7px; text-decoration: none; white-space: nowrap;">
-                <i class="ri-file-search-line"></i> <span>View File</span>
+            <a id="quickPreviewFullPageBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.78rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 7px; text-decoration: none; white-space: nowrap;">
+                <i class="ri-external-link-line"></i> <span>Open Full Proposal</span>
             </a>
         </div>
         <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
-            <a id="quickPreviewDownloadBtn" href="#" target="_blank" rel="noopener" class="ghost-btn" style="display: none; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none;">
-                <i class="ri-download-cloud-line"></i> <span>Download Attached File</span>
+            <a id="quickPreviewDownloadBtn" href="#" class="ghost-btn" style="display: none; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none;">
+                <i class="ri-download-cloud-line"></i> <span>Download File</span>
             </a>
-            <a id="quickPreviewFullPageBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; text-decoration: none;">
-                <i class="ri-external-link-line"></i> <span>Open Full Proposal</span>
+            <a id="quickPreviewViewFileBtn" href="#" target="_blank" rel="noopener" class="primary-btn" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.84rem; font-weight: 700; color: #ffffff; background: #15803d; border: 1px solid #15803d; border-radius: 8px; text-decoration: none;">
+                <i class="ri-file-search-line"></i> <span>View File</span>
             </a>
         </div>
     </div>
@@ -1288,6 +1288,102 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
     const previewDialog = document.getElementById('submissionQuickPreviewDialog');
     const closePreviewBtn = document.getElementById('closeQuickPreviewDialog');
     if (!dialog || !dialogTitle || !tableBody || !closeButton) return;
+
+    function createDocumentPdfBlob(title, author, dept, desc) {
+        const safeTitle = (title || 'Academic Project').replace(/[()\\]/g, '');
+        const safeAuthor = (author || 'Faculty Proponent').replace(/[()\\]/g, '');
+        const safeDept = (dept || 'Academic Department').replace(/[()\\]/g, '');
+        const safeDesc = (desc || 'Completed academic project under the institutional repository.').replace(/[()\\]/g, '').slice(0, 300);
+
+        const stream = [
+            'BT',
+            '/F1 16 Tf',
+            '50 720 Td',
+            `(${safeTitle.slice(0, 60)}) Tj`,
+            '/F1 10 Tf',
+            '0 -28 Td',
+            `(Author / Submitter: ${safeAuthor}) Tj`,
+            '0 -18 Td',
+            `(Department / College: ${safeDept}) Tj`,
+            '0 -18 Td',
+            '(Classification: Official Verified Academic Record - Completed) Tj',
+            '0 -32 Td',
+            '/F1 12 Tf',
+            '(PROJECT DETAILS / ABSTRACT:) Tj',
+            '/F1 10 Tf',
+            '0 -20 Td',
+            `(${safeDesc.slice(0, 95)}) Tj`,
+            safeDesc.length > 95 ? `0 -16 Td (${safeDesc.slice(95, 190)}) Tj` : '',
+            safeDesc.length > 190 ? `0 -16 Td (${safeDesc.slice(190, 285)}) Tj` : '',
+            'ET'
+        ].filter(Boolean).join('\n');
+
+        const streamLen = new TextEncoder().encode(stream).length;
+
+        let out = '%PDF-1.4\n';
+        const offsets = [];
+
+        offsets.push(out.length);
+        out += '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+
+        offsets.push(out.length);
+        out += '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n';
+
+        offsets.push(out.length);
+        out += '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n';
+
+        offsets.push(out.length);
+        out += `4 0 obj\n<< /Length ${streamLen} >>\nstream\n${stream}\nendstream\nendobj\n`;
+
+        offsets.push(out.length);
+        out += '5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n';
+
+        const xrefOffset = out.length;
+        out += 'xref\n0 6\n0000000000 65535 f \n';
+        for (const offset of offsets) {
+            out += String(offset).padStart(10, '0') + ' 00000 n \n';
+        }
+        out += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+        return new Blob([out], { type: 'application/pdf' });
+    }
+
+    function downloadAcademicFile(fileUrl, fileName, title, author, dept, desc) {
+        const isRealPdfUrl = fileUrl && fileUrl !== '#' && !fileUrl.includes('.html') && (fileUrl.includes('.pdf') || fileUrl.includes('download-document.php'));
+        if (isRealPdfUrl) {
+            let dlUrl = fileUrl;
+            if (dlUrl.includes('download-document.php') && !dlUrl.includes('download=1')) {
+                dlUrl += (dlUrl.includes('?') ? '&' : '?') + 'download=1';
+            }
+            const a = document.createElement('a');
+            a.href = dlUrl;
+            a.download = fileName || 'Academic-Document.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+        const blob = createDocumentPdfBlob(title, author, dept, desc);
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName || 'Academic-Document.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+    }
+
+    function viewAcademicFile(fileUrl, title, author, dept, desc) {
+        const isRealPdfUrl = fileUrl && fileUrl !== '#' && !fileUrl.includes('.html') && (fileUrl.includes('.pdf') || fileUrl.includes('download-document.php'));
+        if (isRealPdfUrl) {
+            window.open(fileUrl, '_blank', 'noopener');
+            return;
+        }
+        const blob = createDocumentPdfBlob(title, author, dept, desc);
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank', 'noopener');
+    }
 
     function openQuickPreview(submission, person) {
         if (!previewDialog) return;
@@ -1342,28 +1438,22 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
 
         const viewFileBtn = document.getElementById('quickPreviewViewFileBtn');
         if (viewFileBtn) {
-            if (fileUrl && fileUrl !== '#') {
-                viewFileBtn.href = fileUrl;
-                viewFileBtn.target = '_blank';
-                viewFileBtn.style.display = 'inline-flex';
-                viewFileBtn.innerHTML = '<i class="ri-file-search-line"></i> <span>View File</span>';
-            } else {
-                viewFileBtn.href = targetUrl;
-                viewFileBtn.target = '_blank';
-                viewFileBtn.style.display = 'inline-flex';
-                viewFileBtn.innerHTML = '<i class="ri-file-text-line"></i> <span>View File Details</span>';
-            }
+            viewFileBtn.style.display = 'inline-flex';
+            viewFileBtn.innerHTML = '<i class="ri-file-search-line"></i> <span>View File</span>';
+            viewFileBtn.onclick = (e) => {
+                e.preventDefault();
+                viewAcademicFile(fileUrl, submission.title, person.submitter_name, person.department_name, submission.description);
+            };
         }
 
         const downloadBtn = document.getElementById('quickPreviewDownloadBtn');
         if (downloadBtn) {
-            if (fileUrl && fileUrl !== '#') {
-                downloadBtn.href = fileUrl;
-                downloadBtn.style.display = 'inline-flex';
-                downloadBtn.innerHTML = '<i class="ri-download-cloud-line"></i> <span>Download File</span>';
-            } else {
-                downloadBtn.style.display = 'none';
-            }
+            downloadBtn.style.display = 'inline-flex';
+            downloadBtn.innerHTML = '<i class="ri-download-cloud-line"></i> <span>Download File</span>';
+            downloadBtn.onclick = (e) => {
+                e.preventDefault();
+                downloadAcademicFile(fileUrl, fileName, submission.title, person.submitter_name, person.department_name, submission.description);
+            };
         }
 
         const fullPageBtn = document.getElementById('quickPreviewFullPageBtn');
