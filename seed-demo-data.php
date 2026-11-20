@@ -331,17 +331,6 @@ try {
         // CBA (Dept 5)
         [
             'dept_id' => 5,
-            'cat' => 'Research Proposal',
-            'title' => 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency in Laguna',
-            'abstract' => 'Empirical survey examining financial technology uptake, online logistics barriers, and inventory replenishment patterns among 250 local MSMEs.',
-            'res_status' => 'Pending Executive Approval',
-            'grant' => 95000.00,
-            'funding' => 'DTI-University Partnership Grant',
-            'author' => 'Prof. Raymond Cruz',
-            'ext_data' => null
-        ],
-        [
-            'dept_id' => 5,
             'cat' => 'Extension Project',
             'title' => 'MSME Financial Management and Digital Bookkeeping Mentorship Clinic',
             'abstract' => 'Series of weekend workshops training women cooperative entrepreneurs on basic QuickBooks, cloud invoicing, and tax compliance.',
