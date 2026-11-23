@@ -1220,6 +1220,10 @@ function openActivityEditor(eventData) {
     document.getElementById('activityDateFrom').value = dateFrom;
     document.getElementById('activityDateTo').value = dateTo;
     document.getElementById('activityDateTo').min = dateFrom;
+    const startTimeEl = document.getElementById('activityStartTime');
+    const endTimeEl = document.getElementById('activityEndTime');
+    if (startTimeEl) startTimeEl.value = props.startTime || '';
+    if (endTimeEl) endTimeEl.value = props.endTime || '';
     document.getElementById('activityVenue').value = props.venue || '';
     document.getElementById('activityDescription').value = props.description || '';
     document.getElementById('createActivityButton').style.display = 'none';
@@ -1285,6 +1289,10 @@ function openActivityCreator(dateStr) {
     document.getElementById('activityDateFrom').value = date;
     document.getElementById('activityDateTo').value = date;
     document.getElementById('activityDateTo').min = date;
+    const createStartTimeEl = document.getElementById('activityStartTime');
+    const createEndTimeEl = document.getElementById('activityEndTime');
+    if (createStartTimeEl) createStartTimeEl.value = '';
+    if (createEndTimeEl) createEndTimeEl.value = '';
     document.getElementById('activityVenue').value = '';
     document.getElementById('activityDescription').value = '';
     document.getElementById('createActivityButton').style.display = 'inline-flex';
@@ -1311,10 +1319,19 @@ document.querySelectorAll('[data-create-activity]').forEach((button) => {
 
 const activityDateFrom = document.getElementById('activityDateFrom');
 const activityDateTo = document.getElementById('activityDateTo');
+const activityStartTime = document.getElementById('activityStartTime');
+const activityEndTime = document.getElementById('activityEndTime');
+
 activityDateFrom?.addEventListener('change', () => {
     activityDateTo.min = activityDateFrom.value;
     if (activityDateTo.value && activityDateTo.value < activityDateFrom.value) {
         activityDateTo.value = activityDateFrom.value;
+    }
+});
+
+activityStartTime?.addEventListener('change', () => {
+    if (activityDateFrom?.value === activityDateTo?.value && activityEndTime?.value && activityEndTime.value < activityStartTime.value) {
+        activityEndTime.value = activityStartTime.value;
     }
 });
 

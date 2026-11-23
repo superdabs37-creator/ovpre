@@ -2,6 +2,7 @@
 require_once 'includes/layout.php';
 $user = require_login(['Super Admin', 'OVPRE Admin', ROLE_RESEARCH_DIRECTOR, ROLE_EXTENSION_DIRECTOR, 'Research Coordinator', 'Extension Coordinator']);
 ensure_activity_date_to_column();
+ensure_activity_time_columns();
 ensure_activity_archived_at_column();
 if (role_access_group((string) ($user['role'] ?? '')) === ROLE_RESEARCH_COORDINATOR) {
     redirect_to('research-coordinator/calendar.php');
@@ -23,21 +24,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (in_array($action, ['create', 'update'], true)) {
         $dateFrom = (string) ($_POST['date_from'] ?? '');
         $dateTo = (string) ($_POST['date_to'] ?? '');
+        $startTime = !empty($_POST['start_time']) ? trim((string) $_POST['start_time']) : null;
+        $endTime = !empty($_POST['end_time']) ? trim((string) $_POST['end_time']) : null;
         $parsedDateFrom = DateTime::createFromFormat('!Y-m-d', $dateFrom);
         $parsedDateTo = DateTime::createFromFormat('!Y-m-d', $dateTo);
         if (!$parsedDateFrom || $parsedDateFrom->format('Y-m-d') !== $dateFrom || !$parsedDateTo || $parsedDateTo->format('Y-m-d') !== $dateTo || $dateTo < $dateFrom) {
             flash('error', 'Choose a valid date range. Date To must be on or after Date From.');
             redirect_to('activities.php');
         }
+        if ($startTime && $endTime && $dateFrom === $dateTo && $endTime < $startTime) {
+            flash('error', 'End Time must be after Start Time when scheduled on the same day.');
+            redirect_to('activities.php');
+        }
     }
 
     if ($action === 'create') {
-        db()->prepare('INSERT INTO activities (title, activity_type, date, date_to, venue, description, approval_status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, "Approved", ?, NOW())')
+        db()->prepare('INSERT INTO activities (title, activity_type, date, date_to, start_time, end_time, venue, description, approval_status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "Approved", ?, NOW())')
             ->execute([
                 trim((string) $_POST['title']),
                 valid_activity_type((string) ($_POST['activity_type'] ?? 'Seminar'), $activityTypes),
                 $_POST['date_from'],
                 $_POST['date_to'],
+                $startTime,
+                $endTime,
                 trim((string) $_POST['venue']),
                 trim((string) ($_POST['description'] ?? '')),
                 $user['id'],
@@ -49,12 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'update') {
         $id = (int) ($_POST['id'] ?? 0);
-        db()->prepare('UPDATE activities SET title = ?, activity_type = ?, date = ?, date_to = ?, venue = ?, description = ? WHERE id = ?')
+        db()->prepare('UPDATE activities SET title = ?, activity_type = ?, date = ?, date_to = ?, start_time = ?, end_time = ?, venue = ?, description = ? WHERE id = ?')
             ->execute([
                 trim((string) $_POST['title']),
                 valid_activity_type((string) ($_POST['activity_type'] ?? 'Seminar'), $activityTypes),
                 $_POST['date_from'],
                 $_POST['date_to'],
+                $startTime,
+                $endTime,
                 trim((string) $_POST['venue']),
                 trim((string) ($_POST['description'] ?? '')),
                 $id,
@@ -229,12 +240,26 @@ $eventColors = [
 ];
 $toCalendarEvent = static function (array $activity) use ($eventColors): array {
     $type = $activity['activity_type'];
+    $startTimeFormatted = !empty($activity['start_time']) ? substr((string) $activity['start_time'], 0, 5) : '';
+    $endTimeFormatted = !empty($activity['end_time']) ? substr((string) $activity['end_time'], 0, 5) : '';
+    $hasTime = $startTimeFormatted !== '';
+
+    if ($hasTime) {
+        $start = $activity['date'] . 'T' . $startTimeFormatted . ':00';
+        $end = $endTimeFormatted !== ''
+            ? ($activity['date_to'] ?: $activity['date']) . 'T' . $endTimeFormatted . ':00'
+            : $activity['date'] . 'T' . $startTimeFormatted . ':00';
+    } else {
+        $start = $activity['date'];
+        $end = date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day'));
+    }
+
     return [
         'id' => (string) $activity['id'],
         'title' => $activity['title'],
-        'start' => $activity['date'],
-        'end' => date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day')),
-        'allDay' => true,
+        'start' => $start,
+        'end' => $end,
+        'allDay' => !$hasTime,
         'backgroundColor' => $eventColors[$type] ?? '#15803d',
         'borderColor' => $eventColors[$type] ?? '#15803d',
         'textColor' => '#ffffff',
@@ -245,6 +270,8 @@ $toCalendarEvent = static function (array $activity) use ($eventColors): array {
             'description' => $activity['description'] ?? '',
             'date' => $activity['date'],
             'dateTo' => $activity['date_to'] ?: $activity['date'],
+            'startTime' => $startTimeFormatted,
+            'endTime' => $endTimeFormatted,
         ],
     ];
 };
@@ -285,7 +312,7 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                     <div class="upcoming-date"><strong><?php echo h(date('d', strtotime($activity['date']))); ?></strong><span><?php echo h(date('M', strtotime($activity['date']))); ?></span></div>
                     <div>
                         <h3><?php echo h($activity['title']); ?></h3>
-                        <p><?php echo h($activity['activity_type']); ?> | <?php echo h(date('M d', strtotime($activity['date'])) . ($activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '') . ' | ' . $activity['venue']); ?></p>
+                        <p><?php echo h($activity['activity_type']); ?> | <?php echo h(date('M d', strtotime($activity['date'])) . ($activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '')); ?><?php if (!empty($activity['start_time'])): ?> &bull; <?php echo h(format_activity_time($activity['start_time'], $activity['end_time'] ?? null)); ?><?php endif; ?> | <?php echo h($activity['venue']); ?></p>
                     </div>
                 </article>
             <?php endforeach; ?>
@@ -366,7 +393,12 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                         <td class="table-checkbox-col">
                             <input form="bulk-activitiesTable" type="checkbox" name="ids[]" aria-label="Select activity <?php echo (int) $activity['id']; ?>" value="<?php echo (int) $activity['id']; ?>" data-row-select="activitiesTable">
                         </td>
-                        <td><?php echo h(date('M d, Y', strtotime($activity['date'])) . ($activity['date_to'] && $activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '')); ?></td>
+                        <td>
+                            <?php echo h(date('M d, Y', strtotime($activity['date'])) . ($activity['date_to'] && $activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '')); ?>
+                            <?php if (!empty($activity['start_time'])): ?>
+                                <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"><i class="ri-time-line"></i> <?php echo h(format_activity_time($activity['start_time'], $activity['end_time'] ?? null)); ?></div>
+                            <?php endif; ?>
+                        </td>
                         <td><strong><?php echo h($activity['title']); ?></strong></td>
                         <td><?php echo h($activity['activity_type']); ?></td>
                         <td><?php echo h($activity['venue']); ?></td>
@@ -440,6 +472,16 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
                 <label class="field" style="margin: 0;">
                     <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Date To</span>
                     <input type="date" name="date_to" id="activityDateTo" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                </label>
+            </div>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Start Time</span>
+                    <input type="time" name="start_time" id="activityStartTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                </label>
+                <label class="field" style="margin: 0;">
+                    <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">End Time</span>
+                    <input type="time" name="end_time" id="activityEndTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
                 </label>
             </div>
             <label class="field" style="margin: 0;">

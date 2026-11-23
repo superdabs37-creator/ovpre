@@ -225,6 +225,16 @@
                         <input type="date" name="date_to" id="activityDateTo" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
                     </label>
                 </div>
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <label class="field" style="margin: 0;">
+                        <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Start Time</span>
+                        <input type="time" name="start_time" id="activityStartTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                    </label>
+                    <label class="field" style="margin: 0;">
+                        <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">End Time</span>
+                        <input type="time" name="end_time" id="activityEndTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                    </label>
+                </div>
                 <label class="field" style="margin: 0;">
                     <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Venue / Location</span>
                     <input name="venue" id="activityVenue" placeholder="e.g. University Gymnasium / Audio-Visual Room" required style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
@@ -278,6 +288,8 @@
                     activity_type: 'Seminar',
                     date: '2026-11-05',
                     date_to: '2026-11-07',
+                    start_time: '08:00',
+                    end_time: '17:00',
                     venue: 'University Gymnasium & Performing Arts Auditorium',
                     description: 'Multi-college academic colloquium and peer review sessions for approved faculty and graduate research studies.',
                     approval_status: 'Approved',
@@ -290,6 +302,8 @@
                     activity_type: 'Workshop',
                     date: '2026-11-15',
                     date_to: '2026-11-17',
+                    start_time: '09:00',
+                    end_time: '16:00',
                     venue: 'Audio-Visual Room (AVR), Main Building',
                     description: 'Capacity building on crafting CHED- and DOST-compliant funding proposals with RIUH evaluation scoring benchmarks.',
                     approval_status: 'Approved',
@@ -302,6 +316,8 @@
                     activity_type: 'Community Outreach',
                     date: '2026-11-22',
                     date_to: '2026-11-24',
+                    start_time: '08:30',
+                    end_time: '15:00',
                     venue: 'Barangay San Lucas Covered Court',
                     description: 'Inter-college extension mission combining medical screening, digital literacy tutorials, and micro-business counseling.',
                     approval_status: 'Approved',
@@ -314,6 +330,8 @@
                     activity_type: 'Training',
                     date: '2026-12-05',
                     date_to: '2026-12-06',
+                    start_time: '09:00',
+                    end_time: '17:00',
                     venue: 'University Function Hall, 3rd Floor',
                     description: 'Annual assessment of completed community extension initiatives, monitoring deliverables and societal impact ratings.',
                     approval_status: 'Approved',
@@ -326,6 +344,8 @@
                     activity_type: 'Project Defense',
                     date: '2026-12-12',
                     date_to: '2026-12-14',
+                    start_time: '08:00',
+                    end_time: '17:00',
                     venue: 'Graduate School Amphitheater',
                     description: 'Oral examination and panel defenses for candidate masters and doctoral research papers.',
                     approval_status: 'Approved',
@@ -377,20 +397,49 @@
             'Project Defense': '#7c3aed'
         };
 
+        function formatTime12(timeStr) {
+            if (!timeStr) return '';
+            const parts = timeStr.split(':');
+            let h = parseInt(parts[0], 10);
+            const m = parts[1] || '00';
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return h + ':' + m + ' ' + ampm;
+        }
+
+        function formatTimeRange(startStr, endStr) {
+            if (!startStr) return '';
+            const t1 = formatTime12(startStr);
+            if (!endStr) return t1;
+            const t2 = formatTime12(endStr);
+            return t1 + ' – ' + t2;
+        }
+
         function toCalendarEvent(activity) {
             const type = activity.activity_type || 'Seminar';
             const color = eventColors[type] || '#15803d';
-            const endBase = activity.date_to || activity.date;
-            const endDate = new Date(endBase + 'T00:00:00');
-            endDate.setDate(endDate.getDate() + 1);
-            const endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
+            const startTimeFormatted = activity.start_time ? String(activity.start_time).slice(0, 5) : '';
+            const endTimeFormatted = activity.end_time ? String(activity.end_time).slice(0, 5) : '';
+            const hasTime = !!startTimeFormatted;
+
+            let start = activity.date;
+            let endStr = '';
+            if (hasTime) {
+                start = activity.date + 'T' + startTimeFormatted + ':00';
+                endStr = (activity.date_to || activity.date) + 'T' + (endTimeFormatted || startTimeFormatted) + ':00';
+            } else {
+                const endBase = activity.date_to || activity.date;
+                const endDate = new Date(endBase + 'T00:00:00');
+                endDate.setDate(endDate.getDate() + 1);
+                endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
+            }
 
             return {
                 id: String(activity.id),
                 title: activity.title,
-                start: activity.date,
+                start: start,
                 end: endStr,
-                allDay: true,
+                allDay: !hasTime,
                 backgroundColor: color,
                 borderColor: color,
                 textColor: '#ffffff',
@@ -400,7 +449,9 @@
                     venue: activity.venue || '',
                     description: activity.description || '',
                     date: activity.date,
-                    dateTo: activity.date_to || activity.date
+                    dateTo: activity.date_to || activity.date,
+                    startTime: startTimeFormatted,
+                    endTime: endTimeFormatted
                 }
             };
         }
@@ -486,11 +537,13 @@
                 const d = new Date(activity.date + 'T00:00:00');
                 const dayNum = String(d.getDate()).padStart(2, '0');
                 const monthShort = d.toLocaleString('en-US', { month: 'short' });
+                const timeStr = formatTimeRange(activity.start_time, activity.end_time);
+                const timeFragment = timeStr ? ' &bull; ' + escapeHtml(timeStr) : '';
                 return '<article style="cursor: pointer;" onclick="if(window.activityCalendarInstance){ window.activityCalendarInstance.gotoDate(\'' + activity.date + '\'); }" title="Click to view on calendar">' +
                     '<div class="upcoming-date"><strong>' + dayNum + '</strong><span>' + monthShort + '</span></div>' +
                     '<div>' +
                         '<h3>' + escapeHtml(activity.title) + '</h3>' +
-                        '<p title="' + escapeHtml(activity.activity_type + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + ' | ' + activity.venue) + '">' + escapeHtml(activity.activity_type) + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + ' | ' + escapeHtml(activity.venue) + '</p>' +
+                        '<p title="' + escapeHtml(activity.activity_type + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + (timeStr ? ' (' + timeStr + ')' : '') + ' | ' + activity.venue) + '">' + escapeHtml(activity.activity_type) + ' | ' + formatUpcomingDateRange(activity.date, activity.date_to) + timeFragment + ' | ' + escapeHtml(activity.venue) + '</p>' +
                     '</div>' +
                 '</article>';
             }).join('');
@@ -549,6 +602,8 @@
             tbody.innerHTML = filtered.map(function(activity) {
                 const statusLower = (activity.approval_status || 'approved').toLowerCase();
                 const statusPill = '<div class="activity-status-actions"><span class="status-pill status-' + escapeHtml(statusLower) + '">' + escapeHtml(activity.approval_status || 'Approved') + '</span></div>';
+                const timeStr = formatTimeRange(activity.start_time, activity.end_time);
+                const timeFragment = timeStr ? '<div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"><i class="ri-time-line"></i> ' + escapeHtml(timeStr) + '</div>' : '';
                 let actionButtons = '';
 
                 if (isArchived) {
@@ -567,7 +622,7 @@
                     '<td class="table-checkbox-col">' +
                         '<input form="bulk-activitiesTable" type="checkbox" name="ids[]" aria-label="Select activity ' + activity.id + '" value="' + activity.id + '" data-row-select="activitiesTable">' +
                     '</td>' +
-                    '<td>' + formatTableDate(activity.date, activity.date_to) + '</td>' +
+                    '<td>' + formatTableDate(activity.date, activity.date_to) + timeFragment + '</td>' +
                     '<td><strong>' + escapeHtml(activity.title) + '</strong></td>' +
                     '<td>' + escapeHtml(activity.activity_type) + '</td>' +
                     '<td>' + escapeHtml(activity.venue) + '</td>' +
@@ -616,6 +671,8 @@
             const type = document.getElementById('activityType').value;
             const dateFrom = document.getElementById('activityDateFrom').value;
             const dateTo = document.getElementById('activityDateTo').value || dateFrom;
+            const startTime = (document.getElementById('activityStartTime')?.value || '').trim();
+            const endTime = (document.getElementById('activityEndTime')?.value || '').trim();
             const venue = (document.getElementById('activityVenue').value || '').trim();
             const description = (document.getElementById('activityDescription').value || '').trim();
 
@@ -627,6 +684,10 @@
                 alert('Date To must be on or after Date From.');
                 return;
             }
+            if (startTime && endTime && dateFrom === dateTo && endTime < startTime) {
+                alert('End Time must be after Start Time when scheduled on the same day.');
+                return;
+            }
 
             if (action === 'create') {
                 const newAct = {
@@ -635,6 +696,8 @@
                     activity_type: type,
                     date: dateFrom,
                     date_to: dateTo,
+                    start_time: startTime || null,
+                    end_time: endTime || null,
                     venue: venue,
                     description: description,
                     approval_status: 'Approved',
@@ -653,6 +716,8 @@
                     item.activity_type = type;
                     item.date = dateFrom;
                     item.date_to = dateTo;
+                    item.start_time = startTime || null;
+                    item.end_time = endTime || null;
                     item.venue = venue;
                     item.description = description;
                     saveActivities(activities);

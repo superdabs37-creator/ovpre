@@ -1,6 +1,7 @@
 <?php
 $user = portal_require_user();
 ensure_activity_date_to_column();
+ensure_activity_time_columns();
 ensure_activity_archived_at_column();
 $isExtensionCoordinator = PORTAL_ROLE === 'Extension Coordinator';
 $isResearchCoordinator = PORTAL_ROLE === 'Research Coordinator';
@@ -107,28 +108,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = (string) ($_POST['activity_type'] ?? '');
     $dateFrom = (string) ($_POST['date_from'] ?? '');
     $dateTo = (string) ($_POST['date_to'] ?? '');
+    $startTime = !empty($_POST['start_time']) ? trim((string) $_POST['start_time']) : null;
+    $endTime = !empty($_POST['end_time']) ? trim((string) $_POST['end_time']) : null;
     $venue = trim((string) ($_POST['venue'] ?? ''));
     $description = trim((string) ($_POST['description'] ?? ''));
     $parsedDateFrom = DateTime::createFromFormat('!Y-m-d', $dateFrom);
     $parsedDateTo = DateTime::createFromFormat('!Y-m-d', $dateTo);
     if ($title === '' || mb_strlen($title) > 220 || !in_array($type, $activityTypes, true) || !$parsedDateFrom || $parsedDateFrom->format('Y-m-d') !== $dateFrom || !$parsedDateTo || $parsedDateTo->format('Y-m-d') !== $dateTo || $dateTo < $dateFrom || $venue === '' || mb_strlen($venue) > 180) {
         flash('error', 'Enter a valid title, activity type, date range, and venue.');
+    } elseif ($startTime && $endTime && $dateFrom === $dateTo && $endTime < $startTime) {
+        flash('error', 'End Time must be after Start Time when scheduled on the same day.');
     } elseif ($action === 'update') {
         if ($isDirector) {
-            db()->prepare("UPDATE activities SET title = ?, activity_type = ?, date = ?, date_to = ?, venue = ?, description = ? WHERE id = ?")
-                ->execute([$title, $type, $dateFrom, $dateTo, $venue, $description, $requestId]);
+            db()->prepare("UPDATE activities SET title = ?, activity_type = ?, date = ?, date_to = ?, start_time = ?, end_time = ?, venue = ?, description = ? WHERE id = ?")
+                ->execute([$title, $type, $dateFrom, $dateTo, $startTime, $endTime, $venue, $description, $requestId]);
             log_action((int) $user['id'], 'Updated calendar activity #' . $requestId);
             flash('success', 'Calendar activity updated.');
         } else {
-            db()->prepare("UPDATE activities SET title = ?, activity_type = ?, date = ?, date_to = ?, venue = ?, description = ?, approval_status = 'Pending' WHERE id = ? AND created_by = ? AND approval_status <> 'Approved'")
-                ->execute([$title, $type, $dateFrom, $dateTo, $venue, $description, $requestId, (int) $user['id']]);
+            db()->prepare("UPDATE activities SET title = ?, activity_type = ?, date = ?, date_to = ?, start_time = ?, end_time = ?, venue = ?, description = ?, approval_status = 'Pending' WHERE id = ? AND created_by = ? AND approval_status <> 'Approved'")
+                ->execute([$title, $type, $dateFrom, $dateTo, $startTime, $endTime, $venue, $description, $requestId, (int) $user['id']]);
             log_action((int) $user['id'], 'Updated calendar activity request #' . $requestId);
             flash('success', 'Schedule request updated and sent for admin approval.');
         }
     } else {
         $status = $isDirector ? 'Approved' : 'Pending';
-        db()->prepare("INSERT INTO activities (title, activity_type, date, date_to, venue, description, approval_status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())")
-            ->execute([$title, $type, $dateFrom, $dateTo, $venue, $description, $status, (int) $user['id']]);
+        db()->prepare("INSERT INTO activities (title, activity_type, date, date_to, start_time, end_time, venue, description, approval_status, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())")
+            ->execute([$title, $type, $dateFrom, $dateTo, $startTime, $endTime, $venue, $description, $status, (int) $user['id']]);
         log_action((int) $user['id'], ($isDirector ? 'Created calendar activity: ' : 'Requested calendar activity: ') . $title);
         flash('success', $isDirector ? 'Activity scheduled and published to the shared calendar.' : 'Schedule submitted. Please wait for approval.');
     }
@@ -175,12 +180,26 @@ $eventColors = [
 
 $calendarEvents = array_map(static function (array $activity) use ($eventColors): array {
     $type = $activity['activity_type'];
+    $startTimeFormatted = !empty($activity['start_time']) ? substr((string) $activity['start_time'], 0, 5) : '';
+    $endTimeFormatted = !empty($activity['end_time']) ? substr((string) $activity['end_time'], 0, 5) : '';
+    $hasTime = $startTimeFormatted !== '';
+
+    if ($hasTime) {
+        $start = $activity['date'] . 'T' . $startTimeFormatted . ':00';
+        $end = $endTimeFormatted !== ''
+            ? ($activity['date_to'] ?: $activity['date']) . 'T' . $endTimeFormatted . ':00'
+            : $activity['date'] . 'T' . $startTimeFormatted . ':00';
+    } else {
+        $start = $activity['date'];
+        $end = date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day'));
+    }
+
     return [
         'id' => (string) $activity['id'],
         'title' => $activity['title'],
-        'start' => $activity['date'],
-        'end' => date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day')),
-        'allDay' => true,
+        'start' => $start,
+        'end' => $end,
+        'allDay' => !$hasTime,
         'backgroundColor' => $eventColors[$type] ?? '#15803d',
         'borderColor' => $eventColors[$type] ?? '#15803d',
         'textColor' => '#ffffff',
@@ -191,6 +210,8 @@ $calendarEvents = array_map(static function (array $activity) use ($eventColors)
             'description' => $activity['description'] ?? '',
             'date' => $activity['date'],
             'dateTo' => $activity['date_to'] ?: $activity['date'],
+            'startTime' => $startTimeFormatted,
+            'endTime' => $endTimeFormatted,
             'createdBy' => (int) ($activity['created_by'] ?? 0),
         ],
     ];
@@ -333,13 +354,18 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                         </td>
                         <td><?php echo h($request['title']); ?></td>
                         <td><?php echo h($request['activity_type']); ?></td>
-                        <td><?php echo h(date('M d, Y', strtotime($request['date'])) . ($request['date_to'] && $request['date_to'] !== $request['date'] ? ' – ' . date('M d, Y', strtotime($request['date_to'])) : '')); ?></td>
+                        <td>
+                            <?php echo h(date('M d, Y', strtotime($request['date'])) . ($request['date_to'] && $request['date_to'] !== $request['date'] ? ' – ' . date('M d, Y', strtotime($request['date_to'])) : '')); ?>
+                            <?php if (!empty($request['start_time'])): ?>
+                                <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"><i class="ri-time-line"></i> <?php echo h(format_activity_time($request['start_time'], $request['end_time'] ?? null)); ?></div>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo h($request['venue']); ?></td>
                         <td><span class="status-pill status-<?php echo h(statusClass($request['approval_status'])); ?>"><?php echo h($request['approval_status']); ?></span></td>
                         <td>
                             <div class="file-actions">
                                 <?php if (!$requestsArchived): ?>
-                                    <button class="ghost-btn mini-btn" type="button" data-edit-schedule="<?php echo h(json_encode(['id' => (int) $request['id'], 'title' => $request['title'], 'type' => $request['activity_type'], 'dateFrom' => $request['date'], 'dateTo' => $request['date_to'] ?: $request['date'], 'venue' => $request['venue'], 'description' => $request['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-edit-line"></i> Edit</button>
+                                    <button class="ghost-btn mini-btn" type="button" data-edit-schedule="<?php echo h(json_encode(['id' => (int) $request['id'], 'title' => $request['title'], 'type' => $request['activity_type'], 'dateFrom' => $request['date'], 'dateTo' => $request['date_to'] ?: $request['date'], 'startTime' => !empty($request['start_time']) ? substr((string) $request['start_time'], 0, 5) : '', 'endTime' => !empty($request['end_time']) ? substr((string) $request['end_time'], 0, 5) : '', 'venue' => $request['venue'], 'description' => $request['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-edit-line"></i> Edit</button>
                                     <form method="post" style="display:inline;" onsubmit="return confirm('Archive this schedule request?');">
                                         <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="archive_schedule_request">
@@ -440,7 +466,12 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                         <td class="table-checkbox-col">
                             <input form="bulk-roleCalendarActivitiesTable" type="checkbox" name="ids[]" aria-label="Select activity <?php echo (int) $activity['id']; ?>" value="<?php echo (int) $activity['id']; ?>" data-row-select="roleCalendarActivitiesTable">
                         </td>
-                        <td><?php echo h(date('M d, Y', strtotime($activity['date'])) . ($activity['date_to'] && $activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '')); ?></td>
+                        <td>
+                            <?php echo h(date('M d, Y', strtotime($activity['date'])) . ($activity['date_to'] && $activity['date_to'] !== $activity['date'] ? ' – ' . date('M d, Y', strtotime($activity['date_to'])) : '')); ?>
+                            <?php if (!empty($activity['start_time'])): ?>
+                                <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"><i class="ri-time-line"></i> <?php echo h(format_activity_time($activity['start_time'], $activity['end_time'] ?? null)); ?></div>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo h($activity['title']); ?></td>
                         <td><?php echo h($activity['activity_type']); ?></td>
                         <td><?php echo h($activity['venue']); ?></td>
@@ -460,7 +491,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <?php if ($isDirector || (int) ($activity['created_by'] ?? 0) === (int) $user['id']): ?>
-                                        <button class="ghost-btn mini-btn" type="button" data-edit-schedule="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-edit-line"></i> Edit</button>
+                                        <button class="ghost-btn mini-btn" type="button" data-edit-schedule="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'startTime' => !empty($activity['start_time']) ? substr((string) $activity['start_time'], 0, 5) : '', 'endTime' => !empty($activity['end_time']) ? substr((string) $activity['end_time'], 0, 5) : '', 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-edit-line"></i> Edit</button>
                                         <form method="post" style="margin:0;" onsubmit="return confirm('Archive this activity?');">
                                             <?php echo csrf_field(); ?>
                                             <input type="hidden" name="action" value="archive_activity">
@@ -468,7 +499,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                                             <button class="action-btn btn-archive-natural mini-btn" type="submit"><i class="ri-download-2-line"></i> <span>Archive</span></button>
                                         </form>
                                     <?php else: ?>
-                                        <button class="ghost-btn mini-btn" type="button" data-view-activity="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-eye-line"></i> View</button>
+                                        <button class="ghost-btn mini-btn" type="button" data-view-activity="<?php echo h(json_encode(['id' => (int) $activity['id'], 'title' => $activity['title'], 'type' => $activity['activity_type'], 'dateFrom' => $activity['date'], 'dateTo' => $activity['date_to'] ?: $activity['date'], 'startTime' => !empty($activity['start_time']) ? substr((string) $activity['start_time'], 0, 5) : '', 'endTime' => !empty($activity['end_time']) ? substr((string) $activity['end_time'], 0, 5) : '', 'venue' => $activity['venue'], 'description' => $activity['description'] ?? ''], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)); ?>"><i class="ri-eye-line"></i> View</button>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
@@ -506,6 +537,8 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                 <label class="field"><span>Activity Type</span><select name="activity_type" required><?php foreach ($activityTypes as $type): ?><option value="<?php echo h($type); ?>"><?php echo h($type); ?></option><?php endforeach; ?></select></label>
                 <label class="field"><span>Date From</span><input type="date" name="date_from" min="<?php echo h(date('Y-m-d')); ?>" required></label>
                 <label class="field"><span>Date To</span><input type="date" name="date_to" min="<?php echo h(date('Y-m-d')); ?>" required></label>
+                <label class="field"><span>Start Time</span><input type="time" name="start_time"></label>
+                <label class="field"><span>End Time</span><input type="time" name="end_time"></label>
                 <label class="field"><span>Venue</span><input name="venue" maxlength="180" required></label>
             </div>
             <label class="field"><span>Description</span><textarea name="description" rows="3"></textarea></label>
@@ -531,6 +564,7 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
         </div>
         <div style="display: grid; gap: 12px; font-size: 0.92rem; color: #374151;">
             <div><i class="ri-calendar-line" style="color: #15803d;"></i> <strong>Schedule:</strong> <span id="modalEventDate">-</span></div>
+            <div id="modalEventTimeRow" style="display: none;"><i class="ri-time-line" style="color: #2563eb;"></i> <strong>Time:</strong> <span id="modalEventTime">-</span></div>
             <div><i class="ri-map-pin-line" style="color: #b45309;"></i> <strong>Venue:</strong> <span id="modalEventVenue">-</span></div>
             <div id="modalEventDescWrap" style="background: #f9fafb; padding: 12px; border-radius: 10px; border: 1px solid #e5e7eb;">
                 <strong>Description:</strong>
@@ -550,9 +584,16 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
 <script>
 const scheduleDateFrom = document.querySelector('[name="date_from"]');
 const scheduleDateTo = document.querySelector('[name="date_to"]');
+const scheduleStartTime = document.querySelector('[name="start_time"]');
+const scheduleEndTime = document.querySelector('[name="end_time"]');
 scheduleDateFrom?.addEventListener('change', () => {
     scheduleDateTo.min = scheduleDateFrom.value;
     if (scheduleDateTo.value && scheduleDateTo.value < scheduleDateFrom.value) scheduleDateTo.value = scheduleDateFrom.value;
+});
+scheduleStartTime?.addEventListener('change', () => {
+    if (scheduleDateFrom?.value === scheduleDateTo?.value && scheduleEndTime?.value && scheduleEndTime.value < scheduleStartTime.value) {
+        scheduleEndTime.value = scheduleStartTime.value;
+    }
 });
 
 // FullCalendar Initialization
@@ -574,6 +615,8 @@ if (activityCalendarEl && window.FullCalendar) {
             const titleEl = document.getElementById('modalEventTitle');
             const catEl = document.getElementById('modalEventCategory');
             const dateEl = document.getElementById('modalEventDate');
+            const timeEl = document.getElementById('modalEventTime');
+            const timeRow = document.getElementById('modalEventTimeRow');
             const venueEl = document.getElementById('modalEventVenue');
             const descEl = document.getElementById('modalEventDescription');
             const modal = document.getElementById('activityDetailModal');
@@ -585,6 +628,14 @@ if (activityCalendarEl && window.FullCalendar) {
                 const startStr = props.date || info.event.startStr.slice(0, 10);
                 const endStr = props.dateTo || startStr;
                 dateEl.textContent = startStr === endStr ? startStr : `${startStr} to ${endStr}`;
+            }
+            if (timeEl && timeRow) {
+                if (props.startTime) {
+                    timeEl.textContent = props.endTime ? `${props.startTime} – ${props.endTime}` : props.startTime;
+                    timeRow.style.display = 'block';
+                } else {
+                    timeRow.style.display = 'none';
+                }
             }
             if (venueEl) venueEl.textContent = props.venue || 'N/A';
             if (descEl) descEl.textContent = props.description || 'No additional details provided.';
@@ -601,6 +652,8 @@ if (activityCalendarEl && window.FullCalendar) {
                             type: props.type,
                             dateFrom: props.date,
                             dateTo: props.dateTo,
+                            startTime: props.startTime || '',
+                            endTime: props.endTime || '',
                             venue: props.venue,
                             description: props.description
                         };
@@ -634,6 +687,8 @@ document.querySelectorAll('[data-view-activity]').forEach(btn => {
             const titleEl = document.getElementById('modalEventTitle');
             const catEl = document.getElementById('modalEventCategory');
             const dateEl = document.getElementById('modalEventDate');
+            const timeEl = document.getElementById('modalEventTime');
+            const timeRow = document.getElementById('modalEventTimeRow');
             const venueEl = document.getElementById('modalEventVenue');
             const descEl = document.getElementById('modalEventDescription');
             const modal = document.getElementById('activityDetailModal');
@@ -645,6 +700,14 @@ document.querySelectorAll('[data-view-activity]').forEach(btn => {
                 const startStr = data.dateFrom || '-';
                 const endStr = data.dateTo || startStr;
                 dateEl.textContent = startStr === endStr ? startStr : (startStr + ' to ' + endStr);
+            }
+            if (timeEl && timeRow) {
+                if (data.startTime) {
+                    timeEl.textContent = data.endTime ? `${data.startTime} – ${data.endTime}` : data.startTime;
+                    timeRow.style.display = 'block';
+                } else {
+                    timeRow.style.display = 'none';
+                }
             }
             if (venueEl) venueEl.textContent = data.venue || 'N/A';
             if (descEl) descEl.textContent = data.description || 'No additional details provided.';

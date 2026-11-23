@@ -623,19 +623,59 @@ function ensure_assigned_roles_column(): void {
 }
 
 function ensure_activity_date_to_column(): void {
-    if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
-        return;
-    }
     static $checked = false;
     if ($checked) {
         return;
     }
-    $column = db()->query("SHOW COLUMNS FROM activities LIKE 'date_to'")->fetch();
-    if (!$column) {
-        db()->exec('ALTER TABLE activities ADD COLUMN date_to DATE DEFAULT NULL AFTER date');
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS date_to DATE DEFAULT NULL');
+        } else {
+            $column = db()->query("SHOW COLUMNS FROM activities LIKE 'date_to'")->fetch();
+            if (!$column) {
+                db()->exec('ALTER TABLE activities ADD COLUMN date_to DATE DEFAULT NULL AFTER date');
+            }
+            db()->exec('UPDATE activities SET date_to = date WHERE date_to IS NULL');
+        }
+    } catch (Throwable) {
     }
-    db()->exec('UPDATE activities SET date_to = date WHERE date_to IS NULL');
     $checked = true;
+}
+
+function ensure_activity_time_columns(): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    try {
+        if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
+            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS start_time TIME DEFAULT NULL');
+            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS end_time TIME DEFAULT NULL');
+        } else {
+            $columnStart = db()->query("SHOW COLUMNS FROM activities LIKE 'start_time'")->fetch();
+            if (!$columnStart) {
+                db()->exec('ALTER TABLE activities ADD COLUMN start_time TIME DEFAULT NULL AFTER date_to');
+            }
+            $columnEnd = db()->query("SHOW COLUMNS FROM activities LIKE 'end_time'")->fetch();
+            if (!$columnEnd) {
+                db()->exec('ALTER TABLE activities ADD COLUMN end_time TIME DEFAULT NULL AFTER start_time');
+            }
+        }
+    } catch (Throwable) {
+    }
+    $checked = true;
+}
+
+function format_activity_time(?string $startTime, ?string $endTime = null): string {
+    if (empty($startTime)) {
+        return '';
+    }
+    $t1 = date('g:i A', strtotime('2000-01-01 ' . $startTime));
+    if (empty($endTime)) {
+        return $t1;
+    }
+    $t2 = date('g:i A', strtotime('2000-01-01 ' . $endTime));
+    return $t1 . ' – ' . $t2;
 }
 
 function ensure_activity_archived_at_column(): void {

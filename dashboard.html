@@ -1861,6 +1861,8 @@
                     activity_type: 'Seminar',
                     date: '2026-11-05',
                     date_to: '2026-11-07',
+                    start_time: '08:00',
+                    end_time: '17:00',
                     venue: 'University Gymnasium & Performing Arts Auditorium',
                     description: 'Multi-college academic colloquium and peer review sessions for approved faculty and graduate research studies.',
                     approval_status: 'Approved',
@@ -1873,6 +1875,8 @@
                     activity_type: 'Workshop',
                     date: '2026-11-15',
                     date_to: '2026-11-17',
+                    start_time: '09:00',
+                    end_time: '16:00',
                     venue: 'Audio-Visual Room (AVR), Main Building',
                     description: 'Capacity building on crafting CHED- and DOST-compliant funding proposals with RIUH evaluation scoring benchmarks.',
                     approval_status: 'Approved',
@@ -1885,6 +1889,8 @@
                     activity_type: 'Community Outreach',
                     date: '2026-11-22',
                     date_to: '2026-11-24',
+                    start_time: '08:30',
+                    end_time: '15:00',
                     venue: 'Barangay San Lucas Covered Court',
                     description: 'Inter-college extension mission combining medical screening, digital literacy tutorials, and micro-business counseling.',
                     approval_status: 'Approved',
@@ -1897,6 +1903,8 @@
                     activity_type: 'Training',
                     date: '2026-12-05',
                     date_to: '2026-12-06',
+                    start_time: '09:00',
+                    end_time: '17:00',
                     venue: 'University Function Hall, 3rd Floor',
                     description: 'Annual assessment of completed community extension initiatives, monitoring deliverables and societal impact ratings.',
                     approval_status: 'Approved',
@@ -1909,6 +1917,8 @@
                     activity_type: 'Project Defense',
                     date: '2026-12-12',
                     date_to: '2026-12-14',
+                    start_time: '08:00',
+                    end_time: '17:00',
                     venue: 'Graduate School Amphitheater',
                     description: 'Oral examination and panel defenses for candidate masters and doctoral research papers.',
                     approval_status: 'Approved',
@@ -2034,7 +2044,8 @@
             relBadge.style.color = timing.badgeText;
             relBadge.style.border = '1px solid ' + (timing.badgeBorder || '#bbf7d0');
 
-            document.getElementById('actModalDate').textContent = formatActDateRange(activity.date, activity.date_to);
+            const timeRange = activity.start_time ? ' (' + activity.start_time + (activity.end_time ? ' \u2013 ' + activity.end_time : '') + ')' : '';
+            document.getElementById('actModalDate').textContent = formatActDateRange(activity.date, activity.date_to) + timeRange;
             document.getElementById('actModalVenue').textContent = activity.venue || 'TBA';
             document.getElementById('actModalOrganizer').textContent = activity.created_by || 'Super Administrator';
             const durationDays = getActDurationDays(activity.date, activity.date_to);

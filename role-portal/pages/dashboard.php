@@ -370,7 +370,7 @@ $submissionLink = match (PORTAL_ROLE) {
                             <i class="ri-calendar-event-line" style="flex-shrink: 0;"></i>
                             <div style="min-width: 0;">
                                 <strong style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo h($activity['title']); ?></strong>
-                                <span style="font-size: 0.84rem;"><?php echo h(date('M d, Y', strtotime($activity['date'])) . ' | ' . $activity['venue']); ?></span>
+                                <span style="font-size: 0.84rem;"><?php echo h(date('M d, Y', strtotime($activity['date'])) . (!empty($activity['start_time']) ? ' (' . format_activity_time($activity['start_time'], $activity['end_time'] ?? null) . ')' : '') . ' | ' . $activity['venue']); ?></span>
                             </div>
                         </div>
                         <button class="portal-view-btn" type="button" data-open-modal="activity-detail-<?php echo (int) $activity['id']; ?>" title="View Activity Details">
@@ -418,6 +418,9 @@ $submissionLink = match (PORTAL_ROLE) {
             <h2 id="activity-title-<?php echo (int) $activity['id']; ?>" style="margin-top: 8px;"><?php echo h($activity['title']); ?></h2>
             <div style="margin: 14px 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #475569;">
                 <div><strong style="color: #1e293b;"><i class="ri-calendar-line"></i> Date:</strong> <?php echo h(date('F d, Y', strtotime($activity['date']))); ?><?php if (!empty($activity['date_to']) && $activity['date_to'] !== $activity['date']): ?> &mdash; <?php echo h(date('F d, Y', strtotime($activity['date_to']))); ?><?php endif; ?></div>
+                <?php if (!empty($activity['start_time'])): ?>
+                    <div><strong style="color: #1e293b;"><i class="ri-time-line"></i> Time:</strong> <?php echo h(format_activity_time($activity['start_time'], $activity['end_time'] ?? null)); ?></div>
+                <?php endif; ?>
                 <?php if (!empty($activity['venue'])): ?>
                     <div><strong style="color: #1e293b;"><i class="ri-map-pin-line"></i> Venue:</strong> <?php echo h($activity['venue']); ?></div>
                 <?php endif; ?>

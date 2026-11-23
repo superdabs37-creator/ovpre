@@ -135,6 +135,8 @@ document.addEventListener('click', (event) => {
         scheduleForm.elements.date_to.value = request.dateTo || request.dateFrom || '';
         scheduleForm.elements.date_to.min = request.dateFrom || '';
     }
+    if (scheduleForm.elements.start_time) scheduleForm.elements.start_time.value = request.startTime || '';
+    if (scheduleForm.elements.end_time) scheduleForm.elements.end_time.value = request.endTime || '';
     if (scheduleForm.elements.venue) scheduleForm.elements.venue.value = request.venue || '';
     if (scheduleForm.elements.description) scheduleForm.elements.description.value = request.description || '';
     if (scheduleModalTitle) scheduleModalTitle.textContent = 'Edit Activity';
