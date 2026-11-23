@@ -745,7 +745,7 @@ foreach ($projects as $p) {
                     <strong style="color: #1d4ed8;">Research Director RIUH Evaluation:</strong>
                     <div>Rating / Score: <strong><?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100</strong> (<?php echo h($project['aihr_status'] ?? 'RIUH Evaluated'); ?>)</div>
                     <?php if (!empty($project['grant_amount'])): ?>
-                        <div>Recommended Grant: <strong>PHP <?php echo number_format((float) $project['grant_amount'], 2); ?></strong></div>
+                        <div>Recommended Grant: <strong class="currency-masked-wrap" data-mask-group="grants"><span class="currency-val">PHP <?php echo number_format((float) $project['grant_amount'], 2); ?></span><span class="currency-mask">PHP ••••••</span></strong></div>
                     <?php endif; ?>
                     <div><?php echo nl2br(h($project['director_remarks'])); ?></div>
                     <small style="color: #6b7280;">Director: <?php echo h($project['director_name'] ?? 'Director'); ?> | <?php echo !empty($project['director_reviewed_at']) ? date('M d, Y', strtotime($project['director_reviewed_at'])) : ''; ?></small>
@@ -922,7 +922,7 @@ foreach ($projects as $p) {
 
             <div style="background: #faf5ff; padding: 12px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px; border: 1px solid #e9d5ff;">
                 <div><strong>1. Coordinator Endorsement:</strong> <?php echo h($project['coordinator_remarks'] ?? 'Screened'); ?></div>
-                <div style="margin-top: 4px;"><strong>2. Director RIUH Evaluation:</strong> Score <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 (<?php echo h($project['aihr_status'] ?? ''); ?>) | Rec. Grant: PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></div>
+                <div style="margin-top: 4px;"><strong>2. Director RIUH Evaluation:</strong> Score <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 (<?php echo h($project['aihr_status'] ?? ''); ?>) | Rec. Grant: <span class="currency-masked-wrap" data-mask-group="grants"><span class="currency-val">PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></span><span class="currency-mask">PHP ••••••</span></span></div>
                 <div style="margin-top: 4px;"><?php echo h($project['director_remarks'] ?? ''); ?></div>
             </div>
 

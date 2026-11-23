@@ -2101,3 +2101,89 @@ if (document.readyState === 'loading') {
 }
 
 
+
+
+/* ==========================================================================
+   FINANCIAL PRIVACY MASKING (BUDGET & GRANTS ALLOCATED HIDE/UNHIDE)
+   ========================================================================== */
+(function initFinancialPrivacyMasking() {
+    const STORAGE_KEY_PREFIX = 'ovpre_mask_';
+
+    function setMaskState(target, isMasked) {
+        try {
+            localStorage.setItem(STORAGE_KEY_PREFIX + target, isMasked ? '1' : '0');
+        } catch (e) {}
+
+        if (document.body) {
+            document.body.classList.toggle('mask-' + target, isMasked);
+        }
+
+        document.querySelectorAll(`.currency-masked-wrap[data-mask-group="${target}"]`).forEach(el => {
+            el.classList.toggle('is-masked', isMasked);
+        });
+
+        document.querySelectorAll(`.btn-toggle-mask[data-mask-target="${target}"]`).forEach(btn => {
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = isMasked ? 'ri-eye-off-line' : 'ri-eye-line';
+            }
+            btn.setAttribute('aria-pressed', isMasked ? 'true' : 'false');
+            const label = target === 'budget' ? 'Budget' : (target === 'grants' ? 'Grants Allocated' : target);
+            btn.title = isMasked ? `Unhide / Show ${label}` : `Hide ${label}`;
+            btn.setAttribute('aria-label', btn.title);
+        });
+    }
+
+    function initTarget(target, defaultMasked = false) {
+        let isMasked = defaultMasked;
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY_PREFIX + target);
+            if (stored !== null) {
+                isMasked = stored === '1';
+            }
+        } catch (e) {}
+        setMaskState(target, isMasked);
+    }
+
+    function setupListeners() {
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-toggle-mask');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = btn.getAttribute('data-mask-target');
+                if (target) {
+                    const currentMasked = localStorage.getItem(STORAGE_KEY_PREFIX + target) === '1';
+                    setMaskState(target, !currentMasked);
+                }
+                return;
+            }
+
+            const wrap = e.target.closest('.currency-masked-wrap');
+            if (wrap && (wrap.classList.contains('is-masked') || (document.body && document.body.classList.contains('mask-' + wrap.getAttribute('data-mask-group'))))) {
+                const target = wrap.getAttribute('data-mask-group');
+                if (target) {
+                    setMaskState(target, false);
+                }
+            }
+        });
+
+        initTarget('budget', false);
+        initTarget('grants', false);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupListeners);
+    } else {
+        setupListeners();
+    }
+
+    window.updateFinancialMasking = function(target) {
+        if (target) {
+            initTarget(target);
+        } else {
+            initTarget('budget');
+            initTarget('grants');
+        }
+    };
+})();

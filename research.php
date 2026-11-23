@@ -589,7 +589,7 @@ renderHeader('Research Management', 'research');
             <?php if (!empty($project['director_remarks'])): ?>
                 <div style="border-left: 3px solid #1d4ed8; padding-left: 10px; margin-bottom: 10px; font-size: 0.85rem;">
                     <strong style="color: #1d4ed8;">Director RIUH Evaluation:</strong>
-                    <div>Score: <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 | Grant: PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></div>
+                    <div>Score: <?php echo h($project['aihr_score'] ?? 'N/A'); ?>/100 | Grant: <span class="currency-masked-wrap" data-mask-group="grants"><span class="currency-val">PHP <?php echo number_format((float) ($project['grant_amount'] ?? 0), 2); ?></span><span class="currency-mask">PHP ••••••</span></span></div>
                     <div><?php echo nl2br(h($project['director_remarks'])); ?></div>
                     <small style="color: #6b7280;">By: <?php echo h($project['director_name'] ?? 'Director'); ?></small>
                 </div>

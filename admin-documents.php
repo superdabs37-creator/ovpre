@@ -326,7 +326,7 @@ renderHeader('Record Management', 'documents');
     <div class="table-scroll">
         <?php render_record_selection('extensionSubmissionTable', 'extension', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
         <table class="data-table portal-table" id="extensionSubmissionTable">
-            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>College</th><th>Coordinator</th><th>Partner</th><th>Budget</th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
+            <thead><tr><th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th><th>Project</th><th>College</th><th>Coordinator</th><th>Partner</th><th><div style="display: inline-flex; align-items: center; gap: 6px;"><span>Budget</span><button type="button" class="btn-toggle-mask" data-mask-target="budget" aria-label="Toggle budget visibility" title="Hide/Unhide Budget"><i class="ri-eye-line"></i></button></div></th><th>Assigned To</th><th>Status</th><th>Manage</th></tr></thead>
             <tbody>
                 <?php foreach ($extensionSubmissions as $extension): ?>
                     <tr data-table-row data-status="<?php echo h($extension['progress_status']); ?>">
@@ -335,7 +335,7 @@ renderHeader('Record Management', 'documents');
                         <td data-sort-value="<?php echo h($extension['department_name']); ?>"><span class="dept-pill"><?php echo h($extension['department_name']); ?></span></td>
                         <td data-sort-value="<?php echo h($extension['coordinator']); ?>"><?php echo h($extension['coordinator']); ?></td>
                         <td data-sort-value="<?php echo h($extension['community_partner']); ?>"><?php echo h($extension['community_partner']); ?></td>
-                        <td data-sort-value="<?php echo (float) $extension['budget']; ?>"><?php echo h(number_format((float) $extension['budget'], 2)); ?></td>
+                        <td data-sort-value="<?php echo (float) $extension['budget']; ?>"><span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val">PHP <?php echo h(number_format((float) $extension['budget'], 2)); ?></span><span class="currency-mask">PHP ••••••</span></span></td>
                         <td data-sort-value="<?php echo h($extension['assignee'] ?? 'Unassigned'); ?>"><?php echo h($extension['assignee'] ?? 'Unassigned'); ?></td>
                         <td data-sort-value="<?php echo h($extension['progress_status']); ?>"><span class="status-pill status-<?php echo h(statusClass($extension['progress_status'])); ?>"><?php echo h($extension['progress_status']); ?></span></td>
                         <td><a class="ghost-btn action-btn" href="extension.php?status=<?php echo urlencode($extension['progress_status']); ?>"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>

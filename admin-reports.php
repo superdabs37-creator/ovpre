@@ -456,7 +456,21 @@ renderHeader('Reports Management', 'reports');
         <?php foreach ($summaryStats as $stat): ?>
             <article class="report-stat-card">
                 <div class="report-stat-icon"><i class="<?php echo h($stat['icon']); ?>"></i></div>
-                <div><p><?php echo h($stat['label']); ?></p><h3><?php echo h(number_format((float) $stat['value'])); ?></h3></div>
+                <div>
+                    <p style="display:flex; align-items:center; gap:6px;">
+                        <span><?php echo h($stat['label']); ?></span>
+                        <?php if ($stat['label'] === 'Total Grants'): ?>
+                            <button type="button" class="btn-toggle-mask" data-mask-target="grants" aria-label="Toggle grants visibility" title="Hide/Unhide Grants"><i class="ri-eye-line"></i></button>
+                        <?php endif; ?>
+                    </p>
+                    <h3>
+                        <?php if ($stat['label'] === 'Total Grants'): ?>
+                            <span class="currency-masked-wrap" data-mask-group="grants"><span class="currency-val"><?php echo h(number_format((float) $stat['value'])); ?></span><span class="currency-mask">••••••</span></span>
+                        <?php else: ?>
+                            <?php echo h(number_format((float) $stat['value'])); ?>
+                        <?php endif; ?>
+                    </h3>
+                </div>
             </article>
         <?php endforeach; ?>
     </section>
@@ -487,8 +501,8 @@ renderHeader('Reports Management', 'reports');
         <article class="report-module-card">
             <div class="report-module-head"><div><h3>Grants and Funding</h3><p>Approved budgets and pending requests</p></div><div class="report-module-icon"><i class="ri-hand-coin-line"></i></div></div>
             <div class="report-metrics">
-                <div class="report-metric"><span>Total Grants</span><strong><?php echo number_format($totalGrants); ?></strong></div>
-                <div class="report-metric"><span>Approved Funding</span><strong><?php echo h(number_format($approvedFunding, 2)); ?></strong></div>
+                <div class="report-metric"><span style="display:flex;align-items:center;gap:4px;">Total Grants <button type="button" class="btn-toggle-mask" data-mask-target="grants" aria-label="Toggle grants visibility" title="Hide/Unhide Grants"><i class="ri-eye-line"></i></button></span><strong class="currency-masked-wrap" data-mask-group="grants"><span class="currency-val"><?php echo number_format($totalGrants); ?></span><span class="currency-mask">••••••</span></strong></div>
+                <div class="report-metric"><span style="display:flex;align-items:center;gap:4px;">Approved Funding / Grants <button type="button" class="btn-toggle-mask" data-mask-target="grants" aria-label="Toggle grants visibility" title="Hide/Unhide Grants"><i class="ri-eye-line"></i></button></span><strong class="currency-masked-wrap" data-mask-group="grants"><span class="currency-val">PHP <?php echo h(number_format($approvedFunding, 2)); ?></span><span class="currency-mask">PHP ••••••</span></strong></div>
                 <div class="report-metric"><span>Pending Requests</span><strong><?php echo number_format($pendingRequests); ?></strong></div>
                 <div class="report-metric"><span>Funding Utilization</span><strong><?php echo (int) $fundingUtilization; ?>%</strong></div>
             </div>

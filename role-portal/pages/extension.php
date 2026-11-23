@@ -736,7 +736,7 @@ $projects = portal_extension_projects();
                     <th>Project Title</th>
                     <th>Partner / Location</th>
                     <th>College</th>
-                    <th>Budget</th>
+                    <th><div style="display: inline-flex; align-items: center; gap: 6px;"><span>Budget</span><button type="button" class="btn-toggle-mask" data-mask-target="budget" aria-label="Toggle budget visibility" title="Hide/Unhide Budget"><i class="ri-eye-line"></i></button></div></th>
                     <th>Workflow Stage</th>
                     <th>Status</th>
                     <th>Document</th>
@@ -769,7 +769,7 @@ $projects = portal_extension_projects();
                         </td>
                         <td><span class="dept-pill"><?php echo h($project['department_name'] ?? 'College'); ?></span></td>
                         <td>
-                            <strong>PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></strong>
+                            <span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val"><strong>PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></strong></span><span class="currency-mask"><strong>PHP ••••••</strong></span></span>
                         </td>
                         <td>
                             <span style="font-weight: 600; font-size: 0.85rem; color: #166534;">
@@ -893,7 +893,7 @@ $projects = portal_extension_projects();
             <!-- CORE METRICS BOX -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px;">
                 <div><span style="color:#64748b; display:block; font-size:0.75rem;">Dates (Implementation)</span><strong><?php echo date('M d, Y', strtotime($project['start_date'])); ?> to <?php echo date('M d, Y', strtotime($project['end_date'])); ?></strong></div>
-                <div><span style="color:#64748b; display:block; font-size:0.75rem;">Proposed Budget</span><strong>PHP <?php echo number_format((float) $project['budget'], 2); ?></strong></div>
+                <div><span style="color:#64748b; display:block; font-size:0.75rem;">Proposed Budget</span><strong class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val">PHP <?php echo number_format((float) $project['budget'], 2); ?></span><span class="currency-mask">PHP ••••••</span></strong></div>
                 <div><span style="color:#64748b; display:block; font-size:0.75rem;">Location / Venue</span><strong><?php echo h($project['location'] ?: 'Not specified'); ?></strong></div>
                 <div><span style="color:#64748b; display:block; font-size:0.75rem;">Target Beneficiaries</span><strong><?php echo h($project['target_beneficiaries'] ?: 'Not specified'); ?></strong></div>
             </div>
@@ -983,7 +983,7 @@ $projects = portal_extension_projects();
                     <strong style="color: #1d4ed8;">Extension Director Evaluation:</strong>
                     <div>Rating / Score: <strong><?php echo h($project['evaluation_rating'] ?? 'N/A'); ?>/100</strong></div>
                     <?php if (!empty($project['approved_budget'])): ?>
-                        <div>Approved Extension Budget: <strong>PHP <?php echo number_format((float) $project['approved_budget'], 2); ?></strong></div>
+                        <div>Approved Extension Budget: <strong class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val">PHP <?php echo number_format((float) $project['approved_budget'], 2); ?></span><span class="currency-mask">PHP ••••••</span></strong></div>
                     <?php endif; ?>
                     <div><?php echo nl2br(h($project['director_remarks'])); ?></div>
                     <small style="color: #6b7280;">Director: <?php echo h($project['director_name'] ?? 'Director'); ?> | <?php echo !empty($project['director_reviewed_at']) ? date('M d, Y', strtotime($project['director_reviewed_at'])) : ''; ?></small>
@@ -1130,7 +1130,7 @@ $projects = portal_extension_projects();
 
             <div style="background: #faf5ff; padding: 12px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 12px; border: 1px solid #e9d5ff;">
                 <div><strong>1. Coordinator Endorsement:</strong> <?php echo h($project['coordinator_remarks'] ?? 'Screened'); ?></div>
-                <div style="margin-top: 4px;"><strong>2. Director Evaluation:</strong> Score <?php echo h($project['evaluation_rating'] ?? 'N/A'); ?>/100 | Approved Budget: PHP <?php echo number_format((float) ($project['approved_budget'] ?? $project['budget']), 2); ?></div>
+                <div style="margin-top: 4px;"><strong>2. Director Evaluation:</strong> Score <?php echo h($project['evaluation_rating'] ?? 'N/A'); ?>/100 | Approved Budget: <span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val">PHP <?php echo number_format((float) ($project['approved_budget'] ?? $project['budget']), 2); ?></span><span class="currency-mask">PHP ••••••</span></span></div>
                 <div style="margin-top: 4px;"><?php echo h($project['director_remarks'] ?? ''); ?></div>
             </div>
 

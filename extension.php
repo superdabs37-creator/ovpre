@@ -473,7 +473,7 @@ renderHeader('Extension Management', 'extension');
                     <th>Project</th>
                     <th>Partner / Location</th>
                     <th>College</th>
-                    <th>Budget</th>
+                    <th><div style="display: inline-flex; align-items: center; gap: 6px;"><span>Budget</span><button type="button" class="btn-toggle-mask" data-mask-target="budget" aria-label="Toggle budget visibility" title="Hide/Unhide Budget"><i class="ri-eye-line"></i></button></div></th>
                     <th>Stage</th>
                     <th>Status</th>
                     <th>Manage / Action</th>
@@ -500,7 +500,7 @@ renderHeader('Extension Management', 'extension');
                             <?php endif; ?>
                         </td>
                         <td data-sort-value="<?php echo h($project['department_name'] ?? ''); ?>"><span class="dept-pill"><?php echo h($project['department_name'] ?? 'College'); ?></span></td>
-                        <td><strong>PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></strong></td>
+                        <td data-sort-value="<?php echo (float) ($project['approved_budget'] ?: $project['budget']); ?>"><span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val"><strong>PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></strong></span><span class="currency-mask"><strong>PHP ••••••</strong></span></span></td>
                         <td><span style="font-weight:600; color:#166534;"><?php echo h($project['workflow_stage'] ?? 'Proposal'); ?></span></td>
                         <td>
                             <span class="status-pill status-<?php echo h(statusClass($pStatus)); ?>">
@@ -557,7 +557,7 @@ renderHeader('Extension Management', 'extension');
             <div style="background: #f9fafb; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin-bottom: 12px;">
                 <div><strong>Location:</strong> <?php echo h($project['location'] ?? 'N/A'); ?></div>
                 <div style="margin-top: 4px;"><strong>Target Beneficiaries:</strong> <?php echo h($project['target_beneficiaries'] ?? 'N/A'); ?></div>
-                <div style="margin-top: 4px;"><strong>Budget:</strong> PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></div>
+                <div style="margin-top: 4px;"><strong>Budget:</strong> <span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val">PHP <?php echo number_format((float) ($project['approved_budget'] ?: $project['budget']), 2); ?></span><span class="currency-mask">PHP ••••••</span></span></div>
                 <div style="margin-top: 4px;"><strong>Dates:</strong> <?php echo date('M d, Y', strtotime($project['start_date'])); ?> to <?php echo date('M d, Y', strtotime($project['end_date'])); ?></div>
             </div>
 
@@ -572,7 +572,7 @@ renderHeader('Extension Management', 'extension');
             <?php if (!empty($project['director_remarks'])): ?>
                 <div style="border-left: 3px solid #1d4ed8; padding-left: 10px; margin-bottom: 10px; font-size: 0.85rem;">
                     <strong style="color: #1d4ed8;">Director Evaluation:</strong>
-                    <div>Rating: <?php echo h($project['evaluation_rating'] ?? 'N/A'); ?>/100 | Approved Budget: PHP <?php echo number_format((float) ($project['approved_budget'] ?? $project['budget']), 2); ?></div>
+                    <div>Rating: <?php echo h($project['evaluation_rating'] ?? 'N/A'); ?>/100 | Approved Budget: <span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val">PHP <?php echo number_format((float) ($project['approved_budget'] ?? $project['budget']), 2); ?></span><span class="currency-mask">PHP ••••••</span></span></div>
                     <div><?php echo nl2br(h($project['director_remarks'])); ?></div>
                     <small style="color: #6b7280;">By: <?php echo h($project['director_name'] ?? 'Director'); ?></small>
                 </div>

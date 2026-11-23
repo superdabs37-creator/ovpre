@@ -155,7 +155,7 @@
                                     <th>Project</th>
                                     <th>Partner / Location</th>
                                     <th>College</th>
-                                    <th>Budget</th>
+                                    <th><div style="display: inline-flex; align-items: center; gap: 6px;"><span>Budget</span><button type="button" class="btn-toggle-mask" data-mask-target="budget" aria-label="Toggle budget visibility" title="Hide/Unhide Budget"><i class="ri-eye-line"></i></button></div></th>
                                     <th>Stage</th>
                                     <th>Status</th>
                                     <th>Manage / Action</th>
@@ -518,7 +518,7 @@
             <div style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 14px; border: 1px solid #e2e8f0;">
                 <div><strong>Community Partner:</strong> <span id="detailPartner"></span></div>
                 <div style="margin-top: 6px;"><strong>Location:</strong> <span id="detailLocation"></span></div>
-                <div style="margin-top: 6px;"><strong>Budget Allocation:</strong> <span id="detailBudget"></span></div>
+                <div style="margin-top: 6px;"><strong>Budget Allocation:</strong> <span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val" id="detailBudget"></span><span class="currency-mask">PHP ••••••</span></span></div>
                 <div style="margin-top: 6px;"><strong>Implementation Period:</strong> <span id="detailDates"></span></div>
                 <div style="margin-top: 6px;" id="detailDescWrap"><strong>Description &amp; Beneficiaries:</strong> <div id="detailDescription" style="margin-top: 4px; line-height: 1.5; color: #334155;"></div></div>
             </div>
@@ -1167,7 +1167,7 @@
                             ${loc ? '<br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> ' + OVPRE.h(loc) + '</small>' : ''}
                         </td>
                         <td data-sort-value="${OVPRE.h(col)}"><span class="dept-pill">${OVPRE.h(col)}</span></td>
-                        <td data-sort-value="${p.approved_budget || p.budget}"><strong>PHP ${bgt}</strong></td>
+                        <td data-sort-value="${p.approved_budget || p.budget}"><span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val"><strong>PHP ${bgt}</strong></span><span class="currency-mask"><strong>PHP ••••••</strong></span></span></td>
                         <td data-sort-value="${OVPRE.h(stg)}"><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
                         <td data-sort-value="${OVPRE.h(pStatus)}">
                             <span class="status-pill status-${OVPRE.statusClass(pStatus)}">
