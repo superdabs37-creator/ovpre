@@ -649,16 +649,22 @@ function ensure_activity_time_columns(): void {
     }
     try {
         if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
-            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS start_time TIME DEFAULT NULL');
-            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS end_time TIME DEFAULT NULL');
+            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS start_time VARCHAR(60) DEFAULT NULL');
+            db()->exec('ALTER TABLE activities ADD COLUMN IF NOT EXISTS end_time VARCHAR(60) DEFAULT NULL');
+            db()->exec('ALTER TABLE activities ALTER COLUMN start_time TYPE VARCHAR(60)');
+            db()->exec('ALTER TABLE activities ALTER COLUMN end_time TYPE VARCHAR(60)');
         } else {
             $columnStart = db()->query("SHOW COLUMNS FROM activities LIKE 'start_time'")->fetch();
             if (!$columnStart) {
-                db()->exec('ALTER TABLE activities ADD COLUMN start_time TIME DEFAULT NULL AFTER date_to');
+                db()->exec('ALTER TABLE activities ADD COLUMN start_time VARCHAR(60) DEFAULT NULL AFTER date_to');
+            } else {
+                db()->exec('ALTER TABLE activities MODIFY COLUMN start_time VARCHAR(60) DEFAULT NULL');
             }
             $columnEnd = db()->query("SHOW COLUMNS FROM activities LIKE 'end_time'")->fetch();
             if (!$columnEnd) {
-                db()->exec('ALTER TABLE activities ADD COLUMN end_time TIME DEFAULT NULL AFTER start_time');
+                db()->exec('ALTER TABLE activities ADD COLUMN end_time VARCHAR(60) DEFAULT NULL AFTER start_time');
+            } else {
+                db()->exec('ALTER TABLE activities MODIFY COLUMN end_time VARCHAR(60) DEFAULT NULL');
             }
         }
     } catch (Throwable) {
@@ -667,14 +673,18 @@ function ensure_activity_time_columns(): void {
 }
 
 function format_activity_time(?string $startTime, ?string $endTime = null): string {
-    if (empty($startTime)) {
+    $startTime = trim((string) $startTime);
+    $endTime = trim((string) $endTime);
+    if ($startTime === '') {
         return '';
     }
-    $t1 = date('g:i A', strtotime('2000-01-01 ' . $startTime));
-    if (empty($endTime)) {
+    $ts1 = strtotime('2000-01-01 ' . $startTime);
+    $t1 = $ts1 !== false ? date('g:i A', $ts1) : $startTime;
+    if ($endTime === '') {
         return $t1;
     }
-    $t2 = date('g:i A', strtotime('2000-01-01 ' . $endTime));
+    $ts2 = strtotime('2000-01-01 ' . $endTime);
+    $t2 = $ts2 !== false ? date('g:i A', $ts2) : $endTime;
     return $t1 . ' – ' . $t2;
 }
 

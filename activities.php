@@ -32,9 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('error', 'Choose a valid date range. Date To must be on or after Date From.');
             redirect_to('activities.php');
         }
-        if ($startTime && $endTime && $dateFrom === $dateTo && $endTime < $startTime) {
-            flash('error', 'End Time must be after Start Time when scheduled on the same day.');
-            redirect_to('activities.php');
+        if ($startTime && $endTime && $dateFrom === $dateTo) {
+            $tsStart = strtotime('2000-01-01 ' . $startTime);
+            $tsEnd = strtotime('2000-01-01 ' . $endTime);
+            if ($tsStart !== false && $tsEnd !== false && $tsEnd < $tsStart) {
+                flash('error', 'End Time must be after Start Time when scheduled on the same day.');
+                redirect_to('activities.php');
+            }
         }
     }
 
@@ -240,15 +244,17 @@ $eventColors = [
 ];
 $toCalendarEvent = static function (array $activity) use ($eventColors): array {
     $type = $activity['activity_type'];
-    $startTimeFormatted = !empty($activity['start_time']) ? substr((string) $activity['start_time'], 0, 5) : '';
-    $endTimeFormatted = !empty($activity['end_time']) ? substr((string) $activity['end_time'], 0, 5) : '';
-    $hasTime = $startTimeFormatted !== '';
+    $rawStartTime = trim((string) ($activity['start_time'] ?? ''));
+    $rawEndTime = trim((string) ($activity['end_time'] ?? ''));
+    $tsStart = $rawStartTime !== '' ? strtotime('2000-01-01 ' . $rawStartTime) : false;
+    $tsEnd = $rawEndTime !== '' ? strtotime('2000-01-01 ' . $rawEndTime) : false;
+    $hasTime = $tsStart !== false;
 
     if ($hasTime) {
-        $start = $activity['date'] . 'T' . $startTimeFormatted . ':00';
-        $end = $endTimeFormatted !== ''
-            ? ($activity['date_to'] ?: $activity['date']) . 'T' . $endTimeFormatted . ':00'
-            : $activity['date'] . 'T' . $startTimeFormatted . ':00';
+        $start = $activity['date'] . 'T' . date('H:i:00', $tsStart);
+        $end = $tsEnd !== false
+            ? ($activity['date_to'] ?: $activity['date']) . 'T' . date('H:i:00', $tsEnd)
+            : $activity['date'] . 'T' . date('H:i:00', $tsStart);
     } else {
         $start = $activity['date'];
         $end = date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day'));
@@ -270,8 +276,8 @@ $toCalendarEvent = static function (array $activity) use ($eventColors): array {
             'description' => $activity['description'] ?? '',
             'date' => $activity['date'],
             'dateTo' => $activity['date_to'] ?: $activity['date'],
-            'startTime' => $startTimeFormatted,
-            'endTime' => $endTimeFormatted,
+            'startTime' => $rawStartTime,
+            'endTime' => $rawEndTime,
         ],
     ];
 };
@@ -477,11 +483,11 @@ window.activityCalendarCsrf = <?php echo json_encode(csrf_token()); ?>;
             <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <label class="field" style="margin: 0;">
                     <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Start Time</span>
-                    <input type="time" name="start_time" id="activityStartTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                    <input type="text" name="start_time" id="activityStartTime" placeholder="e.g. 8:00 AM" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
                 </label>
                 <label class="field" style="margin: 0;">
                     <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">End Time</span>
-                    <input type="time" name="end_time" id="activityEndTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                    <input type="text" name="end_time" id="activityEndTime" placeholder="e.g. 5:00 PM" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
                 </label>
             </div>
             <label class="field" style="margin: 0;">

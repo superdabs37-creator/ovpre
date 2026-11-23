@@ -1329,12 +1329,6 @@ activityDateFrom?.addEventListener('change', () => {
     }
 });
 
-activityStartTime?.addEventListener('change', () => {
-    if (activityDateFrom?.value === activityDateTo?.value && activityEndTime?.value && activityEndTime.value < activityStartTime.value) {
-        activityEndTime.value = activityStartTime.value;
-    }
-});
-
 if (activityCalendarEl && window.FullCalendar) {
     const calendar = new FullCalendar.Calendar(activityCalendarEl, {
         initialView: 'dayGridMonth',

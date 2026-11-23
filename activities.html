@@ -228,11 +228,11 @@
                 <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <label class="field" style="margin: 0;">
                         <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">Start Time</span>
-                        <input type="time" name="start_time" id="activityStartTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                        <input type="text" name="start_time" id="activityStartTime" placeholder="e.g. 8:00 AM" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
                     </label>
                     <label class="field" style="margin: 0;">
                         <span style="font-weight: 700; font-size: 0.84rem; color: #334155;">End Time</span>
-                        <input type="time" name="end_time" id="activityEndTime" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
+                        <input type="text" name="end_time" id="activityEndTime" placeholder="e.g. 5:00 PM" style="width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.88rem;">
                     </label>
                 </div>
                 <label class="field" style="margin: 0;">
@@ -399,12 +399,18 @@
 
         function formatTime12(timeStr) {
             if (!timeStr) return '';
+            timeStr = String(timeStr).trim();
+            if (/am|pm/i.test(timeStr)) return timeStr;
             const parts = timeStr.split(':');
-            let h = parseInt(parts[0], 10);
-            const m = parts[1] || '00';
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            return h + ':' + m + ' ' + ampm;
+            if (parts.length >= 2) {
+                let h = parseInt(parts[0], 10);
+                if (isNaN(h)) return timeStr;
+                const m = parts[1].slice(0, 2);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return h + ':' + m + ' ' + ampm;
+            }
+            return timeStr;
         }
 
         function formatTimeRange(startStr, endStr) {
@@ -418,28 +424,20 @@
         function toCalendarEvent(activity) {
             const type = activity.activity_type || 'Seminar';
             const color = eventColors[type] || '#15803d';
-            const startTimeFormatted = activity.start_time ? String(activity.start_time).slice(0, 5) : '';
-            const endTimeFormatted = activity.end_time ? String(activity.end_time).slice(0, 5) : '';
-            const hasTime = !!startTimeFormatted;
+            const rawStartTime = String(activity.start_time || '').trim();
+            const rawEndTime = String(activity.end_time || '').trim();
 
-            let start = activity.date;
-            let endStr = '';
-            if (hasTime) {
-                start = activity.date + 'T' + startTimeFormatted + ':00';
-                endStr = (activity.date_to || activity.date) + 'T' + (endTimeFormatted || startTimeFormatted) + ':00';
-            } else {
-                const endBase = activity.date_to || activity.date;
-                const endDate = new Date(endBase + 'T00:00:00');
-                endDate.setDate(endDate.getDate() + 1);
-                endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
-            }
+            const endBase = activity.date_to || activity.date;
+            const endDate = new Date(endBase + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + 1);
+            const endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
 
             return {
                 id: String(activity.id),
                 title: activity.title,
-                start: start,
+                start: activity.date,
                 end: endStr,
-                allDay: !hasTime,
+                allDay: true,
                 backgroundColor: color,
                 borderColor: color,
                 textColor: '#ffffff',
@@ -450,8 +448,8 @@
                     description: activity.description || '',
                     date: activity.date,
                     dateTo: activity.date_to || activity.date,
-                    startTime: startTimeFormatted,
-                    endTime: endTimeFormatted
+                    startTime: rawStartTime,
+                    endTime: rawEndTime
                 }
             };
         }
@@ -682,10 +680,6 @@
             }
             if (dateTo < dateFrom) {
                 alert('Date To must be on or after Date From.');
-                return;
-            }
-            if (startTime && endTime && dateFrom === dateTo && endTime < startTime) {
-                alert('End Time must be after Start Time when scheduled on the same day.');
                 return;
             }
 

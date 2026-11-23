@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $parsedDateTo = DateTime::createFromFormat('!Y-m-d', $dateTo);
     if ($title === '' || mb_strlen($title) > 220 || !in_array($type, $activityTypes, true) || !$parsedDateFrom || $parsedDateFrom->format('Y-m-d') !== $dateFrom || !$parsedDateTo || $parsedDateTo->format('Y-m-d') !== $dateTo || $dateTo < $dateFrom || $venue === '' || mb_strlen($venue) > 180) {
         flash('error', 'Enter a valid title, activity type, date range, and venue.');
-    } elseif ($startTime && $endTime && $dateFrom === $dateTo && $endTime < $startTime) {
+    } elseif ($startTime && $endTime && $dateFrom === $dateTo && ($ts1 = strtotime('2000-01-01 ' . $startTime)) !== false && ($ts2 = strtotime('2000-01-01 ' . $endTime)) !== false && $ts2 < $ts1) {
         flash('error', 'End Time must be after Start Time when scheduled on the same day.');
     } elseif ($action === 'update') {
         if ($isDirector) {
@@ -180,15 +180,17 @@ $eventColors = [
 
 $calendarEvents = array_map(static function (array $activity) use ($eventColors): array {
     $type = $activity['activity_type'];
-    $startTimeFormatted = !empty($activity['start_time']) ? substr((string) $activity['start_time'], 0, 5) : '';
-    $endTimeFormatted = !empty($activity['end_time']) ? substr((string) $activity['end_time'], 0, 5) : '';
-    $hasTime = $startTimeFormatted !== '';
+    $rawStartTime = trim((string) ($activity['start_time'] ?? ''));
+    $rawEndTime = trim((string) ($activity['end_time'] ?? ''));
+    $tsStart = $rawStartTime !== '' ? strtotime('2000-01-01 ' . $rawStartTime) : false;
+    $tsEnd = $rawEndTime !== '' ? strtotime('2000-01-01 ' . $rawEndTime) : false;
+    $hasTime = $tsStart !== false;
 
     if ($hasTime) {
-        $start = $activity['date'] . 'T' . $startTimeFormatted . ':00';
-        $end = $endTimeFormatted !== ''
-            ? ($activity['date_to'] ?: $activity['date']) . 'T' . $endTimeFormatted . ':00'
-            : $activity['date'] . 'T' . $startTimeFormatted . ':00';
+        $start = $activity['date'] . 'T' . date('H:i:00', $tsStart);
+        $end = $tsEnd !== false
+            ? ($activity['date_to'] ?: $activity['date']) . 'T' . date('H:i:00', $tsEnd)
+            : $activity['date'] . 'T' . date('H:i:00', $tsStart);
     } else {
         $start = $activity['date'];
         $end = date('Y-m-d', strtotime(($activity['date_to'] ?: $activity['date']) . ' +1 day'));
@@ -210,8 +212,8 @@ $calendarEvents = array_map(static function (array $activity) use ($eventColors)
             'description' => $activity['description'] ?? '',
             'date' => $activity['date'],
             'dateTo' => $activity['date_to'] ?: $activity['date'],
-            'startTime' => $startTimeFormatted,
-            'endTime' => $endTimeFormatted,
+            'startTime' => $rawStartTime,
+            'endTime' => $rawEndTime,
             'createdBy' => (int) ($activity['created_by'] ?? 0),
         ],
     ];
@@ -537,8 +539,8 @@ window.roleCalendarEvents = <?php echo json_encode($calendarEvents, JSON_HEX_TAG
                 <label class="field"><span>Activity Type</span><select name="activity_type" required><?php foreach ($activityTypes as $type): ?><option value="<?php echo h($type); ?>"><?php echo h($type); ?></option><?php endforeach; ?></select></label>
                 <label class="field"><span>Date From</span><input type="date" name="date_from" min="<?php echo h(date('Y-m-d')); ?>" required></label>
                 <label class="field"><span>Date To</span><input type="date" name="date_to" min="<?php echo h(date('Y-m-d')); ?>" required></label>
-                <label class="field"><span>Start Time</span><input type="time" name="start_time"></label>
-                <label class="field"><span>End Time</span><input type="time" name="end_time"></label>
+                <label class="field"><span>Start Time</span><input type="text" name="start_time" placeholder="e.g. 8:00 AM"></label>
+                <label class="field"><span>End Time</span><input type="text" name="end_time" placeholder="e.g. 5:00 PM"></label>
                 <label class="field"><span>Venue</span><input name="venue" maxlength="180" required></label>
             </div>
             <label class="field"><span>Description</span><textarea name="description" rows="3"></textarea></label>
@@ -589,11 +591,6 @@ const scheduleEndTime = document.querySelector('[name="end_time"]');
 scheduleDateFrom?.addEventListener('change', () => {
     scheduleDateTo.min = scheduleDateFrom.value;
     if (scheduleDateTo.value && scheduleDateTo.value < scheduleDateFrom.value) scheduleDateTo.value = scheduleDateFrom.value;
-});
-scheduleStartTime?.addEventListener('change', () => {
-    if (scheduleDateFrom?.value === scheduleDateTo?.value && scheduleEndTime?.value && scheduleEndTime.value < scheduleStartTime.value) {
-        scheduleEndTime.value = scheduleStartTime.value;
-    }
 });
 
 // FullCalendar Initialization
