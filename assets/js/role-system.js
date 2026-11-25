@@ -636,6 +636,12 @@
             adaptExtensionPage(config, user);
         } else if (currentPath === 'admin-settings.html') {
             adaptSettingsPage(config, user);
+        } else if (currentPath === 'admin-documents.html' || currentPath.includes('documents')) {
+            adaptDocumentsPage(config, user);
+        }
+
+        if (document.getElementById('researchFolder') || document.getElementById('extensionFolder')) {
+            adaptDocumentsPage(config, user);
         }
     }
 
@@ -985,6 +991,44 @@
                     </div>
                 `;
             }
+        }
+    }
+
+    function adaptDocumentsPage(config, user) {
+        const isResearchDir = (config.roleName === 'Research Director' || config.roleName === 'Research Coordinator');
+        const isExtensionDir = (config.roleName === 'Extension Director' || config.roleName === 'Extension Coordinator');
+
+        const researchFolder = document.getElementById('researchFolder');
+        const extensionFolder = document.getElementById('extensionFolder');
+        const sfSubtitle = document.getElementById('submissionFoldersSubtitle');
+        const foldersContainer = document.querySelector('.submission-folders');
+
+        if (isResearchDir) {
+            // Research Director: remove Extension Project Submissions
+            if (extensionFolder) extensionFolder.style.display = 'none';
+            if (researchFolder) researchFolder.style.display = '';
+            if (sfSubtitle) {
+                const isArchived = (typeof currentTab !== 'undefined' && currentTab === 'archived');
+                sfSubtitle.textContent = isArchived ? 'Archived research and activity submissions' : 'Research and activity submissions';
+            }
+            if (foldersContainer) foldersContainer.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        } else if (isExtensionDir) {
+            // Extension Director: remove Research Management Submissions
+            if (researchFolder) researchFolder.style.display = 'none';
+            if (extensionFolder) extensionFolder.style.display = '';
+            if (sfSubtitle) {
+                const isArchived = (typeof currentTab !== 'undefined' && currentTab === 'archived');
+                sfSubtitle.textContent = isArchived ? 'Archived extension and activity submissions' : 'Extension and activity submissions';
+            }
+            if (foldersContainer) foldersContainer.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        } else {
+            if (researchFolder) researchFolder.style.display = '';
+            if (extensionFolder) extensionFolder.style.display = '';
+            if (sfSubtitle) {
+                const isArchived = (typeof currentTab !== 'undefined' && currentTab === 'archived');
+                sfSubtitle.textContent = isArchived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions';
+            }
+            if (foldersContainer) foldersContainer.style.gridTemplateColumns = '';
         }
     }
 

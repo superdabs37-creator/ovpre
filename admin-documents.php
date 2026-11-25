@@ -253,6 +253,7 @@ $activitySubmissions = db()->query("
     ORDER BY a.date DESC, a.created_at DESC
 ")->fetchAll();
 $isResearchDirector = in_array(role_access_group((string) ($user['role'] ?? '')), [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR], true);
+$isExtensionDirector = (role_access_group((string) ($user['role'] ?? '')) === ROLE_EXTENSION_DIRECTOR);
 $notice = flash();
 $categoryAnalytics = db()->query('SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND d.archived_at IS NULL GROUP BY c.id ORDER BY c.category_name')->fetchAll();
 $departmentAnalytics = db()->query('SELECT dep.department_name, COUNT(d.id) total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND d.archived_at IS NULL GROUP BY dep.id ORDER BY dep.department_name')->fetchAll();
@@ -290,11 +291,12 @@ renderHeader('Record Management', 'documents');
                 <i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i>
                 <span><?php echo $archived ? 'Archived Submission Folders' : 'Submission Folders'; ?></span>
             </h2>
-            <span id="submissionFoldersSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;"><?php echo $archived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions'; ?></span>
+            <span id="submissionFoldersSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;"><?php if ($isResearchDirector) { echo $archived ? 'Archived research and activity submissions' : 'Research and activity submissions'; } elseif ($isExtensionDirector) { echo $archived ? 'Archived extension and activity submissions' : 'Extension and activity submissions'; } else { echo $archived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions'; } ?></span>
         </div>
     </div>
 
-    <details class="submission-folder">
+    <?php if (!$isExtensionDirector): ?>
+    <details class="submission-folder" id="researchFolder">
         <summary><span><i class="ri-flask-line"></i> <?php echo $archived ? 'Archived Research Submissions' : 'Research Management Submissions'; ?></span><strong><?php echo count($researchSubmissions); ?></strong></summary>
     <div class="table-scroll">
         <?php render_record_selection('researchSubmissionTable', 'research', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
@@ -319,9 +321,10 @@ renderHeader('Record Management', 'documents');
         </table>
     </div>
     </details>
+    <?php endif; ?>
 
     <?php if (!$isResearchDirector): ?>
-    <details class="submission-folder">
+    <details class="submission-folder" id="extensionFolder">
         <summary><span><i class="ri-community-line"></i> <?php echo $archived ? 'Archived Extension Project Submissions' : 'Extension Project Submissions'; ?></span><strong><?php echo count($extensionSubmissions); ?></strong></summary>
     <div class="table-scroll">
         <?php render_record_selection('extensionSubmissionTable', 'extension', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>
@@ -348,7 +351,7 @@ renderHeader('Record Management', 'documents');
     </details>
     <?php endif; ?>
 
-    <details class="submission-folder">
+    <details class="submission-folder" id="activityFolder">
         <summary><span><i class="ri-calendar-event-line"></i> <?php echo $archived ? 'Archived Activity Submissions' : 'Activity Submissions'; ?></span><strong><?php echo count($activitySubmissions); ?></strong></summary>
     <div class="table-scroll">
         <?php render_record_selection('activitySubmissionTable', 'activity', $archived ? ['restore' => 'Restore Selected'] : ['archive' => 'Archive Selected'], false, $archived); ?>

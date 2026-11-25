@@ -1519,7 +1519,22 @@
             const sfTitle = document.getElementById('submissionFoldersTitle');
             const sfSub = document.getElementById('submissionFoldersSubtitle');
             if (sfTitle) sfTitle.innerHTML = `<i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i><span>${isArchived ? 'Archived Submission Folders' : 'Submission Folders'}</span>`;
-            if (sfSub) sfSub.textContent = isArchived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions';
+            const _currentUser = (function() {
+                try {
+                    const u = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
+                    return u ? JSON.parse(u) : null;
+                } catch(e) { return null; }
+            })();
+            const _role = (_currentUser && _currentUser.role) ? _currentUser.role : '';
+            if (sfSub) {
+                if (_role === 'Research Director') {
+                    sfSub.textContent = isArchived ? 'Archived research and activity submissions' : 'Research and activity submissions';
+                } else if (_role === 'Extension Director') {
+                    sfSub.textContent = isArchived ? 'Archived extension and activity submissions' : 'Extension and activity submissions';
+                } else {
+                    sfSub.textContent = isArchived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions';
+                }
+            }
 
             const rfTitle = document.getElementById('researchFolderTitle');
             const efTitle = document.getElementById('extensionFolderTitle');
@@ -1973,8 +1988,32 @@
             OVPRE.toast('Announcement successfully restored to published announcements!', 'success');
         }
 
+        function applyRoleFolders() {
+            try {
+                const u = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
+                const user = u ? JSON.parse(u) : null;
+                const role = (user && user.role) ? user.role : '';
+                const rf = document.getElementById('researchFolder');
+                const ef = document.getElementById('extensionFolder');
+                const wrap = document.querySelector('.submission-folders');
+                const sfSub = document.getElementById('submissionFoldersSubtitle');
+                if (role === 'Extension Director') {
+                    if (rf) rf.style.display = 'none';
+                    if (ef) ef.style.display = '';
+                    if (wrap) wrap.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+                    if (sfSub) sfSub.textContent = (currentTab === 'archived') ? 'Archived extension and activity submissions' : 'Extension and activity submissions';
+                } else if (role === 'Research Director') {
+                    if (ef) ef.style.display = 'none';
+                    if (rf) rf.style.display = '';
+                    if (wrap) wrap.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+                    if (sfSub) sfSub.textContent = (currentTab === 'archived') ? 'Archived research and activity submissions' : 'Research and activity submissions';
+                }
+            } catch(e) {}
+        }
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', function () {
+            applyRoleFolders();
             // Check URL for ?archived=1
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('archived') === '1') {

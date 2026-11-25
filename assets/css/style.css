@@ -9182,6 +9182,24 @@ MODERN REVIEW ACTION BUTTONS (MODALS)
 /* ==========================================================================
    DYNAMIC TABLE ROW / REPEATER FIELD STYLING
    ========================================================================== */
+/* Submission Folders role-based visibility */
+.role-research-director #extensionFolder,
+.role-research-coordinator #extensionFolder {
+    display: none !important;
+}
+
+.role-extension-director #researchFolder,
+.role-extension-coordinator #researchFolder {
+    display: none !important;
+}
+
+.role-research-director .submission-folders,
+.role-research-coordinator .submission-folders,
+.role-extension-director .submission-folders,
+.role-extension-coordinator .submission-folders {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
 .repeater-container {
     display: flex;
     flex-direction: column;
