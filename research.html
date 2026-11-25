@@ -119,7 +119,7 @@
                     <div id="mySubmissionsAlertBanner" class="my-submissions-alert-banner" style="display: none; margin-top: 12px; margin-bottom: 0;">
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
                             <i class="ri-user-star-fill" style="color: #2563eb; font-size: 1.15rem;"></i>
-                            <span>Filtered View: Showing your personal research proposals only (<strong id="myProposalsBannerCount">4</strong> found)</span>
+                            <span>Your <strong id="myProposalsBannerCount">3</strong> submissions have been routed to the <strong>CCST Research Coordinator</strong>.</span>
                         </div>
                         <button type="button" class="alert-btn-clear" onclick="setResearchScope('all')">
                             <i class="ri-eye-line"></i><span>View All Proposals</span>
@@ -1058,7 +1058,7 @@
                     banner.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
                             <i class="ri-user-star-fill" style="color: #2563eb; font-size: 1.15rem;"></i>
-                            <span>My Submissions (${OVPRE.h(currentUser.fullname || 'Faculty')}${userDeptCode ? ' • ' + userDeptCode : ''}): Showing only your personal research papers (<strong>${currentTab === 'active' ? myActiveList.length : myArchivedList.length}</strong> found — routed to <strong>${userDeptCode || 'College'} Research Coordinator</strong>)</span>
+                            <span>Your <strong>${currentTab === 'active' ? myActiveList.length : myArchivedList.length}</strong> ${(currentTab === 'active' ? myActiveList.length : myArchivedList.length) === 1 ? 'submission has' : 'submissions have'} been routed to the <strong>${userDeptCode || 'CCST'} Research Coordinator</strong>.</span>
                         </div>
                     `;
                 }

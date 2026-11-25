@@ -459,7 +459,7 @@ renderHeader('Research Management', 'research');
     <div class="my-submissions-alert-banner">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
             <i class="ri-user-star-fill" style="color: #2563eb; font-size: 1.15rem;"></i>
-            <span>Filtered View: Showing your personal research proposals only (<strong><?php echo count($projects); ?></strong> found)</span>
+            <span>Your <strong><?php echo count($projects); ?></strong> <?php echo count($projects) === 1 ? 'submission has' : 'submissions have'; ?> been routed to the <strong>CCST Research Coordinator</strong>.</span>
         </div>
         <a href="research.php" class="alert-btn-clear" style="text-decoration: none;">
             <i class="ri-eye-line"></i><span>View All Proposals</span>

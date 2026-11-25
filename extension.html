@@ -119,7 +119,7 @@
                     <div id="mySubmissionsAlertBanner" class="my-submissions-alert-banner" style="display: none; margin-top: 12px; margin-bottom: 0;">
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
                             <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
-                            <span>Filtered View: Showing your personal extension projects only (<strong id="myExtensionBannerCount">2</strong> found)</span>
+                            <span>Your <strong id="myExtensionBannerCount">3</strong> submissions have been routed to the <strong>CCST Extension Coordinator</strong>.</span>
                         </div>
                         <button type="button" class="alert-btn-clear" onclick="setExtensionScope('all')">
                             <i class="ri-eye-line"></i><span>View All Initiatives</span>
@@ -1043,7 +1043,7 @@
                     banner.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
                             <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
-                            <span>My Submissions (${OVPRE.h(currentUser.fullname || 'Faculty')}${userDeptCode ? ' • ' + userDeptCode : ''}): Showing only your personal extension projects (<strong>${currentTab === 'active' ? myActiveList.length : myArchivedList.length}</strong> found — routed to <strong>${userDeptCode || 'College'} Extension Coordinator</strong>)</span>
+                            <span>Your <strong>${currentTab === 'active' ? myActiveList.length : myArchivedList.length}</strong> ${(currentTab === 'active' ? myActiveList.length : myArchivedList.length) === 1 ? 'submission has' : 'submissions have'} been routed to the <strong>${userDeptCode || 'CCST'} Extension Coordinator</strong>.</span>
                         </div>
                     `;
                 }

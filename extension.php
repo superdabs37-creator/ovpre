@@ -430,7 +430,7 @@ renderHeader('Extension Management', 'extension');
     <div class="my-submissions-alert-banner">
         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
             <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
-            <span>Filtered View: Showing your personal extension projects only (<strong><?php echo count($projects); ?></strong> found)</span>
+            <span>Your <strong><?php echo count($projects); ?></strong> <?php echo count($projects) === 1 ? 'submission has' : 'submissions have'; ?> been routed to the <strong>CCST Extension Coordinator</strong>.</span>
         </div>
         <a href="extension.php" class="alert-btn-clear" style="text-decoration: none;">
             <i class="ri-eye-line"></i><span>View All Initiatives</span>
