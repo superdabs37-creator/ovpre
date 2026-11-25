@@ -832,15 +832,15 @@ foreach ($projects as $p) {
                     <textarea name="remarks" rows="4" placeholder="Enter endorsement notes for the Research Director, or specific revision instructions for the faculty researcher..." required></textarea>
                 </label>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
-                    <button class="primary-btn" type="submit" name="action" value="coordinator_endorse" style="background: #15803d;">
+                <div class="modal-review-actions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                    <button class="primary-btn btn-endorse" type="submit" name="action" value="coordinator_endorse">
                         <i class="ri-check-line"></i> Endorse to Research Director
                     </button>
-                    <button class="ghost-btn" type="submit" name="action" value="coordinator_return" style="color: #c2410c; border-color: #fed7aa;">
+                    <button class="ghost-btn btn-revision" type="submit" name="action" value="coordinator_return">
                         <i class="ri-arrow-go-back-line"></i> Return for Revision
                     </button>
-                    <button class="ghost-btn danger-btn" type="submit" name="action" value="decline" onclick="return confirm('Are you sure you want to decline this proposal?');">
-                        <i class="ri-close-line"></i> Decline
+                    <button class="ghost-btn danger-btn btn-decline" type="submit" name="action" value="decline" onclick="return confirm('Are you sure you want to decline this proposal?');">
+                        <i class="ri-close-circle-line"></i> Decline Proposal
                     </button>
                 </div>
             </form>
@@ -895,15 +895,15 @@ foreach ($projects as $p) {
                     <textarea name="remarks" rows="3" placeholder="Evaluation and recommendations regarding methodology, budget allocation, and national agenda alignment..." required></textarea>
                 </label>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
-                    <button class="primary-btn" type="submit" name="action" value="director_endorse" style="background: #1d4ed8;">
-                        <i class="ri-send-plane-line"></i> Endorse to VP / Executive
+                <div class="modal-review-actions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
+                    <button class="primary-btn btn-endorse" type="submit" name="action" value="director_endorse">
+                        <i class="ri-checkbox-circle-line"></i> Endorse for Implementation
                     </button>
-                    <button class="ghost-btn" type="submit" name="action" value="director_return" style="color: #c2410c; border-color: #fed7aa;">
+                    <button class="ghost-btn btn-revision" type="submit" name="action" value="director_return">
                         <i class="ri-arrow-go-back-line"></i> Return for Revision
                     </button>
-                    <button class="ghost-btn danger-btn" type="submit" name="action" value="decline" onclick="return confirm('Decline this proposal?');">
-                        <i class="ri-close-line"></i> Decline
+                    <button class="ghost-btn danger-btn btn-decline" type="submit" name="action" value="decline" onclick="return confirm('Decline this proposal?');">
+                        <i class="ri-close-circle-line"></i> Decline Proposal
                     </button>
                 </div>
             </form>
@@ -935,7 +935,7 @@ foreach ($projects as $p) {
                     <textarea name="remarks" rows="4" placeholder="Official approval resolution, fund allocation directives, and project commencement guidelines..." required>Approved for implementation under the Institutional Research Program. Grant funding released as recommended.</textarea>
                 </label>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
+                <div class="modal-review-actions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
                     <button class="primary-btn" type="submit" name="action" value="executive_approve" style="background: #16a34a;">
                         <i class="ri-checkbox-circle-line"></i> Grant Final Approval
                     </button>

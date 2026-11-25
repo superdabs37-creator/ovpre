@@ -7981,6 +7981,150 @@ body.register-body .stepper-nav {
 
 
 /* =========================================================
+MODERN REVIEW ACTION BUTTONS (MODALS)
+   ========================================================= */
+.modal-review-actions {
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    margin-top: 16px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid #f1f5f9 !important;
+    flex-wrap: wrap !important;
+}
+
+.modal-card button.btn-endorse,
+.modal-card button.btn-revision,
+.modal-card button.btn-decline,
+.modal-card .btn-endorse,
+.modal-card .btn-revision,
+.modal-card .btn-decline {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    padding: 0 18px !important;
+    border-radius: 9px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modal-card button.btn-endorse i,
+.modal-card button.btn-revision i,
+.modal-card button.btn-decline i,
+.modal-card .btn-endorse i,
+.modal-card .btn-revision i,
+.modal-card .btn-decline i {
+    font-size: 1.05rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+}
+
+/* 1. Endorse for Implementation - Modern Emerald */
+.modal-card button.btn-endorse,
+.modal-card .btn-endorse {
+    background: #15803d !important;
+    border: 1px solid #166534 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25) !important;
+}
+
+.modal-card button.btn-endorse:hover,
+.modal-card .btn-endorse:hover {
+    background: #166534 !important;
+    border-color: #14532d !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35) !important;
+    transform: translateY(-1px) !important;
+}
+
+.modal-card button.btn-endorse:active,
+.modal-card .btn-endorse:active {
+    transform: translateY(0) !important;
+}
+
+.modal-card button.btn-endorse i,
+.modal-card .btn-endorse i {
+    color: #ffffff !important;
+}
+
+/* 2. Return for Revision - Modern Professional Amber / Orange */
+.modal-card button.btn-revision,
+.modal-card .btn-revision {
+    background: #fffbeb !important;
+    border: 1px solid #fcd34d !important;
+    color: #b45309 !important;
+    box-shadow: 0 1px 3px rgba(180, 83, 9, 0.08) !important;
+}
+
+.modal-card button.btn-revision:hover,
+.modal-card .btn-revision:hover {
+    background: #fef3c7 !important;
+    border-color: #f59e0b !important;
+    color: #92400e !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.22) !important;
+    transform: translateY(-1px) !important;
+}
+
+.modal-card button.btn-revision:active,
+.modal-card .btn-revision:active {
+    transform: translateY(0) !important;
+}
+
+.modal-card button.btn-revision i,
+.modal-card .btn-revision i {
+    color: #b45309 !important;
+}
+
+.modal-card button.btn-revision:hover i,
+.modal-card .btn-revision:hover i {
+    color: #92400e !important;
+}
+
+/* 3. Decline Proposal - Modern Danger / Crimson */
+.modal-card button.btn-decline,
+.modal-card .btn-decline {
+    background: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    color: #dc2626 !important;
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.08) !important;
+}
+
+.modal-card button.btn-decline:hover,
+.modal-card .btn-decline:hover {
+    background: #fee2e2 !important;
+    border-color: #f87171 !important;
+    color: #b91c1c !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.22) !important;
+    transform: translateY(-1px) !important;
+}
+
+.modal-card button.btn-decline:active,
+.modal-card .btn-decline:active {
+    transform: translateY(0) !important;
+}
+
+.modal-card button.btn-decline i,
+.modal-card .btn-decline i {
+    color: #dc2626 !important;
+}
+
+.modal-card button.btn-decline:hover i,
+.modal-card .btn-decline:hover i {
+    color: #b91c1c !important;
+}
+
+/* =========================================================
    FEATURED SPOTLIGHT BENCHMARK HEADER STYLING
    ========================================================= */
 .featured-spotlight-card {

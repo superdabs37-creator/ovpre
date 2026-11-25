@@ -696,14 +696,16 @@ renderHeader('Research Management', 'research');
             <label class="field"><span>Endorsement Remarks / Feedback:</span>
                 <textarea name="remarks" rows="3" required placeholder="Enter initial screening remarks before endorsing to the Research Director..."></textarea>
             </label>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
-                <button class="primary-btn" type="submit" name="action" value="coordinator_endorse" style="background: #15803d;">
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
+                <button class="primary-btn btn-endorse" type="submit" name="action" value="coordinator_endorse">
                     <i class="ri-check-line"></i> Endorse to Director
                 </button>
-                <button class="ghost-btn" type="submit" name="action" value="coordinator_return" style="color: #c2410c;">
+                <button class="ghost-btn btn-revision" type="submit" name="action" value="coordinator_return">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
-                <button class="ghost-btn danger-btn" type="submit" name="action" value="decline">Decline</button>
+                <button class="ghost-btn danger-btn btn-decline" type="submit" name="action" value="decline">
+                    <i class="ri-close-circle-line"></i> Decline Proposal
+                </button>
             </div>
         </form>
     </div>
@@ -743,14 +745,16 @@ renderHeader('Research Management', 'research');
             <label class="field"><span>Evaluation & Recommendation Remarks:</span>
                 <textarea name="remarks" rows="3" required placeholder="Evaluation feedback and recommendations regarding funding and national agenda alignment..."></textarea>
             </label>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
-                <button class="primary-btn" type="submit" name="action" value="director_endorse" style="background: #1d4ed8;">
-                    <i class="ri-send-plane-line"></i> Endorse to VP / Executive
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
+                <button class="primary-btn btn-endorse" type="submit" name="action" value="director_endorse">
+                    <i class="ri-checkbox-circle-line"></i> Endorse for Implementation
                 </button>
-                <button class="ghost-btn" type="submit" name="action" value="director_return" style="color: #c2410c;">
+                <button class="ghost-btn btn-revision" type="submit" name="action" value="director_return">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
-                <button class="ghost-btn danger-btn" type="submit" name="action" value="decline">Decline</button>
+                <button class="ghost-btn danger-btn btn-decline" type="submit" name="action" value="decline">
+                    <i class="ri-close-circle-line"></i> Decline Proposal
+                </button>
             </div>
         </form>
     </div>
@@ -776,7 +780,7 @@ renderHeader('Research Management', 'research');
             <label class="field"><span>Executive Resolution & Directives:</span>
                 <textarea name="remarks" rows="4" required>Approved for implementation under the Institutional Research Program. Notice of Award issued.</textarea>
             </label>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
                 <button class="primary-btn" type="submit" name="action" value="executive_approve" style="background: #16a34a;">
                     <i class="ri-check-double-line"></i> Grant Final Approval
                 </button>

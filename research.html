@@ -424,14 +424,16 @@
             <label class="field"><span>Screening Remarks / Endorsement Note:</span>
                 <textarea id="coordRemarks" name="remarks" rows="3" required placeholder="Screening notes regarding methodology, college alignment, and ethical protocols..."></textarea>
             </label>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
-                <button class="primary-btn" type="submit" name="coord_action" value="endorse" style="background: #15803d;">
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn btn-endorse" type="submit" name="coord_action" value="endorse">
                     <i class="ri-check-line"></i> Endorse to Director
                 </button>
-                <button class="ghost-btn" type="submit" name="coord_action" value="revision" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;">
+                <button class="ghost-btn btn-revision" type="submit" name="coord_action" value="revision">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
-                <button class="ghost-btn danger-btn" type="submit" name="coord_action" value="decline">Decline</button>
+                <button class="ghost-btn danger-btn btn-decline" type="submit" name="coord_action" value="decline">
+                    <i class="ri-close-circle-line"></i> Decline Proposal
+                </button>
             </div>
         </form>
     </div>
@@ -455,14 +457,16 @@
             <label class="field"><span>Evaluation &amp; Recommendation Remarks:</span>
                 <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="RIUH evaluation remarks, technical review, and institutional priority recommendation..."></textarea>
             </label>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
-                <button class="primary-btn" type="submit" name="dir_action" value="endorse" style="background: #1d4ed8;">
-                    <i class="ri-send-plane-line"></i> Endorse to VP / Executive
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn btn-endorse" type="submit" name="dir_action" value="endorse">
+                    <i class="ri-checkbox-circle-line"></i> Endorse for Implementation
                 </button>
-                <button class="ghost-btn" type="submit" name="dir_action" value="revision" style="color: #c2410c; border-color: #fed7aa; background: #fff7ed;">
+                <button class="ghost-btn btn-revision" type="submit" name="dir_action" value="revision">
                     <i class="ri-arrow-go-back-line"></i> Return for Revision
                 </button>
-                <button class="ghost-btn danger-btn" type="submit" name="dir_action" value="decline">Decline</button>
+                <button class="ghost-btn danger-btn btn-decline" type="submit" name="dir_action" value="decline">
+                    <i class="ri-close-circle-line"></i> Decline Proposal
+                </button>
             </div>
         </form>
     </div>
@@ -478,7 +482,7 @@
             <label class="field"><span>Executive Resolution &amp; Directives:</span>
                 <textarea id="execRemarks" name="remarks" rows="4" required>Approved for implementation under Institutional Research Program. Notice to Proceed and grant release authorized.</textarea>
             </label>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
                 <button class="primary-btn" type="submit" name="exec_action" value="approve" style="background: #16a34a;">
                     <i class="ri-check-double-line"></i> Grant Final Approval
                 </button>

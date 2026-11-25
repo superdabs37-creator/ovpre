@@ -1055,15 +1055,15 @@ $projects = portal_extension_projects();
                     <textarea name="remarks" rows="4" placeholder="e.g. Community proposal screened. Selected community is suitable and aligned with the college extension agenda." required></textarea>
                 </label>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
-                    <button class="primary-btn" type="submit" name="action" value="coordinator_endorse" style="background: #15803d;">
+                <div class="modal-review-actions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                    <button class="primary-btn btn-endorse" type="submit" name="action" value="coordinator_endorse">
                         <i class="ri-check-line"></i> Endorse to Extension Director
                     </button>
-                    <button class="ghost-btn" type="submit" name="action" value="coordinator_return" style="color: #c2410c; border-color: #fed7aa;">
+                    <button class="ghost-btn btn-revision" type="submit" name="action" value="coordinator_return">
                         <i class="ri-arrow-go-back-line"></i> Return for Revision
                     </button>
-                    <button class="ghost-btn danger-btn" type="submit" name="action" value="decline" onclick="return confirm('Decline this extension proposal?');">
-                        <i class="ri-close-line"></i> Decline
+                    <button class="ghost-btn danger-btn btn-decline" type="submit" name="action" value="decline" onclick="return confirm('Decline this extension proposal?');">
+                        <i class="ri-close-circle-line"></i> Decline Proposal
                     </button>
                 </div>
             </form>
@@ -1103,15 +1103,15 @@ $projects = portal_extension_projects();
                     <textarea name="remarks" rows="3" placeholder="Director evaluation remarks regarding community partnership, safety protocols, and budget allocation..." required></textarea>
                 </label>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
-                    <button class="primary-btn" type="submit" name="action" value="director_endorse" style="background: #1d4ed8;">
-                        <i class="ri-send-plane-line"></i> Endorse to VP / Executive
+                <div class="modal-review-actions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
+                    <button class="primary-btn btn-endorse" type="submit" name="action" value="director_endorse">
+                        <i class="ri-checkbox-circle-line"></i> Endorse for Implementation
                     </button>
-                    <button class="ghost-btn" type="submit" name="action" value="director_return" style="color: #c2410c; border-color: #fed7aa;">
+                    <button class="ghost-btn btn-revision" type="submit" name="action" value="director_return">
                         <i class="ri-arrow-go-back-line"></i> Return for Revision
                     </button>
-                    <button class="ghost-btn danger-btn" type="submit" name="action" value="decline" onclick="return confirm('Decline this project?');">
-                        <i class="ri-close-line"></i> Decline
+                    <button class="ghost-btn danger-btn btn-decline" type="submit" name="action" value="decline" onclick="return confirm('Decline this project?');">
+                        <i class="ri-close-circle-line"></i> Decline Proposal
                     </button>
                 </div>
             </form>
@@ -1143,7 +1143,7 @@ $projects = portal_extension_projects();
                     <textarea name="remarks" rows="4" placeholder="Official approval resolution, budget allocation directives, and Notice to Implement..." required>Approved for implementation under the Institutional Extension Program. Notice to Implement issued.</textarea>
                 </label>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
+                <div class="modal-review-actions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 8px;">
                     <button class="primary-btn" type="submit" name="action" value="executive_approve" style="background: #16a34a;">
                         <i class="ri-checkbox-circle-line"></i> Grant Final Approval
                     </button>
