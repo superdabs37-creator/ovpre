@@ -944,7 +944,7 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
         </div>
     </div>
 
-    <div class="acad-analytics-grid">
+    <div class="acad-analytics-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
         
         <!-- Card 1: Project Status Breakdown -->
         <article class="panel chart-panel acad-analytics-card">
@@ -1022,85 +1022,6 @@ $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects'
                         <div class="acad-progress-fill" style="width: <?php echo $rvsPct; ?>%; background: #f43f5e;"></div>
                     </div>
                 </div>
-            </div>
-        </article>
-
-        <!-- Card 2: Completed Colleges Directory -->
-        <article class="panel chart-panel acad-analytics-card">
-            <div class="acad-card-header">
-                <div class="acad-card-title-wrap">
-                    <span class="acad-card-icon icon-emerald">
-                        <i class="ri-building-2-line"></i>
-                    </span>
-                    <div>
-                        <h2 class="acad-card-title">Completed Colleges</h2>
-                    </div>
-                </div>
-                <div class="acad-filter-box">
-                    <label for="completedProjectTypeFilter">Stream:</label>
-                    <select id="completedProjectTypeFilter" class="filter-select compact-select">
-                        <?php if ($isFacultyExtensionist): ?>
-                            <option value="extension">Extension Only</option>
-                        <?php else: ?>
-                            <option value="all">All Projects</option>
-                            <option value="research">Research</option>
-                            <option value="extension">Extension</option>
-                        <?php endif; ?>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Custom Clean Scroll Container -->
-            <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; max-height: 256px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
-                <?php if (empty($completedColleges)): ?>
-                    <div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;">
-                        <i class="ri-inbox-line" style="font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
-                        No completed projects found
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($completedColleges as $completedCollege): ?>
-                        <div class="acad-college-group">
-                            <div class="acad-college-header">
-                                <div class="acad-college-name-wrap">
-                                    <i class="ri-building-line" style="color: #15803d; font-size: 0.90rem; flex-shrink: 0;"></i>
-                                    <h3 class="acad-college-name"><?php echo h($completedCollege['department_name']); ?></h3>
-                                </div>
-                                <span class="acad-college-count"><?php echo count($completedCollege['projects']); ?> completed</span>
-                            </div>
-                            <div class="acad-project-list">
-                                <?php foreach ($completedCollege['projects'] as $completedProject): ?>
-                                    <?php
-                                        $isResearch = ($completedProject['type'] ?? '') === 'Research';
-                                        $projId = (int) ($completedProject['id'] ?? 0);
-                                        $targetUrl = $isResearch
-                                            ? 'research.php?highlight=' . $projId . '#proposal-' . $projId
-                                            : 'extension.php?highlight=' . $projId . '#project-' . $projId;
-                                    ?>
-                                    <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, { submitter_name: <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, department_name: <?php echo json_encode($completedCollege["department_name"]); ?> })' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
-                                        <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
-                                            <span class="acad-project-type <?php echo $isResearch ? 'type-research' : 'type-extension'; ?>">
-                                                <?php echo h($completedProject['type']); ?>
-                                            </span>
-                                            <span class="acad-project-title">
-                                                <?php echo h($completedProject['title']); ?>
-                                            </span>
-                                        </div>
-                                        <button type="button" class="acad-view-file-btn">
-                                            <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
-                                            <span>View File</span>
-                                        </button>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-
-            <!-- Card Bottom Bar -->
-            <div class="acad-card-footer">
-                <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><i class="ri-shield-check-line" style="color: #15803d; font-size: 0.9rem;"></i> Institutional Completion Registry</span>
-                <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;"><?php echo count($completedColleges); ?> Active Colleges · <?php echo $totalCompletedProjectsCount; ?> Completed</strong>
             </div>
         </article>
 

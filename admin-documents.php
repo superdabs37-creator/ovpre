@@ -257,6 +257,105 @@ $isExtensionDirector = (role_access_group((string) ($user['role'] ?? '')) === RO
 $notice = flash();
 $categoryAnalytics = db()->query('SELECT c.category_name, COUNT(d.id) total FROM categories c LEFT JOIN documents d ON d.category_id = c.id AND d.archived_at IS NULL GROUP BY c.id ORDER BY c.category_name')->fetchAll();
 $departmentAnalytics = db()->query('SELECT dep.department_name, COUNT(d.id) total FROM departments dep LEFT JOIN documents d ON d.department_id = dep.id AND d.archived_at IS NULL GROUP BY dep.id ORDER BY dep.department_name')->fetchAll();
+
+if (!function_exists('getCollegeCodeTag')) {
+    function getCollegeCodeTag($dept) {
+        $s = strtolower((string) $dept);
+        if (strpos($s, 'ccst') !== false || strpos($s, 'computer') !== false) return 'CCST';
+        if (strpos($s, 'coe') !== false || strpos($s, 'engineering') !== false) return 'COE';
+        if (strpos($s, 'conahs') !== false || strpos($s, 'nursing') !== false) return 'CONAHS';
+        if (strpos($s, 'cas') !== false || strpos($s, 'arts') !== false) return 'CAS';
+        if (strpos($s, 'cba') !== false || strpos($s, 'business') !== false) return 'CBA';
+        if (strpos($s, 'cte') !== false || strpos($s, 'teacher') !== false || strpos($s, 'education') !== false) return 'CTE';
+        if (strpos($s, 'cthm') !== false || strpos($s, 'tourism') !== false || strpos($s, 'hospitality') !== false) return 'CTHM';
+        if (strpos($s, 'accountancy') !== false || strpos($s, 'coa') !== false) return 'COA';
+        if (strpos($s, 'cpag') !== false || strpos($s, 'public administration') !== false) return 'CPAG';
+        if (strpos($s, 'chk') !== false || strpos($s, 'human kinetics') !== false || strpos($s, 'cpe') !== false || strpos($s, 'physical education') !== false) return 'CPE';
+        return strtoupper(substr(trim((string)$dept), 0, 4));
+    }
+}
+
+$completedProjectRows = db()->query("
+    SELECT 
+        'Research' AS project_type,
+        r.id AS project_id,
+        r.title AS project_title,
+        r.description AS project_description,
+        r.researchers AS project_lead,
+        r.department_id,
+        dep.department_name,
+        r.created_at AS submitted_at,
+        u.fullname AS submitter_name,
+        d.id AS document_id,
+        d.filename AS document_filename,
+        d.original_filename AS document_original_filename
+    FROM research_projects r
+    JOIN departments dep ON dep.id = r.department_id
+    LEFT JOIN users u ON u.id = r.submitted_by
+    LEFT JOIN documents d ON (d.entity_type = 'research' AND d.entity_id = r.id AND d.archived_at IS NULL)
+    WHERE r.workflow_stage = 'Completed'
+    UNION ALL
+    SELECT 
+        'Extension' AS project_type,
+        e.id AS project_id,
+        e.project_title AS project_title,
+        e.project_description,
+        e.coordinator AS project_lead,
+        e.department_id,
+        dep.department_name,
+        e.created_at AS submitted_at,
+        u.fullname AS submitter_name,
+        d.id AS document_id,
+        d.filename AS document_filename,
+        d.original_filename AS document_original_filename
+    FROM extension_projects e
+    JOIN departments dep ON dep.id = e.department_id
+    LEFT JOIN users u ON u.id = e.submitted_by
+    LEFT JOIN documents d ON (d.entity_type = 'extension' AND d.entity_id = e.id AND d.archived_at IS NULL)
+    WHERE e.progress_status = 'Completed'
+    ORDER BY department_name ASC, project_type ASC, project_title ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$completedColleges = [];
+foreach ($completedProjectRows as $completedProjectRow) {
+    if ($isExtensionDirector && ($completedProjectRow['project_type'] ?? '') !== 'Extension') {
+        continue;
+    }
+    if ($isResearchDirector && ($completedProjectRow['project_type'] ?? '') !== 'Research') {
+        continue;
+    }
+    $departmentId = (int) $completedProjectRow['department_id'];
+    if (!isset($completedColleges[$departmentId])) {
+        $completedColleges[$departmentId] = [
+            'department_name' => (string) $completedProjectRow['department_name'],
+            'projects' => [],
+        ];
+    }
+    $docId = (int) ($completedProjectRow['document_id'] ?? 0);
+    $fileUrl = $docId > 0 ? 'download-document.php?id=' . $docId : '';
+    $fileName = !empty($completedProjectRow['document_original_filename'])
+        ? (string) $completedProjectRow['document_original_filename']
+        : (!empty($completedProjectRow['document_filename']) ? basename((string) $completedProjectRow['document_filename']) : 'Final-Completed-Report.pdf');
+
+    $completedColleges[$departmentId]['projects'][] = [
+        'id' => (int) $completedProjectRow['project_id'],
+        'type' => (string) $completedProjectRow['project_type'],
+        'title' => (string) $completedProjectRow['project_title'],
+        'status' => 'Completed',
+        'description' => (string) ($completedProjectRow['project_description'] ?? ''),
+        'lead' => (string) ($completedProjectRow['project_lead'] ?? ''),
+        'extra_info' => (string) ($completedProjectRow['project_lead'] ?? ''),
+        'submitter_name' => (string) ($completedProjectRow['submitter_name'] ?? 'Faculty Proponent'),
+        'department_name' => (string) $completedProjectRow['department_name'],
+        'submitted_at' => (string) ($completedProjectRow['submitted_at'] ?? ''),
+        'document_url' => $fileUrl,
+        'file_url' => $fileUrl,
+        'file_name' => $fileName,
+    ];
+}
+$completedColleges = array_values($completedColleges);
+$totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects']), $completedColleges));
+
 renderHeader('Record Management', 'documents');
 ?>
 <section class="module-header">
@@ -411,6 +510,84 @@ $catIcons = [
     <?php endforeach; ?>
 </section>
 
+<!-- Card: Completed Colleges Directory -->
+<article class="panel chart-panel acad-analytics-card" style="margin-bottom: 24px;">
+    <div class="acad-card-header">
+        <div class="acad-card-title-wrap">
+            <span class="acad-card-icon icon-emerald">
+                <i class="ri-building-2-line"></i>
+            </span>
+            <div>
+                <h2 class="acad-card-title">Completed Colleges</h2>
+            </div>
+        </div>
+        <div class="acad-filter-box">
+            <label for="completedProjectTypeFilter">Stream:</label>
+            <select id="completedProjectTypeFilter" class="filter-select compact-select">
+                <?php if ($isExtensionDirector): ?>
+                    <option value="extension">Extension Only</option>
+                <?php elseif ($isResearchDirector): ?>
+                    <option value="research">Research Only</option>
+                <?php else: ?>
+                    <option value="all">All Projects</option>
+                    <option value="research">Research</option>
+                    <option value="extension">Extension</option>
+                <?php endif; ?>
+            </select>
+        </div>
+    </div>
+
+    <!-- Custom Clean Scroll Container -->
+    <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; max-height: 256px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
+        <?php if (empty($completedColleges)): ?>
+            <div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;">
+                <i class="ri-inbox-line" style="font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
+                No completed projects found
+            </div>
+        <?php else: ?>
+            <?php foreach ($completedColleges as $completedCollege): ?>
+                <div class="acad-college-group">
+                    <div class="acad-college-header">
+                        <div class="acad-college-name-wrap">
+                            <span class="acad-college-acronym"><?php echo h(getCollegeCodeTag($completedCollege['department_name'])); ?></span>
+                            <h3 class="acad-college-name"><?php echo h($completedCollege['department_name']); ?></h3>
+                        </div>
+                        <span class="acad-college-count"><?php echo count($completedCollege['projects']); ?> completed</span>
+                    </div>
+                    <div class="acad-project-list">
+                        <?php foreach ($completedCollege['projects'] as $completedProject): ?>
+                            <?php
+                                $isResearch = ($completedProject['type'] ?? '') === 'Research';
+                                $projId = (int) ($completedProject['id'] ?? 0);
+                            ?>
+                            <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, <?php echo json_encode($completedCollege["department_name"]); ?>)' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
+                                <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                                    <span class="acad-project-type <?php echo $isResearch ? 'type-research' : 'type-extension'; ?>">
+                                        <?php echo h($completedProject['type']); ?>
+                                    </span>
+                                    <span class="acad-project-title">
+                                        <?php echo h($completedProject['title']); ?>
+                                    </span>
+                                </div>
+                                <button type="button" class="acad-view-file-btn">
+                                    <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
+                                    <span>View File</span>
+                                </button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+
+    <!-- Card Bottom Bar -->
+    <div class="acad-card-footer">
+        <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><i class="ri-shield-check-line" style="color: #15803d; font-size: 0.9rem;"></i> Institutional Completion Registry</span>
+        <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;"><?php echo count($completedColleges); ?> Active Colleges · <?php echo $totalCompletedProjectsCount; ?> Completed</strong>
+    </div>
+</article>
+
 <section class="panel">
     <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
         <div>
@@ -524,4 +701,328 @@ if (!empty($docIds)) {
     <div class="modal" id="versions-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2>Version History</h2><div class="timeline-list"><?php $versions = $docVersionsMap[(int) $doc['id']] ?? []; foreach ($versions as $version): ?><div><strong><?php echo h($version['version_label']); ?></strong><p><a href="<?php echo h(record_file_url($version['filename'], (int) $version['document_id'], (int) $version['id'])); ?>">Download version</a></p><small><?php echo h(($version['fullname'] ?? 'System') . ' | ' . date('M d, Y h:i A', strtotime($version['created_at']))); ?></small></div><?php endforeach; ?></div></article></div>
     <?php if (record_is_previewable($doc['filename'])): ?><div class="modal" id="preview-<?php echo (int) $doc['id']; ?>" aria-hidden="true"><div class="modal-backdrop" data-close-modal></div><article class="modal-card preview-card"><button class="modal-close" type="button" data-close-modal><i class="ri-close-line"></i></button><h2><?php echo h($doc['title']); ?></h2><?php $ext = strtolower(pathinfo($doc['filename'], PATHINFO_EXTENSION)); if ($ext === 'pdf'): ?><iframe class="document-preview" data-src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" src="about:blank"></iframe><?php else: ?><img class="document-preview-image" data-src="<?php echo h(record_file_url($doc['filename'], (int) $doc['id'])); ?>" alt="<?php echo h($doc['title']); ?>"><?php endif; ?></article></div><?php endif; ?>
 <?php endforeach; ?>
+
+<!-- Quick Preview Modal for Completed Submissions -->
+<div class="modal" id="submissionQuickPreviewDialog" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <article class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="quickPreviewTypeBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 9px; border-radius: 6px;"></span>
+                <span id="quickPreviewStatusBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px;"></span>
+            </div>
+            <button type="button" id="closeQuickPreviewDialog" data-close-modal aria-label="Close preview" style="width: 30px; height: 30px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+        </div>
+        <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 72px); overflow-y: auto;">
+            <div>
+                <h3 id="quickPreviewTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.18rem; font-weight: 800; line-height: 1.4;"></h3>
+                <p id="quickPreviewMeta" style="margin: 0; color: #64748b; font-size: 0.84rem; line-height: 1.5;"></p>
+            </div>
+            <div id="quickPreviewDescBox" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
+                <strong id="quickPreviewDescLabel" style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Abstract / Details</strong>
+                <p id="quickPreviewDesc" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></p>
+            </div>
+
+            <!-- Attached File Showcase Card -->
+            <div id="quickPreviewFileCard" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                    <span style="width: 38px; height: 38px; border-radius: 8px; background: #dcfce7; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                        <i class="ri-file-pdf-fill"></i>
+                    </span>
+                    <div style="min-width: 0;">
+                        <strong id="quickPreviewFileName" style="display: block; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            Research-Documentation.pdf
+                        </strong>
+                        <span style="font-size: 0.72rem; color: #15803d; font-weight: 600;">
+                            <i class="ri-checkbox-circle-fill"></i> Official Verified Academic Document
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 12px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+                <a id="quickPreviewDownloadBtn" href="#" class="ghost-btn action-btn" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px; font-size: 0.86rem; font-weight: 600; color: #1e293b !important; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease;">
+                    <i class="ri-download-cloud-line" style="font-size: 0.95rem;"></i> <span>Download File</span>
+                </a>
+                <a id="quickPreviewViewFileBtn" href="#" target="_blank" rel="noopener" class="primary-btn action-btn" style="height: 38px; min-height: 38px; max-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 18px; font-size: 0.86rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 8px; text-decoration: none; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">
+                    <i class="ri-file-search-line" style="font-size: 0.95rem; line-height: 1; color: #ffffff !important;"></i> <span style="color: #ffffff !important; font-size: 0.86rem; font-weight: 700;">View File</span>
+                </a>
+            </div>
+        </div>
+    </article>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const previewDialog = document.getElementById('submissionQuickPreviewDialog');
+    const closePreviewDialog = document.getElementById('closeQuickPreviewDialog');
+    const completedProjectFilter = document.getElementById('completedProjectTypeFilter');
+    const completedCollegesList = document.getElementById('completedCollegesList');
+    const completedTotalBadgeEl = document.getElementById('completedTotalBadge');
+
+    function getCollegeCodeTag(deptName) {
+        const s = String(deptName || '').toLowerCase();
+        if (s.includes('ccst') || s.includes('computer')) return 'CCST';
+        if (s.includes('coe') || s.includes('engineering')) return 'COE';
+        if (s.includes('conahs') || s.includes('nursing')) return 'CONAHS';
+        if (s.includes('cas') || s.includes('arts')) return 'CAS';
+        if (s.includes('cba') || s.includes('business')) return 'CBA';
+        if (s.includes('cte') || s.includes('teacher') || s.includes('education')) return 'CTE';
+        if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
+        if (s.includes('coa') || s.includes('accountancy')) return 'COA';
+        if (s.includes('cpag') || s.includes('public administration')) return 'CPAG';
+        if (s.includes('chk') || s.includes('human kinetics') || s.includes('cpe') || s.includes('physical education')) return 'CPE';
+        return s.trim().slice(0, 4).toUpperCase();
+    }
+
+    function createDocumentPdfBlob(title, author, dept, desc) {
+        const safeTitle = (title || 'Academic Project').replace(/[()\\]/g, '');
+        const safeAuthor = (author || 'Faculty Proponent').replace(/[()\\]/g, '');
+        const safeDept = (dept || 'Academic Department').replace(/[()\\]/g, '');
+        const safeDesc = (desc || 'Completed academic project under the institutional repository.').replace(/[()\\]/g, '').slice(0, 300);
+
+        const stream = [
+            'BT',
+            '/F1 16 Tf',
+            '50 720 Td',
+            `(${safeTitle.slice(0, 60)}) Tj`,
+            '/F1 10 Tf',
+            '0 -28 Td',
+            `(Author / Submitter: ${safeAuthor}) Tj`,
+            '0 -18 Td',
+            `(Department / College: ${safeDept}) Tj`,
+            '0 -18 Td',
+            '(Classification: Official Verified Academic Record - Completed) Tj',
+            '0 -32 Td',
+            '/F1 12 Tf',
+            '(PROJECT DETAILS / ABSTRACT:) Tj',
+            '/F1 10 Tf',
+            '0 -20 Td',
+            `(${safeDesc.slice(0, 95)}) Tj`,
+            safeDesc.length > 95 ? `0 -16 Td (${safeDesc.slice(95, 190)}) Tj` : '',
+            safeDesc.length > 190 ? `0 -16 Td (${safeDesc.slice(190, 285)}) Tj` : '',
+            'ET'
+        ].filter(Boolean).join('\n');
+
+        const streamLen = new TextEncoder().encode(stream).length;
+        let out = '%PDF-1.4\n';
+        const offsets = [];
+        offsets.push(out.length);
+        out += '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+        offsets.push(out.length);
+        out += '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n';
+        offsets.push(out.length);
+        out += '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n';
+        offsets.push(out.length);
+        out += `4 0 obj\n<< /Length ${streamLen} >>\nstream\n${stream}\nendstream\nendobj\n`;
+        offsets.push(out.length);
+        out += '5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n';
+        const xrefOffset = out.length;
+        out += 'xref\n0 6\n0000000000 65535 f \n';
+        for (const offset of offsets) {
+            out += String(offset).padStart(10, '0') + ' 00000 n \n';
+        }
+        out += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+        return new Blob([out], { type: 'application/pdf' });
+    }
+
+    function downloadAcademicFile(fileUrl, fileName, title, author, dept, desc) {
+        const isRealPdfUrl = fileUrl && fileUrl !== '#' && !fileUrl.includes('.php#') && (fileUrl.includes('.pdf') || fileUrl.includes('download-document.php'));
+        if (isRealPdfUrl) {
+            let dlUrl = fileUrl;
+            if (dlUrl.includes('download-document.php') && !dlUrl.includes('download=1')) {
+                dlUrl += (dlUrl.includes('?') ? '&' : '?') + 'download=1';
+            }
+            const a = document.createElement('a');
+            a.href = dlUrl;
+            a.download = fileName || 'Academic-Document.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+        const blob = createDocumentPdfBlob(title, author, dept, desc);
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName || 'Academic-Document.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+    }
+
+    function viewAcademicFile(fileUrl, title, author, dept, desc) {
+        const isRealPdfUrl = fileUrl && fileUrl !== '#' && !fileUrl.includes('.php#') && (fileUrl.includes('.pdf') || fileUrl.includes('download-document.php'));
+        if (isRealPdfUrl) {
+            window.open(fileUrl, '_blank', 'noopener');
+            return;
+        }
+        const blob = createDocumentPdfBlob(title, author, dept, desc);
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank', 'noopener');
+    }
+
+    window.openQuickPreview = function (sub, personName, deptName) {
+        if (!previewDialog) return;
+        const isResearch = (sub.type || '') === 'Research';
+        document.getElementById('quickPreviewTypeBadge').textContent = sub.type || 'Project';
+        document.getElementById('quickPreviewTypeBadge').style.background = isResearch ? '#f0fdf4' : '#f3e8ff';
+        document.getElementById('quickPreviewTypeBadge').style.color = isResearch ? '#15803d' : '#7c3aed';
+
+        const statusEl = document.getElementById('quickPreviewStatusBadge');
+        const status = sub.status || 'Completed';
+        statusEl.textContent = status;
+        statusEl.style.background = (status === 'Completed' || status === 'Approved') ? '#f0fdf4' : '#fffbeb';
+        statusEl.style.color = (status === 'Completed' || status === 'Approved') ? '#15803d' : '#b45309';
+
+        document.getElementById('quickPreviewTitle').textContent = sub.title || '';
+        const pName = personName || sub.submitter_name || 'Faculty Proponent';
+        const dName = deptName || sub.department_name || 'Academic Department';
+        document.getElementById('quickPreviewMeta').textContent = `Submitter: ${pName} (${dName}) | Status: ${status}`;
+        document.getElementById('quickPreviewDesc').textContent = sub.description || 'Completed institutional project document.';
+
+        const subId = encodeURIComponent(sub.id || '');
+        const targetUrl = isResearch
+            ? `research.php?highlight=${subId}#proposal-${subId}`
+            : `extension.php?highlight=${subId}#project-${subId}`;
+        const fileUrl = sub.file_url || sub.document_url || targetUrl;
+        const fileName = sub.file_name || (sub.title ? sub.title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 32) + '-Report.pdf' : 'Academic-Document.pdf');
+
+        const fileNameEl = document.getElementById('quickPreviewFileName');
+        if (fileNameEl) fileNameEl.textContent = fileName;
+
+        const viewFileBtn = document.getElementById('quickPreviewViewFileBtn');
+        if (viewFileBtn) {
+            viewFileBtn.onclick = (e) => {
+                e.preventDefault();
+                viewAcademicFile(fileUrl, sub.title, pName, dName, sub.description);
+            };
+        }
+
+        const downloadBtn = document.getElementById('quickPreviewDownloadBtn');
+        if (downloadBtn) {
+            downloadBtn.onclick = (e) => {
+                e.preventDefault();
+                downloadAcademicFile(fileUrl, fileName, sub.title, pName, dName, sub.description);
+            };
+        }
+
+        if (window.OVPRE && OVPRE.openModal) OVPRE.openModal('submissionQuickPreviewDialog');
+        else previewDialog.classList.add('open');
+    };
+
+    if (closePreviewDialog && previewDialog) {
+        closePreviewDialog.addEventListener('click', () => {
+            if (window.OVPRE && OVPRE.closeModal) OVPRE.closeModal('submissionQuickPreviewDialog');
+            else previewDialog.classList.remove('open');
+        });
+        previewDialog.addEventListener('click', (e) => {
+            if (e.target === previewDialog) previewDialog.classList.remove('open');
+        });
+    }
+
+    if (completedProjectFilter && completedCollegesList) {
+        const completedCollegeRows = <?php echo json_encode($completedColleges, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const renderCompletedColleges = () => {
+            const selectedType = completedProjectFilter.value;
+            completedCollegesList.replaceChildren();
+            let visibleCollegeCount = 0;
+            let totalProjectsCount = 0;
+
+            completedCollegeRows.forEach(college => {
+                const projects = college.projects.filter(project =>
+                    selectedType === 'all' || project.type.toLowerCase() === selectedType
+                );
+                if (!projects.length) return;
+                visibleCollegeCount++;
+                totalProjectsCount += projects.length;
+
+                const card = document.createElement('div');
+                card.className = 'acad-college-group';
+
+                const heading = document.createElement('div');
+                heading.className = 'acad-college-header';
+
+                const collegeLeft = document.createElement('div');
+                collegeLeft.className = 'acad-college-name-wrap';
+
+                const acronymBadge = document.createElement('span');
+                acronymBadge.className = 'acad-college-acronym';
+                acronymBadge.textContent = getCollegeCodeTag(college.department_name);
+
+                const collegeName = document.createElement('h3');
+                collegeName.className = 'acad-college-name';
+                collegeName.textContent = college.department_name;
+                collegeLeft.append(acronymBadge, collegeName);
+
+                const projectCount = document.createElement('span');
+                projectCount.className = 'acad-college-count';
+                projectCount.textContent = `${projects.length} completed`;
+                heading.append(collegeLeft, projectCount);
+
+                const projectContainer = document.createElement('div');
+                projectContainer.className = 'acad-project-list';
+
+                projects.forEach(project => {
+                    const isResearch = project.type === 'Research';
+                    const pill = document.createElement('div');
+                    pill.className = 'acad-project-row';
+                    pill.role = 'button';
+                    pill.tabIndex = 0;
+                    pill.title = `Click to view file & details for: ${project.title}`;
+
+                    const leftWrap = document.createElement('div');
+                    leftWrap.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;flex:1;';
+
+                    const typeBadge = document.createElement('span');
+                    typeBadge.className = `acad-project-type ${isResearch ? 'type-research' : 'type-extension'}`;
+                    typeBadge.textContent = project.type;
+
+                    const titleSpan = document.createElement('span');
+                    titleSpan.className = 'acad-project-title';
+                    titleSpan.textContent = project.title;
+                    leftWrap.append(typeBadge, titleSpan);
+
+                    const viewFileBtn = document.createElement('button');
+                    viewFileBtn.type = 'button';
+                    viewFileBtn.className = 'acad-view-file-btn';
+                    viewFileBtn.innerHTML = '<i class="ri-file-text-line" style="font-size:0.76rem;"></i><span>View File</span>';
+
+                    pill.append(leftWrap, viewFileBtn);
+
+                    const triggerPreview = (e) => {
+                        if (e) e.stopPropagation();
+                        window.openQuickPreview(project, project.submitter_name || 'Faculty Proponent', college.department_name);
+                    };
+
+                    pill.addEventListener('click', triggerPreview);
+                    pill.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            triggerPreview(e);
+                        }
+                    });
+
+                    projectContainer.appendChild(pill);
+                });
+
+                card.append(heading, projectContainer);
+                completedCollegesList.appendChild(card);
+            });
+
+            if (completedTotalBadgeEl) {
+                completedTotalBadgeEl.textContent = `${visibleCollegeCount} Active College${visibleCollegeCount === 1 ? '' : 's'} · ${totalProjectsCount} Completed`;
+            }
+
+            if (!visibleCollegeCount) {
+                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-inbox-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found for selected stream.</div>`;
+            }
+        };
+
+        completedProjectFilter.addEventListener('change', renderCompletedColleges);
+    }
+});
+</script>
+
 <?php renderFooter(); ?>
