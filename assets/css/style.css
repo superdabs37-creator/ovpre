@@ -9431,3 +9431,51 @@ body.mask-grants .currency-masked-wrap[data-mask-group="grants"] .currency-mask,
 .currency-masked-wrap[data-mask-group="grants"].is-masked .currency-mask {
     display: inline !important;
 }
+
+/* =========================================================
+   DOCUMENTS OVERVIEW SPLIT LAYOUT (CATEGORIES LEFT, COLLEGES RIGHT)
+   ========================================================= */
+.documents-overview-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 24px;
+}
+
+.documents-category-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.documents-summary-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin-bottom: 0 !important;
+}
+
+.documents-colleges-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.documents-colleges-card {
+    margin-bottom: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+@media (max-width: 1100px) {
+    .documents-overview-row {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+}
+
+@media (max-width: 580px) {
+    .documents-summary-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
