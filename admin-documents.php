@@ -520,7 +520,7 @@ $catIcons = [
     <!-- RIGHT: Completed Colleges Directory Card -->
     <div class="documents-colleges-col">
         <article class="panel chart-panel acad-analytics-card documents-colleges-card">
-            <div class="acad-card-header">
+            <div class="acad-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <div class="acad-card-title-wrap">
                     <span class="acad-card-icon icon-emerald">
                         <i class="ri-building-2-line"></i>
@@ -529,19 +529,28 @@ $catIcons = [
                         <h2 class="acad-card-title">Completed Colleges</h2>
                     </div>
                 </div>
-                <div class="acad-filter-box">
-                    <label for="completedProjectTypeFilter">Stream:</label>
-                    <select id="completedProjectTypeFilter" class="filter-select compact-select">
-                        <?php if ($isExtensionDirector): ?>
-                            <option value="extension">Extension Only</option>
-                        <?php elseif ($isResearchDirector): ?>
-                            <option value="research">Research Only</option>
-                        <?php else: ?>
-                            <option value="all">All Projects</option>
-                            <option value="research">Research</option>
-                            <option value="extension">Extension</option>
-                        <?php endif; ?>
-                    </select>
+                <div class="acad-header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <div class="acad-search-box" style="position: relative; display: flex; align-items: center;">
+                        <i class="ri-search-line" style="position: absolute; left: 9px; color: #94a3b8; font-size: 0.85rem; pointer-events: none;"></i>
+                        <input type="search" id="completedCollegeSearchInput" placeholder="Search department or title..." aria-label="Search completed projects by department" style="height: 32px; padding: 0 28px 0 28px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; color: #1e293b; background: #ffffff; width: 175px; outline: none; transition: all 0.2s ease;">
+                        <button type="button" id="completedCollegeSearchBtn" aria-label="Search" title="Search" style="position: absolute; right: 2px; width: 26px; height: 26px; border: none; background: transparent; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                            <i class="ri-arrow-right-s-line" style="font-size: 1rem;"></i>
+                        </button>
+                    </div>
+                    <div class="acad-filter-box">
+                        <label for="completedProjectTypeFilter">Stream:</label>
+                        <select id="completedProjectTypeFilter" class="filter-select compact-select">
+                            <?php if ($isExtensionDirector): ?>
+                                <option value="extension">Extension Only</option>
+                            <?php elseif ($isResearchDirector): ?>
+                                <option value="research">Research Only</option>
+                            <?php else: ?>
+                                <option value="all">All Projects</option>
+                                <option value="research">Research</option>
+                                <option value="extension">Extension</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -934,16 +943,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (completedProjectFilter && completedCollegesList) {
         const completedCollegeRows = <?php echo json_encode($completedColleges, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const searchInput = document.getElementById('completedCollegeSearchInput');
+        const searchBtn = document.getElementById('completedCollegeSearchBtn');
+
         const renderCompletedColleges = () => {
             const selectedType = completedProjectFilter.value;
+            const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
             completedCollegesList.replaceChildren();
             let visibleCollegeCount = 0;
             let totalProjectsCount = 0;
 
             completedCollegeRows.forEach(college => {
-                const projects = college.projects.filter(project =>
-                    selectedType === 'all' || project.type.toLowerCase() === selectedType
-                );
+                const deptMatches = !query || 
+                    college.department_name.toLowerCase().includes(query) || 
+                    getCollegeCodeTag(college.department_name).toLowerCase().includes(query);
+
+                const projects = college.projects.filter(project => {
+                    const matchesStream = selectedType === 'all' || project.type.toLowerCase() === selectedType;
+                    if (!matchesStream) return false;
+                    if (!query) return true;
+                    if (deptMatches) return true;
+                    return (project.title && project.title.toLowerCase().includes(query)) ||
+                           (project.lead && project.lead.toLowerCase().includes(query)) ||
+                           (project.submitter_name && project.submitter_name.toLowerCase().includes(query));
+                });
                 if (!projects.length) return;
                 visibleCollegeCount++;
                 totalProjectsCount += projects.length;
@@ -1022,15 +1045,35 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (completedTotalBadgeEl) {
-                completedTotalBadgeEl.textContent = `${visibleCollegeCount} Active College${visibleCollegeCount === 1 ? '' : 's'} · ${totalProjectsCount} Completed`;
+                if (query) {
+                    completedTotalBadgeEl.textContent = `${visibleCollegeCount} College${visibleCollegeCount === 1 ? '' : 's'} · ${totalProjectsCount} Completed (Filtered)`;
+                } else {
+                    completedTotalBadgeEl.textContent = `${visibleCollegeCount} Active College${visibleCollegeCount === 1 ? '' : 's'} · ${totalProjectsCount} Completed`;
+                }
             }
 
             if (!visibleCollegeCount) {
-                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-inbox-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found for selected stream.</div>`;
+                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-search-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found${query ? ' matching "' + query.replace(/["<>]/g, '') + '"' : ' for selected stream'}.</div>`;
             }
         };
 
         completedProjectFilter.addEventListener('change', renderCompletedColleges);
+        if (searchInput) {
+            searchInput.addEventListener('input', renderCompletedColleges);
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    renderCompletedColleges();
+                }
+            });
+        }
+        if (searchBtn) {
+            searchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                renderCompletedColleges();
+                if (searchInput) searchInput.focus();
+            });
+        }
     }
 });
 </script>

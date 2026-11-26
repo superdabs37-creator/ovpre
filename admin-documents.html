@@ -511,7 +511,7 @@
                     <!-- RIGHT: COMPLETED COLLEGES DIRECTORY CARD -->
                     <div class="documents-colleges-col">
                         <article class="panel chart-panel acad-analytics-card documents-colleges-card">
-                            <div class="acad-card-header">
+                            <div class="acad-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                                 <div class="acad-card-title-wrap">
                                     <span class="acad-card-icon icon-emerald">
                                         <i class="ri-building-2-line"></i>
@@ -520,13 +520,22 @@
                                         <h2 class="acad-card-title">Completed Colleges</h2>
                                     </div>
                                 </div>
-                                <div class="acad-filter-box">
-                                    <label for="completedProjectTypeFilter">Stream:</label>
-                                    <select id="completedProjectTypeFilter" class="filter-select compact-select">
-                                        <option value="all">All Projects</option>
-                                        <option value="research">Research</option>
-                                        <option value="extension">Extension</option>
-                                    </select>
+                                <div class="acad-header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <div class="acad-search-box" style="position: relative; display: flex; align-items: center;">
+                                        <i class="ri-search-line" style="position: absolute; left: 9px; color: #94a3b8; font-size: 0.85rem; pointer-events: none;"></i>
+                                        <input type="search" id="completedCollegeSearchInput" placeholder="Search department or title..." aria-label="Search completed projects by department" style="height: 32px; padding: 0 28px 0 28px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; color: #1e293b; background: #ffffff; width: 175px; outline: none; transition: all 0.2s ease;">
+                                        <button type="button" id="completedCollegeSearchBtn" aria-label="Search" title="Search" style="position: absolute; right: 2px; width: 26px; height: 26px; border: none; background: transparent; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                                            <i class="ri-arrow-right-s-line" style="font-size: 1rem;"></i>
+                                        </button>
+                                    </div>
+                                    <div class="acad-filter-box">
+                                        <label for="completedProjectTypeFilter">Stream:</label>
+                                        <select id="completedProjectTypeFilter" class="filter-select compact-select">
+                                            <option value="all">All Projects</option>
+                                            <option value="research">Research</option>
+                                            <option value="extension">Extension</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -2363,10 +2372,12 @@
         function renderCompletedColleges() {
             const completedCollegesList = document.getElementById('completedCollegesList');
             const completedProjectFilter = document.getElementById('completedProjectTypeFilter');
+            const searchInput = document.getElementById('completedCollegeSearchInput');
             const completedTotalBadgeEl = document.getElementById('completedTotalBadge');
             if (!completedCollegesList) return;
 
             const filterVal = completedProjectFilter ? completedProjectFilter.value : 'all';
+            const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
             completedCollegesList.replaceChildren();
 
             let mergedColleges = buildMergedCompletedColleges();
@@ -2374,7 +2385,19 @@
             let totalCompletedProjects = 0;
 
             mergedColleges.forEach(col => {
-                const filteredProjects = col.projects.filter(p => filterVal === 'all' || p.type.toLowerCase() === filterVal);
+                const deptMatches = !query || 
+                    col.department_name.toLowerCase().includes(query) || 
+                    normalizeCompletedCollegeDept(col.department_name).toLowerCase().includes(query);
+
+                const filteredProjects = col.projects.filter(p => {
+                    const matchesStream = filterVal === 'all' || p.type.toLowerCase() === filterVal;
+                    if (!matchesStream) return false;
+                    if (!query) return true;
+                    if (deptMatches) return true;
+                    return (p.title && p.title.toLowerCase().includes(query)) ||
+                           (p.submitter_name && p.submitter_name.toLowerCase().includes(query)) ||
+                           (p.description && p.description.toLowerCase().includes(query));
+                });
                 if (!filteredProjects.length) return;
                 visibleCount++;
                 totalCompletedProjects += filteredProjects.length;
@@ -2454,11 +2477,15 @@
             });
 
             if (completedTotalBadgeEl) {
-                completedTotalBadgeEl.textContent = `${visibleCount} Active College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed`;
+                if (query) {
+                    completedTotalBadgeEl.textContent = `${visibleCount} College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed (Filtered)`;
+                } else {
+                    completedTotalBadgeEl.textContent = `${visibleCount} Active College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed`;
+                }
             }
 
             if (!visibleCount) {
-                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-inbox-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects matching selected criteria.</div>`;
+                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-search-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found${query ? ' matching "' + query.replace(/["<>]/g, '') + '"' : ' matching selected criteria'}.</div>`;
             }
         }
         window.renderCompletedColleges = renderCompletedColleges;
@@ -2475,9 +2502,30 @@
             }
 
             const completedProjectFilter = document.getElementById('completedProjectTypeFilter');
+            const searchInput = document.getElementById('completedCollegeSearchInput');
+            const searchBtn = document.getElementById('completedCollegeSearchBtn');
+
             if (completedProjectFilter) {
                 completedProjectFilter.addEventListener('change', renderCompletedColleges);
                 renderCompletedColleges();
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', renderCompletedColleges);
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        renderCompletedColleges();
+                    }
+                });
+            }
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    renderCompletedColleges();
+                    if (searchInput) searchInput.focus();
+                });
             }
 
             const closePreviewDialog = document.getElementById('closeQuickPreviewDialog');
