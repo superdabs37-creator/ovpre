@@ -383,7 +383,7 @@ renderHeader('Record Management', 'documents');
     </div>
 </section>
 
-<section class="panel submission-folders">
+<section class="panel submission-folders" style="margin-bottom: 24px;">
     <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
         <div>
             <h2 id="submissionFoldersTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
@@ -486,126 +486,117 @@ $catIcons = [
     'Technical Report' => 'ri-file-settings-line',
 ];
 ?>
-<div class="documents-overview-row">
-    <!-- LEFT: Category Summary Cards -->
-    <div class="documents-category-col">
-        <section class="summary-grid documents-summary-grid">
-            <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All" aria-pressed="true">
-                <div class="summary-icon"><i class="ri-folders-line"></i></div>
-                <div>
-                    <p>All Records</p>
-                    <h3><?php echo array_sum(array_map(fn($row) => (int) $row['total'], $categoryAnalytics)); ?></h3>
-                    <span>Open all records</span>
-                </div>
-            </article>
-            <?php 
-            $catCount = count($categoryAnalytics);
-            foreach ($categoryAnalytics as $catIdx => $row): 
-                $catName = $row['category_name'];
-                $iconClass = $catIcons[$catName] ?? 'ri-folder-3-line';
-                $spanTwo = ($catIdx === $catCount - 1);
-            ?>
-                <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="<?php echo h($catName); ?>" aria-pressed="false" <?php echo $spanTwo ? 'style="grid-column: span 2;"' : ''; ?>>
-                    <div class="summary-icon"><i class="<?php echo $iconClass; ?>"></i></div>
-                    <div>
-                        <p><?php echo h($catName); ?></p>
-                        <h3><?php echo (int) $row['total']; ?></h3>
-                        <span>Open category records</span>
-                    </div>
-                </article>
-            <?php endforeach; ?>
-        </section>
-    </div>
-
-    <!-- RIGHT: Completed Colleges Directory Card -->
-    <div class="documents-colleges-col">
-        <article class="panel chart-panel acad-analytics-card documents-colleges-card">
-            <div class="acad-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <div class="acad-card-title-wrap">
-                    <span class="acad-card-icon icon-emerald">
-                        <i class="ri-building-2-line"></i>
-                    </span>
-                    <div>
-                        <h2 class="acad-card-title">Completed Colleges</h2>
-                    </div>
-                </div>
-                <div class="acad-header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <div class="acad-search-box" style="position: relative; display: flex; align-items: center;">
-                        <i class="ri-search-line" style="position: absolute; left: 9px; color: #94a3b8; font-size: 0.85rem; pointer-events: none;"></i>
-                        <input type="search" id="completedCollegeSearchInput" placeholder="Search department or title..." aria-label="Search completed projects by department" style="height: 32px; padding: 0 28px 0 28px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; color: #1e293b; background: #ffffff; width: 175px; outline: none; transition: all 0.2s ease;">
-                        <button type="button" id="completedCollegeSearchBtn" aria-label="Search" title="Search" style="position: absolute; right: 2px; width: 26px; height: 26px; border: none; background: transparent; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
-                            <i class="ri-arrow-right-s-line" style="font-size: 1rem;"></i>
-                        </button>
-                    </div>
-                    <div class="acad-filter-box">
-                        <label for="completedProjectTypeFilter">Stream:</label>
-                        <select id="completedProjectTypeFilter" class="filter-select compact-select">
-                            <?php if ($isExtensionDirector): ?>
-                                <option value="extension">Extension Only</option>
-                            <?php elseif ($isResearchDirector): ?>
-                                <option value="research">Research Only</option>
-                            <?php else: ?>
-                                <option value="all">All Projects</option>
-                                <option value="research">Research</option>
-                                <option value="extension">Extension</option>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Custom Clean Scroll Container -->
-            <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; min-height: 250px; max-height: 295px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
-                <?php if (empty($completedColleges)): ?>
-                    <div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;">
-                        <i class="ri-inbox-line" style="font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
-                        No completed projects found
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($completedColleges as $completedCollege): ?>
-                        <div class="acad-college-group">
-                            <div class="acad-college-header">
-                                <div class="acad-college-name-wrap">
-                                    <span class="acad-college-acronym"><?php echo h(getCollegeCodeTag($completedCollege['department_name'])); ?></span>
-                                    <h3 class="acad-college-name"><?php echo h($completedCollege['department_name']); ?></h3>
-                                </div>
-                                <span class="acad-college-count"><?php echo count($completedCollege['projects']); ?> completed</span>
-                            </div>
-                            <div class="acad-project-list">
-                                <?php foreach ($completedCollege['projects'] as $completedProject): ?>
-                                    <?php
-                                        $isResearch = ($completedProject['type'] ?? '') === 'Research';
-                                        $projId = (int) ($completedProject['id'] ?? 0);
-                                    ?>
-                                    <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, <?php echo json_encode($completedCollege["department_name"]); ?>)' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
-                                        <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
-                                            <span class="acad-project-type <?php echo $isResearch ? 'type-research' : 'type-extension'; ?>">
-                                                <?php echo h($completedProject['type']); ?>
-                                            </span>
-                                            <span class="acad-project-title">
-                                                <?php echo h($completedProject['title']); ?>
-                                            </span>
-                                        </div>
-                                        <button type="button" class="acad-view-file-btn">
-                                            <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
-                                            <span>View File</span>
-                                        </button>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-
-            <!-- Card Bottom Bar -->
-            <div class="acad-card-footer">
-                <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><i class="ri-shield-check-line" style="color: #15803d; font-size: 0.9rem;"></i> Institutional Completion Registry</span>
-                <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;"><?php echo count($completedColleges); ?> Active Colleges · <?php echo $totalCompletedProjectsCount; ?> Completed</strong>
+<!-- Category Summary Cards (Full-Width Grid) -->
+<section class="summary-grid" style="margin-bottom: 24px;">
+    <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All" aria-pressed="true">
+        <div class="summary-icon"><i class="ri-folders-line"></i></div>
+        <div>
+            <p>All Records</p>
+            <h3><?php echo array_sum(array_map(fn($row) => (int) $row['total'], $categoryAnalytics)); ?></h3>
+            <span>Open all records</span>
+        </div>
+    </article>
+    <?php foreach ($categoryAnalytics as $row): 
+        $catName = $row['category_name'];
+        $iconClass = $catIcons[$catName] ?? 'ri-folder-3-line';
+    ?>
+        <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="<?php echo h($catName); ?>" aria-pressed="false">
+            <div class="summary-icon"><i class="<?php echo $iconClass; ?>"></i></div>
+            <div>
+                <p><?php echo h($catName); ?></p>
+                <h3><?php echo (int) $row['total']; ?></h3>
+                <span>Open category records</span>
             </div>
         </article>
+    <?php endforeach; ?>
+</section>
+
+<!-- Completed Colleges Directory (Full-Width Under Category Cards) -->
+<article class="panel chart-panel acad-analytics-card" style="margin-bottom: 24px;">
+    <div class="acad-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div class="acad-card-title-wrap">
+            <span class="acad-card-icon icon-emerald">
+                <i class="ri-building-2-line"></i>
+            </span>
+            <div>
+                <h2 class="acad-card-title">Completed Colleges</h2>
+            </div>
+        </div>
+        <div class="acad-header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div class="acad-search-box" style="position: relative; display: flex; align-items: center;">
+                <i class="ri-search-line" style="position: absolute; left: 9px; color: #94a3b8; font-size: 0.85rem; pointer-events: none;"></i>
+                <input type="search" id="completedCollegeSearchInput" placeholder="Search department or title..." aria-label="Search completed projects by department" style="height: 32px; padding: 0 28px 0 28px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; color: #1e293b; background: #ffffff; width: 220px; outline: none; transition: all 0.2s ease;">
+                <button type="button" id="completedCollegeSearchBtn" aria-label="Search" title="Search" style="position: absolute; right: 2px; width: 26px; height: 26px; border: none; background: transparent; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                    <i class="ri-arrow-right-s-line" style="font-size: 1rem;"></i>
+                </button>
+            </div>
+            <div class="acad-filter-box">
+                <label for="completedProjectTypeFilter">Stream:</label>
+                <select id="completedProjectTypeFilter" class="filter-select compact-select">
+                    <?php if ($isExtensionDirector): ?>
+                        <option value="extension">Extension Only</option>
+                    <?php elseif ($isResearchDirector): ?>
+                        <option value="research">Research Only</option>
+                    <?php else: ?>
+                        <option value="all">All Projects</option>
+                        <option value="research">Research</option>
+                        <option value="extension">Extension</option>
+                    <?php endif; ?>
+                </select>
+            </div>
+        </div>
     </div>
-</div>
+
+    <!-- Custom Clean Scroll Container -->
+    <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; min-height: 250px; max-height: 295px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
+        <?php if (empty($completedColleges)): ?>
+            <div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;">
+                <i class="ri-inbox-line" style="font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
+                No completed projects found
+            </div>
+        <?php else: ?>
+            <?php foreach ($completedColleges as $completedCollege): ?>
+                <div class="acad-college-group">
+                    <div class="acad-college-header">
+                        <div class="acad-college-name-wrap">
+                            <span class="acad-college-acronym"><?php echo h(getCollegeCodeTag($completedCollege['department_name'])); ?></span>
+                            <h3 class="acad-college-name"><?php echo h($completedCollege['department_name']); ?></h3>
+                        </div>
+                        <span class="acad-college-count"><?php echo count($completedCollege['projects']); ?> completed</span>
+                    </div>
+                    <div class="acad-project-list">
+                        <?php foreach ($completedCollege['projects'] as $completedProject): ?>
+                            <?php
+                                $isResearch = ($completedProject['type'] ?? '') === 'Research';
+                                $projId = (int) ($completedProject['id'] ?? 0);
+                            ?>
+                            <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, <?php echo json_encode($completedCollege["department_name"]); ?>)' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
+                                <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                                    <span class="acad-project-type <?php echo $isResearch ? 'type-research' : 'type-extension'; ?>">
+                                        <?php echo h($completedProject['type']); ?>
+                                    </span>
+                                    <span class="acad-project-title">
+                                        <?php echo h($completedProject['title']); ?>
+                                    </span>
+                                </div>
+                                <button type="button" class="acad-view-file-btn">
+                                    <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
+                                    <span>View File</span>
+                                </button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+
+    <!-- Card Bottom Bar -->
+    <div class="acad-card-footer">
+        <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><i class="ri-shield-check-line" style="color: #15803d; font-size: 0.9rem;"></i> Institutional Completion Registry</span>
+        <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;"><?php echo count($completedColleges); ?> Active Colleges · <?php echo $totalCompletedProjectsCount; ?> Completed</strong>
+    </div>
+</article>
 
 <section class="panel">
     <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
