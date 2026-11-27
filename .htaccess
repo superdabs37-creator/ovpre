@@ -3,6 +3,8 @@ DirectoryIndex landing.php index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteRule ^login\.html$ index.php [R=302,L]
+    RewriteRule ^login$ index.php [R=302,L]
     RewriteRule ^research-director(?:/.*)?$ dashboard.php [R=302,L]
     RewriteRule ^extension-director(?:/.*)?$ dashboard.php [R=302,L]
 </IfModule>

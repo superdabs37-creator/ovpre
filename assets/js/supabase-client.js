@@ -18,6 +18,14 @@
         try {
             client = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
             console.info('[OVPRE Supabase] Connected successfully to ' + SUPABASE_CONFIG.url);
+
+            const token = window.SUPABASE_ACCESS_TOKEN || sessionStorage.getItem('supabase_access_token');
+            const refreshToken = window.SUPABASE_REFRESH_TOKEN || sessionStorage.getItem('supabase_refresh_token');
+            if (token && client.auth && typeof client.auth.setSession === 'function') {
+                client.auth.setSession({ access_token: token, refresh_token: refreshToken || '' })
+                    .then(() => console.info('[OVPRE Supabase] Authenticated session established.'))
+                    .catch((err) => console.warn('[OVPRE Supabase] Session sync notice:', err.message));
+            }
         } catch (e) {
             console.warn('[OVPRE Supabase] Init error:', e.message);
         }

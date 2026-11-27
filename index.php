@@ -45,6 +45,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && $password !== '') {
         if (!empty($user['password']) && password_verify($password, (string) $user['password'])) {
             $passwordValid = true;
+            // Transparently link/sync Supabase Auth session if configured
+            if (!empty($user['email']) && defined('SUPABASE_URL') && SUPABASE_URL !== '') {
+                try {
+                    $authUserId = (string) ($user['auth_user_id'] ?? '');
+                    if ($authUserId === '') {
+                        $existingAuth = supabase_auth_admin_find_user_by_email((string) $user['email']);
+                        if ($existingAuth && !empty($existingAuth['id'])) {
+                            $authUserId = (string) $existingAuth['id'];
+                            supabase_auth_admin_set_password($authUserId, $password);
+                        } else {
+                            $createdAuth = supabase_auth_admin_create_user((string) $user['email'], $password, [
+                                'fullname' => (string) ($user['fullname'] ?? ''),
+                                'role' => (string) ($user['role'] ?? ''),
+                            ]);
+                            if ($createdAuth && !empty($createdAuth['id'])) {
+                                $authUserId = (string) $createdAuth['id'];
+                            }
+                        }
+                        if ($authUserId !== '') {
+                            db()->prepare('UPDATE users SET auth_user_id = ? WHERE id = ?')->execute([$authUserId, $user['id']]);
+                            $user['auth_user_id'] = $authUserId;
+                        }
+                    }
+                    $auth = supabase_auth_password_login((string) $user['email'], $password);
+                } catch (Throwable) {
+                    // Supabase sync failure shouldn't block valid local login
+                }
+            }
         } else {
             try {
                 $auth = supabase_auth_password_login((string) $user['email'], $password);

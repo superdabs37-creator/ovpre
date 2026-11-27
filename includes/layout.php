@@ -173,6 +173,12 @@ function renderHeader($pageTitle, $currentPage)
                 </main>
             </div>
         </div>
+        <?php if (!empty($_SESSION['supabase_access_token'])): ?>
+        <script>
+            window.SUPABASE_ACCESS_TOKEN = <?php echo json_encode($_SESSION['supabase_access_token']); ?>;
+            window.SUPABASE_REFRESH_TOKEN = <?php echo json_encode($_SESSION['supabase_refresh_token'] ?? ''); ?>;
+        </script>
+        <?php endif; ?>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="assets/js/app.js?v=20261109-fixed"></script>
     </body>

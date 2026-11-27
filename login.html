@@ -79,6 +79,7 @@
         </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         window.quickLoginAccount = function(username) {
             let registeredUsers = [];
@@ -128,6 +129,12 @@
         };
 
         (() => {
+            // If running on a live web server (XAMPP / Apache / PHP), redirect to the real secure PHP login
+            if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('vercel.app')) {
+                window.location.replace('index.php');
+                return;
+            }
+
             // Check URL parameters for banners
             const urlParams = new URLSearchParams(window.location.search);
             const noticeBox = document.getElementById('loginNotice');
@@ -165,7 +172,7 @@
             const loginForm = document.getElementById('loginForm');
             const submitBtn = document.getElementById('submitBtn');
 
-            loginForm.addEventListener('submit', (e) => {
+            loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const usernameInput = document.getElementById('username').value.trim();
                 const passwordInput = document.getElementById('password').value;
@@ -173,7 +180,96 @@
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Signing in...';
 
-                // Look up in registered users first
+                function showError(msg) {
+                    noticeBox.style.display = 'flex';
+                    noticeBox.style.background = '#fef2f2';
+                    noticeBox.style.border = '1px solid #fca5a5';
+                    noticeBox.style.color = '#991b1b';
+                    noticeBox.innerHTML = '<i class="ri-error-warning-line" style="font-size: 1.25rem;"></i> ' + msg;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Sign In';
+                }
+
+                if (!usernameInput || !passwordInput) {
+                    showError('Please enter both your username and password.');
+                    return;
+                }
+
+                // Known system accounts mapping for Supabase Auth lookup
+                const USERNAME_EMAIL_MAP = {
+                    'admin': 'superdabs37@gmail.com',
+                    'athorne': 'thorne.ccst@plsp.edu.ph',
+                    'kvaldez': 'valdez.coe@plsp.edu.ph',
+                    'lbautista': 'bautista.conahs@plsp.edu.ph',
+                    'gmendoza': 'mendoza.cas@plsp.edu.ph',
+                    'rcruz': 'cruz.cba@plsp.edu.ph',
+                    'mdelosreyes': 'delosreyes.cte@plsp.edu.ph',
+                    'jaquino': 'aquino.cthm@plsp.edu.ph',
+                    'vramos': 'ramos.coa@plsp.edu.ph',
+                    'jcigaral2': 'jcigaral2@gmail.com',
+                    'edrianbanaagt': 'edrianbanaagt@gmail.com',
+                    'marielramos12': 'marielramos12@gmail.com',
+                    'johncarl28': 'johncarl28@gmail.com',
+                    'owbiwan2': 'owbiwan2@gmail.com',
+                    'kendrix': 'brosaskndrx05@gmail.com',
+                    'jeysii': 'jeysii@gmail.com'
+                };
+
+                const targetEmail = usernameInput.includes('@') 
+                    ? usernameInput 
+                    : (USERNAME_EMAIL_MAP[usernameInput.toLowerCase()] || (usernameInput.toLowerCase() + '@plsp.edu.ph'));
+
+                // Try authenticating with Supabase Auth cloud service
+                let supabaseSuccess = false;
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    try {
+                        const sb = window.supabase.createClient(
+                            'https://yolquvpmptfjblfldbuh.supabase.co',
+                            'sb_publishable_0tb6TAlGiK3xHBjZkNuCZw_l6ImNFmC'
+                        );
+                        const { data, error } = await sb.auth.signInWithPassword({
+                            email: targetEmail,
+                            password: passwordInput
+                        });
+
+                        if (!error && data && data.user) {
+                            supabaseSuccess = true;
+                            const u = data.user;
+                            const meta = u.user_metadata || {};
+                            const userSession = {
+                                id: u.id,
+                                username: usernameInput,
+                                fullname: meta.fullname || meta.full_name || usernameInput,
+                                role: meta.role || (usernameInput.toLowerCase() === 'admin' ? 'Super Admin' : 'Researcher'),
+                                email: u.email,
+                                is_registered: true,
+                                logged_in: true
+                            };
+
+                            sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+                            localStorage.setItem('irecord_user', JSON.stringify(userSession));
+                            if (data.session) {
+                                sessionStorage.setItem('supabase_access_token', data.session.access_token);
+                                sessionStorage.setItem('supabase_refresh_token', data.session.refresh_token);
+                            }
+
+                            noticeBox.style.display = 'flex';
+                            noticeBox.style.background = '#f0fdf4';
+                            noticeBox.style.border = '1px solid #86efac';
+                            noticeBox.style.color = '#166534';
+                            noticeBox.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Sign-in successful! Redirecting to dashboard...';
+
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 600);
+                            return;
+                        }
+                    } catch (sbErr) {
+                        console.warn('[OVPRE Supabase] Auth attempt error:', sbErr);
+                    }
+                }
+
+                // If Supabase failed or offline, check registered prototype users
                 let registeredUsers = [];
                 try {
                     registeredUsers = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
@@ -184,57 +280,40 @@
                     u.email.toLowerCase() === usernameInput.toLowerCase()
                 );
 
-                let userSession;
-                if (matchedUser) {
-                    userSession = {
-                        id: matchedUser.id || ('usr_' + matchedUser.username.toLowerCase()),
-                        username: matchedUser.username,
-                        fullname: matchedUser.fullname,
-                        role: matchedUser.role,
-                        email: matchedUser.email,
-                        phone: matchedUser.phone || '',
-                        birthday: matchedUser.birthday || '',
-                        gender: matchedUser.gender || '',
-                        photo: matchedUser.photo || '',
-                        department: matchedUser.department || '',
-                        is_registered: true,
-                        logged_in: true
-                    };
-                } else {
-                    const lower = usernameInput.toLowerCase();
-                    let role = 'Super Admin';
-                    let fullname = 'Super Administrator';
+                const isDefaultAdmin = (usernameInput.toLowerCase() === 'admin' && (passwordInput === 'admin' || passwordInput === 'PLSP_Research2026!'));
 
-                    if (lower.includes('director') && lower.includes('extension')) {
-                        role = 'Extension Director';
-                        fullname = 'Extension Director';
-                    } else if (lower.includes('director') || lower.includes('research')) {
-                        role = 'Research Director';
-                        fullname = 'Research Director';
-                    } else if (lower.includes('coord') && lower.includes('extension')) {
-                        role = 'Extension Coordinator';
-                        fullname = 'Extension Coordinator';
-                    } else if (lower.includes('coord')) {
-                        role = 'Research Coordinator';
-                        fullname = 'Research Coordinator';
-                    } else if (lower.includes('exten')) {
-                        role = 'Faculty Extensionist';
-                        fullname = usernameInput ? (usernameInput.charAt(0).toUpperCase() + usernameInput.slice(1)) : 'Faculty Extensionist';
-                    } else if (lower !== 'admin' && usernameInput) {
-                        role = 'Faculty Researcher';
-                        fullname = usernameInput.charAt(0).toUpperCase() + usernameInput.slice(1);
-                    }
-
-                    userSession = {
-                        id: (lower === 'admin' || !usernameInput) ? 1 : ('usr_' + lower.replace(/[^a-z0-9_.-]/g, '_')),
-                        username: usernameInput || 'admin',
-                        fullname: fullname,
-                        role: role,
-                        email: (usernameInput || 'admin') + '@plsp.edu.ph',
-                        is_registered: (lower !== 'admin' && Boolean(usernameInput)),
-                        logged_in: true
-                    };
+                if (!matchedUser && !isDefaultAdmin) {
+                    showError('Invalid credentials or temporarily locked account.');
+                    return;
                 }
+
+                if (matchedUser && matchedUser.password && matchedUser.password !== passwordInput) {
+                    showError('Invalid credentials or temporarily locked account.');
+                    return;
+                }
+
+                const userSession = matchedUser ? {
+                    id: matchedUser.id || ('usr_' + matchedUser.username.toLowerCase()),
+                    username: matchedUser.username,
+                    fullname: matchedUser.fullname,
+                    role: matchedUser.role,
+                    email: matchedUser.email,
+                    phone: matchedUser.phone || '',
+                    birthday: matchedUser.birthday || '',
+                    gender: matchedUser.gender || '',
+                    photo: matchedUser.photo || '',
+                    department: matchedUser.department || '',
+                    is_registered: true,
+                    logged_in: true
+                } : {
+                    id: 1,
+                    username: 'admin',
+                    fullname: 'Super Administrator',
+                    role: 'Super Admin',
+                    email: 'admin@plsp.edu.ph',
+                    is_registered: true,
+                    logged_in: true
+                };
 
                 sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
                 localStorage.setItem('irecord_user', JSON.stringify(userSession));

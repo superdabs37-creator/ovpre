@@ -17,18 +17,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!hash_equals($newPassword, $confirmPassword)) {
             $error = 'New password and confirmation do not match.';
         } else {
-            try {
-                $auth = supabase_auth_password_login((string) $user['email'], $currentPassword);
-                $authUser = supabase_auth_user((string) ($auth['access_token'] ?? ''));
-                if (empty($user['auth_user_id']) || strcasecmp((string) ($authUser['id'] ?? ''), (string) $user['auth_user_id']) !== 0) {
-                    throw new RuntimeException('The profile is not linked to the signed-in Auth account.');
+            $isCurrentValid = false;
+            if (!empty($user['password']) && password_verify($currentPassword, (string) $user['password'])) {
+                $isCurrentValid = true;
+            } else {
+                try {
+                    $auth = supabase_auth_password_login((string) $user['email'], $currentPassword);
+                    $isCurrentValid = !empty($auth['access_token']);
+                } catch (Throwable) {
+                    $isCurrentValid = false;
                 }
-                supabase_auth_set_password((string) $auth['access_token'], $newPassword);
-                log_action((int) $user['id'], 'Changed own Supabase Auth password');
-                flash('success', 'Your password has been changed.');
-                redirect_to('profile.php?section=password');
-            } catch (Throwable $exception) {
-                $error = 'Your current password is incorrect, or the Auth service is unavailable.';
+            }
+
+            if (!$isCurrentValid) {
+                $error = 'Your current password is incorrect.';
+            } else {
+                try {
+                    $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                    db()->prepare('UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?')->execute([$newHash, (int) $user['id']]);
+
+                    // Sync to Supabase Auth if configured
+                    if (!empty($user['email']) && defined('SUPABASE_URL') && SUPABASE_URL !== '') {
+                        $authUserId = (string) ($user['auth_user_id'] ?? '');
+                        if ($authUserId !== '') {
+                            supabase_auth_admin_set_password($authUserId, $newPassword);
+                        } else {
+                            $existingAuth = supabase_auth_admin_find_user_by_email((string) $user['email']);
+                            if ($existingAuth && !empty($existingAuth['id'])) {
+                                $authUserId = (string) $existingAuth['id'];
+                                supabase_auth_admin_set_password($authUserId, $newPassword);
+                                db()->prepare('UPDATE users SET auth_user_id = ? WHERE id = ?')->execute([$authUserId, (int) $user['id']]);
+                            }
+                        }
+                    }
+
+                    log_action((int) $user['id'], 'Changed account password');
+                    flash('success', 'Your password has been changed successfully.');
+                    redirect_to('profile.php?section=password');
+                } catch (Throwable $exception) {
+                    $error = 'Failed to update password. Please try again.';
+                }
             }
         }
     } else {

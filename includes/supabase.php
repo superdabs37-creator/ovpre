@@ -195,3 +195,40 @@ function supabase_auth_admin_set_password(string $authUserId, string $password):
         return false;
     }
 }
+
+function supabase_auth_admin_create_user(string $email, string $password, array $metadata = []): ?array
+{
+    if (SUPABASE_URL === '' || SUPABASE_SECRET_KEY === '') {
+        return null;
+    }
+    try {
+        return supabase_request('POST', '/auth/v1/admin/users', [
+            'email' => $email,
+            'password' => $password,
+            'email_confirm' => true,
+            'user_metadata' => $metadata
+        ], null, true);
+    } catch (Throwable $error) {
+        error_log('Failed to create Supabase auth user for ' . $email . ': ' . $error->getMessage());
+        return null;
+    }
+}
+
+function supabase_auth_admin_find_user_by_email(string $email): ?array
+{
+    if (SUPABASE_URL === '' || SUPABASE_SECRET_KEY === '') {
+        return null;
+    }
+    try {
+        $result = supabase_request('GET', '/auth/v1/admin/users?per_page=100', null, null, true);
+        $users = $result['users'] ?? [];
+        foreach ($users as $user) {
+            if (isset($user['email']) && strcasecmp((string) $user['email'], $email) === 0) {
+                return $user;
+            }
+        }
+    } catch (Throwable $error) {
+        error_log('Failed to find Supabase auth user by email: ' . $error->getMessage());
+    }
+    return null;
+}

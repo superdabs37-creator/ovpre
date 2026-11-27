@@ -121,15 +121,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $newUserId = (int) db()->lastInsertId();
 
-        // Optional Supabase Auth sync (silent fallback)
+        // Supabase Auth sync
         try {
-            if (function_exists('supabase_auth_signup')) {
-                supabase_auth_signup($email, $password, [
-                    'full_name' => $fullname,
+            if (defined('SUPABASE_URL') && SUPABASE_URL !== '') {
+                $authRes = supabase_auth_admin_create_user($email, $password, [
+                    'fullname' => $fullname,
                     'username' => $username,
                     'role' => $role,
                     'department_id' => $departmentId
                 ]);
+                if ($authRes && !empty($authRes['id'])) {
+                    db()->prepare('UPDATE users SET auth_user_id = ? WHERE id = ?')->execute([(string) $authRes['id'], $newUserId]);
+                }
             }
         } catch (Throwable $e) {}
 
