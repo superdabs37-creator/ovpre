@@ -629,6 +629,10 @@
                     '<td>' + actionButtons + '</td>' +
                 '</tr>';
             }).join('');
+
+            if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('activitiesTable'));
+            }
         }
 
         function renderAll() {

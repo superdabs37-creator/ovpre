@@ -9479,3 +9479,42 @@ body.mask-grants .currency-masked-wrap[data-mask-group="grants"] .currency-mask,
         grid-template-columns: 1fr !important;
     }
 }
+
+
+/* Data Table Toolbar Sort & Order Controls */
+.data-table-sort,
+.data-table-order {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
+.data-table-sort select,
+.data-table-order select {
+    min-height: 36px;
+    max-width: min(100%, 260px);
+    padding: 0 26px 0 10px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.data-table-sort select:focus,
+.data-table-order select:focus {
+    border-color: var(--green-700);
+    box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+}
+
+.data-table-order i {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+}

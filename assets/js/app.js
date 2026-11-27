@@ -775,7 +775,9 @@ function populateAdminColumnFilters(state, table) {
         });
         label.append(select);
         state.filterSelects[columnIndex] = select;
-        if (exportButton && toolbar.contains(exportButton)) {
+        if (state.sortLabel && toolbar.contains(state.sortLabel)) {
+            toolbar.insertBefore(label, state.sortLabel);
+        } else if (exportButton && toolbar.contains(exportButton)) {
             toolbar.insertBefore(label, exportButton);
         } else {
             toolbar.append(label);
@@ -802,8 +804,12 @@ window.reloadAdminTablePagination = function(targetTable) {
     state.emptyRows = emptyRows;
     state.rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
     populateAdminColumnFilters(state, table);
-    state.page = 1;
-    refreshAdminTablePagination();
+    if (typeof state.applyTableSort === 'function' && state.currentSortColumn !== undefined) {
+        state.applyTableSort(state.currentSortColumn, state.currentSortOrder || 'asc');
+    } else {
+        state.page = 1;
+        refreshAdminTablePagination();
+    }
 };
 
 function resetAdminTablePagination() {
@@ -1026,26 +1032,88 @@ window.initAdminTablePagination = function(table) {
         }
     }
 
+    const sortableHeaders = [];
     table.querySelectorAll('thead th').forEach((header, columnIndex) => {
-        if (!header.textContent.trim() || /^(manage|review|actions?|select\s*all|file|files|document|documents)$/i.test(header.textContent.trim()) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
-        header.classList.add('data-table-sortable');
-        header.tabIndex = 0;
-        header.setAttribute('aria-sort', 'none');
+        const text = header.textContent.trim();
+        if (!text || /^(manage|review|actions?|select\s*all|file|files|document|documents)$/i.test(text) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
+        sortableHeaders.push({ header, columnIndex, text });
+    });
 
-        const sortByHeader = () => {
-            const direction = header.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
+    if (sortableHeaders.length > 0) {
+        const sortLabel = document.createElement('label');
+        sortLabel.className = 'data-table-sort';
+        sortLabel.innerHTML = '<span>Sort:</span>';
+        const sortSelect = document.createElement('select');
+        sortSelect.setAttribute('aria-label', 'Sort by column');
+        sortableHeaders.forEach(({ columnIndex, text }) => {
+            const option = document.createElement('option');
+            option.value = String(columnIndex);
+            option.textContent = text;
+            sortSelect.append(option);
+        });
+        sortLabel.append(sortSelect);
+
+        const orderLabel = document.createElement('label');
+        orderLabel.className = 'data-table-order';
+        orderLabel.innerHTML = '<i class="ri-sort-asc" aria-hidden="true" style="color: #15803d; font-size: 1.05rem;"></i><span>Order:</span>';
+        const orderSelect = document.createElement('select');
+        orderSelect.setAttribute('aria-label', 'Sort order');
+        const ascOption = document.createElement('option');
+        ascOption.value = 'asc';
+        ascOption.textContent = 'Ascending';
+        ascOption.selected = true;
+        const descOption = document.createElement('option');
+        descOption.value = 'desc';
+        descOption.textContent = 'Descending';
+        orderSelect.append(ascOption, descOption);
+        orderLabel.append(orderSelect);
+
+        if (lengthLabel && toolbar.contains(lengthLabel)) {
+            toolbar.insertBefore(sortLabel, lengthLabel);
+            toolbar.insertBefore(orderLabel, lengthLabel);
+        } else if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(sortLabel, exportButton);
+            toolbar.insertBefore(orderLabel, exportButton);
+        } else {
+            toolbar.append(sortLabel, orderLabel);
+        }
+        state.sortLabel = sortLabel;
+        state.orderLabel = orderLabel;
+        state.sortSelect = sortSelect;
+        state.orderSelect = orderSelect;
+
+        const applyTableSort = (columnIndex, direction) => {
+            state.currentSortColumn = columnIndex;
+            state.currentSortOrder = direction;
+
             table.querySelectorAll('thead th[data-sort-direction]').forEach((otherHeader) => {
                 otherHeader.removeAttribute('data-sort-direction');
                 otherHeader.setAttribute('aria-sort', 'none');
             });
-            header.dataset.sortDirection = direction;
-            header.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+            const targetHeader = sortableHeaders.find(h => h.columnIndex === columnIndex)?.header;
+            if (targetHeader) {
+                targetHeader.dataset.sortDirection = direction;
+                targetHeader.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+            }
+
+            if (sortSelect.value !== String(columnIndex)) {
+                sortSelect.value = String(columnIndex);
+            }
+            if (orderSelect.value !== direction) {
+                orderSelect.value = direction;
+            }
+            const orderIcon = orderLabel.querySelector('i');
+            if (orderIcon) {
+                orderIcon.className = direction === 'asc' ? 'ri-sort-asc' : 'ri-sort-desc';
+                orderIcon.style.color = direction === 'asc' ? '#15803d' : '#0369a1';
+            }
+
             const sortTargetRows = state ? state.rows : rows;
             sortTargetRows.sort((rowA, rowB) => {
                 const cellA = rowA.cells[columnIndex];
                 const cellB = rowB.cells[columnIndex];
-                const valueA = (cellA?.dataset.sortValue || cellA?.innerText || '').trim();
-                const valueB = (cellB?.dataset.sortValue || cellB?.innerText || '').trim();
+                const valueA = (cellA?.dataset.sortValue || cellA?.innerText || cellA?.textContent || '').trim();
+                const valueB = (cellB?.dataset.sortValue || cellB?.innerText || cellB?.textContent || '').trim();
                 const numericPattern = /^[-+]?[^\dA-Za-z]*[\d,]+(?:\.\d+)?%?$/;
                 let comparison;
                 if (numericPattern.test(valueA) && numericPattern.test(valueB)) {
@@ -1061,23 +1129,46 @@ window.initAdminTablePagination = function(table) {
                 }
                 return direction === 'asc' ? comparison : -comparison;
             });
+
             const appendTargetRows = state ? state.rows : rows;
             appendTargetRows.forEach((row) => body.append(row));
             emptyRows.forEach((row) => body.append(row));
-            state.page = 1;
+            if (state) state.page = 1;
             refreshAdminTablePagination();
         };
+        state.applyTableSort = applyTableSort;
 
-        header.addEventListener('click', sortByHeader);
-        header.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                sortByHeader();
-            }
+        sortSelect.addEventListener('change', () => {
+            applyTableSort(Number(sortSelect.value), orderSelect.value);
         });
-    });
+        orderSelect.addEventListener('change', () => {
+            applyTableSort(Number(sortSelect.value), orderSelect.value);
+        });
+
+        sortableHeaders.forEach(({ header, columnIndex }) => {
+            header.classList.add('data-table-sortable');
+            header.tabIndex = 0;
+            header.setAttribute('aria-sort', 'none');
+
+            const sortByHeader = () => {
+                const currentDir = header.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
+                applyTableSort(columnIndex, currentDir);
+            };
+
+            header.addEventListener('click', sortByHeader);
+            header.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    sortByHeader();
+                }
+            });
+        });
+
+        // Initialize table in Ascending order by default
+        applyTableSort(sortableHeaders[0].columnIndex, 'asc');
+    }
 };
-document.querySelectorAll('.content-area table.data-table').forEach(window.initAdminTablePagination);
+document.querySelectorAll('table.data-table').forEach(window.initAdminTablePagination);
 refreshAdminTablePagination();
 
 function setRecordsCategoryFilter(card) {

@@ -703,6 +703,9 @@
             if (typeof window.initTableSelectionEngine === 'function') {
                 window.initTableSelectionEngine();
             }
+            if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('announcementsTable'));
+            }
         }
 
         window.handleBulkAnnouncementsSubmit = function(e) {
