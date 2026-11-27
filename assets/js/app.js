@@ -805,7 +805,7 @@ window.reloadAdminTablePagination = function(targetTable) {
     state.rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
     populateAdminColumnFilters(state, table);
     if (typeof state.applyTableSort === 'function' && state.currentSortColumn !== undefined) {
-        state.applyTableSort(state.currentSortColumn, state.currentSortOrder || 'asc');
+        state.applyTableSort(state.currentSortColumn, state.currentSortOrder || 'desc');
     } else {
         state.page = 1;
         refreshAdminTablePagination();
@@ -1055,17 +1055,17 @@ window.initAdminTablePagination = function(table) {
 
         const orderLabel = document.createElement('label');
         orderLabel.className = 'data-table-order';
-        orderLabel.innerHTML = '<i class="ri-sort-asc" aria-hidden="true" style="color: #15803d; font-size: 1.05rem;"></i><span>Order:</span>';
+        orderLabel.innerHTML = '<i class="ri-time-line" aria-hidden="true" style="color: #15803d; font-size: 1.05rem;"></i><span>Order:</span>';
         const orderSelect = document.createElement('select');
         orderSelect.setAttribute('aria-label', 'Sort order');
-        const ascOption = document.createElement('option');
-        ascOption.value = 'asc';
-        ascOption.textContent = 'Ascending';
-        ascOption.selected = true;
         const descOption = document.createElement('option');
         descOption.value = 'desc';
-        descOption.textContent = 'Descending';
-        orderSelect.append(ascOption, descOption);
+        descOption.textContent = 'Newest to Oldest';
+        descOption.selected = true;
+        const ascOption = document.createElement('option');
+        ascOption.value = 'asc';
+        ascOption.textContent = 'Oldest to Newest';
+        orderSelect.append(descOption, ascOption);
         orderLabel.append(orderSelect);
 
         if (lengthLabel && toolbar.contains(lengthLabel)) {
@@ -1093,7 +1093,8 @@ window.initAdminTablePagination = function(table) {
             const targetHeader = sortableHeaders.find(h => h.columnIndex === columnIndex)?.header;
             if (targetHeader) {
                 targetHeader.dataset.sortDirection = direction;
-                targetHeader.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+                targetHeader.setAttribute('aria-sort', direction === 'desc' ? 'descending' : 'ascending');
+                targetHeader.title = direction === 'desc' ? 'Sorted: Newest to Oldest (Click to sort Oldest to Newest)' : 'Sorted: Oldest to Newest (Click to sort Newest to Oldest)';
             }
 
             if (sortSelect.value !== String(columnIndex)) {
@@ -1104,8 +1105,8 @@ window.initAdminTablePagination = function(table) {
             }
             const orderIcon = orderLabel.querySelector('i');
             if (orderIcon) {
-                orderIcon.className = direction === 'asc' ? 'ri-sort-asc' : 'ri-sort-desc';
-                orderIcon.style.color = direction === 'asc' ? '#15803d' : '#0369a1';
+                orderIcon.className = direction === 'desc' ? 'ri-time-line' : 'ri-history-line';
+                orderIcon.style.color = direction === 'desc' ? '#15803d' : '#0369a1';
             }
 
             const sortTargetRows = state ? state.rows : rows;
@@ -1151,7 +1152,7 @@ window.initAdminTablePagination = function(table) {
             header.setAttribute('aria-sort', 'none');
 
             const sortByHeader = () => {
-                const currentDir = header.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
+                const currentDir = header.dataset.sortDirection === 'desc' ? 'asc' : 'desc';
                 applyTableSort(columnIndex, currentDir);
             };
 
@@ -1164,8 +1165,18 @@ window.initAdminTablePagination = function(table) {
             });
         });
 
-        // Initialize table in Ascending order by default
-        applyTableSort(sortableHeaders[0].columnIndex, 'asc');
+        // Pick date or ID column as preferred default for "Newest to Oldest"
+        let defaultHeaderIndex = sortableHeaders.findIndex(h => /date|submitted|published|registered|created|time/i.test(h.text));
+        if (defaultHeaderIndex === -1) {
+            defaultHeaderIndex = sortableHeaders.findIndex(h => /id/i.test(h.text));
+        }
+        if (defaultHeaderIndex === -1) {
+            defaultHeaderIndex = 0;
+        }
+        const defaultCol = sortableHeaders[defaultHeaderIndex];
+
+        // Initialize table in Newest to Oldest order by default
+        applyTableSort(defaultCol.columnIndex, 'desc');
     }
 };
 document.querySelectorAll('table.data-table').forEach(window.initAdminTablePagination);
