@@ -9479,3 +9479,106 @@ body.mask-grants .currency-masked-wrap[data-mask-group="grants"] .currency-mask,
         grid-template-columns: 1fr !important;
     }
 }
+
+
+/* Completed Colleges Stream Separation */
+.acad-streams-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 14px;
+    width: 100%;
+    align-items: start;
+}
+
+.acad-stream-column {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 11px 12px;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    min-width: 0;
+}
+
+.acad-stream-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 11px;
+    border-radius: 8px;
+    gap: 8px;
+}
+
+.acad-stream-header.research-header {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.acad-stream-header.extension-header {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+}
+
+.acad-stream-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.acad-stream-header.research-header .acad-stream-title {
+    color: #15803d;
+}
+
+.acad-stream-header.extension-header .acad-stream-title {
+    color: #0369a1;
+}
+
+.acad-stream-badge {
+    font-size: 0.69rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.acad-stream-badge.research-badge {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.acad-stream-badge.extension-badge {
+    background: #e0f2fe;
+    color: #075985;
+    border: 1px solid #7dd3fc;
+}
+
+.acad-stream-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100px;
+    max-height: 310px;
+    overflow-y: auto;
+    padding-right: 3px;
+}
+
+.acad-stream-empty {
+    padding: 28px 10px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.acad-stream-empty i {
+    font-size: 1.5rem;
+    color: #cbd5e1;
+}

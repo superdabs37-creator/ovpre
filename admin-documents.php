@@ -356,6 +356,27 @@ foreach ($completedProjectRows as $completedProjectRow) {
 $completedColleges = array_values($completedColleges);
 $totalCompletedProjectsCount = array_sum(array_map(fn($c) => count($c['projects']), $completedColleges));
 
+$researchColleges = [];
+$extensionColleges = [];
+foreach ($completedColleges as $cCol) {
+    $rProjs = array_values(array_filter($cCol['projects'], fn($p) => ($p['type'] ?? '') === 'Research'));
+    $eProjs = array_values(array_filter($cCol['projects'], fn($p) => ($p['type'] ?? '') === 'Extension'));
+    if (!empty($rProjs)) {
+        $researchColleges[] = [
+            'department_name' => $cCol['department_name'],
+            'projects' => $rProjs
+        ];
+    }
+    if (!empty($eProjs)) {
+        $extensionColleges[] = [
+            'department_name' => $cCol['department_name'],
+            'projects' => $eProjs
+        ];
+    }
+}
+$totalResearchCount = array_sum(array_map(fn($c) => count($c['projects']), $researchColleges));
+$totalExtensionCount = array_sum(array_map(fn($c) => count($c['projects']), $extensionColleges));
+
 renderHeader('Record Management', 'documents');
 ?>
 <section class="module-header">
@@ -547,54 +568,128 @@ $catIcons = [
         </div>
     </div>
 
-    <!-- Custom Clean Scroll Container -->
-    <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; min-height: 250px; max-height: 295px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
+    <!-- Stream-Separated Completed Registry Container -->
+    <div id="completedCollegesList" style="flex: 1; display: flex; flex-direction: column; gap: 9px;">
         <?php if (empty($completedColleges)): ?>
             <div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;">
                 <i class="ri-inbox-line" style="font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: 6px;"></i>
                 No completed projects found
             </div>
         <?php else: ?>
-            <?php foreach ($completedColleges as $completedCollege): ?>
-                <div class="acad-college-group">
-                    <div class="acad-college-header">
-                        <div class="acad-college-name-wrap">
-                            <span class="acad-college-acronym"><?php echo h(getCollegeCodeTag($completedCollege['department_name'])); ?></span>
-                            <h3 class="acad-college-name"><?php echo h($completedCollege['department_name']); ?></h3>
-                        </div>
-                        <span class="acad-college-count"><?php echo count($completedCollege['projects']); ?> completed</span>
-                    </div>
-                    <div class="acad-project-list">
-                        <?php foreach ($completedCollege['projects'] as $completedProject): ?>
-                            <?php
-                                $isResearch = ($completedProject['type'] ?? '') === 'Research';
-                                $projId = (int) ($completedProject['id'] ?? 0);
-                            ?>
-                            <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, <?php echo json_encode($completedCollege["department_name"]); ?>)' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
-                                <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
-                                    <span class="acad-project-type <?php echo $isResearch ? 'type-research' : 'type-extension'; ?>">
-                                        <?php echo h($completedProject['type']); ?>
-                                    </span>
-                                    <span class="acad-project-title">
-                                        <?php echo h($completedProject['title']); ?>
-                                    </span>
-                                </div>
-                                <button type="button" class="acad-view-file-btn">
-                                    <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
-                                    <span>View File</span>
-                                </button>
+            <div class="acad-streams-container" id="completedStreamsContainer">
+                <?php if (!$isExtensionDirector): ?>
+                    <!-- Research Stream Column -->
+                    <div class="acad-stream-column stream-research" id="completedResearchColumn">
+                        <div class="acad-stream-header research-header">
+                            <div class="acad-stream-title">
+                                <i class="ri-microscope-line"></i>
+                                <span>Research Completed</span>
                             </div>
-                        <?php endforeach; ?>
+                            <span class="acad-stream-badge research-badge" id="completedResearchCountBadge">
+                                <?php echo $totalResearchCount; ?> <?php echo $totalResearchCount === 1 ? 'Project' : 'Projects'; ?>
+                            </span>
+                        </div>
+                        <div class="acad-stream-list custom-clean-scrollbar" id="completedResearchList">
+                            <?php if (empty($researchColleges)): ?>
+                                <div class="acad-stream-empty">
+                                    <i class="ri-flask-line"></i>
+                                    <span>No completed research projects</span>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($researchColleges as $college): ?>
+                                    <div class="acad-college-group">
+                                        <div class="acad-college-header">
+                                            <div class="acad-college-name-wrap">
+                                                <span class="acad-college-acronym"><?php echo h(getCollegeCodeTag($college['department_name'])); ?></span>
+                                                <h3 class="acad-college-name" title="<?php echo h($college['department_name']); ?>"><?php echo h($college['department_name']); ?></h3>
+                                            </div>
+                                            <span class="acad-college-count"><?php echo count($college['projects']); ?> completed</span>
+                                        </div>
+                                        <div class="acad-project-list">
+                                            <?php foreach ($college['projects'] as $completedProject): ?>
+                                                <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, <?php echo json_encode($college["department_name"]); ?>)' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
+                                                    <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                                                        <span class="acad-project-type type-research">
+                                                            Research
+                                                        </span>
+                                                        <span class="acad-project-title">
+                                                            <?php echo h($completedProject['title']); ?>
+                                                        </span>
+                                                    </div>
+                                                    <button type="button" class="acad-view-file-btn">
+                                                        <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
+                                                        <span>View File</span>
+                                                    </button>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php if (!$isResearchDirector): ?>
+                    <!-- Extension Stream Column -->
+                    <div class="acad-stream-column stream-extension" id="completedExtensionColumn">
+                        <div class="acad-stream-header extension-header">
+                            <div class="acad-stream-title">
+                                <i class="ri-community-line"></i>
+                                <span>Extension Completed</span>
+                            </div>
+                            <span class="acad-stream-badge extension-badge" id="completedExtensionCountBadge">
+                                <?php echo $totalExtensionCount; ?> <?php echo $totalExtensionCount === 1 ? 'Project' : 'Projects'; ?>
+                            </span>
+                        </div>
+                        <div class="acad-stream-list custom-clean-scrollbar" id="completedExtensionList">
+                            <?php if (empty($extensionColleges)): ?>
+                                <div class="acad-stream-empty">
+                                    <i class="ri-team-line"></i>
+                                    <span>No completed extension projects</span>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($extensionColleges as $college): ?>
+                                    <div class="acad-college-group">
+                                        <div class="acad-college-header">
+                                            <div class="acad-college-name-wrap">
+                                                <span class="acad-college-acronym"><?php echo h(getCollegeCodeTag($college['department_name'])); ?></span>
+                                                <h3 class="acad-college-name" title="<?php echo h($college['department_name']); ?>"><?php echo h($college['department_name']); ?></h3>
+                                            </div>
+                                            <span class="acad-college-count"><?php echo count($college['projects']); ?> completed</span>
+                                        </div>
+                                        <div class="acad-project-list">
+                                            <?php foreach ($college['projects'] as $completedProject): ?>
+                                                <div class="acad-project-row" role="button" tabindex="0" onclick='openQuickPreview(<?php echo htmlspecialchars(json_encode($completedProject), ENT_QUOTES, "UTF-8"); ?>, <?php echo json_encode($completedProject["submitter_name"] ?? "Faculty Proponent"); ?>, <?php echo json_encode($college["department_name"]); ?>)' title="Click to view file & details for <?php echo h($completedProject['title']); ?>">
+                                                    <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                                                        <span class="acad-project-type type-extension">
+                                                            Extension
+                                                        </span>
+                                                        <span class="acad-project-title">
+                                                            <?php echo h($completedProject['title']); ?>
+                                                        </span>
+                                                    </div>
+                                                    <button type="button" class="acad-view-file-btn">
+                                                        <i class="ri-file-text-line" style="font-size: 0.76rem;"></i>
+                                                        <span>View File</span>
+                                                    </button>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
     </div>
 
     <!-- Card Bottom Bar -->
     <div class="acad-card-footer">
         <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><i class="ri-shield-check-line" style="color: #15803d; font-size: 0.9rem;"></i> Institutional Completion Registry</span>
-        <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;"><?php echo count($completedColleges); ?> Active Colleges · <?php echo $totalCompletedProjectsCount; ?> Completed</strong>
+        <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;"><?php echo count($completedColleges); ?> Active Colleges · <?php echo $totalResearchCount; ?> Research · <?php echo $totalExtensionCount; ?> Extension Completed</strong>
     </div>
 </article>
 
@@ -937,114 +1032,219 @@ document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('completedCollegeSearchInput');
         const searchBtn = document.getElementById('completedCollegeSearchBtn');
 
+        const buildCollegeStreamGroup = (college, projects, streamType) => {
+            const card = document.createElement('div');
+            card.className = 'acad-college-group';
+
+            const heading = document.createElement('div');
+            heading.className = 'acad-college-header';
+
+            const collegeLeft = document.createElement('div');
+            collegeLeft.className = 'acad-college-name-wrap';
+
+            const acronymBadge = document.createElement('span');
+            acronymBadge.className = 'acad-college-acronym';
+            acronymBadge.textContent = getCollegeCodeTag(college.department_name);
+
+            const collegeName = document.createElement('h3');
+            collegeName.className = 'acad-college-name';
+            collegeName.textContent = college.department_name;
+            collegeName.title = college.department_name;
+            collegeLeft.append(acronymBadge, collegeName);
+
+            const projectCount = document.createElement('span');
+            projectCount.className = 'acad-college-count';
+            projectCount.textContent = `${projects.length} completed`;
+            heading.append(collegeLeft, projectCount);
+
+            const projectContainer = document.createElement('div');
+            projectContainer.className = 'acad-project-list';
+
+            projects.forEach(project => {
+                const isResearch = (project.type || streamType) === 'Research';
+                const pill = document.createElement('div');
+                pill.className = 'acad-project-row';
+                pill.role = 'button';
+                pill.tabIndex = 0;
+                pill.title = `Click to view file & details for: ${project.title}`;
+
+                const leftWrap = document.createElement('div');
+                leftWrap.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;flex:1;';
+
+                const typeBadge = document.createElement('span');
+                typeBadge.className = `acad-project-type ${isResearch ? 'type-research' : 'type-extension'}`;
+                typeBadge.textContent = project.type || (isResearch ? 'Research' : 'Extension');
+
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'acad-project-title';
+                titleSpan.textContent = project.title;
+                leftWrap.append(typeBadge, titleSpan);
+
+                const viewFileBtn = document.createElement('button');
+                viewFileBtn.type = 'button';
+                viewFileBtn.className = 'acad-view-file-btn';
+                viewFileBtn.innerHTML = '<i class="ri-file-text-line" style="font-size:0.76rem;"></i><span>View File</span>';
+
+                pill.append(leftWrap, viewFileBtn);
+
+                const triggerPreview = (e) => {
+                    if (e) e.stopPropagation();
+                    window.openQuickPreview(project, project.submitter_name || 'Faculty Proponent', college.department_name);
+                };
+
+                pill.addEventListener('click', triggerPreview);
+                pill.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        triggerPreview(e);
+                    }
+                });
+
+                projectContainer.appendChild(pill);
+            });
+
+            card.append(heading, projectContainer);
+            return card;
+        };
+
         const renderCompletedColleges = () => {
             const selectedType = completedProjectFilter.value;
             const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
             completedCollegesList.replaceChildren();
-            let visibleCollegeCount = 0;
-            let totalProjectsCount = 0;
+
+            const resColleges = [];
+            const extColleges = [];
+            let totalResCount = 0;
+            let totalExtCount = 0;
+            const activeDepts = new Set();
 
             completedCollegeRows.forEach(college => {
                 const deptMatches = !query || 
                     college.department_name.toLowerCase().includes(query) || 
                     getCollegeCodeTag(college.department_name).toLowerCase().includes(query);
 
-                const projects = college.projects.filter(project => {
-                    const matchesStream = selectedType === 'all' || project.type.toLowerCase() === selectedType;
-                    if (!matchesStream) return false;
+                const matchingProjects = college.projects.filter(project => {
                     if (!query) return true;
                     if (deptMatches) return true;
                     return (project.title && project.title.toLowerCase().includes(query)) ||
                            (project.lead && project.lead.toLowerCase().includes(query)) ||
                            (project.submitter_name && project.submitter_name.toLowerCase().includes(query));
                 });
-                if (!projects.length) return;
-                visibleCollegeCount++;
-                totalProjectsCount += projects.length;
 
-                const card = document.createElement('div');
-                card.className = 'acad-college-group';
+                const resProjs = matchingProjects.filter(p => (p.type || '').toLowerCase() === 'research');
+                const extProjs = matchingProjects.filter(p => (p.type || '').toLowerCase() === 'extension');
 
-                const heading = document.createElement('div');
-                heading.className = 'acad-college-header';
+                if (resProjs.length && (selectedType === 'all' || selectedType === 'research')) {
+                    resColleges.push({ department_name: college.department_name, projects: resProjs });
+                    totalResCount += resProjs.length;
+                    activeDepts.add(college.department_name);
+                }
 
-                const collegeLeft = document.createElement('div');
-                collegeLeft.className = 'acad-college-name-wrap';
-
-                const acronymBadge = document.createElement('span');
-                acronymBadge.className = 'acad-college-acronym';
-                acronymBadge.textContent = getCollegeCodeTag(college.department_name);
-
-                const collegeName = document.createElement('h3');
-                collegeName.className = 'acad-college-name';
-                collegeName.textContent = college.department_name;
-                collegeLeft.append(acronymBadge, collegeName);
-
-                const projectCount = document.createElement('span');
-                projectCount.className = 'acad-college-count';
-                projectCount.textContent = `${projects.length} completed`;
-                heading.append(collegeLeft, projectCount);
-
-                const projectContainer = document.createElement('div');
-                projectContainer.className = 'acad-project-list';
-
-                projects.forEach(project => {
-                    const isResearch = project.type === 'Research';
-                    const pill = document.createElement('div');
-                    pill.className = 'acad-project-row';
-                    pill.role = 'button';
-                    pill.tabIndex = 0;
-                    pill.title = `Click to view file & details for: ${project.title}`;
-
-                    const leftWrap = document.createElement('div');
-                    leftWrap.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;flex:1;';
-
-                    const typeBadge = document.createElement('span');
-                    typeBadge.className = `acad-project-type ${isResearch ? 'type-research' : 'type-extension'}`;
-                    typeBadge.textContent = project.type;
-
-                    const titleSpan = document.createElement('span');
-                    titleSpan.className = 'acad-project-title';
-                    titleSpan.textContent = project.title;
-                    leftWrap.append(typeBadge, titleSpan);
-
-                    const viewFileBtn = document.createElement('button');
-                    viewFileBtn.type = 'button';
-                    viewFileBtn.className = 'acad-view-file-btn';
-                    viewFileBtn.innerHTML = '<i class="ri-file-text-line" style="font-size:0.76rem;"></i><span>View File</span>';
-
-                    pill.append(leftWrap, viewFileBtn);
-
-                    const triggerPreview = (e) => {
-                        if (e) e.stopPropagation();
-                        window.openQuickPreview(project, project.submitter_name || 'Faculty Proponent', college.department_name);
-                    };
-
-                    pill.addEventListener('click', triggerPreview);
-                    pill.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            triggerPreview(e);
-                        }
-                    });
-
-                    projectContainer.appendChild(pill);
-                });
-
-                card.append(heading, projectContainer);
-                completedCollegesList.appendChild(card);
+                if (extProjs.length && (selectedType === 'all' || selectedType === 'extension')) {
+                    extColleges.push({ department_name: college.department_name, projects: extProjs });
+                    totalExtCount += extProjs.length;
+                    activeDepts.add(college.department_name);
+                }
             });
 
-            if (completedTotalBadgeEl) {
-                if (query) {
-                    completedTotalBadgeEl.textContent = `${visibleCollegeCount} College${visibleCollegeCount === 1 ? '' : 's'} · ${totalProjectsCount} Completed (Filtered)`;
-                } else {
-                    completedTotalBadgeEl.textContent = `${visibleCollegeCount} Active College${visibleCollegeCount === 1 ? '' : 's'} · ${totalProjectsCount} Completed`;
+            const showResearch = selectedType === 'all' || selectedType === 'research';
+            const showExtension = selectedType === 'all' || selectedType === 'extension';
+
+            if ((showResearch && totalResCount === 0) && (showExtension && totalExtCount === 0)) {
+                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-search-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found${query ? ' matching "' + query.replace(/["<>]/g, '') + '"' : ' for selected criteria'}.</div>`;
+                if (completedTotalBadgeEl) {
+                    completedTotalBadgeEl.textContent = `0 Colleges · 0 Completed`;
                 }
+                return;
             }
 
-            if (!visibleCollegeCount) {
-                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-search-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found${query ? ' matching "' + query.replace(/["<>]/g, '') + '"' : ' for selected stream'}.</div>`;
+            const streamsGrid = document.createElement('div');
+            streamsGrid.className = 'acad-streams-container';
+            streamsGrid.id = 'completedStreamsContainer';
+
+            // Research Column
+            if (showResearch) {
+                const resCol = document.createElement('div');
+                resCol.className = 'acad-stream-column stream-research';
+                resCol.id = 'completedResearchColumn';
+
+                const resHeader = document.createElement('div');
+                resHeader.className = 'acad-stream-header research-header';
+                resHeader.innerHTML = `
+                    <div class="acad-stream-title">
+                        <i class="ri-microscope-line"></i>
+                        <span>Research Completed</span>
+                    </div>
+                    <span class="acad-stream-badge research-badge">${totalResCount} ${totalResCount === 1 ? 'Project' : 'Projects'}</span>
+                `;
+
+                const resList = document.createElement('div');
+                resList.className = 'acad-stream-list custom-clean-scrollbar';
+                resList.id = 'completedResearchList';
+
+                if (resColleges.length === 0) {
+                    resList.innerHTML = `
+                        <div class="acad-stream-empty">
+                            <i class="ri-flask-line"></i>
+                            <span>No completed research projects match criteria</span>
+                        </div>
+                    `;
+                } else {
+                    resColleges.forEach(col => {
+                        resList.appendChild(buildCollegeStreamGroup(col, col.projects, 'Research'));
+                    });
+                }
+
+                resCol.append(resHeader, resList);
+                streamsGrid.appendChild(resCol);
+            }
+
+            // Extension Column
+            if (showExtension) {
+                const extCol = document.createElement('div');
+                extCol.className = 'acad-stream-column stream-extension';
+                extCol.id = 'completedExtensionColumn';
+
+                const extHeader = document.createElement('div');
+                extHeader.className = 'acad-stream-header extension-header';
+                extHeader.innerHTML = `
+                    <div class="acad-stream-title">
+                        <i class="ri-community-line"></i>
+                        <span>Extension Completed</span>
+                    </div>
+                    <span class="acad-stream-badge extension-badge">${totalExtCount} ${totalExtCount === 1 ? 'Project' : 'Projects'}</span>
+                `;
+
+                const extList = document.createElement('div');
+                extList.className = 'acad-stream-list custom-clean-scrollbar';
+                extList.id = 'completedExtensionList';
+
+                if (extColleges.length === 0) {
+                    extList.innerHTML = `
+                        <div class="acad-stream-empty">
+                            <i class="ri-team-line"></i>
+                            <span>No completed extension projects match criteria</span>
+                        </div>
+                    `;
+                } else {
+                    extColleges.forEach(col => {
+                        extList.appendChild(buildCollegeStreamGroup(col, col.projects, 'Extension'));
+                    });
+                }
+
+                extCol.append(extHeader, extList);
+                streamsGrid.appendChild(extCol);
+            }
+
+            completedCollegesList.appendChild(streamsGrid);
+
+            if (completedTotalBadgeEl) {
+                const deptCount = activeDepts.size;
+                if (query) {
+                    completedTotalBadgeEl.textContent = `${deptCount} College${deptCount === 1 ? '' : 's'} · ${totalResCount} Research · ${totalExtCount} Extension (Filtered)`;
+                } else {
+                    completedTotalBadgeEl.textContent = `${deptCount} Active College${deptCount === 1 ? '' : 's'} · ${totalResCount} Research · ${totalExtCount} Extension Completed`;
+                }
             }
         };
 
