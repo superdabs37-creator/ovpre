@@ -323,9 +323,6 @@ renderHeader('User Management', 'users');
                                 <summary class="user-actions-trigger"><i class="ri-more-2-fill"></i><span>Manage</span><i class="ri-arrow-down-s-line user-actions-chevron"></i></summary>
                                 <div class="user-action-menu">
                                     <button class="ghost-btn action-btn" type="button" data-open-modal="edit-user-<?php echo (int) $user['id']; ?>"><i class="ri-edit-line"></i><span>Edit</span></button>
-                                    <?php if ($user['role'] !== ROLE_SUPER_ADMIN && (int) $user['id'] !== (int) $actor['id']): ?>
-                                        <form method="post" onsubmit="return confirm('Delete this account? It will be removed from User Management. Existing records remain intact.');"><?php echo csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $user['id']; ?>"><button class="danger-btn action-btn" type="submit"><i class="ri-delete-bin-line"></i><span>Delete Account</span></button></form>
-                                    <?php endif; ?>
                                 </div>
                             </details>
                         </td>

@@ -302,11 +302,6 @@
                             <button type="button" onclick="editUser('${u.id}')" style="display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 32px; padding: 0 11px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #0f172a; cursor: pointer; font-size: 0.78rem; font-weight: 700; white-space: nowrap; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03); transition: all 0.15s ease;" onmouseover="this.style.borderColor='#94a3b8';this.style.background='#f8fafc';" onmouseout="this.style.borderColor='#cbd5e1';this.style.background='#ffffff';">
                                 <i class="ri-edit-line" style="font-size: 0.88rem; color: #15803d;"></i><span>Edit</span>
                             </button>
-                            ${u.role !== 'Super Admin' ? `
-                                <button type="button" onclick="deleteUser('${u.id}')" title="Delete account" aria-label="Delete account" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; cursor: pointer; font-size: 0.9rem; flex-shrink: 0; transition: all 0.15s ease;" onmouseover="this.style.background='#fee2e2';this.style.borderColor='#fca5a5';" onmouseout="this.style.background='#fef2f2';this.style.borderColor='#fecaca';">
-                                    <i class="ri-delete-bin-line"></i>
-                                </button>
-                            ` : ''}
                         </div>
                     </td>
                 `;
@@ -412,15 +407,6 @@
                 localStorage.setItem('irecord_registered_users', JSON.stringify(users));
                 renderUsers();
                 closeEditUserModal();
-            }
-        }
-
-        function deleteUser(id) {
-            if (confirm('Are you sure you want to remove this account from the user directory?')) {
-                let users = getUsers();
-                users = users.filter(u => String(u.id) !== String(id));
-                localStorage.setItem('irecord_registered_users', JSON.stringify(users));
-                renderUsers();
             }
         }
 

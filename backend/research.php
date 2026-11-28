@@ -483,9 +483,6 @@ renderHeader('Research Management', 'research');
                     <i class="ri-download-2-line"></i><span>Archive Selected</span>
                 </button>
             <?php endif; ?>
-            <button class="action-btn" type="submit" name="bulk_action" value="delete" style="color: #dc2626; border: 1px solid #fecaca; background: #fef2f2; font-weight: 600;" onclick="return confirm('Are you sure you want to permanently delete the selected research proposals?');">
-                <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
-            </button>
         </form>
     </div>
 
