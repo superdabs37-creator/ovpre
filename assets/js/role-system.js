@@ -46,7 +46,7 @@
             title: 'Research Director',
             roleName: 'Research Director',
             portalTitle: 'Research Director Command Portal',
-            subtitle: 'Institutional research evaluation, policy enforcement, RIUH ratings, and grant recommendations.',
+            subtitle: 'Institutional research evaluation, policy enforcement, review of RIUH faculty proposals, and grant recommendations.',
             division: 'Research Division',
             avatar: 'RD',
             nav: ['dashboard', 'records', 'research', 'reports', 'backup', 'announcements', 'activities'],
@@ -99,11 +99,11 @@
             canReviewExtension: true
         },
         'Faculty Researcher': {
-            title: 'Faculty Researcher',
+            title: 'Faculty Researcher (RIUH)',
             roleName: 'Faculty Researcher',
-            portalTitle: 'Faculty Researcher Portal',
+            portalTitle: 'RIUH Faculty Researcher Portal',
             subtitle: 'Submit research proposals, report milestones, monitor screening, and track grant status.',
-            division: 'Faculty Research Proponent',
+            division: 'RIUH Faculty Research Proponent',
             avatar: 'FR',
             nav: ['dashboard', 'research', 'announcements', 'activities'],
             primaryAction: { label: 'Submit Research Proposal', href: 'research.html?action=new', icon: 'ri-add-circle-line' },
@@ -113,11 +113,11 @@
             canReviewExtension: false
         },
         'Faculty Extensionist': {
-            title: 'Faculty Extensionist',
+            title: 'Faculty Extensionist (RIUH)',
             roleName: 'Faculty Extensionist',
-            portalTitle: 'Faculty Extensionist Portal',
+            portalTitle: 'RIUH Faculty Extensionist Portal',
             subtitle: 'Submit extension proposals, community milestones, liquidation, and impact documentation.',
-            division: 'Faculty Extension Practitioner',
+            division: 'RIUH Faculty Extension Practitioner',
             avatar: 'FE',
             nav: ['dashboard', 'extension', 'announcements', 'activities'],
             primaryAction: { label: 'Submit Extension Proposal', href: 'extension.html?action=new', icon: 'ri-add-circle-line' },
@@ -159,6 +159,8 @@
         if (lower.includes('extension') && lower.includes('director')) return 'Extension Director';
         if (lower.includes('research') && lower.includes('coord')) return 'Research Coordinator';
         if (lower.includes('extension') && lower.includes('coord')) return 'Extension Coordinator';
+        if (lower.includes('riuh') && lower.includes('extension')) return 'Faculty Extensionist';
+        if (lower.includes('riuh')) return 'Faculty Researcher';
         if (lower.includes('faculty') && lower.includes('extension')) return 'Faculty Extensionist';
         if (lower.includes('extensionist')) return 'Faculty Extensionist';
         if (lower.includes('faculty') && lower.includes('research')) return 'Faculty Researcher';
@@ -463,7 +465,7 @@
 
             const execRoles = [
                 { role: 'Super Admin', label: 'Super Administrator', icon: 'ri-shield-star-line', color: '#15803d' },
-                { role: 'Research Director', label: 'Research Director (RIUH)', icon: 'ri-flask-line', color: '#0284c7' },
+                { role: 'Research Director', label: 'Research Director', icon: 'ri-flask-line', color: '#0284c7' },
                 { role: 'Extension Director', label: 'Extension Director', icon: 'ri-community-line', color: '#0d9488' }
             ];
 
@@ -482,7 +484,7 @@
             // Faculty Accounts Section (Zyrus + Demo Faculty + Custom Registered Faculty)
             switcherHTML += `
                 <div style="font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 7px 0 3px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                    <span>Faculty Accounts (By Dept)</span>
+                    <span>RIUH Accounts (Faculty Researchers &amp; Extensionists)</span>
                     <i class="ri-user-star-line"></i>
                 </div>
             `;
@@ -934,11 +936,11 @@
                 if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #15803d; background: #f0fdf4; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">${badgeLabel}</span>`;
                 if (sub) sub.textContent = `Stage 1 (${deptBadge || 'Department'} Exclusive): Screen proposals submitted by ${deptBadge || 'your college'} faculty, endorse to Research Director, or return for revision.`;
             } else if (config.roleName === 'Research Director') {
-                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #1d4ed8; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Director RIUH Review</span>`;
-                if (sub) sub.textContent = `Stage 2: Evaluate Coordinator-endorsed research proposals across all colleges, enter RIUH rating and budget allocation, and endorse to Executive VP.`;
+                if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #1d4ed8; background: #eff6ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Director Review &amp; Approval</span>`;
+                if (sub) sub.textContent = `Stage 2: Evaluate Coordinator-endorsed research proposals from RIUH faculty across all colleges, enter evaluation rating and budget allocation, and endorse to Executive VP.`;
             } else if (config.roleName === 'Super Admin' || config.roleName === 'OVPRE Admin') {
                 if (h2) h2.innerHTML = `Research Management <span style="font-size: 0.82rem; font-weight: 600; color: #7e22ce; background: #faf5ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Executive Oversight</span>`;
-                if (sub) sub.innerHTML = `Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (RIUH) &rarr; Executive Final Approval`;
+                if (sub) sub.innerHTML = `Academic Pipeline: RIUH Proponent (Faculty Researcher) &rarr; College Coordinator &rarr; Research Director &rarr; Executive Final Approval`;
             }
         }
     }
@@ -963,7 +965,7 @@
                 if (sub) sub.textContent = `Stage 2: Evaluate Coordinator-endorsed extension initiatives across all colleges, assign rating and approved funding allocation, and endorse to Executive VP.`;
             } else if (config.roleName === 'Super Admin' || config.roleName === 'OVPRE Admin') {
                 if (h2) h2.innerHTML = `Extension Projects &amp; Workflow <span style="font-size: 0.82rem; font-weight: 600; color: #7e22ce; background: #faf5ff; padding: 2px 10px; border-radius: 12px; margin-left: 8px;">Executive Oversight</span>`;
-                if (sub) sub.innerHTML = `Academic Pipeline: Faculty Extensionist &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval`;
+                if (sub) sub.innerHTML = `Academic Pipeline: RIUH Proponent (Faculty Extensionist) &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval`;
             }
         }
     }

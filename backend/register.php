@@ -1073,7 +1073,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="step-pane active" id="pane-step-1">
                 <div class="step-header">
                     <h3><i class="ri-user-settings-line" style="color:var(--reg-green);"></i> Select Account Type</h3>
-                    <p>Choose whether the account is for Admin/Directors, Coordinators, or Researchers/Extensionists.</p>
+                    <p>Choose whether the account is for Admin/Directors, Coordinators, or RIUH (Faculty Researchers / Extensionists).</p>
                 </div>
 
                 <div class="account-type-grid">
@@ -1103,15 +1103,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="account-type-radio"></div>
                     </div>
 
-                    <!-- Option 3: Researchers / Extensionist -->
+                    <!-- Option 3: RIUH (Faculty Researchers & Extensionists) -->
                     <div class="account-type-card" data-type="work" onclick="handleCardClick('work', this)">
                         <div class="account-type-icon"><i class="ri-briefcase-line"></i></div>
                         <div class="account-type-info" style="flex: 1;">
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-                                <h4 style="margin: 0;">Researchers / Extensionist</h4>
+                                <h4 style="margin: 0;">RIUH (Researchers &amp; Extensionists)</h4>
                                 <span class="selected-subrole-badge" id="facultyBadge"><i class="ri-flask-line"></i> Faculty Researcher</span>
                             </div>
-                            <p style="margin-top: 4px;">For faculty Researchers and Extension practitioners. <span class="change-subrole-btn" onclick="event.stopPropagation(); openFacultyModal();"><i class="ri-edit-line"></i> Change</span></p>
+                            <p style="margin-top: 4px;">For RIUH members: Faculty Researchers and Faculty Extension practitioners. <span class="change-subrole-btn" onclick="event.stopPropagation(); openFacultyModal();"><i class="ri-edit-line"></i> Change Track</span></p>
                         </div>
                         <div class="account-type-radio"></div>
                     </div>
@@ -1441,8 +1441,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="role-modal-card">
         <div class="role-modal-header">
             <div>
-                <h3 id="modalFacultyTitle"><i class="ri-briefcase-line" style="color: var(--reg-green);"></i> Select Faculty Track</h3>
-                <p>Choose your primary academic engagement in research or community extension.</p>
+                <h3 id="modalFacultyTitle"><i class="ri-briefcase-line" style="color: var(--reg-green);"></i> Select RIUH Track</h3>
+                <p>Choose your designated RIUH track: Faculty Researcher or Faculty Extensionist.</p>
             </div>
             <button type="button" class="role-modal-close" onclick="closeFacultyModal()" aria-label="Close modal">
                 <i class="ri-close-line"></i>
@@ -1453,7 +1453,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="role-option-item selected" data-role="Researcher" onclick="selectSpecificRole('Researcher', this)">
                 <div class="role-option-icon"><i class="ri-flask-line"></i></div>
                 <div class="role-option-content">
-                    <h4>Faculty Researcher <span class="role-pill pill-research">Research Track</span></h4>
+                    <h4>RIUH Faculty Researcher <span class="role-pill pill-research">Research Track</span></h4>
                     
                 </div>
                 <div class="role-option-radio"></div>
@@ -1463,7 +1463,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="role-option-item" data-role="Faculty Extensionist" onclick="selectSpecificRole('Faculty Extensionist', this)">
                 <div class="role-option-icon"><i class="ri-community-line"></i></div>
                 <div class="role-option-content">
-                    <h4>Faculty Extensionist <span class="role-pill pill-extension">Extension Track</span></h4>
+                    <h4>RIUH Faculty Extensionist <span class="role-pill pill-extension">Extension Track</span></h4>
                 
                 </div>
                 <div class="role-option-radio"></div>

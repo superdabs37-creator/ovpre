@@ -136,15 +136,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         db()->prepare('UPDATE research_projects SET status = "Approved", workflow_stage = "Completed", director_id = ?, director_remarks = ?, aihr_status = ?, aihr_score = ?, grant_amount = ?, director_reviewed_at = NOW(), status_remarks = ? WHERE id = ?')
             ->execute([(int) $user['id'], $remarks, $aihrStatus, $aihrScore, $grantAmount, $remarks, $id]);
 
-        $logDetails = "RIUH Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Approved Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
+        $logDetails = "Evaluation Status: {$aihrStatus} | Score: " . ($aihrScore ?? 'N/A') . " | Approved Grant: PHP " . number_format((float) $grantAmount, 2) . "\n" . $remarks;
         log_review('research', $id, (int) $user['id'], 'Stage 3: Approved by Research Director', $logDetails);
         log_action((int) $user['id'], "Research Director approved research #{$id}");
 
         $owner = db()->query("SELECT submitted_by, title FROM research_projects WHERE id = {$id}")->fetch();
         if ($owner) {
-            notify_user((int) $owner['submitted_by'], '🎉 Congratulations! Your proposal passed RIUH review and has been Approved!', 'research.php#proposal-' . $id);
+            notify_user((int) $owner['submitted_by'], '🎉 Congratulations! Your RIUH proposal was evaluated and Approved by the Research Director!', 'research.php#proposal-' . $id);
         }
-        flash('success', 'RIUH evaluation completed and proposal has been Approved!');
+        flash('success', 'RIUH proposal evaluation completed and proposal has been Approved!');
     } elseif ($action === 'executive_approve') {
         $id = (int) $_POST['id'];
         $remarks = trim($_POST['remarks'] ?? 'Granted Final Institutional Approval.');

@@ -27,11 +27,21 @@ const ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR = 'Director for Research and Creativ
 const ROLE_OVPRE_SECRETARIAT = 'OVPRE Secretariat';
 const SELF_REGISTERABLE_ROLES = [ROLE_RESEARCH_COORDINATOR, ROLE_EXTENSION_COORDINATOR, ROLE_FACULTY_EXTENSIONIST, ROLE_RESEARCHER];
 
+// RIUH (Research & Innovation Unit) encompasses Faculty Researchers and Faculty Extensionists
+const RIUH_ROLES = [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST];
+
+function is_riuh_role(string $role): bool {
+    $group = role_access_group($role);
+    return in_array($group, [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST], true);
+}
+
 function role_access_group(string $role): string {
     return match ($role) {
         ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR => ROLE_RESEARCH_DIRECTOR,
         ROLE_EXTENSION_DIRECTOR => ROLE_EXTENSION_DIRECTOR,
         ROLE_OVPRE_SECRETARIAT => ROLE_OVPRE_ADMIN,
+        'Faculty Researcher', 'RIUH Faculty Researcher', 'RIUH Researcher' => ROLE_RESEARCHER,
+        'Faculty Extensionist', 'RIUH Faculty Extensionist', 'RIUH Extensionist' => ROLE_FACULTY_EXTENSIONIST,
         default => $role,
     };
 }
@@ -39,7 +49,7 @@ function role_access_group(string $role): string {
 function announcement_audience_roles(string $audience): ?array {
     return match ($audience) {
         'All' => [],
-        'All Faculty' => [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST],
+        'All Faculty', 'RIUH', 'RIUH Faculty' => [ROLE_RESEARCHER, ROLE_FACULTY_EXTENSIONIST],
         'Research Director' => [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR],
         'Extension Director' => [ROLE_EXTENSION_DIRECTOR],
         'Directors' => [ROLE_RESEARCH_DIRECTOR, ROLE_RESEARCH_CREATIVE_WORKS_DIRECTOR, ROLE_EXTENSION_DIRECTOR],

@@ -80,7 +80,7 @@
                     <div>
                         <p>Research Repository</p>
                         <h2>Research Management</h2>
-                        <span>Academic Pipeline: Proponent &rarr; College Coordinator &rarr; Research Director (RIUH) &rarr; Executive Final Approval</span>
+                        <span>Academic Pipeline: RIUH Proponent (Faculty Researcher) &rarr; College Coordinator &rarr; Research Director &rarr; Executive Final Approval</span>
                     </div>
                 </section>
 
@@ -443,7 +443,7 @@
         <div class="modal-backdrop" data-close-modal></div>
         <form class="modal-card" id="dirForm" onsubmit="handleDirSubmit(event)" style="max-width: 620px;">
             <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
-            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Research Director Evaluation (RIUH)</h2>
+            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Research Director Evaluation &amp; Policy Review</h2>
             <input type="hidden" id="dirProjId" name="id">
             <p><strong id="dirProjTitle"></strong></p>
             <div class="form-grid">
@@ -455,7 +455,7 @@
                 </label>
             </div>
             <label class="field"><span>Evaluation &amp; Recommendation Remarks:</span>
-                <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="RIUH evaluation remarks, technical review, and institutional priority recommendation..."></textarea>
+                <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="Director evaluation remarks, technical review, and institutional priority recommendation for RIUH proposal..."></textarea>
             </label>
             <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
                 <button class="primary-btn btn-endorse" type="submit" name="dir_action" value="endorse">
@@ -1134,8 +1134,8 @@
                         // Stage 2: STRICTLY Research Director ONLY (No override)
                         else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
                             workflowBtns += `
-                                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director RIUH & Policy Evaluation">
-                                    <i class="ri-award-line"></i><span>RIUH</span>
+                                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director Policy Evaluation & Recommendation">
+                                    <i class="ri-award-line"></i><span>Evaluate</span>
                                 </button>
                             `;
                         }
@@ -1599,7 +1599,7 @@
                 p.stage = 'Completed';
                 supabaseUpdates.status = 'Approved';
                 supabaseUpdates.workflow_stage = 'Completed';
-                OVPRE.toast('RIUH Director evaluation completed. Proposal Approved!', 'success');
+                OVPRE.toast('Research Director evaluation completed. Proposal Approved!', 'success');
             } else if (action === 'revision') {
                 p.status = 'Needs Revision';
                 p.stage = 'Stage 1: Coordinator Screening';
