@@ -280,9 +280,9 @@ $completedProjectRows = db()->query("
         'Research' AS project_type,
         r.id AS project_id,
         r.title AS project_title,
-        r.description AS project_description,
+        COALESCE(d.description, r.abstract, '') AS project_description,
         r.researchers AS project_lead,
-        r.department_id,
+        dep.id AS department_id,
         dep.department_name,
         r.created_at AS submitted_at,
         u.fullname AS submitter_name,
@@ -290,18 +290,18 @@ $completedProjectRows = db()->query("
         d.filename AS document_filename,
         d.original_filename AS document_original_filename
     FROM research_projects r
-    JOIN departments dep ON dep.id = r.department_id
-    LEFT JOIN users u ON u.id = r.submitted_by
-    LEFT JOIN documents d ON (d.entity_type = 'research' AND d.entity_id = r.id AND d.archived_at IS NULL)
+    JOIN users u ON u.id = r.submitted_by
+    JOIN departments dep ON dep.id = u.department_id
+    LEFT JOIN documents d ON d.id = r.document_id
     WHERE r.workflow_stage = 'Completed'
     UNION ALL
     SELECT 
         'Extension' AS project_type,
         e.id AS project_id,
         e.project_title AS project_title,
-        e.project_description,
+        COALESCE(d.description, e.location, e.community_partner, '') AS project_description,
         e.coordinator AS project_lead,
-        e.department_id,
+        dep.id AS department_id,
         dep.department_name,
         e.created_at AS submitted_at,
         u.fullname AS submitter_name,
@@ -309,9 +309,9 @@ $completedProjectRows = db()->query("
         d.filename AS document_filename,
         d.original_filename AS document_original_filename
     FROM extension_projects e
-    JOIN departments dep ON dep.id = e.department_id
-    LEFT JOIN users u ON u.id = e.submitted_by
-    LEFT JOIN documents d ON (d.entity_type = 'extension' AND d.entity_id = e.id AND d.archived_at IS NULL)
+    JOIN users u ON u.id = e.submitted_by
+    JOIN departments dep ON dep.id = u.department_id
+    LEFT JOIN documents d ON d.id = e.document_id
     WHERE e.progress_status = 'Completed'
     ORDER BY department_name ASC, project_type ASC, project_title ASC
 ")->fetchAll(PDO::FETCH_ASSOC);

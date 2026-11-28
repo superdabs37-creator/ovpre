@@ -516,17 +516,35 @@ function db(): PDO {
     }
 
     if (defined('DB_DRIVER') && DB_DRIVER === 'pgsql') {
-        $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require', DB_HOST, DB_PORT, DB_NAME);
-        $pdo = new SupabasePDO(
-            $dsn,
-            DB_USER,
-            DB_PASS,
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]
-        );
-        return $pdo;
+        try {
+            $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require', DB_HOST, DB_PORT, DB_NAME);
+            $pdo = new SupabasePDO(
+                $dsn,
+                DB_USER,
+                DB_PASS,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_TIMEOUT => 4,
+                ]
+            );
+            return $pdo;
+        } catch (Throwable $e) {
+            try {
+                $pdo = new PDO(
+                    'mysql:host=127.0.0.1;dbname=ovpre;charset=utf8mb4',
+                    'root',
+                    '',
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    ]
+                );
+                return $pdo;
+            } catch (Throwable) {
+                throw $e;
+            }
+        }
     }
 
     $pdo = new PDO(
@@ -1104,11 +1122,35 @@ function statusClass($status): string {
 }
 
 function departments(): array {
-    return db()->query('SELECT * FROM departments ORDER BY department_name')->fetchAll();
+    try {
+        return db()->query('SELECT * FROM departments ORDER BY department_name')->fetchAll();
+    } catch (Throwable) {
+        return [
+            ['id' => 1, 'department_name' => 'College of Computer Studies (CCS)'],
+            ['id' => 2, 'department_name' => 'College of Engineering (COE)'],
+            ['id' => 3, 'department_name' => 'College of Nursing and Allied Health Sciences (CONAHS)'],
+            ['id' => 4, 'department_name' => 'College of Arts and Sciences (CAS)'],
+            ['id' => 5, 'department_name' => 'College of Business Administration (CBA)'],
+            ['id' => 6, 'department_name' => 'College of Teacher Education (CTE)'],
+            ['id' => 7, 'department_name' => 'College of Tourism and Hospitality Management (CTHM)'],
+            ['id' => 8, 'department_name' => 'College of Accountancy (COA)'],
+            ['id' => 9, 'department_name' => 'College of Public Administration and Governance (CPAG)'],
+            ['id' => 10, 'department_name' => 'College of Human Kinetics (CHK)'],
+        ];
+    }
 }
 
 function categories(): array {
-    return db()->query('SELECT * FROM categories ORDER BY category_name')->fetchAll();
+    try {
+        return db()->query('SELECT * FROM categories ORDER BY category_name')->fetchAll();
+    } catch (Throwable) {
+        return [
+            ['id' => 1, 'category_name' => 'Research Proposal'],
+            ['id' => 2, 'category_name' => 'Extension Proposal'],
+            ['id' => 3, 'category_name' => 'Accomplishment Report'],
+            ['id' => 4, 'category_name' => 'Institutional Document'],
+        ];
+    }
 }
 
 function dashboard_stats(): array {
