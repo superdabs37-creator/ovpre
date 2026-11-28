@@ -1,19 +1,28 @@
-# Set landing.php as default directory index page
-DirectoryIndex landing.php index.php
+# Set landing / index page
+DirectoryIndex backend/landing.php backend/index.php index.php frontend/index.html index.html
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^login\.html$ index.php [R=302,L]
-    RewriteRule ^login$ index.php [R=302,L]
-    RewriteRule ^research-director(?:/.*)?$ dashboard.php [R=302,L]
-    RewriteRule ^extension-director(?:/.*)?$ dashboard.php [R=302,L]
+
+    # Route root static assets to frontend/assets/
+    RewriteRule ^assets/(.*)$ frontend/assets/$1 [L]
+    RewriteRule ^backend/assets/(.*)$ frontend/assets/$1 [L]
+
+    # Friendly URLs for backend routing
+    RewriteRule ^login\.html$ backend/index.php [R=302,L]
+    RewriteRule ^login$ backend/index.php [R=302,L]
+    RewriteRule ^register$ backend/register.php [R=302,L]
+    RewriteRule ^dashboard$ backend/dashboard.php [R=302,L]
+    RewriteRule ^research-director(?:/.*)?$ backend/dashboard.php [R=302,L]
+    RewriteRule ^extension-director(?:/.*)?$ backend/dashboard.php [R=302,L]
 </IfModule>
 
 # Custom Error Pages
-ErrorDocument 404 /404.php
-ErrorDocument 403 /403.php
-ErrorDocument 500 /500.php
+ErrorDocument 404 /backend/404.php
+ErrorDocument 403 /backend/403.php
+ErrorDocument 500 /backend/500.php
 
+# Security: Deny direct web access to sensitive files
 <FilesMatch "^(config\.local\.php|.*\.(sql|ini|log))$">
     Require all denied
 </FilesMatch>

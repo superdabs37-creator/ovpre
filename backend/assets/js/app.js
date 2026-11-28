@@ -1,0 +1,2291 @@
+const appShell = document.querySelector('.app-shell') || document.querySelector('#appShell');
+const sidebar = document.querySelector('#sidebar');
+const sidebarToggle = document.querySelector('[data-toggle-sidebar]');
+const profileToggle = document.querySelector('[data-profile-toggle]');
+const profileDropdown = document.querySelector('[data-profile-dropdown]');
+
+if (sidebarToggle && sidebar) {
+    const backdrop = document.createElement('button');
+    backdrop.type = 'button';
+    backdrop.className = 'sidebar-backdrop';
+    backdrop.setAttribute('aria-label', 'Close navigation menu');
+    sidebar.insertAdjacentElement('afterend', backdrop);
+
+    const setSidebarOpen = (isOpen) => {
+        sidebar.classList.toggle('open', isOpen);
+        backdrop.classList.toggle('open', isOpen);
+        sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    sidebarToggle.addEventListener('click', () => {
+        if (window.innerWidth > 900) {
+            const isExpanded = appShell ? appShell.classList.toggle('sidebar-expanded') : sidebar.classList.toggle('expanded');
+            sidebarToggle.setAttribute('aria-expanded', String(isExpanded));
+            try {
+                localStorage.setItem('ovpre_admin_sidebar_expanded', isExpanded ? '1' : '0');
+            } catch (e) {}
+        } else {
+            setSidebarOpen(!sidebar.classList.contains('open'));
+        }
+    });
+
+    backdrop.addEventListener('click', () => setSidebarOpen(false));
+    sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) setSidebarOpen(false);
+    }));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            if (window.innerWidth <= 900) setSidebarOpen(false);
+        }
+    });
+
+    // Restore desktop sidebar expanded state from localStorage
+    try {
+        const stored = localStorage.getItem('ovpre_admin_sidebar_expanded');
+        if (window.innerWidth > 900) {
+            if (stored === '0') {
+                if (appShell) appShell.classList.remove('sidebar-expanded');
+                sidebar.classList.remove('expanded');
+                sidebarToggle.setAttribute('aria-expanded', 'false');
+            } else {
+                if (appShell) appShell.classList.add('sidebar-expanded');
+                sidebar.classList.add('expanded');
+                sidebarToggle.setAttribute('aria-expanded', 'true');
+            }
+        }
+    } catch (e) {}
+}
+
+if (profileToggle && profileDropdown) {
+    profileToggle.addEventListener('click', () => {
+        const isOpen = profileDropdown.classList.toggle('open');
+        profileToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!profileToggle.contains(event.target) && !profileDropdown.contains(event.target)) {
+            profileDropdown.classList.remove('open');
+            profileToggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+}
+
+const globalSearchForm = document.querySelector('[data-global-search-form]');
+const topbarSearch = document.querySelector('[data-global-search]');
+const topbarSearchClear = document.querySelector('[data-global-search-clear]');
+const topbarSearchCount = document.querySelector('[data-global-search-count]');
+
+function clearGlobalHighlights() {
+    document.querySelectorAll('mark.global-search-hit').forEach((mark) => {
+        mark.replaceWith(document.createTextNode(mark.textContent));
+    });
+}
+
+function highlightFirstMatch(element, query) {
+    if (!query || !element) return;
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+            const parent = node.parentElement;
+            if (!parent || ['SCRIPT', 'STYLE', 'MARK', 'INPUT', 'TEXTAREA', 'SELECT'].includes(parent.tagName)) {
+                return NodeFilter.FILTER_REJECT;
+            }
+            return node.nodeValue.toLowerCase().includes(query) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+        }
+    });
+    const node = walker.nextNode();
+    if (!node) return;
+
+    const text = node.nodeValue;
+    const index = text.toLowerCase().indexOf(query);
+    const range = document.createRange();
+    range.setStart(node, index);
+    range.setEnd(node, index + query.length);
+    const mark = document.createElement('mark');
+    mark.className = 'global-search-hit';
+    range.surroundContents(mark);
+}
+
+if (globalSearchForm && topbarSearch) {
+    const searchableItems = () => Array.from(document.querySelectorAll([
+        '.data-table tbody tr',
+        '[data-file-card]',
+        '[data-announcement-card]',
+        '.summary-card',
+        '.file-card',
+        '.folder-card',
+        '.list-card',
+        '.notification-item',
+        '.panel'
+    ].join(','))).filter((item) => !item.closest('.topbar') && !(item.classList.contains('panel') && item.querySelector('.data-table')));
+
+    function runGlobalSearch() {
+        clearGlobalHighlights();
+        const query = topbarSearch.value.trim().toLowerCase();
+        const items = searchableItems();
+        let matches = 0;
+
+        globalSearchForm.classList.toggle('has-query', Boolean(query));
+
+        items.forEach((item) => {
+            const matched = !query || item.textContent.toLowerCase().includes(query);
+            item.classList.toggle('global-search-hidden', !matched);
+            if (query && matched) {
+                matches += 1;
+                highlightFirstMatch(item, query);
+            }
+        });
+        resetAdminTablePagination();
+        refreshAdminTablePagination();
+
+        if (topbarSearchCount) {
+            topbarSearchCount.textContent = query ? `${matches} result${matches === 1 ? '' : 's'}` : '';
+        }
+    }
+
+    topbarSearch.addEventListener('input', runGlobalSearch);
+
+    globalSearchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const query = topbarSearch.value.trim();
+        if (query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+    });
+
+    if (topbarSearchClear) {
+        topbarSearchClear.addEventListener('click', () => {
+            topbarSearch.value = '';
+            runGlobalSearch();
+            topbarSearch.focus();
+        });
+    }
+}
+
+document.querySelectorAll('.add-user-btn, .content-area .primary-btn:not(.action-btn), .content-area .post-btn, .content-area .ghost-btn:not(.action-btn):not(.mini-btn), .content-area .portal-link, .login-form .primary-btn, .modal-card .primary-btn:not(.action-btn), .modal-card .ghost-btn:not(.action-btn), .tool-panel .primary-btn, .tool-panel .ghost-btn, .report-actions .primary-btn, .report-actions .ghost-btn').forEach((button) => {
+    button.addEventListener('mouseenter', () => {
+        button.classList.remove('is-hovering', 'premium-action-hover');
+        window.requestAnimationFrame(() => button.classList.add('is-hovering', 'premium-action-hover'));
+    });
+
+    button.addEventListener('animationend', () => {
+        button.classList.remove('is-hovering', 'premium-action-hover');
+    });
+});
+
+const chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            labels: {
+                color: '#17231c',
+                boxWidth: 12,
+                usePointStyle: true
+            }
+        }
+    }
+};
+
+const palette = ['#15803d', '#16a34a', '#facc15', '#fde047', '#0f3d24', '#86efac'];
+const statusColors = {
+    approved: '#16a34a',
+    completed: '#16a34a',
+    declined: '#dc2626',
+    rejected: '#dc2626',
+    'under-review': '#facc15',
+    pending: '#fde047'
+};
+
+function normalizeStatusLabel(value) {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, '-');
+}
+
+function chartColorForLabel(value, fallbackIndex = 0) {
+    return statusColors[normalizeStatusLabel(value)] || palette[fallbackIndex % palette.length];
+}
+
+function chartColorsForRows(rows) {
+    return rows.map((row, index) => {
+        const label = row.status || row.label || row.progress_status || row.department_name || row.category_name;
+        return chartColorForLabel(label, index);
+    });
+}
+
+const pieCanvas = document.getElementById('pieChart');
+if (pieCanvas && window.Chart) {
+    const statusRows = window.irecordCharts?.status || [];
+    const labels = statusRows.length ? statusRows.map((row) => row.label) : ['Pending', 'Approved'];
+    new Chart(pieCanvas, {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data: statusRows.length ? statusRows.map((row) => Number(row.total)) : [0, 0],
+                backgroundColor: labels.map((label, index) => chartColorForLabel(label, index)),
+                borderColor: '#ffffff',
+                borderWidth: 3
+            }]
+        },
+        options: chartDefaults
+    });
+}
+
+const barCanvas = document.getElementById('barChart');
+if (barCanvas && window.Chart) {
+    const monthlyRows = window.irecordCharts?.monthly || [];
+    new Chart(barCanvas, {
+        type: 'bar',
+        data: {
+            labels: monthlyRows.length ? monthlyRows.map((row) => row.label) : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Uploads',
+                data: monthlyRows.length ? monthlyRows.map((row) => Number(row.total)) : [0, 0, 0, 0, 0, 0],
+                backgroundColor: '#16a34a',
+                borderRadius: 10
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#6f7b73' } },
+                y: { grid: { color: '#e6ede8' }, ticks: { color: '#6f7b73' } }
+            }
+        }
+    });
+}
+
+const lineCanvas = document.getElementById('lineChart');
+if (lineCanvas && window.Chart) {
+    const extensionRows = window.irecordCharts?.extension || [];
+    new Chart(lineCanvas, {
+        type: 'line',
+        data: {
+            labels: extensionRows.length ? extensionRows.map((row) => row.label) : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Extension Projects',
+                data: extensionRows.length ? extensionRows.map((row) => Number(row.total)) : [0, 0, 0, 0, 0, 0],
+                borderColor: '#15803d',
+                backgroundColor: 'rgba(250, 204, 21, 0.25)',
+                fill: true,
+                tension: 0.42,
+                pointBackgroundColor: '#facc15',
+                pointBorderColor: '#0f3d24',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#6f7b73' } },
+                y: { grid: { color: '#e6ede8' }, ticks: { color: '#6f7b73' } }
+            }
+        }
+    });
+}
+
+function renderReportChart(id, type, rows, label) {
+    const canvas = document.getElementById(id);
+    if (!canvas || !window.Chart) return;
+    const labels = rows.map((row) => row.label || row.department_name || row.category_name || row.status);
+    const statusAwareColors = chartColorsForRows(rows);
+    const isLine = type === 'line';
+    new Chart(canvas, {
+        type,
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data: rows.map((row) => Number(row.total)),
+                backgroundColor: isLine ? statusAwareColors.map((color) => `${color}33`) : statusAwareColors,
+                borderColor: isLine ? statusAwareColors : '#15803d',
+                pointBackgroundColor: statusAwareColors,
+                tension: 0.35
+            }]
+        },
+        options: chartDefaults
+    });
+}
+
+function renderMonthlySubmissionsChart() {
+    const canvas = document.getElementById('reportMonthlyChart');
+    if (!canvas || !window.Chart || !window.reportCharts) return;
+
+    const monthlyOverall = window.reportCharts.monthly || [];
+    const monthlyByCollege = window.reportCharts.monthlyByCollege || [];
+    const collegesList = window.reportCharts.collegesList || [];
+    const filterSelect = document.getElementById('monthlyCollegeFilter');
+    const subtitle = document.getElementById('monthlySubmissionsSubtitle');
+
+    if (!monthlyByCollege.length) {
+        renderReportChart('reportMonthlyChart', 'bar', monthlyOverall, 'Submissions');
+        return;
+    }
+
+    // Determine unique chronological month labels
+    const rawMonths = [];
+    monthlyByCollege.forEach((row) => {
+        if (row.month_label && !rawMonths.includes(row.month_label)) {
+            rawMonths.push(row.month_label);
+        }
+    });
+    monthlyOverall.forEach((row) => {
+        if (row.label && !rawMonths.includes(row.label)) {
+            rawMonths.push(row.label);
+        }
+    });
+    const months = rawMonths.length ? rawMonths : ['No Data'];
+
+    // Distinct palette for DLSP colleges
+    const collegeColorMap = {
+        'College of Computer Studies and Technology': '#15803d',
+        'College of Engineering': '#2563eb',
+        'College of Nursing and Allied Health Sciences': '#0d9488',
+        'College of Arts and Sciences': '#7c3aed',
+        'College of Business Administration': '#d97706',
+        'College of Physical Education': '#e11d48',
+        'College of Human Kinetics': '#e11d48',
+        'College of Teacher Education': '#ea580c',
+        'College of Tourism and Hospitality Management': '#0284c7',
+        'College of Accountancy': '#4f46e5',
+        'Other / Unassigned': '#64748b'
+    };
+    const distinctColors = ['#15803d', '#2563eb', '#0d9488', '#7c3aed', '#d97706', '#e11d48', '#ea580c', '#0284c7', '#4f46e5', '#64748b'];
+
+    // Identify active colleges with submissions + ensure all known colleges are selectable
+    const activeColleges = [...new Set(monthlyByCollege.map((r) => r.department_name).filter(Boolean))];
+    const knownColleges = collegesList.map((c) => c.department_name).filter(Boolean);
+    const displayColleges = activeColleges.length ? activeColleges : (knownColleges.length ? knownColleges : ['Colleges']);
+
+    function getDatasets(mode) {
+        if (mode === 'total') {
+            const data = months.map((month) => {
+                const item = monthlyOverall.find((r) => r.label === month);
+                if (item) return Number(item.total);
+                return monthlyByCollege
+                    .filter((r) => r.month_label === month)
+                    .reduce((sum, r) => sum + Number(r.total), 0);
+            });
+            return [{
+                label: 'Overall Submissions',
+                data,
+                backgroundColor: '#15803d',
+                borderColor: '#15803d',
+                borderRadius: 6,
+                borderSkipped: false
+            }];
+        }
+
+        if (mode !== 'all') {
+            const college = mode;
+            const color = collegeColorMap[college] || '#15803d';
+            const data = months.map((month) => {
+                const found = monthlyByCollege.find((r) => r.month_label === month && r.department_name === college);
+                return found ? Number(found.total) : 0;
+            });
+            return [{
+                label: college,
+                data,
+                backgroundColor: color,
+                borderColor: color,
+                borderRadius: 6,
+                borderSkipped: false
+            }];
+        }
+
+        return displayColleges.map((college, idx) => {
+            const color = collegeColorMap[college] || distinctColors[idx % distinctColors.length];
+            const data = months.map((month) => {
+                const found = monthlyByCollege.find((r) => r.month_label === month && r.department_name === college);
+                return found ? Number(found.total) : 0;
+            });
+            return {
+                label: college,
+                data,
+                backgroundColor: color,
+                borderColor: color,
+                borderRadius: 4,
+                borderSkipped: false,
+                stack: 'monthly-college-stack'
+            };
+        });
+    }
+
+    const initialMode = filterSelect ? filterSelect.value : 'all';
+    const isStacked = initialMode === 'all';
+
+    if (window._monthlySubmissionsChartInstance) {
+        try { window._monthlySubmissionsChartInstance.destroy(); } catch (e) {}
+    }
+
+    const chartInstance = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: getDatasets(initialMode)
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: isStacked ? 'index' : 'nearest',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    display: isStacked,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 8,
+                        boxHeight: 8,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded',
+                        padding: 8,
+                        font: { size: 10, weight: 600 },
+                        color: '#475569'
+                    }
+                },
+                tooltip: {
+                    mode: isStacked ? 'index' : 'nearest',
+                    intersect: false,
+                    backgroundColor: '#0f3d24',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: {
+                        footer: (items) => {
+                            if (!isStacked) return '';
+                            let sum = 0;
+                            items.forEach((item) => { sum += item.parsed.y; });
+                            return 'Month Total: ' + sum + ' submission' + (sum === 1 ? '' : 's');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: isStacked,
+                    grid: { display: false },
+                    ticks: { color: '#6f7b73', font: { weight: 600 } }
+                },
+                y: {
+                    stacked: isStacked,
+                    beginAtZero: true,
+                    grid: { color: '#e6ede8' },
+                    ticks: { color: '#6f7b73', precision: 0, font: { weight: 600 } }
+                }
+            }
+        }
+    });
+
+    window._monthlySubmissionsChartInstance = chartInstance;
+
+    if (filterSelect) {
+        filterSelect.addEventListener('change', () => {
+            const mode = filterSelect.value;
+            const stacked = mode === 'all';
+
+            if (subtitle) {
+                if (mode === 'all') {
+                    subtitle.textContent = 'Breakdown per college';
+                } else if (mode === 'total') {
+                    subtitle.textContent = 'Overall combined total';
+                } else {
+                    subtitle.textContent = 'Filtered to ' + mode;
+                }
+            }
+
+            chartInstance.data.datasets = getDatasets(mode);
+            chartInstance.options.scales.x.stacked = stacked;
+            chartInstance.options.scales.y.stacked = stacked;
+            chartInstance.options.interaction.mode = stacked ? 'index' : 'nearest';
+            chartInstance.options.plugins.legend.display = stacked;
+            chartInstance.options.plugins.tooltip.mode = stacked ? 'index' : 'nearest';
+            chartInstance.update();
+        });
+    }
+}
+
+if (window.reportCharts) {
+    renderReportChart('reportCategoryChart', 'bar', window.reportCharts.categories || [], 'Documents');
+    renderMonthlySubmissionsChart();
+    renderReportChart('reportResearchChart', 'doughnut', window.reportCharts.research || [], 'Research');
+    renderReportChart('reportExtensionChart', 'line', window.reportCharts.extension || [], 'Extension');
+    renderReportChart('reportDepartmentChart', 'bar', window.reportCharts.departments || [], 'Colleges Output');
+}
+
+document.querySelectorAll('[data-file-search]').forEach((input) => {
+    input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        document.querySelectorAll('[data-file-card]').forEach((card) => {
+            card.style.display = card.textContent.toLowerCase().includes(query) ? '' : 'none';
+        });
+    });
+});
+
+const announcementSearch = document.querySelector('#announcementSearch');
+const categoryFilter = document.querySelector('#categoryFilter');
+const announcementCards = document.querySelectorAll('[data-announcement-card]');
+const announcementEmpty = document.querySelector('#announcementEmpty');
+
+function filterAnnouncements() {
+    if (!announcementCards.length) return;
+
+    const query = announcementSearch ? announcementSearch.value.trim().toLowerCase() : '';
+    const category = categoryFilter ? categoryFilter.value : 'All';
+    let visibleCount = 0;
+
+    announcementCards.forEach((card) => {
+        const matchesSearch = card.textContent.toLowerCase().includes(query);
+        const matchesCategory = category === 'All' || card.dataset.category === category;
+        const visible = matchesSearch && matchesCategory;
+        card.style.display = visible ? '' : 'none';
+        if (visible) visibleCount += 1;
+    });
+
+    if (announcementEmpty) {
+        announcementEmpty.classList.toggle('show', visibleCount === 0);
+    }
+}
+
+if (announcementSearch) announcementSearch.addEventListener('input', filterAnnouncements);
+if (categoryFilter) categoryFilter.addEventListener('change', filterAnnouncements);
+
+const announcementModal = document.querySelector('#announcementModal');
+const modalTitle = document.querySelector('#modalTitle');
+const modalCategory = document.querySelector('#modalCategory');
+const modalDate = document.querySelector('#modalDate');
+const modalAuthor = document.querySelector('#modalAuthor');
+const modalContent = document.querySelector('#modalContent');
+const modalAttachment = document.querySelector('#modalAttachment');
+
+function closeModal(modal) {
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    if (!document.querySelector('.modal.open')) {
+        document.body.style.overflow = '';
+    }
+}
+
+function closeAnnouncementModal() {
+    closeModal(announcementModal);
+}
+
+document.querySelectorAll('.read-more-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+        if (!announcementModal) return;
+
+        modalTitle.textContent = button.dataset.title || '';
+        modalCategory.textContent = button.dataset.category || '';
+        modalDate.textContent = button.dataset.date || '';
+        modalAuthor.textContent = button.dataset.author || '';
+        modalContent.textContent = button.dataset.content || '';
+
+        const attachment = button.dataset.attachment || '';
+        if (attachment) {
+            modalAttachment.href = attachment;
+            modalAttachment.classList.remove('hidden');
+        } else {
+            modalAttachment.classList.add('hidden');
+        }
+
+        announcementModal.classList.add('open');
+        announcementModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    });
+});
+
+document.querySelectorAll('[data-close-modal]').forEach((element) => {
+    element.addEventListener('click', () => {
+        const modal = element.closest('.modal');
+        if (modal) {
+            closeModal(modal);
+        } else {
+            closeAnnouncementModal();
+        }
+    });
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        const profileModal = document.getElementById('profileEditorModal');
+        if (profileModal && profileModal.classList.contains('open')) {
+            window.location.href = profileModal.dataset.returnUrl || 'dashboard.html';
+            return;
+        }
+        document.querySelectorAll('.modal.open').forEach(closeModal);
+    }
+});
+
+document.querySelectorAll('[data-open-modal]').forEach((button) => {
+    button.addEventListener('click', () => {
+        if (button.hasAttribute('data-dismiss-modal')) {
+            const currentModal = button.closest('.modal');
+            if (currentModal) closeModal(currentModal);
+        }
+        const modal = document.getElementById(button.dataset.openModal);
+        if (!modal) return;
+        modal.querySelectorAll('[data-src]').forEach((el) => {
+            if (el.dataset.src && el.getAttribute('src') !== el.dataset.src) {
+                el.setAttribute('src', el.dataset.src);
+            }
+        });
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    });
+});
+
+function initTableSelectionEngine() {
+    document.querySelectorAll('[data-select-all]').forEach((selectAll) => {
+        const tableId = selectAll.dataset.selectAll;
+        const table = document.getElementById(tableId);
+        const toolbar = document.querySelector(`[data-selection-toolbar="${tableId}"]`);
+        if (!table || !toolbar) return;
+        const rowCheckboxes = () => Array.from(table.querySelectorAll(`[data-row-select="${tableId}"], [data-row-select]`));
+        const countLabel = toolbar.querySelector('[data-selection-count]');
+        const openSelected = toolbar.querySelector('[data-open-selected-research]');
+        const bulkButtons = toolbar.querySelectorAll('[data-bulk-submit]');
+        const updateSelection = () => {
+            const checkboxes = rowCheckboxes();
+            const selected = checkboxes.filter((checkbox) => checkbox.checked);
+            selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
+            selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+            const hasSelection = selected.length > 0;
+            toolbar.hidden = !hasSelection;
+            toolbar.classList.toggle('is-hidden', !hasSelection);
+            if (hasSelection) {
+                toolbar.style.setProperty('display', 'flex', 'important');
+            } else {
+                toolbar.style.setProperty('display', 'none', 'important');
+            }
+            if (countLabel) countLabel.textContent = `${selected.length} selected`;
+            if (openSelected) openSelected.disabled = !hasSelection;
+            bulkButtons.forEach((button) => { button.disabled = !hasSelection; });
+        };
+
+        if (selectAll.dataset.selectionBound !== 'true') {
+            selectAll.dataset.selectionBound = 'true';
+            selectAll.addEventListener('change', () => {
+                rowCheckboxes().forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+                updateSelection();
+            });
+            table.addEventListener('change', (event) => {
+                if (event.target.matches('[data-row-select]')) updateSelection();
+            });
+            if (openSelected) {
+                openSelected.addEventListener('click', () => {
+                    const ids = rowCheckboxes().filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+                    if (ids.length) window.location.href = `research.html?ids=${encodeURIComponent(ids.join(','))}`;
+                });
+            }
+            toolbar.querySelectorAll('[data-confirm-delete]').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    if (!window.confirm('Permanently delete all selected items? This cannot be undone.')) event.preventDefault();
+                });
+            });
+        }
+        updateSelection();
+    });
+}
+window.initTableSelectionEngine = initTableSelectionEngine;
+initTableSelectionEngine();
+
+document.addEventListener('click', (event) => {
+    const clickedDropdown = event.target.closest('.user-actions-dropdown');
+    document.querySelectorAll('.user-actions-dropdown[open]').forEach((dropdown) => {
+        if (dropdown !== clickedDropdown || event.target.closest('.user-action-menu .action-btn')) {
+            dropdown.open = false;
+        }
+    });
+});
+
+const tableSearch = document.querySelector('[data-table-search]');
+const statusFilter = document.querySelector('[data-status-filter]');
+const categoryFilterCards = document.querySelectorAll('[data-category-filter]');
+const recordsPanelTitle = document.getElementById('recordsPanelTitle');
+const recordsPanelSubtitle = document.getElementById('recordsPanelSubtitle');
+let activeRecordsCategory = 'All';
+
+function filterRows() {
+    const rows = document.querySelectorAll('[data-table-row]');
+    const query = tableSearch ? tableSearch.value.trim().toLowerCase() : '';
+    const status = statusFilter ? statusFilter.value : 'All';
+
+    rows.forEach((row) => {
+        const matchesText = row.textContent.toLowerCase().includes(query);
+        const matchesStatus = status === 'All' || row.dataset.status === status;
+        const matchesCategory = activeRecordsCategory === 'All' || !row.dataset.category || row.dataset.category === activeRecordsCategory;
+        row.dataset.localFilterMatch = String(matchesText && matchesStatus && matchesCategory);
+    });
+    adminTablePages.forEach((state, tbl) => {
+        if (tbl.id === 'recordsTable' || !tableSearch) {
+            state.query = query;
+            if (state.searchInput && state.searchInput !== document.activeElement) {
+                state.searchInput.value = tableSearch ? tableSearch.value : '';
+            }
+        }
+    });
+    resetAdminTablePagination();
+    refreshAdminTablePagination();
+}
+
+if (tableSearch) tableSearch.addEventListener('input', filterRows);
+if (statusFilter) statusFilter.addEventListener('change', filterRows);
+
+const adminTablePages = new Map();
+
+function populateAdminColumnFilters(state, table) {
+    if (!state || !table || !state.toolbar) return;
+    const toolbar = state.toolbar;
+    const exportButton = state.exportButton;
+    // Remove existing filter dropdowns
+    toolbar.querySelectorAll('.data-table-filter').forEach((el) => el.remove());
+    state.filterSelects = {};
+
+    table.querySelectorAll('thead th').forEach((header, columnIndex) => {
+        if (!/status|category|department|college|role|stage/i.test(header.textContent)) return;
+        let presetOptions = null;
+        try { presetOptions = JSON.parse(table.dataset.filterOptions || '{}')[header.textContent.trim()] || null; } catch (e) { presetOptions = null; }
+        const values = presetOptions
+            ? [...new Set(presetOptions.map((value) => String(value).trim()).filter(Boolean))]
+            : [...new Set(state.rows.map((row) => (row.cells[columnIndex]?.textContent || '').trim()).filter(Boolean))];
+        if (!presetOptions && (values.length < 1 || values.length > 40)) return;
+        const label = document.createElement('label');
+        label.className = 'data-table-filter';
+        label.append(document.createTextNode(`${header.textContent.trim()}: `));
+        const select = document.createElement('select');
+        select.setAttribute('aria-label', `Filter by ${header.textContent.trim()}`);
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = 'All';
+        select.append(allOption);
+        values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).forEach((value) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.append(option);
+        });
+        if (state.columnFilters[columnIndex]) {
+            select.value = state.columnFilters[columnIndex];
+        }
+        select.addEventListener('change', () => {
+            state.columnFilters[columnIndex] = select.value;
+            state.page = 1;
+            refreshAdminTablePagination();
+        });
+        label.append(select);
+        state.filterSelects[columnIndex] = select;
+        if (state.sortLabel && toolbar.contains(state.sortLabel)) {
+            toolbar.insertBefore(label, state.sortLabel);
+        } else if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(label, exportButton);
+        } else {
+            toolbar.append(label);
+        }
+    });
+}
+
+window.reloadAdminTablePagination = function(targetTable) {
+    const table = targetTable || document.querySelector('.content-area table.data-table');
+    if (!table) return;
+    let state = adminTablePages.get(table);
+    if (!state) {
+        if (typeof window.initAdminTablePagination === 'function') {
+            window.initAdminTablePagination(table);
+            state = adminTablePages.get(table);
+        }
+    }
+    if (!state) return;
+    const body = table.tBodies[0];
+    if (!body) return;
+    const children = [...body.rows];
+    const emptyRows = children.filter((row) => row.hasAttribute('data-pagination-empty') || (row.cells.length === 1 && row.cells[0].colSpan > 1));
+    state.rows = children.filter((row) => !emptyRows.includes(row));
+    state.emptyRows = emptyRows;
+    state.rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
+    populateAdminColumnFilters(state, table);
+    if (typeof state.applyTableSort === 'function' && state.currentSortColumn !== undefined) {
+        state.applyTableSort(state.currentSortColumn, state.currentSortOrder || 'desc');
+    } else {
+        state.page = 1;
+        refreshAdminTablePagination();
+    }
+};
+
+function resetAdminTablePagination() {
+    adminTablePages.forEach((state) => { state.page = 1; });
+}
+
+function refreshAdminTablePagination() {
+    adminTablePages.forEach((state) => {
+        const query = state.query.trim().toLowerCase();
+        const matches = state.rows.filter((row) => row.dataset.localFilterMatch !== 'false'
+            && !row.classList.contains('global-search-hidden')
+            && Object.entries(state.columnFilters).every(([column, value]) => !value || (row.cells[Number(column)]?.textContent || '').trim() === value)
+            && (!query || row.textContent.toLowerCase().includes(query)));
+        const pageCount = Math.max(1, Math.ceil(matches.length / state.pageSize));
+        state.page = Math.min(state.page, pageCount);
+        const first = (state.page - 1) * state.pageSize;
+        const visibleRows = new Set(matches.slice(first, first + state.pageSize));
+
+        state.rows.forEach((row) => { row.hidden = !visibleRows.has(row); });
+        state.emptyRows.forEach((row) => {
+            row.hidden = matches.length > 0 || row.classList.contains('global-search-hidden');
+            const cell = row.cells[0];
+            if (cell) {
+                cell.textContent = query ? 'No matching entries found.' : (row.dataset.emptyMessage || cell.textContent);
+            }
+        });
+
+        state.summary.textContent = matches.length
+            ? `Showing ${first + 1}–${Math.min(first + state.pageSize, matches.length)} of ${matches.length} entries`
+            : 'Showing 0 of 0 entries';
+        state.previous.disabled = state.page <= 1;
+        state.next.disabled = state.page >= pageCount;
+
+        const pageButtons = state.pageButtons;
+        pageButtons.replaceChildren();
+        const startPage = Math.max(1, Math.min(state.page - 2, pageCount - 4));
+        const endPage = Math.min(pageCount, Math.max(5, state.page + 2));
+        for (let page = startPage; page <= endPage; page += 1) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = String(page);
+            button.setAttribute('aria-label', `Page ${page}`);
+            button.setAttribute('aria-current', page === state.page ? 'page' : 'false');
+            if (page === state.page) button.classList.add('is-current');
+            button.addEventListener('click', () => {
+                state.page = page;
+                refreshAdminTablePagination();
+            });
+            pageButtons.append(button);
+        }
+    });
+}
+
+window.initAdminTablePagination = function(table) {
+    if (!table) return;
+    const body = table.tBodies[0];
+    if (!body) return;
+
+    // If already initialized and elements exist in DOM, just reload
+    const existingState = adminTablePages.get(table);
+    const wrapper = table.closest('.table-scroll') || table;
+    const prevToolbar = wrapper.previousElementSibling;
+    if (existingState && prevToolbar && prevToolbar.classList.contains('data-table-toolbar')) {
+        window.reloadAdminTablePagination(table);
+        return;
+    }
+
+    // Clean up any stale toolbar or pagination next to wrapper
+    if (wrapper.previousElementSibling && wrapper.previousElementSibling.classList.contains('data-table-toolbar')) {
+        wrapper.previousElementSibling.remove();
+    }
+    if (wrapper.nextElementSibling && wrapper.nextElementSibling.classList.contains('admin-table-pagination')) {
+        wrapper.nextElementSibling.remove();
+    }
+
+    const children = [...body.rows];
+    const emptyRows = children.filter((row) => row.hasAttribute('data-pagination-empty') || (row.cells.length === 1 && row.cells[0].colSpan > 1));
+    const rows = children.filter((row) => !emptyRows.includes(row));
+    rows.forEach((row) => { row.dataset.localFilterMatch ??= 'true'; });
+    emptyRows.forEach((row) => { row.dataset.emptyMessage = row.cells[0]?.textContent || ''; });
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'data-table-toolbar';
+    const columnFilters = {};
+    const existingDedicatedSearch = table.id ? document.querySelector(`[data-table-search="${table.id}"]`) : null;
+    let tableSearchInput = null;
+    if (!existingDedicatedSearch) {
+        toolbar.classList.add('has-table-search');
+        const searchLabel = document.createElement('label');
+        searchLabel.className = 'data-table-search';
+        searchLabel.innerHTML = '<i class="ri-search-line" aria-hidden="true"></i><span class="sr-only">Search this table</span>';
+        tableSearchInput = document.createElement('input');
+        tableSearchInput.type = 'search';
+        const placeholderText = table.id === 'recordsTable' ? 'Search records...' : (table.id === 'usersTable' ? 'Search users...' : (table.id === 'researchSubmissionTable' ? 'Search research...' : (table.id === 'extensionSubmissionTable' ? 'Search extension...' : (table.id === 'activitySubmissionTable' ? 'Search activities...' : (table.id === 'systemActivityTable' ? 'Search system activity...' : 'Search this table')))));
+        tableSearchInput.placeholder = placeholderText;
+        tableSearchInput.setAttribute('aria-label', placeholderText);
+        if (tableSearch && table.id === 'recordsTable' && tableSearch.value) {
+            tableSearchInput.value = tableSearch.value;
+        }
+        searchLabel.append(tableSearchInput);
+        toolbar.append(searchLabel);
+        tableSearchInput.addEventListener('input', () => {
+            if (table.id === 'recordsTable' && tableSearch) {
+                tableSearch.value = tableSearchInput.value;
+                filterRows();
+            } else {
+                state.query = tableSearchInput.value;
+                state.page = 1;
+                refreshAdminTablePagination();
+            }
+        });
+        tableSearchInput.addEventListener('search', () => {
+            if (tableSearchInput.value === '') {
+                tableSearchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    } else {
+        existingDedicatedSearch.addEventListener('input', () => {
+            state.query = existingDedicatedSearch.value;
+            state.page = 1;
+            refreshAdminTablePagination();
+        });
+        existingDedicatedSearch.addEventListener('search', () => {
+            if (existingDedicatedSearch.value === '') {
+                existingDedicatedSearch.dispatchEvent(new Event('input'));
+            }
+        });
+    }
+
+    const lengthLabel = document.createElement('label');
+    lengthLabel.className = 'data-table-length';
+    lengthLabel.innerHTML = '<span>Show</span>';
+    const lengthSelect = document.createElement('select');
+    lengthSelect.setAttribute('aria-label', 'Rows per page');
+    [['5', '5'], ['10', '10'], ['25', '25'], ['all', 'All']].forEach(([value, label]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        lengthSelect.append(option);
+    });
+    lengthSelect.value = '10';
+    lengthLabel.append(lengthSelect, document.createTextNode(' entries'));
+    toolbar.append(lengthLabel);
+    const exportButton = document.createElement('button');
+    exportButton.type = 'button';
+    exportButton.className = 'data-table-export';
+    exportButton.innerHTML = '<i class="ri-download-2-line" aria-hidden="true"></i> Export CSV';
+    exportButton.addEventListener('click', () => {
+        const query = state.query.trim().toLowerCase();
+        const currentRows = state ? state.rows : rows;
+        const exportRows = currentRows.filter((row) => row.dataset.localFilterMatch !== 'false'
+            && !row.classList.contains('global-search-hidden')
+            && Object.entries(state.columnFilters).every(([column, value]) => !value || (row.cells[Number(column)]?.textContent || '').trim() === value)
+            && (!query || row.textContent.toLowerCase().includes(query)));
+        const csvCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
+        const headers = [...table.tHead.rows[table.tHead.rows.length - 1].cells]
+            .map((cell) => cell.innerText.trim());
+        const lines = [headers.map(csvCell).join(',')];
+        exportRows.forEach((row) => {
+            lines.push([...row.cells].map((cell) => csvCell(cell.innerText.trim())).join(','));
+        });
+        const blob = new Blob([`\uFEFF${lines.join('\r\n')}`], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${(document.querySelector('.topbar-title h1')?.textContent || 'table').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+    toolbar.append(exportButton);
+    wrapper.insertAdjacentElement('beforebegin', toolbar);
+
+    const controls = document.createElement('nav');
+    controls.className = 'admin-table-pagination';
+    controls.setAttribute('aria-label', 'Table pages');
+    controls.innerHTML = '<span class="admin-table-page-summary" data-table-page-summary></span><div class="admin-table-page-buttons"><button type="button" data-table-page-previous aria-label="Previous page">Previous</button><span data-table-page-buttons></span><button type="button" data-table-page-next aria-label="Next page">Next</button></div>';
+    wrapper.insertAdjacentElement('afterend', controls);
+
+    const state = {
+        rows,
+        emptyRows,
+        controls,
+        summary: controls.querySelector('[data-table-page-summary]'),
+        previous: controls.querySelector('[data-table-page-previous]'),
+        next: controls.querySelector('[data-table-page-next]'),
+        pageButtons: controls.querySelector('[data-table-page-buttons]'),
+        columnFilters,
+        filterSelects: {},
+        toolbar,
+        exportButton,
+        searchInput: tableSearchInput,
+        query: (table.id === 'recordsTable' && tableSearch) ? tableSearch.value : (tableSearchInput ? tableSearchInput.value : (tableSearch ? tableSearch.value : '')),
+        pageSize: 10,
+        page: 1
+    };
+    adminTablePages.set(table, state);
+    lengthSelect.addEventListener('change', () => {
+        state.pageSize = lengthSelect.value === 'all' ? Math.max(rows.length, 1) : Number(lengthSelect.value);
+        state.page = 1;
+        refreshAdminTablePagination();
+    });
+    state.previous.addEventListener('click', () => {
+        state.page -= 1;
+        refreshAdminTablePagination();
+    });
+    state.next.addEventListener('click', () => {
+        state.page += 1;
+        refreshAdminTablePagination();
+    });
+
+    populateAdminColumnFilters(state, table);
+
+    const extraFiltersSelector = table.dataset.extraFilters;
+    const extraFilters = extraFiltersSelector ? document.querySelector(extraFiltersSelector) : null;
+    if (extraFilters) {
+        if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(extraFilters, exportButton);
+        } else {
+            toolbar.append(extraFilters);
+        }
+    }
+
+    const sortableHeaders = [];
+    table.querySelectorAll('thead th').forEach((header, columnIndex) => {
+        const text = header.textContent.trim();
+        if (!text || /^(manage|review|actions?|select\s*all|file|files|document|documents)$/i.test(text) || header.querySelector('[data-select-all]') || header.querySelector('input[type="checkbox"]') || header.classList.contains('table-checkbox-col')) return;
+        sortableHeaders.push({ header, columnIndex, text });
+    });
+
+    if (sortableHeaders.length > 0) {
+        const sortLabel = document.createElement('label');
+        sortLabel.className = 'data-table-sort';
+        sortLabel.innerHTML = '<span>Sort:</span>';
+        const sortSelect = document.createElement('select');
+        sortSelect.setAttribute('aria-label', 'Sort by column');
+        sortableHeaders.forEach(({ columnIndex, text }) => {
+            const option = document.createElement('option');
+            option.value = String(columnIndex);
+            option.textContent = text;
+            sortSelect.append(option);
+        });
+        sortLabel.append(sortSelect);
+
+        const orderLabel = document.createElement('label');
+        orderLabel.className = 'data-table-order';
+        orderLabel.innerHTML = '<i class="ri-time-line" aria-hidden="true" style="color: #15803d; font-size: 1.05rem;"></i><span>Order:</span>';
+        const orderSelect = document.createElement('select');
+        orderSelect.setAttribute('aria-label', 'Sort order');
+        const descOption = document.createElement('option');
+        descOption.value = 'desc';
+        descOption.textContent = 'Newest to Oldest';
+        descOption.selected = true;
+        const ascOption = document.createElement('option');
+        ascOption.value = 'asc';
+        ascOption.textContent = 'Oldest to Newest';
+        orderSelect.append(descOption, ascOption);
+        orderLabel.append(orderSelect);
+
+        if (lengthLabel && toolbar.contains(lengthLabel)) {
+            toolbar.insertBefore(sortLabel, lengthLabel);
+            toolbar.insertBefore(orderLabel, lengthLabel);
+        } else if (exportButton && toolbar.contains(exportButton)) {
+            toolbar.insertBefore(sortLabel, exportButton);
+            toolbar.insertBefore(orderLabel, exportButton);
+        } else {
+            toolbar.append(sortLabel, orderLabel);
+        }
+        state.sortLabel = sortLabel;
+        state.orderLabel = orderLabel;
+        state.sortSelect = sortSelect;
+        state.orderSelect = orderSelect;
+
+        const applyTableSort = (columnIndex, direction) => {
+            state.currentSortColumn = columnIndex;
+            state.currentSortOrder = direction;
+
+            table.querySelectorAll('thead th[data-sort-direction]').forEach((otherHeader) => {
+                otherHeader.removeAttribute('data-sort-direction');
+                otherHeader.setAttribute('aria-sort', 'none');
+            });
+            const targetHeader = sortableHeaders.find(h => h.columnIndex === columnIndex)?.header;
+            if (targetHeader) {
+                targetHeader.dataset.sortDirection = direction;
+                targetHeader.setAttribute('aria-sort', direction === 'desc' ? 'descending' : 'ascending');
+                targetHeader.title = direction === 'desc' ? 'Sorted: Newest to Oldest (Click to sort Oldest to Newest)' : 'Sorted: Oldest to Newest (Click to sort Newest to Oldest)';
+            }
+
+            if (sortSelect.value !== String(columnIndex)) {
+                sortSelect.value = String(columnIndex);
+            }
+            if (orderSelect.value !== direction) {
+                orderSelect.value = direction;
+            }
+            const orderIcon = orderLabel.querySelector('i');
+            if (orderIcon) {
+                orderIcon.className = direction === 'desc' ? 'ri-time-line' : 'ri-history-line';
+                orderIcon.style.color = direction === 'desc' ? '#15803d' : '#0369a1';
+            }
+
+            const sortTargetRows = state ? state.rows : rows;
+            sortTargetRows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex];
+                const cellB = rowB.cells[columnIndex];
+                const valueA = (cellA?.dataset.sortValue || cellA?.innerText || cellA?.textContent || '').trim();
+                const valueB = (cellB?.dataset.sortValue || cellB?.innerText || cellB?.textContent || '').trim();
+                const numericPattern = /^[-+]?[^\dA-Za-z]*[\d,]+(?:\.\d+)?%?$/;
+                let comparison;
+                if (numericPattern.test(valueA) && numericPattern.test(valueB)) {
+                    const numberA = Number(valueA.replace(/[^\d.+-]/g, '')) || 0;
+                    const numberB = Number(valueB.replace(/[^\d.+-]/g, '')) || 0;
+                    comparison = numberA - numberB;
+                } else {
+                    const dateA = Date.parse(valueA);
+                    const dateB = Date.parse(valueB);
+                    comparison = Number.isNaN(dateA) || Number.isNaN(dateB)
+                        ? valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' })
+                        : dateA - dateB;
+                }
+                return direction === 'asc' ? comparison : -comparison;
+            });
+
+            const appendTargetRows = state ? state.rows : rows;
+            appendTargetRows.forEach((row) => body.append(row));
+            emptyRows.forEach((row) => body.append(row));
+            if (state) state.page = 1;
+            refreshAdminTablePagination();
+        };
+        state.applyTableSort = applyTableSort;
+
+        sortSelect.addEventListener('change', () => {
+            applyTableSort(Number(sortSelect.value), orderSelect.value);
+        });
+        orderSelect.addEventListener('change', () => {
+            applyTableSort(Number(sortSelect.value), orderSelect.value);
+        });
+
+        sortableHeaders.forEach(({ header, columnIndex }) => {
+            header.classList.add('data-table-sortable');
+            header.tabIndex = 0;
+            header.setAttribute('aria-sort', 'none');
+
+            const sortByHeader = () => {
+                const currentDir = header.dataset.sortDirection === 'desc' ? 'asc' : 'desc';
+                applyTableSort(columnIndex, currentDir);
+            };
+
+            header.addEventListener('click', sortByHeader);
+            header.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    sortByHeader();
+                }
+            });
+        });
+
+        // Pick date or ID column as preferred default for "Newest to Oldest"
+        let defaultHeaderIndex = sortableHeaders.findIndex(h => /date|submitted|published|registered|created|time/i.test(h.text));
+        if (defaultHeaderIndex === -1) {
+            defaultHeaderIndex = sortableHeaders.findIndex(h => /id/i.test(h.text));
+        }
+        if (defaultHeaderIndex === -1) {
+            defaultHeaderIndex = 0;
+        }
+        const defaultCol = sortableHeaders[defaultHeaderIndex];
+
+        // Initialize table in Newest to Oldest order by default
+        applyTableSort(defaultCol.columnIndex, 'desc');
+    }
+};
+document.querySelectorAll('table.data-table').forEach(window.initAdminTablePagination);
+refreshAdminTablePagination();
+
+function setRecordsCategoryFilter(card) {
+    activeRecordsCategory = card.dataset.categoryFilter || 'All';
+    const selectedTitle = activeRecordsCategory === 'All' ? 'All Records' : `${activeRecordsCategory} Records`;
+
+    categoryFilterCards.forEach((filterCard) => {
+        const isActive = filterCard === card;
+        filterCard.classList.toggle('active', isActive);
+        filterCard.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    if (recordsPanelTitle) {
+        recordsPanelTitle.textContent = selectedTitle;
+    }
+
+    if (recordsPanelSubtitle) {
+        recordsPanelSubtitle.textContent = activeRecordsCategory === 'All'
+            ? 'Showing records from every category.'
+            : `Showing records filed under ${activeRecordsCategory}.`;
+    }
+
+    filterRows();
+    document.getElementById('recordsTable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+categoryFilterCards.forEach((card) => {
+    card.addEventListener('click', () => setRecordsCategoryFilter(card));
+    card.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        setRecordsCategoryFilter(card);
+    });
+});
+
+const uploadForm = document.getElementById('uploadForm');
+const uploadProgressBar = document.getElementById('uploadProgressBar');
+const documentFile = document.getElementById('documentFile');
+const dropzone = document.getElementById('dropzone');
+
+if (documentFile && dropzone) {
+    documentFile.addEventListener('change', () => {
+        const file = documentFile.files[0];
+        if (file) {
+            dropzone.querySelector('strong').textContent = file.name;
+            dropzone.querySelector('span').textContent = `${Math.round(file.size / 1024)} KB selected`;
+        }
+    });
+}
+
+if (uploadForm && uploadProgressBar) {
+    uploadForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        let progress = 0;
+        uploadProgressBar.style.width = '0%';
+        const timer = setInterval(() => {
+            progress += 10;
+            uploadProgressBar.style.width = `${progress}%`;
+            if (progress >= 100) {
+                clearInterval(timer);
+                alert('Document submitted successfully. Tracking number generated.');
+            }
+        }, 90);
+    });
+}
+
+const markAllRead = document.getElementById('markAllRead');
+if (markAllRead) {
+    markAllRead.addEventListener('click', () => {
+        document.querySelectorAll('.notification-card').forEach((card) => {
+            card.classList.remove('unread');
+            card.classList.add('read');
+            const pill = card.querySelector('.status-pill');
+            if (pill) {
+                pill.textContent = 'Read';
+                pill.className = 'status-pill status-read';
+            }
+        });
+    });
+}
+
+document.querySelector('[data-select-all-records]')?.addEventListener('change', (event) => {
+    document.querySelectorAll('input[name="ids[]"]').forEach((checkbox) => {
+        checkbox.checked = event.target.checked;
+    });
+});
+
+document.querySelectorAll('[data-export-table]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const table = document.getElementById(button.dataset.exportTable);
+        if (!table) return;
+        const rows = [...table.querySelectorAll('tr')].map((row) => [...row.children].map((cell) => {
+            const text = cell.innerText.replace(/\s+/g, ' ').trim();
+            return `"${text.replaceAll('"', '""')}"`;
+        }).join(',')).join('\n');
+        const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'irecord-export.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+});
+
+document.querySelectorAll('.user-status-form').forEach((form) => {
+    const select = form.querySelector('select[name="status"]');
+    if (!select) return;
+
+    select.addEventListener('change', () => {
+        if (select.value !== select.dataset.originalStatus) {
+            form.submit();
+        }
+    });
+});
+
+const activityCalendarEl = document.getElementById('activityCalendar');
+const activityModal = document.getElementById('activityEditorModal');
+const activityForm = document.getElementById('activityEditorForm');
+
+function activityById(id) {
+    return (window.activityEditorEvents || window.activityCalendarEvents || []).find((event) => String(event.id) === String(id));
+}
+
+function openActivityEditor(eventData) {
+    if (!activityModal || !activityForm || !eventData) return;
+
+    const props = eventData.extendedProps || {};
+    const approvalStatus = props.approvalStatus || 'Approved';
+    document.getElementById('activityModalMode').textContent = props.type || 'Activity';
+    document.getElementById('activityModalTitle').textContent = 'Edit Activity';
+    document.getElementById('activityAction').value = 'update';
+    document.getElementById('activityId').value = eventData.id || '';
+    document.getElementById('activityTitle').value = eventData.title || '';
+    document.getElementById('activityType').value = props.type || 'Seminar';
+    const dateFrom = (eventData.startStr || props.date || '').slice(0, 10);
+    const exclusiveEnd = (eventData.endStr || '').slice(0, 10);
+    const inclusiveEnd = exclusiveEnd ? new Date(`${exclusiveEnd}T00:00:00`) : null;
+    if (inclusiveEnd) inclusiveEnd.setDate(inclusiveEnd.getDate() - 1);
+    const dateTo = props.dateTo || (inclusiveEnd ? `${inclusiveEnd.getFullYear()}-${String(inclusiveEnd.getMonth() + 1).padStart(2, '0')}-${String(inclusiveEnd.getDate()).padStart(2, '0')}` : dateFrom);
+    document.getElementById('activityDateFrom').value = dateFrom;
+    document.getElementById('activityDateTo').value = dateTo;
+    document.getElementById('activityDateTo').min = dateFrom;
+    const startTimeEl = document.getElementById('activityStartTime');
+    const endTimeEl = document.getElementById('activityEndTime');
+    if (startTimeEl) startTimeEl.value = props.startTime || '';
+    if (endTimeEl) endTimeEl.value = props.endTime || '';
+    document.getElementById('activityVenue').value = props.venue || '';
+    document.getElementById('activityDescription').value = props.description || '';
+    document.getElementById('createActivityButton').style.display = 'none';
+    document.getElementById('saveActivityButton').style.display = 'inline-flex';
+    const approveButton = document.getElementById('approveActivityButton');
+    const rejectButton = document.getElementById('rejectActivityButton');
+    const archiveButton = document.getElementById('archiveActivityButton');
+    const deleteButton = document.getElementById('deleteActivityButton');
+    const statusBadge = document.getElementById('activityStatusBadge');
+
+    if (statusBadge) {
+        if (approvalStatus === 'Approved') {
+            statusBadge.style.display = 'inline-flex';
+            statusBadge.style.background = '#f0fdf4';
+            statusBadge.style.color = '#166534';
+            statusBadge.style.border = '1px solid #bbf7d0';
+            statusBadge.innerHTML = '<i class="ri-checkbox-circle-line" style="margin-right:4px;"></i> Approved';
+        } else if (approvalStatus === 'Rejected') {
+            statusBadge.style.display = 'inline-flex';
+            statusBadge.style.background = '#fef2f2';
+            statusBadge.style.color = '#dc2626';
+            statusBadge.style.border = '1px solid #fecaca';
+            statusBadge.innerHTML = '<i class="ri-close-circle-line" style="margin-right:4px;"></i> Rejected';
+        } else {
+            statusBadge.style.display = 'inline-flex';
+            statusBadge.style.background = '#fffbeb';
+            statusBadge.style.color = '#b45309';
+            statusBadge.style.border = '1px solid #fde68a';
+            statusBadge.innerHTML = '<i class="ri-time-line" style="margin-right:4px;"></i> Pending Review';
+        }
+    }
+
+    if (approveButton) {
+        if (approvalStatus === 'Approved') {
+            approveButton.style.display = 'none';
+        } else {
+            approveButton.style.display = 'inline-flex';
+            approveButton.disabled = false;
+            approveButton.innerHTML = '<i class="ri-check-line"></i> Approve';
+        }
+    }
+    if (rejectButton) {
+        rejectButton.style.display = (approvalStatus === 'Rejected') ? 'none' : 'inline-flex';
+    }
+    if (archiveButton) archiveButton.style.display = 'inline-flex';
+    if (deleteButton) deleteButton.style.display = 'inline-flex';
+
+    activityModal.classList.add('open');
+    activityModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function openActivityCreator(dateStr) {
+    if (!activityModal || !activityForm) return;
+
+    document.getElementById('activityModalMode').textContent = 'New Activity';
+    document.getElementById('activityModalTitle').textContent = 'Add Activity';
+    document.getElementById('activityAction').value = 'create';
+    document.getElementById('activityId').value = '';
+    document.getElementById('activityTitle').value = '';
+    document.getElementById('activityType').value = 'Seminar';
+    const date = (dateStr || new Date().toISOString().slice(0, 10)).slice(0, 10);
+    document.getElementById('activityDateFrom').value = date;
+    document.getElementById('activityDateTo').value = date;
+    document.getElementById('activityDateTo').min = date;
+    const createStartTimeEl = document.getElementById('activityStartTime');
+    const createEndTimeEl = document.getElementById('activityEndTime');
+    if (createStartTimeEl) createStartTimeEl.value = '';
+    if (createEndTimeEl) createEndTimeEl.value = '';
+    document.getElementById('activityVenue').value = '';
+    document.getElementById('activityDescription').value = '';
+    document.getElementById('createActivityButton').style.display = 'inline-flex';
+    document.getElementById('saveActivityButton').style.display = 'none';
+    const statusBadge = document.getElementById('activityStatusBadge');
+    if (statusBadge) statusBadge.style.display = 'none';
+    const approveButton = document.getElementById('approveActivityButton');
+    const rejectButton = document.getElementById('rejectActivityButton');
+    const archiveButton = document.getElementById('archiveActivityButton');
+    const deleteButton = document.getElementById('deleteActivityButton');
+    if (approveButton) approveButton.style.display = 'none';
+    if (rejectButton) rejectButton.style.display = 'none';
+    if (archiveButton) archiveButton.style.display = 'none';
+    if (deleteButton) deleteButton.style.display = 'none';
+
+    activityModal.classList.add('open');
+    activityModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+document.querySelectorAll('[data-create-activity]').forEach((button) => {
+    button.addEventListener('click', () => openActivityCreator());
+});
+
+const activityDateFrom = document.getElementById('activityDateFrom');
+const activityDateTo = document.getElementById('activityDateTo');
+const activityStartTime = document.getElementById('activityStartTime');
+const activityEndTime = document.getElementById('activityEndTime');
+
+activityDateFrom?.addEventListener('change', () => {
+    activityDateTo.min = activityDateFrom.value;
+    if (activityDateTo.value && activityDateTo.value < activityDateFrom.value) {
+        activityDateTo.value = activityDateFrom.value;
+    }
+});
+
+if (activityCalendarEl && window.FullCalendar) {
+    const calendar = new FullCalendar.Calendar(activityCalendarEl, {
+        initialView: 'dayGridMonth',
+        height: 'auto',
+        editable: true,
+        selectable: true,
+        dayMaxEvents: true,
+        nowIndicator: true,
+        events: window.activityCalendarEvents || [],
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        buttonText: {
+            today: 'today',
+            month: 'month',
+            week: 'week',
+            day: 'day',
+            list: 'list'
+        },
+        dateClick(info) {
+            openActivityCreator(info.dateStr);
+        },
+        eventClick(info) {
+            openActivityEditor(info.event);
+        },
+        eventDrop(info) {
+            // Static build: no PHP endpoint. Persist the move through the page hook (localStorage) instead.
+            const moveRequest = (typeof window.OVPRE_activityMove === 'function')
+                ? Promise.resolve(window.OVPRE_activityMove(info.event.id, info.event.startStr.slice(0, 10)))
+                : Promise.resolve({ ok: true });
+            moveRequest.then((data) => {
+                if (data && data.ok === false) throw new Error(data.message || 'Move failed');
+            }).catch(() => {
+                info.revert();
+                alert('The activity could not be moved. Please try again.');
+            });
+        }
+    });
+    calendar.render();
+    window.activityCalendarInstance = calendar;
+
+    document.querySelectorAll('[data-edit-activity]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const parentModal = button.closest('.modal');
+            if (parentModal && parentModal !== activityModal) closeModal(parentModal);
+            openActivityEditor(activityById(button.dataset.editActivity));
+        });
+    });
+}
+
+
+/* =========================================================
+   SEARCHABLE SELECT ENGINE
+   ========================================================= */
+function initSearchableSelects() {
+    document.querySelectorAll('select.searchable-select, select[data-searchable]').forEach((select) => {
+        if (select.dataset.searchableInit === 'true') return;
+        select.dataset.searchableInit = 'true';
+
+        // Keep native select accessible for standard form POST submission
+        select.style.position = 'absolute';
+        select.style.opacity = '0';
+        select.style.pointerEvents = 'none';
+        select.style.width = '1px';
+        select.style.height = '1px';
+        select.tabIndex = -1;
+
+        const placeholder = select.dataset.placeholder || 'Unassigned';
+
+        // Build wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-searchable-select';
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'custom-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        const label = document.createElement('span');
+        label.className = 'custom-select-label';
+
+        const arrow = document.createElement('i');
+        arrow.className = 'ri-arrow-down-s-line custom-select-arrow';
+
+        trigger.appendChild(label);
+        trigger.appendChild(arrow);
+        wrapper.appendChild(trigger);
+
+        // Build dropdown
+        const dropdown = document.createElement('div');
+        dropdown.className = 'custom-select-dropdown';
+        dropdown.setAttribute('role', 'listbox');
+
+        // Search box
+        const searchBox = document.createElement('div');
+        searchBox.className = 'custom-select-search-box';
+
+        const searchIcon = document.createElement('i');
+        searchIcon.className = 'ri-search-line';
+
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'custom-select-search-input';
+        searchInput.placeholder = select.dataset.searchPlaceholder || 'Type to search reviewer...';
+        searchInput.setAttribute('autocomplete', 'off');
+        searchInput.setAttribute('spellcheck', 'false');
+
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'custom-select-clear-search';
+        clearBtn.innerHTML = '<i class="ri-close-line"></i>';
+        clearBtn.title = 'Clear search';
+
+        searchBox.appendChild(searchIcon);
+        searchBox.appendChild(searchInput);
+        searchBox.appendChild(clearBtn);
+        dropdown.appendChild(searchBox);
+
+        // Options container
+        const optionsList = document.createElement('div');
+        optionsList.className = 'custom-select-options';
+
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'custom-select-empty';
+        emptyMsg.innerHTML = '<i class="ri-search-eye-line"></i><span>No matching reviewer found</span>';
+
+        dropdown.appendChild(optionsList);
+        dropdown.appendChild(emptyMsg);
+        wrapper.appendChild(dropdown);
+
+        // Insert wrapper right after select
+        select.parentNode.insertBefore(wrapper, select.nextSibling);
+
+        function updateTriggerLabel() {
+            const selectedOpt = select.options[select.selectedIndex];
+            if (!selectedOpt || selectedOpt.value === '') {
+                label.innerHTML = `<span style="color: #64748b;">${selectedOpt ? selectedOpt.textContent : placeholder}</span>`;
+            } else {
+                const text = selectedOpt.textContent.trim();
+                const parts = text.split(' - ');
+                if (parts.length > 1) {
+                    const name = parts[0];
+                    const role = parts.slice(1).join(' - ');
+                    label.innerHTML = `<span>${name}</span> <span class="role-badge">${role}</span>`;
+                } else {
+                    label.textContent = text;
+                }
+            }
+        }
+
+        function renderOptions() {
+            optionsList.innerHTML = '';
+            Array.from(select.options).forEach((opt, idx) => {
+                const optEl = document.createElement('div');
+                optEl.className = 'custom-select-option';
+                optEl.dataset.value = opt.value;
+                optEl.dataset.index = idx;
+                if (opt.selected) {
+                    optEl.classList.add('is-selected');
+                }
+
+                const text = opt.textContent.trim();
+                const parts = text.split(' - ');
+                if (parts.length > 1 && opt.value !== '') {
+                    const name = parts[0];
+                    const role = parts.slice(1).join(' - ');
+                    optEl.innerHTML = `<span class="opt-title">${name}</span> <span class="opt-badge">${role}</span> <i class="ri-check-line opt-check"></i>`;
+                } else {
+                    optEl.innerHTML = `<span class="opt-title">${text}</span> <i class="ri-check-line opt-check"></i>`;
+                }
+
+                optEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    select.selectedIndex = idx;
+                    select.value = opt.value;
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                    updateTriggerLabel();
+                    renderOptions();
+                    closeDropdown();
+                    trigger.focus();
+                });
+
+                optionsList.appendChild(optEl);
+            });
+        }
+
+        function filterOptions(query) {
+            const q = query.trim().toLowerCase();
+            clearBtn.style.display = q ? 'block' : 'none';
+            let visibleCount = 0;
+
+            optionsList.querySelectorAll('.custom-select-option').forEach((optEl) => {
+                const text = optEl.textContent.toLowerCase();
+                const matches = text.includes(q);
+                optEl.style.display = matches ? 'flex' : 'none';
+                if (matches) visibleCount++;
+            });
+
+            emptyMsg.style.display = visibleCount === 0 ? 'flex' : 'none';
+        }
+
+        function openDropdown() {
+            document.querySelectorAll('.custom-searchable-select.is-open').forEach((other) => {
+                if (other !== wrapper) other.classList.remove('is-open');
+            });
+
+            wrapper.classList.add('is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+            searchInput.value = '';
+            filterOptions('');
+            renderOptions();
+
+            setTimeout(() => {
+                searchInput.focus();
+                const selectedEl = optionsList.querySelector('.custom-select-option.is-selected');
+                if (selectedEl) {
+                    selectedEl.scrollIntoView({ block: 'nearest' });
+                }
+            }, 60);
+        }
+
+        function closeDropdown() {
+            wrapper.classList.remove('is-open');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (wrapper.classList.contains('is-open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        });
+
+        searchInput.addEventListener('input', () => {
+            filterOptions(searchInput.value);
+        });
+
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            searchInput.value = '';
+            filterOptions('');
+            searchInput.focus();
+        });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', (e) => {
+            const visibleOpts = Array.from(optionsList.querySelectorAll('.custom-select-option:not([style*="display: none"])'));
+            const focusedOpt = optionsList.querySelector('.custom-select-option.is-focused');
+            let currentIndex = visibleOpts.indexOf(focusedOpt);
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const nextIndex = currentIndex < visibleOpts.length - 1 ? currentIndex + 1 : 0;
+                if (focusedOpt) focusedOpt.classList.remove('is-focused');
+                if (visibleOpts[nextIndex]) {
+                    visibleOpts[nextIndex].classList.add('is-focused');
+                    visibleOpts[nextIndex].scrollIntoView({ block: 'nearest' });
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : visibleOpts.length - 1;
+                if (focusedOpt) focusedOpt.classList.remove('is-focused');
+                if (visibleOpts[prevIndex]) {
+                    visibleOpts[prevIndex].classList.add('is-focused');
+                    visibleOpts[prevIndex].scrollIntoView({ block: 'nearest' });
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (focusedOpt) {
+                    focusedOpt.click();
+                } else if (visibleOpts.length === 1) {
+                    visibleOpts[0].click();
+                }
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeDropdown();
+                trigger.focus();
+            }
+        });
+
+        // Initialize state
+        updateTriggerLabel();
+        renderOptions();
+    });
+}
+
+// Global click to close dropdowns
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.custom-searchable-select')) {
+        document.querySelectorAll('.custom-searchable-select.is-open').forEach((el) => {
+            el.classList.remove('is-open');
+            const trig = el.querySelector('.custom-select-trigger');
+            if (trig) trig.setAttribute('aria-expanded', 'false');
+        });
+    }
+});
+
+// Run on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearchableSelects);
+} else {
+    initSearchableSelects();
+}
+
+// Universal Record Locator & Glowing Highlight Engine
+// Handles hash (#proposal-12, #project-12) and query params (?highlight=12)
+function handleLocationHashTarget() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawHash = window.location.hash ? window.location.hash.substring(1) : '';
+
+    let targetId = urlParams.get('highlight') || urlParams.get('proposal') || urlParams.get('project') || urlParams.get('id') || '';
+    let targetType = '';
+
+    if (!targetId && rawHash) {
+        if (rawHash.startsWith('proposal-')) {
+            targetId = rawHash.replace('proposal-', '');
+            targetType = 'research';
+        } else if (rawHash.startsWith('project-')) {
+            targetId = rawHash.replace('project-', '');
+            targetType = 'extension';
+        } else if (rawHash.startsWith('research-project-')) {
+            targetId = rawHash.replace('research-project-', '');
+            targetType = 'research';
+        } else if (rawHash.startsWith('ext-project-')) {
+            targetId = rawHash.replace('ext-project-', '');
+            targetType = 'extension';
+        } else if (/^\d+$/.test(rawHash)) {
+            targetId = rawHash;
+        }
+    }
+
+    if (!targetId && !rawHash) return;
+
+    // Search for target row across all possible selector patterns
+    const selectors = [];
+    if (targetId) {
+        selectors.push(
+            `#proposal-${targetId}`,
+            `#project-${targetId}`,
+            `#research-project-${targetId}`,
+            `#ext-project-${targetId}`,
+            `tr[data-id="${targetId}"]`,
+            `tr[data-proposal-id="${targetId}"]`,
+            `tr[data-project-id="${targetId}"]`,
+            `input[name="ids[]"][value="${targetId}"]`
+        );
+    }
+    if (rawHash) {
+        selectors.push(`#${rawHash}`);
+    }
+
+    let targetRow = null;
+    for (const sel of selectors) {
+        try {
+            const el = document.querySelector(sel);
+            if (el) {
+                targetRow = el.tagName === 'TR' ? el : el.closest('tr');
+                if (targetRow) break;
+            }
+        } catch (e) {}
+    }
+
+    if (!targetRow) return;
+
+    // If row is inside an archived/inactive tab pane, switch tab if available
+    const tabPane = targetRow.closest('.tab-pane, [data-tab-content]');
+    if (tabPane && tabPane.hidden) {
+        const tabId = tabPane.id || tabPane.dataset.tabContent;
+        const tabBtn = document.querySelector(`[data-tab="${tabId}"], [href="#${tabId}"]`);
+        if (tabBtn) tabBtn.click();
+    }
+
+    // Synchronize Table Pagination if table uses adminTablePages
+    const table = targetRow.closest('table');
+    if (table && typeof adminTablePages !== 'undefined' && adminTablePages.has(table)) {
+        const state = adminTablePages.get(table);
+        if (state) {
+            let stateChanged = false;
+            // Clear any active search query if row might be filtered out
+            if (state.query) {
+                state.query = '';
+                if (state.searchInput) state.searchInput.value = '';
+                stateChanged = true;
+            }
+            // Clear column filters if active
+            if (state.columnFilters && Object.values(state.columnFilters).some(v => v)) {
+                state.columnFilters = {};
+                table.parentElement?.querySelectorAll('.data-table-filter select').forEach(sel => { sel.value = ''; });
+                stateChanged = true;
+            }
+            if (targetRow.classList.contains('global-search-hidden')) {
+                targetRow.classList.remove('global-search-hidden');
+                stateChanged = true;
+            }
+            targetRow.dataset.localFilterMatch = 'true';
+
+            // Find which page the row is on
+            const matches = state.rows.filter(r => r.dataset.localFilterMatch !== 'false' && !r.classList.contains('global-search-hidden'));
+            const rowIndex = matches.indexOf(targetRow);
+            if (rowIndex !== -1) {
+                const targetPage = Math.floor(rowIndex / state.pageSize) + 1;
+                if (state.page !== targetPage) {
+                    state.page = targetPage;
+                    stateChanged = true;
+                }
+            }
+            if (stateChanged && typeof refreshAdminTablePagination === 'function') {
+                refreshAdminTablePagination();
+            }
+        }
+    }
+
+    // Scroll smoothly to center the record in view
+    requestAnimationFrame(() => {
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Remove any previous active highlights and badges
+    document.querySelectorAll('.record-highlight-active').forEach(el => {
+        el.classList.remove('record-highlight-active');
+    });
+    document.querySelectorAll('.record-highlight-badge').forEach(el => el.remove());
+
+    // Apply the glowing highlight animation
+    targetRow.classList.add('record-highlight-active');
+
+    // Add glowing badge to title column
+    const titleCell = targetRow.querySelector('strong')?.parentElement || targetRow.cells[1] || targetRow.cells[0];
+    let badge = null;
+    if (titleCell && !titleCell.querySelector('.record-highlight-badge')) {
+        badge = document.createElement('span');
+        badge.className = 'record-highlight-badge';
+        badge.innerHTML = '<i class="ri-focus-2-line"></i> Target Record';
+        titleCell.appendChild(badge);
+    }
+
+    // Determine target title for toast
+    const rowTitle = targetRow.querySelector('strong')?.textContent.trim() || (targetId ? `Record #${targetId}` : 'Selected Record');
+
+    // Check modal availability
+    const modalId = (targetType === 'extension' || rawHash.startsWith('project-') || rawHash.startsWith('ext-project-'))
+        ? ('ext-detail-' + targetId)
+        : ('research-' + targetId);
+    const modal = document.getElementById(modalId)
+        || document.getElementById('detailsModal')
+        || (targetId ? document.getElementById('project-' + targetId) : null);
+
+    const canOpenModal = !!modal || (typeof window.openDetailsModal === 'function');
+
+    // Display floating feedback toast
+    document.querySelectorAll('.record-focus-toast').forEach(t => t.remove());
+    const toast = document.createElement('div');
+    toast.className = 'record-focus-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+
+    const cleanTitle = rowTitle.length > 42 ? rowTitle.slice(0, 42) + '…' : rowTitle;
+    let actionBtnHtml = '';
+    if (canOpenModal) {
+        actionBtnHtml = `<button type="button" class="toast-btn" id="recordFocusViewDetailsBtn"><i class="ri-eye-line"></i> View Details</button>`;
+    }
+
+    toast.innerHTML = `
+        <span style="display:inline-flex;align-items:center;gap:7px;">
+            <i class="ri-checkbox-circle-fill" style="color:#22c55e;font-size:1.15rem;flex-shrink:0;"></i>
+            <span>Located in records: <strong style="color:#f8fafc;">${cleanTitle.replace(/[<>&"]/g, '')}</strong></span>
+        </span>
+        ${actionBtnHtml}
+        <button type="button" class="toast-close" aria-label="Close message"><i class="ri-close-line"></i></button>
+    `;
+
+    document.body.appendChild(toast);
+
+    const detailsBtn = toast.querySelector('#recordFocusViewDetailsBtn');
+    if (detailsBtn) {
+        detailsBtn.addEventListener('click', () => {
+            if (typeof window.openDetailsModal === 'function' && targetId) {
+                window.openDetailsModal(Number(targetId));
+            } else if (modal) {
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
+
+    const closeBtn = toast.querySelector('.toast-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => toast.remove(), 300);
+        });
+    }
+
+    setTimeout(() => {
+        if (toast.isConnected) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 6500);
+
+    // Auto-remove row highlight after 8 seconds or when row is clicked
+    const clearHighlight = () => {
+        targetRow.classList.remove('record-highlight-active');
+        if (badge && badge.isConnected) {
+            badge.style.transition = 'opacity 0.4s ease';
+            badge.style.opacity = '0';
+            setTimeout(() => badge.remove(), 400);
+        }
+        targetRow.removeEventListener('click', clearHighlight);
+    };
+    targetRow.addEventListener('click', clearHighlight);
+    setTimeout(clearHighlight, 8000);
+
+    // Optional modal auto-open if explicitly requested in URL query
+    if (urlParams.get('open_modal') === '1' || urlParams.get('modal') === '1') {
+        setTimeout(() => {
+            if (typeof window.openDetailsModal === 'function' && targetId) {
+                window.openDetailsModal(Number(targetId));
+            } else if (modal) {
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+        }, 500);
+    }
+}
+
+window.handleLocationHashTarget = handleLocationHashTarget;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        handleLocationHashTarget();
+        setTimeout(handleLocationHashTarget, 250);
+    });
+} else {
+    handleLocationHashTarget();
+    setTimeout(handleLocationHashTarget, 250);
+}
+window.addEventListener('hashchange', handleLocationHashTarget);
+
+/* ==========================================================================
+   DYNAMIC TABLE ROW / REPEATER FIELD CONTROLLER
+   ========================================================================== */
+function escapeHtmlForRepeater(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function addResearcherRow(name = '', role = '', isPrimary = false) {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+
+    const row = document.createElement('tr');
+    row.className = 'repeater-row';
+
+    const isFirstRow = tbody.children.length === 0 || isPrimary;
+    const roleValue = role || '';
+    const rolePlaceholder = isFirstRow 
+        ? "e.g. Lead Researcher / Principal Investigator" 
+        : "e.g. Co-Author / Research Member";
+
+    row.innerHTML = `
+        <td>
+            <input type="text" class="repeater-input researcher-name-input" value="${escapeHtmlForRepeater(name)}" placeholder="Full Name (e.g. Dr. Maria Santos)" required oninput="handleResearcherChange()">
+        </td>
+        <td>
+            <input type="text" class="repeater-input researcher-role-input" value="${escapeHtmlForRepeater(roleValue)}" placeholder="${rolePlaceholder}" oninput="handleResearcherChange()">
+        </td>
+        <td style="text-align: center;">
+            <button type="button" class="btn-repeater-remove" onclick="removeResearcherRow(this)" title="Remove Entry" aria-label="Remove researcher row">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+    updateResearchersState();
+
+    if (!isFirstRow && !name) {
+        const input = row.querySelector('.researcher-name-input');
+        if (input) input.focus();
+    }
+}
+
+function removeResearcherRow(btn) {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+    if (tbody.children.length <= 1) {
+        if (window.OVPRE && typeof OVPRE.toast === 'function') {
+            OVPRE.toast('At least one Lead Researcher is required.', 'warning');
+        } else {
+            alert('At least one Lead Researcher is required.');
+        }
+        return;
+    }
+    const row = btn.closest('tr');
+    if (row) {
+        row.remove();
+        updateResearchersState();
+    }
+}
+
+function handleResearcherChange() {
+    updateResearchersState();
+}
+
+function updateResearchersState() {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    const badge = document.getElementById('researcherCountBadge');
+    if (badge) {
+        badge.textContent = rows.length === 1 ? '1 Proponent' : `${rows.length} Proponents`;
+    }
+
+    rows.forEach(r => {
+        const btn = r.querySelector('.btn-repeater-remove');
+        if (btn) {
+            btn.disabled = rows.length <= 1;
+            btn.title = rows.length <= 1 ? 'At least 1 proponent required' : 'Remove Entry';
+        }
+    });
+
+    const parts = [];
+    rows.forEach(r => {
+        const nameInput = r.querySelector('.researcher-name-input');
+        const roleInput = r.querySelector('.researcher-role-input, .researcher-role-select');
+        const name = nameInput ? nameInput.value.trim() : '';
+        const role = roleInput ? roleInput.value.trim() : '';
+        if (name) {
+            parts.push(role ? `${name} (${role})` : name);
+        }
+    });
+
+    const hidden = document.getElementById('createResearchers');
+    if (hidden) {
+        hidden.value = parts.join(', ');
+    }
+}
+
+function initResearchersRepeater(defaultName) {
+    const tbody = document.getElementById('researchersRepeaterBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    let name = defaultName;
+    if (!name && typeof getCurrentUserObj === 'function') {
+        const u = getCurrentUserObj();
+        name = u.fullname || (typeof getCurrentUserFullname === 'function' ? getCurrentUserFullname() : '');
+    }
+    if (!name) {
+        const existingInput = document.getElementById('createResearchers');
+        if (existingInput && existingInput.value) {
+            name = existingInput.value;
+        }
+    }
+    addResearcherRow(name || 'Faculty Researcher', '', true);
+}
+
+// --- BUDGET BREAKDOWN REPEATER ---
+function addBudgetBreakdownRow(desc = '', category = 'MOOE', amount = '') {
+    const tbody = document.getElementById('budgetRepeaterBody');
+    if (!tbody) return;
+
+    const row = document.createElement('tr');
+    row.className = 'repeater-row';
+
+    row.innerHTML = `
+        <td>
+            <input type="text" class="repeater-input budget-desc-input" value="${escapeHtmlForRepeater(desc)}" placeholder="e.g. Laboratory Chemicals / Consumables" oninput="calcBudgetTotal()">
+        </td>
+        <td>
+            <select class="repeater-input budget-cat-select" onchange="calcBudgetTotal()">
+                <option value="MOOE" ${category === 'MOOE' ? 'selected' : ''}>MOOE (Supplies / Materials)</option>
+                <option value="Personnel" ${category === 'Personnel' ? 'selected' : ''}>Personnel Services</option>
+                <option value="Equipment" ${category === 'Equipment' ? 'selected' : ''}>Capital Outlay / Equipment</option>
+                <option value="Travel" ${category === 'Travel' ? 'selected' : ''}>Travel & Fieldwork</option>
+                <option value="Dissemination" ${category === 'Dissemination' ? 'selected' : ''}>Publication & Dissemination</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" step="0.01" min="0" class="repeater-input budget-amount-input" value="${amount}" placeholder="0.00" oninput="calcBudgetTotal()">
+        </td>
+        <td style="text-align: center;">
+            <button type="button" class="btn-repeater-remove" onclick="removeBudgetRow(this)" title="Remove Line Item">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+    calcBudgetTotal();
+
+    const descInput = row.querySelector('.budget-desc-input');
+    if (descInput && !desc) descInput.focus();
+}
+
+function removeBudgetRow(btn) {
+    const row = btn.closest('tr');
+    if (row) {
+        row.remove();
+        calcBudgetTotal();
+    }
+}
+
+function calcBudgetTotal() {
+    const tbody = document.getElementById('budgetRepeaterBody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    let total = 0;
+    let hasItems = false;
+
+    rows.forEach(r => {
+        const amtInput = r.querySelector('.budget-amount-input');
+        const val = parseFloat(amtInput ? amtInput.value : 0) || 0;
+        if (val > 0) {
+            total += val;
+            hasItems = true;
+        }
+    });
+
+    const badge = document.getElementById('budgetItemsCountBadge');
+    if (badge) {
+        badge.textContent = rows.length === 1 ? '1 item' : `${rows.length} items`;
+    }
+
+    if (hasItems) {
+        const budgetInput = document.getElementById('createBudget');
+        if (budgetInput) {
+            budgetInput.value = total.toFixed(2);
+        }
+    }
+}
+
+window.addResearcherRow = addResearcherRow;
+window.removeResearcherRow = removeResearcherRow;
+window.handleResearcherChange = handleResearcherChange;
+window.updateResearchersState = updateResearchersState;
+window.initResearchersRepeater = initResearchersRepeater;
+window.addBudgetBreakdownRow = addBudgetBreakdownRow;
+window.removeBudgetRow = removeBudgetRow;
+window.calcBudgetTotal = calcBudgetTotal;
+
+// Auto-initialize repeater if present on page load
+function autoInitRepeaters() {
+    const resTbody = document.getElementById('researchersRepeaterBody');
+    if (resTbody && resTbody.children.length === 0) {
+        initResearchersRepeater();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInitRepeaters);
+} else {
+    autoInitRepeaters();
+}
+
+
+
+
+/* ==========================================================================
+   FINANCIAL PRIVACY MASKING (BUDGET & GRANTS ALLOCATED HIDE/UNHIDE)
+   ========================================================================== */
+(function initFinancialPrivacyMasking() {
+    const STORAGE_KEY_PREFIX = 'ovpre_mask_';
+
+    function setMaskState(target, isMasked) {
+        try {
+            localStorage.setItem(STORAGE_KEY_PREFIX + target, isMasked ? '1' : '0');
+        } catch (e) {}
+
+        if (document.body) {
+            document.body.classList.toggle('mask-' + target, isMasked);
+        }
+
+        document.querySelectorAll(`.currency-masked-wrap[data-mask-group="${target}"]`).forEach(el => {
+            el.classList.toggle('is-masked', isMasked);
+        });
+
+        document.querySelectorAll(`.btn-toggle-mask[data-mask-target="${target}"]`).forEach(btn => {
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = isMasked ? 'ri-eye-off-line' : 'ri-eye-line';
+            }
+            btn.setAttribute('aria-pressed', isMasked ? 'true' : 'false');
+            const label = target === 'budget' ? 'Budget' : (target === 'grants' ? 'Grants Allocated' : target);
+            btn.title = isMasked ? `Unhide / Show ${label}` : `Hide ${label}`;
+            btn.setAttribute('aria-label', btn.title);
+        });
+    }
+
+    function initTarget(target, defaultMasked = false) {
+        let isMasked = defaultMasked;
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY_PREFIX + target);
+            if (stored !== null) {
+                isMasked = stored === '1';
+            }
+        } catch (e) {}
+        setMaskState(target, isMasked);
+    }
+
+    function setupListeners() {
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-toggle-mask');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = btn.getAttribute('data-mask-target');
+                if (target) {
+                    const currentMasked = localStorage.getItem(STORAGE_KEY_PREFIX + target) === '1';
+                    setMaskState(target, !currentMasked);
+                }
+                return;
+            }
+
+            const wrap = e.target.closest('.currency-masked-wrap');
+            if (wrap && (wrap.classList.contains('is-masked') || (document.body && document.body.classList.contains('mask-' + wrap.getAttribute('data-mask-group'))))) {
+                const target = wrap.getAttribute('data-mask-group');
+                if (target) {
+                    setMaskState(target, false);
+                }
+            }
+        });
+
+        initTarget('budget', false);
+        initTarget('grants', false);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupListeners);
+    } else {
+        setupListeners();
+    }
+
+    window.updateFinancialMasking = function(target) {
+        if (target) {
+            initTarget(target);
+        } else {
+            initTarget('budget');
+            initTarget('grants');
+        }
+    };
+})();

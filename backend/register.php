@@ -54,6 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirmPassword) {
         $errors[] = 'Password confirmation does not match.';
     }
+    if (empty($_POST['terms_agreed'])) {
+        $errors[] = 'Please read and accept the Terms and Conditions and Data Privacy Policy to complete registration.';
+    }
 
     // Check email uniqueness
     $stmt = db()->prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?) AND deleted_at IS NULL LIMIT 1');
@@ -943,6 +946,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             cursor: pointer;
         }
+
+        /* Policy and Terms Modal Styles */
+        .policy-tab-btn {
+            padding: 10px 18px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #64748b;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .policy-tab-btn.active {
+            border-bottom: 3px solid var(--reg-green) !important;
+            color: var(--reg-green) !important;
+            font-weight: 700 !important;
+        }
+        .policy-content-block {
+            margin-bottom: 16px;
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .policy-content-block h4 {
+            margin: 0 0 8px 0;
+            color: #0f172a;
+            font-size: 0.92rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .policy-content-block p {
+            margin: 0 0 8px 0;
+            color: #475569;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .policy-content-block p:last-child {
+            margin-bottom: 0;
+        }
+        .policy-content-block ul {
+            margin: 0 0 8px 0;
+            padding-left: 20px;
+            color: #475569;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+        .policy-content-block li {
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body class="register-body">
@@ -1244,10 +1304,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <div style="margin-top: 14px;">
-                    <label style="display:flex; align-items:flex-start; gap:8px; font-size:0.84rem; color:#475569; cursor:pointer;">
-                        <input type="checkbox" required checked style="margin-top:3px;">
-                        <span>I accept the DLSP OVPRE Terms of Service, Ethics and Data Privacy Policy. My account will be active immediately.</span>
+                <div style="margin-top: 16px; background: #f8fafc; padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <label style="display:flex; align-items:flex-start; gap:10px; font-size:0.86rem; color:#334155; cursor:pointer;">
+                        <input type="checkbox" id="termsCheckbox" name="terms_agreed" value="1" required checked style="margin-top:3px; accent-color: var(--reg-green); width: 17px; height: 17px; cursor: pointer;">
+                        <span style="line-height: 1.5;">
+                            I have read, understood, and accept the 
+                            <a href="javascript:void(0)" onclick="openTermsModal('terms')" style="color:var(--reg-green); font-weight:700; text-decoration:underline;">Terms and Conditions</a> 
+                            and 
+                            <a href="javascript:void(0)" onclick="openTermsModal('privacy')" style="color:var(--reg-green); font-weight:700; text-decoration:underline;">Data Privacy Policy</a> 
+                            of PLSP OVPRE. My account will be active immediately upon creation.
+                        </span>
                     </label>
                 </div>
             </div>
@@ -1271,7 +1337,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <div style="text-align: center; padding: 14px; background: #f8fafc; border-top: 1px solid #f1f5f9; font-size: 0.88rem; color: #64748b;">
-        Already have an account? <a href="index.php" style="color: var(--reg-green); font-weight: 700; text-decoration: none;">Sign in here</a>
+        Already have an account? <a href="index.php" style="color: var(--reg-green); font-weight: 700; text-decoration: none;">Sign in here</a> &bull; 
+        <a href="javascript:void(0)" onclick="openTermsModal('terms')" style="color: #64748b; text-decoration: underline;">Terms &amp; Conditions</a> &bull; 
+        <a href="javascript:void(0)" onclick="openTermsModal('privacy')" style="color: #64748b; text-decoration: underline;">Privacy Policy</a>
     </div>
 </div>
 
@@ -1408,6 +1476,127 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="button" class="btn-next" onclick="confirmFacultyRole()" style="margin: 0; padding: 9px 22px;">
                 <i class="ri-check-line"></i> Confirm Selection
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Terms and Conditions & Privacy Policy -->
+<div class="role-modal-overlay" id="termsPrivacyModal" role="dialog" aria-modal="true" aria-labelledby="modalTermsTitle">
+    <div class="role-modal-card" style="width: min(100%, 700px); max-height: 88vh; display: flex; flex-direction: column;">
+        <div class="role-modal-header" style="flex-shrink: 0;">
+            <div>
+                <h3 id="modalTermsTitle"><i class="ri-shield-check-line" style="color: var(--reg-green);"></i> <span id="termsModalHeaderTitle">Terms and Conditions</span></h3>
+                <p>Pamantasan ng Lungsod ng San Pablo &bull; Office of the Vice President for Research and Extension</p>
+            </div>
+            <button type="button" class="role-modal-close" onclick="closeTermsModal()" aria-label="Close modal">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+
+        <!-- Tab Controls -->
+        <div style="display: flex; gap: 8px; padding: 10px 24px 0; border-bottom: 1px solid #e2e8f0; background: #f8fafc; flex-shrink: 0;">
+            <button type="button" class="policy-tab-btn active" id="tabBtnTerms" onclick="switchTermsTab('terms')">
+                <i class="ri-file-text-line"></i> Terms &amp; Conditions
+            </button>
+            <button type="button" class="policy-tab-btn" id="tabBtnPrivacy" onclick="switchTermsTab('privacy')">
+                <i class="ri-lock-2-line"></i> Privacy Policy (RA 10173)
+            </button>
+        </div>
+
+        <!-- Modal Body / Content -->
+        <div class="role-modal-body" style="flex: 1 1 auto; overflow-y: auto; padding: 20px 24px; background: #fdfdfd;">
+            <!-- Terms and Conditions Tab Content -->
+            <div id="contentTerms">
+                <div class="policy-content-block">
+                    <h4><i class="ri-government-line" style="color: var(--reg-green);"></i> 1. Acceptance and Purpose</h4>
+                    <p>Welcome to <strong>I-Record</strong>, the official research and extension repository and management system of the <strong>Pamantasan ng Lungsod ng San Pablo - Office of the Vice President for Research and Extension (PLSP OVPRE)</strong>. By creating an account and accessing this system, you agree to comply with and be bound by these Terms and Conditions and all applicable university policies and Philippine laws.</p>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-award-line" style="color: var(--reg-green);"></i> 2. Academic Integrity and Research Ethics</h4>
+                    <p>All users must uphold the highest standards of academic honesty, integrity, and ethical conduct:</p>
+                    <ul>
+                        <li>All submitted research proposals, extension project papers, accomplishment reports, and datasets must be original works of the authors.</li>
+                        <li>Plagiarism, fabrication, falsification of research data, and duplicate submissions are strictly prohibited and subject to institutional disciplinary and legal penalties.</li>
+                        <li>Proper attribution and citation must be given to all intellectual sources, co-authors, and funding collaborators.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-key-2-line" style="color: var(--reg-green);"></i> 3. User Accounts and Security Responsibilities</h4>
+                    <p>You are solely responsible for maintaining the confidentiality of your login credentials and preventing unauthorized access to your account:</p>
+                    <ul>
+                        <li>Do not share your username and password with any unauthorized individuals.</li>
+                        <li>All actions and submissions conducted under your authenticated account are deemed to be authorized by you.</li>
+                        <li>Notify the OVPRE Administrator immediately if you detect any unauthorized access or compromise of your credentials.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-book-open-line" style="color: var(--reg-green);"></i> 4. Intellectual Property Rights (IPR)</h4>
+                    <p>All research outputs and extension projects submitted through I-Record remain protected under the Philippine Intellectual Property Code (Republic Act No. 8293) and the Institutional IP Policies of PLSP. PLSP OVPRE reserves the rights to archive, verify, and generate statistical metrics on submissions for institutional accreditation and reporting.</p>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-forbid-line" style="color: #ef4444;"></i> 5. Prohibited Conduct and Sanctions</h4>
+                    <p>Users shall not upload malicious code, attempt unauthorized penetration testing or privilege escalation, scrape bulk data, or submit defamatory or misleading materials. Violations may result in account termination and administrative sanctions under university rules.</p>
+                </div>
+            </div>
+
+            <!-- Privacy Policy Tab Content -->
+            <div id="contentPrivacy" style="display: none;">
+                <div class="policy-content-block">
+                    <h4><i class="ri-shield-keyhole-line" style="color: var(--reg-green);"></i> 1. Compliance with RA 10173 (Data Privacy Act of 2012)</h4>
+                    <p>PLSP OVPRE is strictly committed to protecting and respecting your personal privacy in accordance with <strong>Republic Act No. 10173</strong>, otherwise known as the <em>Philippine Data Privacy Act of 2012 (DPA)</em>, its Implementing Rules and Regulations, and issuance from the National Privacy Commission (NPC).</p>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-folder-user-line" style="color: var(--reg-green);"></i> 2. Personal Information Collected</h4>
+                    <p>During registration and system usage, we collect and process the following information:</p>
+                    <ul>
+                        <li><strong>Personal Identity:</strong> Full name, date of birth, gender, and college/department affiliation.</li>
+                        <li><strong>Contact Information:</strong> Official email address and mobile phone number.</li>
+                        <li><strong>System Credentials:</strong> Username and securely salted/hashed passwords.</li>
+                        <li><strong>Academic Contributions:</strong> Research papers, project proposals, accomplishment reports, uploaded documents, and reviewer comments.</li>
+                        <li><strong>Access Logs:</strong> Timestamped login activity, IP address, and browser user agent for audit security.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-focus-2-line" style="color: var(--reg-green);"></i> 3. Purpose of Collection and Processing</h4>
+                    <p>Your information is collected solely for legitimate institutional purposes, including:</p>
+                    <ul>
+                        <li>Verifying user identity and enforcing Role-Based Access Control (RBAC).</li>
+                        <li>Facilitating the workflow, evaluation, review, and tracking of research and extension initiatives.</li>
+                        <li>Generating official statistical summaries for university accreditation and government compliance (e.g., CHED, DOST).</li>
+                        <li>Delivering notifications, system alerts, and password recovery verifications.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-lock-line" style="color: var(--reg-green);"></i> 4. Data Security and Protection</h4>
+                    <p>We implement strict administrative, physical, and technical safeguards including encryption at rest, secure session tokens, brute-force lockout defense, and isolated storage permissions to safeguard your data against unauthorized access, alteration, or theft.</p>
+                </div>
+
+                <div class="policy-content-block">
+                    <h4><i class="ri-user-settings-line" style="color: var(--reg-green);"></i> 5. Your Rights as a Data Subject</h4>
+                    <p>Under the Data Privacy Act of 2012, you possess the right to be informed, to access, to object, to modify or correct, and to request deletion of your personal data within legal and institutional retention limits. For privacy concerns, you may contact the <strong>PLSP Data Protection Officer / OVPRE Secretariat</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="role-modal-footer" style="flex-shrink: 0; justify-content: space-between;">
+            <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 5px;">
+                <i class="ri-shield-check-line" style="color: var(--reg-green);"></i> Protected under RA 10173 &amp; PLSP Policies
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-prev" onclick="closeTermsModal()" style="margin: 0; padding: 9px 18px;">
+                    Close
+                </button>
+                <button type="button" class="btn-next" onclick="agreeAndCloseTerms()" style="margin: 0; padding: 9px 20px;">
+                    <i class="ri-check-line"></i> I Accept &amp; Agree
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1850,6 +2039,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('recapPhone').textContent = phone || 'Verified';
     }
 
+    // Terms & Privacy Policy Modal Logic
+    function openTermsModal(tab = 'terms') {
+        const modal = document.getElementById('termsPrivacyModal');
+        if (!modal) return;
+        switchTermsTab(tab);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTermsModal() {
+        const modal = document.getElementById('termsPrivacyModal');
+        if (!modal) return;
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function switchTermsTab(tab) {
+        const tabTerms = document.getElementById('tabBtnTerms');
+        const tabPrivacy = document.getElementById('tabBtnPrivacy');
+        const contentTerms = document.getElementById('contentTerms');
+        const contentPrivacy = document.getElementById('contentPrivacy');
+        const titleSpan = document.getElementById('termsModalHeaderTitle');
+
+        if (tab === 'privacy') {
+            tabPrivacy?.classList.add('active');
+            tabTerms?.classList.remove('active');
+            if (contentTerms) contentTerms.style.display = 'none';
+            if (contentPrivacy) contentPrivacy.style.display = 'block';
+            if (titleSpan) titleSpan.textContent = 'Data Privacy Policy';
+        } else {
+            tabTerms?.classList.add('active');
+            tabPrivacy?.classList.remove('active');
+            if (contentTerms) contentTerms.style.display = 'block';
+            if (contentPrivacy) contentPrivacy.style.display = 'none';
+            if (titleSpan) titleSpan.textContent = 'Terms and Conditions';
+        }
+    }
+
+    function agreeAndCloseTerms() {
+        const cb = document.getElementById('termsCheckbox');
+        if (cb) cb.checked = true;
+        closeTermsModal();
+    }
+
     // Modal background click & escape key handlers
     document.getElementById('adminDirectorModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'adminDirectorModal') closeAdminDirectorModal();
@@ -1860,12 +2093,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     document.getElementById('facultyModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'facultyModal') closeFacultyModal();
     });
+    document.getElementById('termsPrivacyModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'termsPrivacyModal') closeTermsModal();
+    });
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeAdminDirectorModal();
             closeCoordinatorModal();
             closeFacultyModal();
+            closeTermsModal();
+        }
+    });
+
+    // Registration form submit handler
+    document.getElementById('registrationForm')?.addEventListener('submit', function(e) {
+        const cb = document.getElementById('termsCheckbox');
+        if (cb && !cb.checked) {
+            e.preventDefault();
+            openTermsModal('terms');
+            return false;
+        }
+        const submitBtn = document.getElementById('btnSubmit');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Creating Account &amp; Signing In...';
         }
     });
 

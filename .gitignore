@@ -1,5 +1,7 @@
 # Local environment configuration
 /config.local.php
+/backend/config.local.php
+*.local.php
 .env
 
 # Editor & OS artifacts

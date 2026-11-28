@@ -1,0 +1,26 @@
+# I-Record Apache / XAMPP Configuration
+DirectoryIndex backend/landing.php backend/index.php index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Route root static assets to frontend/assets/
+    RewriteRule ^assets/(.*)$ frontend/assets/$1 [L]
+    RewriteRule ^backend/assets/(.*)$ frontend/assets/$1 [L]
+
+    # Friendly URL Rewriting for Backend
+    RewriteRule ^login$ backend/index.php [R=302,L]
+    RewriteRule ^register$ backend/register.php [R=302,L]
+    RewriteRule ^dashboard$ backend/dashboard.php [R=302,L]
+    RewriteRule ^landing$ backend/landing.php [R=302,L]
+</IfModule>
+
+# Custom Error Pages
+ErrorDocument 404 /backend/404.php
+ErrorDocument 403 /backend/403.php
+ErrorDocument 500 /backend/500.php
+
+# Security: Block sensitive files from direct web access
+<FilesMatch "^(config\.local\.php|.*\.(sql|ini|log))$">
+    Require all denied
+</FilesMatch>

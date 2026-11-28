@@ -1,0 +1,6 @@
+<FilesMatch "\.(pdf|png|jpe?g|gif|webp|svg|docx?|zip)$">
+    Require all granted
+</FilesMatch>
+<FilesMatch "(?i)\.(php|phtml|phar|pl|py|jsp|asp|sh|cgi)$">
+    Require all denied
+</FilesMatch>

@@ -37,6 +37,6 @@ define('SUPABASE_ANON_KEY', $localValue('SUPABASE_ANON_KEY'));
 define('SUPABASE_SECRET_KEY', $localValue('SUPABASE_SECRET_KEY'));
 define('SUPABASE_STORAGE_BUCKET', $localValue('SUPABASE_STORAGE_BUCKET', 'irecord-records'));
 
-define('UPLOAD_DIR', __DIR__ . '/uploads/records');
+define('UPLOAD_DIR', is_dir(__DIR__ . '/uploads/records') ? __DIR__ . '/uploads/records' : dirname(__DIR__) . '/uploads/records');
 define('MAX_UPLOAD_BYTES', 15 * 1024 * 1024);
 define('MAX_LOGIN_ATTEMPTS', 5);

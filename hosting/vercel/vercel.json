@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/uploads/records/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "inline"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/frontend/assets/$1"
+    },
+    {
+      "src": "^/uploads/(.*)",
+      "dest": "/frontend/uploads/$1"
+    },
+    {
+      "src": "^/$",
+      "dest": "/frontend/index.html"
+    },
+    {
+      "src": "^/landing$",
+      "dest": "/frontend/landing.html"
+    },
+    {
+      "src": "^/reset-password$",
+      "dest": "/frontend/reset-password.html"
+    },
+    {
+      "src": "^/submitted-files$",
+      "dest": "/frontend/submitted-files.html"
+    },
+    {
+      "src": "^/upload-document$",
+      "dest": "/frontend/upload-document.html"
+    },
+    {
+      "src": "^/admin-pending-users$",
+      "dest": "/frontend/admin-pending-users.html"
+    },
+    {
+      "src": "^/login$",
+      "dest": "/frontend/login.html"
+    },
+    {
+      "src": "^/register$",
+      "dest": "/frontend/register.html"
+    },
+    {
+      "src": "^/dashboard$",
+      "dest": "/frontend/dashboard.html"
+    },
+    {
+      "src": "^/research$",
+      "dest": "/frontend/research.html"
+    },
+    {
+      "src": "^/extension$",
+      "dest": "/frontend/extension.html"
+    },
+    {
+      "src": "^/admin-reports$",
+      "dest": "/frontend/admin-reports.html"
+    },
+    {
+      "src": "^/admin-users$",
+      "dest": "/frontend/admin-users.html"
+    },
+    {
+      "src": "^/system-activity$",
+      "dest": "/frontend/system-activity.html"
+    },
+    {
+      "src": "^/system-backup$",
+      "dest": "/frontend/system-backup.html"
+    },
+    {
+      "src": "^/admin-storage$",
+      "dest": "/frontend/dashboard.html"
+    },
+    {
+      "src": "^/admin-settings$",
+      "dest": "/frontend/admin-settings.html"
+    },
+    {
+      "src": "^/admin-documents$",
+      "dest": "/frontend/admin-documents.html"
+    },
+    {
+      "src": "^/announcements$",
+      "dest": "/frontend/announcements.html"
+    },
+    {
+      "src": "^/activities$",
+      "dest": "/frontend/activities.html"
+    },
+    {
+      "src": "^/notifications$",
+      "dest": "/frontend/notifications.html"
+    },
+    {
+      "src": "^/profile$",
+      "dest": "/frontend/profile.html"
+    },
+    {
+      "src": "^/forgot-password$",
+      "dest": "/frontend/forgot-password.html"
+    },
+    {
+      "src": "^/search$",
+      "dest": "/frontend/search.html"
+    },
+    {
+      "src": "^/404$",
+      "dest": "/frontend/404.html"
+    },
+    {
+      "src": "^/403$",
+      "dest": "/frontend/403.html"
+    },
+    {
+      "src": "^/500$",
+      "dest": "/frontend/500.html"
+    },
+    {
+      "src": "^/(.*)\\.html$",
+      "dest": "/frontend/$1.html"
+    },
+    {
+      "src": "^/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ]
+}
