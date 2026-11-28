@@ -81,8 +81,8 @@ renderHeader('Notifications', 'notifications');
 </section>
 
 <section class="panel">
-    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="notificationsTable" id="notificationsSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; margin-bottom: 12px;">
-        <span data-selection-count id="notificationsSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="notificationsTable" id="notificationsSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 8px 0; margin-bottom: 12px; background: transparent;">
+        <span data-selection-count id="notificationsSelectedCount" style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">0 selected</span>
         <form method="post" id="bulkNotificationsForm" style="margin: 0; display: inline-flex; gap: 8px; align-items: center;">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="mark_selected" value="1">

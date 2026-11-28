@@ -264,8 +264,8 @@ renderHeader($archived ? 'Archived Announcements' : 'Announcements Management', 
     </div>
 
     <!-- Bulk Selection Toolbar for Announcements -->
-    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="announcementsTable" hidden style="display: none; justify-content: space-between; padding: 10px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 14px;">
-        <span data-selection-count style="font-weight: 700; color: #15803d; font-size: 0.88rem;">0 selected</span>
+    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="announcementsTable" hidden style="display: none; justify-content: space-between; padding: 8px 0; margin-bottom: 14px; background: transparent;">
+        <span data-selection-count style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">0 selected</span>
         <form id="bulk-announcementsTable" method="post" data-bulk-selection-form style="margin: 0;">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="bulk">
