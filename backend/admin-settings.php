@@ -5,6 +5,17 @@ $user = require_super_admin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+
+    if (isset($_POST['send_digest_now'])) {
+        $res = send_weekly_dean_director_digest();
+        if ($res['success']) {
+            flash('success', 'Weekly Dean & Director Digest successfully sent to ' . $res['count'] . ' recipient(s).');
+        } else {
+            flash('error', $res['message']);
+        }
+        redirect_to('admin-settings.php');
+    }
+
     $strongPasswords = isset($_POST['strong_passwords']) ? '1' : '0';
     $sessionTimeoutEnabled = isset($_POST['session_timeout_enabled']) ? '1' : '0';
     $sessionTimeoutMinutes = max(5, min(480, (int) ($_POST['session_timeout_minutes'] ?? 30)));
@@ -15,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $requireAdminRemarks = isset($_POST['require_admin_remarks']) ? '1' : '0';
     $notifyOnApproval = isset($_POST['notify_on_approval']) ? '1' : '0';
+    $emailAlertsEndorsements = isset($_POST['email_alerts_endorsements']) ? '1' : '0';
+    $weeklyDigestEnabled = isset($_POST['weekly_digest_enabled']) ? '1' : '0';
 
     set_system_setting('strong_passwords', $strongPasswords);
     set_system_setting('session_timeout_enabled', $sessionTimeoutEnabled);
@@ -23,6 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     set_system_setting('allowed_file_types', $allowedTypes);
     set_system_setting('require_admin_remarks', $requireAdminRemarks);
     set_system_setting('notify_on_approval', $notifyOnApproval);
+    set_system_setting('email_alerts_endorsements', $emailAlertsEndorsements);
+    set_system_setting('weekly_digest_enabled', $weeklyDigestEnabled);
 
     log_action((int) $user['id'], 'Updated system settings');
     flash('success', 'System settings saved and applied across all modules.');
@@ -37,9 +52,11 @@ $maxFileSizeMb = (int) get_system_setting('max_file_size_mb', 25);
 $allowedTypes = (string) get_system_setting('allowed_file_types', 'PDF, DOCX, XLSX, PPTX');
 $requireAdminRemarks = get_system_setting('require_admin_remarks', '1') === '1';
 $notifyOnApproval = get_system_setting('notify_on_approval', '1') === '1';
+$emailAlertsEndorsements = get_system_setting('email_alerts_endorsements', '1') === '1';
+$weeklyDigestEnabled = get_system_setting('weekly_digest_enabled', '1') === '1';
 
 renderHeader('System Settings', 'settings');
-renderModuleHeader('System Settings', 'Configure security rules, upload limits, notifications, and workflow defaults.', 'ri-settings-3-line');
+renderModuleHeader('System Settings', 'Configure security rules, upload limits, email notifications, and workflow defaults.', 'ri-settings-3-line');
 ?>
 
 <?php if ($notice): ?>
@@ -99,12 +116,40 @@ renderModuleHeader('System Settings', 'Configure security rules, upload limits, 
             </div>
         </article>
 
-        <!-- Workflow Defaults -->
+        <!-- Workflow & Notifications -->
+        <article class="panel setting-card">
+            <i class="ri-notification-badge-line" style="color: #7c3aed;"></i>
+            <div>
+                <h3 style="margin: 0 0 4px;">Workflow &amp; Notifications</h3>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Email dispatch and alert delivery defaults.</p>
+            </div>
+            
+            <label class="toggle-row">
+                <span>Email alerts on proposal endorsements<br><small style="font-weight: 400; color: var(--muted);">Notify proponent upon review stage progress</small></span>
+                <input type="checkbox" name="email_alerts_endorsements" value="1" <?php echo $emailAlertsEndorsements ? 'checked' : ''; ?>>
+            </label>
+            
+            <label class="toggle-row">
+                <span>Weekly Dean &amp; Director digests<br><small style="font-weight: 400; color: var(--muted);">Automated university research activity summary</small></span>
+                <input type="checkbox" name="weekly_digest_enabled" value="1" <?php echo $weeklyDigestEnabled ? 'checked' : ''; ?>>
+            </label>
+
+            <div style="margin-top: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <div style="font-size: 0.8rem; color: #475569;">
+                    <i class="ri-mail-check-line" style="color: #15803d; font-weight: 700;"></i> <strong>SMTP Connected:</strong> smtp.gmail.com
+                </div>
+                <button type="submit" name="send_digest_now" value="1" style="background: #ffffff; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; color: #1e293b; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="ri-send-plane-line"></i> Send Digest Now
+                </button>
+            </div>
+        </article>
+
+        <!-- Review & In-App Defaults -->
         <article class="panel setting-card">
             <i class="ri-route-line"></i>
             <div>
-                <h3 style="margin: 0 0 4px;">Workflow Defaults</h3>
-                <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Reviewer feedback requirements & notifications.</p>
+                <h3 style="margin: 0 0 4px;">Review Policies</h3>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Reviewer feedback requirements & audit flags.</p>
             </div>
             
             <label class="toggle-row">
@@ -113,7 +158,7 @@ renderModuleHeader('System Settings', 'Configure security rules, upload limits, 
             </label>
             
             <label class="toggle-row">
-                <span>Notify on review & approval<br><small style="font-weight: 400; color: var(--muted);">Alert proponent on status updates</small></span>
+                <span>Notify on review & approval<br><small style="font-weight: 400; color: var(--muted);">Generate in-app notification feed alerts</small></span>
                 <input type="checkbox" name="notify_on_approval" value="1" <?php echo $notifyOnApproval ? 'checked' : ''; ?>>
             </label>
 

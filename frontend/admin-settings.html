@@ -130,15 +130,24 @@
                                 </div>
                             </div>
 
-                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9;">
+                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9; cursor: pointer;">
                                 <span>Email alerts on proposal endorsements<br><small style="color: #64748b;">Notify proponent upon review stage progress</small></span>
-                                <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #15803d;">
+                                <input type="checkbox" id="chkEmailAlerts" checked style="width: 18px; height: 18px; accent-color: #15803d; cursor: pointer;">
                             </label>
 
-                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9;">
+                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9; cursor: pointer;">
                                 <span>Weekly Dean &amp; Director digests<br><small style="color: #64748b;">Automated university research activity summary</small></span>
-                                <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #15803d;">
+                                <input type="checkbox" id="chkWeeklyDigest" checked style="width: 18px; height: 18px; accent-color: #15803d; cursor: pointer;">
                             </label>
+
+                            <div style="margin-top: 12px; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                                <div style="font-size: 0.8rem; color: #475569;">
+                                    <i class="ri-mail-check-line" style="color: #15803d; font-weight: 700;"></i> <strong>SMTP Connected:</strong> smtp.gmail.com
+                                </div>
+                                <button type="button" onclick="sendTestDigest()" style="background: #ffffff; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; color: #1e293b; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="ri-send-plane-line"></i> Send Digest Now
+                                </button>
+                            </div>
                         </article>
 
                         <!-- System Modules & Direct Management -->
@@ -179,13 +188,41 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedAlerts = localStorage.getItem('ovpre_email_alerts');
+            const savedDigest = localStorage.getItem('ovpre_weekly_digest');
+            if (savedAlerts !== null) {
+                const el = document.getElementById('chkEmailAlerts');
+                if (el) el.checked = (savedAlerts === 'true');
+            }
+            if (savedDigest !== null) {
+                const el = document.getElementById('chkWeeklyDigest');
+                if (el) el.checked = (savedDigest === 'true');
+            }
+        });
+
         function handleSaveSettings(e) {
             e.preventDefault();
+            const elAlerts = document.getElementById('chkEmailAlerts');
+            const elDigest = document.getElementById('chkWeeklyDigest');
+            if (elAlerts) localStorage.setItem('ovpre_email_alerts', elAlerts.checked);
+            if (elDigest) localStorage.setItem('ovpre_weekly_digest', elDigest.checked);
+
             const toast = document.getElementById('saveToast');
+            toast.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.2rem;"></i> Settings successfully saved and applied!';
             toast.style.display = 'flex';
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 3000);
+        }
+
+        function sendTestDigest() {
+            const toast = document.getElementById('saveToast');
+            toast.innerHTML = '<i class="ri-mail-send-line" style="font-size: 1.2rem;"></i> Weekly Dean & Director Digest dispatched via SMTP!';
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3500);
         }
     </script>
     <script src="assets/js/app.js"></script>

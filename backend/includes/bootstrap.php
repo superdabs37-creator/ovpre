@@ -559,7 +559,7 @@ function db(): PDO {
     return $pdo;
 }
 
-function send_app_email(string $to, string $subject, string $body): bool {
+function send_app_email(string $to, string $subject, string $body, bool $isHtml = false): bool {
     if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
         return false;
     }
@@ -574,8 +574,14 @@ function send_app_email(string $to, string $subject, string $body): bool {
         $mailer->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mailer->addAddress($to);
         $mailer->Subject = $subject;
-        $mailer->Body = $body;
-        $mailer->isHTML(false);
+        if ($isHtml) {
+            $mailer->isHTML(true);
+            $mailer->Body = $body;
+            $mailer->AltBody = strip_tags(str_replace(['<br>', '<br/>', '<br />', '</p>'], "\n", $body));
+        } else {
+            $mailer->isHTML(false);
+            $mailer->Body = $body;
+        }
 
         if (SMTP_HOST !== '') {
             $mailer->isSMTP();
@@ -831,6 +837,8 @@ function ensure_system_settings_table(): void {
                 'allowed_file_types' => 'PDF, DOCX, XLSX, PPTX',
                 'require_admin_remarks' => '1',
                 'notify_on_approval' => '1',
+                'email_alerts_endorsements' => '1',
+                'weekly_digest_enabled' => '1',
             ];
             $stmt = db()->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES (?, ?)");
             foreach ($defaults as $k => $v) {
@@ -1072,14 +1080,66 @@ function notification_link_column_exists(): bool {
     return $exists;
 }
 
-function notify_user(int $userId, string $message, ?string $link = null): void {
-    if (notification_link_column_exists()) {
-        $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at, link) VALUES (?, ?, ?, NOW(), ?)');
-        $stmt->execute([$userId, $message, 'Unread', $link]);
-        return;
+function notify_user(int $userId, string $message, ?string $link = null, bool $sendEmail = true): void {
+    try {
+        if (notification_link_column_exists()) {
+            $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at, link) VALUES (?, ?, ?, NOW(), ?)');
+            $stmt->execute([$userId, $message, 'Unread', $link]);
+        } else {
+            $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at) VALUES (?, ?, ?, NOW())');
+            $stmt->execute([$userId, $message, 'Unread']);
+        }
+    } catch (Throwable $e) {
+        error_log('notify_user db error: ' . $e->getMessage());
     }
-    $stmt = db()->prepare('INSERT INTO notifications (user_id, message, status, created_at) VALUES (?, ?, ?, NOW())');
-    $stmt->execute([$userId, $message, 'Unread']);
+
+    // Email alerts on proposal endorsements and review progress
+    if ($sendEmail && get_system_setting('email_alerts_endorsements', '1') === '1') {
+        try {
+            $uStmt = db()->prepare('SELECT email, fullname FROM users WHERE id = ? LIMIT 1');
+            $uStmt->execute([$userId]);
+            $userRow = $uStmt->fetch();
+            if ($userRow && !empty($userRow['email'])) {
+                $recipientEmail = trim($userRow['email']);
+                $recipientName = trim($userRow['fullname'] ?? 'Colleague');
+                $subject = '[OVPRE Notification] ' . mb_substr($message, 0, 60) . (mb_strlen($message) > 60 ? '...' : '');
+
+                $host = $_SERVER['HTTP_HOST'] ?? 'ovpre.vercel.app';
+                $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                $baseUrl = $proto . '://' . $host;
+                $actionLink = $link ? (str_starts_with($link, 'http') ? $link : $baseUrl . '/' . ltrim($link, '/')) : $baseUrl;
+
+                $emailHtml = '
+                <div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+                    <div style="background: linear-gradient(135deg, #15803d, #166534); padding: 24px 28px; color: #ffffff;">
+                        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;">OVPRE Portal Notification</h2>
+                        <p style="margin: 4px 0 0; font-size: 0.85rem; opacity: 0.9;">Office of the Vice President for Research and Extension</p>
+                    </div>
+                    <div style="padding: 28px; color: #1e293b; line-height: 1.6;">
+                        <p style="margin: 0 0 16px; font-size: 0.95rem;">Hello <strong>' . htmlspecialchars($recipientName) . '</strong>,</p>
+                        <div style="background: #f8fafc; border-left: 4px solid #15803d; padding: 16px 20px; border-radius: 4px; margin: 20px 0;">
+                            <p style="margin: 0; font-size: 1rem; color: #0f172a; font-weight: 500;">' . nl2br(htmlspecialchars($message)) . '</p>
+                        </div>';
+                if ($link) {
+                    $emailHtml .= '
+                        <div style="margin: 24px 0 16px;">
+                            <a href="' . htmlspecialchars($actionLink) . '" style="display: inline-block; background: #15803d; color: #ffffff; padding: 11px 22px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">View Proposal in Portal &rarr;</a>
+                        </div>';
+                }
+                $emailHtml .= '
+                        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 28px 0 20px;">
+                        <p style="margin: 0; font-size: 0.78rem; color: #64748b;">
+                            This is an automated workflow notification triggered by an endorsement or review update. You can manage your notification preferences in the OVPRE Admin Settings.
+                        </p>
+                    </div>
+                </div>';
+
+                send_app_email($recipientEmail, $subject, $emailHtml, true);
+            }
+        } catch (Throwable $mailEx) {
+            error_log('notify_user email error: ' . $mailEx->getMessage());
+        }
+    }
 }
 
 function notify_all_accounts(string $message, ?string $link = null, ?int $excludeUserId = null): void {
@@ -1092,7 +1152,183 @@ function notify_all_accounts(string $message, ?string $link = null, ?int $exclud
     $users = db()->prepare($sql);
     $users->execute($params);
     foreach ($users->fetchAll(PDO::FETCH_COLUMN) as $userId) {
-        notify_user((int) $userId, $message, $link);
+        notify_user((int) $userId, $message, $link, false);
+    }
+}
+
+function send_weekly_dean_director_digest(): array {
+    if (get_system_setting('weekly_digest_enabled', '1') !== '1') {
+        return [
+            'success' => false,
+            'message' => 'Weekly digests are currently disabled in system settings.',
+            'count' => 0,
+            'recipients' => []
+        ];
+    }
+
+    try {
+        $sevenDaysAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $today = date('Y-m-d');
+
+        // Collect metrics for the weekly summary
+        $totalResearch = (int) (db()->query("SELECT COUNT(*) FROM research_projects")->fetchColumn() ?: 0);
+        $resStmt = db()->prepare("SELECT COUNT(*) FROM research_projects WHERE created_at >= ?");
+        $resStmt->execute([$sevenDaysAgo]);
+        $newResearch7d = (int) ($resStmt->fetchColumn() ?: 0);
+
+        $apprStmt = db()->query("SELECT COUNT(*) FROM research_projects WHERE status = 'Approved'");
+        $approvedResearch = (int) ($apprStmt->fetchColumn() ?: 0);
+
+        $pendStmt = db()->query("SELECT COUNT(*) FROM research_projects WHERE status LIKE '%Pending%' OR status LIKE '%Review%'");
+        $pendingResearch = (int) ($pendStmt->fetchColumn() ?: 0);
+
+        $totalExtension = (int) (db()->query("SELECT COUNT(*) FROM extension_projects")->fetchColumn() ?: 0);
+        $extStmt = db()->prepare("SELECT COUNT(*) FROM extension_projects WHERE created_at >= ?");
+        $extStmt->execute([$sevenDaysAgo]);
+        $newExtension7d = (int) ($extStmt->fetchColumn() ?: 0);
+
+        $compStmt = db()->query("SELECT COUNT(*) FROM extension_projects WHERE progress_status = 'Completed'");
+        $completedExtension = (int) ($compStmt->fetchColumn() ?: 0);
+
+        $totalDocuments = (int) (db()->query("SELECT COUNT(*) FROM documents WHERE archived_at IS NULL")->fetchColumn() ?: 0);
+        $docStmt = db()->prepare("SELECT COUNT(*) FROM documents WHERE created_at >= ?");
+        $docStmt->execute([$sevenDaysAgo]);
+        $newDocuments7d = (int) ($docStmt->fetchColumn() ?: 0);
+
+        $actStmt = db()->prepare("SELECT COUNT(*) FROM activities WHERE date >= ?");
+        $actStmt->execute([$today]);
+        $upcomingActivities = (int) ($actStmt->fetchColumn() ?: 0);
+
+        // Fetch target recipients (Directors, Coordinators, Deans, OVPRE Admins)
+        $roles = [
+            ROLE_RESEARCH_DIRECTOR,
+            ROLE_EXTENSION_DIRECTOR,
+            ROLE_OVPRE_ADMIN,
+            ROLE_SUPER_ADMIN,
+            ROLE_RESEARCH_COORDINATOR,
+            ROLE_EXTENSION_COORDINATOR,
+            'Director for Research and Creative Works',
+            'OVPRE Secretariat'
+        ];
+        $placeholders = implode(',', array_fill(0, count($roles), '?'));
+        $sql = "SELECT id, fullname, email, role FROM users WHERE status = 'Active' AND deleted_at IS NULL AND (role IN ($placeholders) OR role LIKE '%Director%' OR role LIKE '%Coordinator%' OR role LIKE '%Dean%')";
+        $stmt = db()->prepare($sql);
+        $stmt->execute($roles);
+        $recipients = $stmt->fetchAll();
+
+        if (empty($recipients)) {
+            return [
+                'success' => false,
+                'message' => 'No eligible dean or director recipients found with active accounts.',
+                'count' => 0,
+                'recipients' => []
+            ];
+        }
+
+        $host = $_SERVER['HTTP_HOST'] ?? 'ovpre.vercel.app';
+        $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $portalUrl = $proto . '://' . $host;
+        $dateRange = date('F j, Y', strtotime('-7 days')) . ' — ' . date('F j, Y');
+
+        $sentRecipients = [];
+
+        foreach ($recipients as $recipient) {
+            $email = trim($recipient['email'] ?? '');
+            if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+
+            $name = htmlspecialchars($recipient['fullname'] ?? 'Director / Dean');
+            $roleName = htmlspecialchars($recipient['role'] ?? 'Executive');
+
+            $subject = 'Weekly OVPRE Executive Digest: University Research & Extension Activity (' . date('M j, Y') . ')';
+
+            $digestHtml = '
+            <div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+                <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 28px; color: #ffffff; border-bottom: 4px solid #15803d;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 20px; font-weight: 700;">Executive Digest</span>
+                        <span style="font-size: 0.8rem; opacity: 0.8;">' . $dateRange . '</span>
+                    </div>
+                    <h1 style="margin: 12px 0 4px; font-size: 1.35rem; font-weight: 800; color: #ffffff;">University Research &amp; Extension Summary</h1>
+                    <p style="margin: 0; font-size: 0.85rem; opacity: 0.85;">Office of the Vice President for Research and Extension</p>
+                </div>
+                <div style="padding: 28px; color: #1e293b; line-height: 1.6;">
+                    <p style="margin: 0 0 16px; font-size: 0.95rem;">
+                        Dear <strong>' . $name . '</strong> (' . $roleName . '),
+                    </p>
+                    <p style="font-size: 0.9rem; color: #475569; margin: 0 0 20px;">
+                        Here is the automated weekly executive briefing on university-wide research proposals, extension engagements, and scholarly assets recorded across campus:
+                    </p>
+
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 10px; margin-bottom: 24px;">
+                        <tr>
+                            <td style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; width: 50%; vertical-align: top;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; color: #15803d; font-weight: 700; letter-spacing: 0.05em;">Research Proposals</div>
+                                <div style="font-size: 1.8rem; font-weight: 800; color: #14532d; margin: 6px 0 2px;">' . $totalResearch . '</div>
+                                <div style="font-size: 0.8rem; color: #166534;">+' . $newResearch7d . ' submitted this week<br>' . $approvedResearch . ' approved total (' . $pendingResearch . ' in review)</div>
+                            </td>
+                            <td style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; width: 50%; vertical-align: top;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; color: #1d4ed8; font-weight: 700; letter-spacing: 0.05em;">Extension Projects</div>
+                                <div style="font-size: 1.8rem; font-weight: 800; color: #1e3a8a; margin: 6px 0 2px;">' . $totalExtension . '</div>
+                                <div style="font-size: 0.8rem; color: #1e40af;">+' . $newExtension7d . ' added this week<br>' . $completedExtension . ' successfully completed</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; width: 50%; vertical-align: top;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; color: #475569; font-weight: 700; letter-spacing: 0.05em;">Repository Documents</div>
+                                <div style="font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 6px 0 2px;">' . $totalDocuments . '</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">+' . $newDocuments7d . ' uploads this past week</div>
+                            </td>
+                            <td style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 16px; width: 50%; vertical-align: top;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; color: #7e22ce; font-weight: 700; letter-spacing: 0.05em;">Upcoming Activities</div>
+                                <div style="font-size: 1.8rem; font-weight: 800; color: #581c87; margin: 6px 0 2px;">' . $upcomingActivities . '</div>
+                                <div style="font-size: 0.8rem; color: #6b21a8;">Scheduled defenses, workshops, and colloquiums</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="background: #f1f5f9; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px;">
+                        <p style="margin: 0; font-size: 0.88rem; color: #334155;">
+                            <strong>Dean &amp; Director Action Items:</strong> Please review any pending college endorsements or committee evaluations to ensure timely turnaround times for faculty proponents.
+                        </p>
+                    </div>
+
+                    <div style="text-align: center; margin: 28px 0 16px;">
+                        <a href="' . htmlspecialchars($portalUrl) . '/dashboard.php" style="display: inline-block; background: #15803d; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.92rem;">Open OVPRE Executive Dashboard &rarr;</a>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 28px 0 20px;">
+                    <p style="margin: 0; font-size: 0.78rem; color: #64748b; text-align: center;">
+                        This briefing was automatically generated for college deans, program directors, and university administrators based on system settings.
+                    </p>
+                </div>
+            </div>';
+
+            $sent = send_app_email($email, $subject, $digestHtml, true);
+            if ($sent) {
+                $sentRecipients[] = $email;
+            }
+        }
+
+        try {
+            log_action(null, 'Dispatched weekly Dean & Director digest to ' . count($sentRecipients) . ' recipients.');
+        } catch (Throwable) {}
+
+        return [
+            'success' => true,
+            'message' => 'Weekly digest successfully delivered to ' . count($sentRecipients) . ' recipients.',
+            'count' => count($sentRecipients),
+            'recipients' => $sentRecipients
+        ];
+    } catch (Throwable $e) {
+        error_log('send_weekly_dean_director_digest error: ' . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Failed to send weekly digest: ' . $e->getMessage(),
+            'count' => 0,
+            'recipients' => []
+        ];
     }
 }
 
