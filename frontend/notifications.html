@@ -99,8 +99,37 @@
                     <i class="ri-checkbox-circle-line"></i> Notifications updated!
                 </div>
 
-                <section class="notification-list" id="notifListContainer" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-                    <!-- Populated by JS -->
+                <section class="panel" style="padding: 22px; border-radius: 16px; background: #ffffff; border: 1px solid #dbe7df;">
+                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="notificationsTable" id="notificationsSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; margin-bottom: 12px;">
+                        <span data-selection-count id="notificationsSelectedCount" style="font-weight: 700; color: #166534; font-size: 0.88rem;">0 selected</span>
+                        <div style="display: inline-flex; gap: 8px; align-items: center;">
+                            <button class="action-btn" type="button" data-bulk-submit onclick="markSelectedAsRead()" style="background: #15803d; color: #ffffff; border: none; font-weight: 700; padding: 7px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="ri-check-line"></i><span>Mark Selected as Read</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table" id="notificationsTable">
+                            <thead>
+                                <tr>
+                                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; text-align: center;">
+                                        <label class="select-all-control">
+                                            <input type="checkbox" aria-label="Select all notifications" data-select-all="notificationsTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
+                                    <th>Notification Details</th>
+                                    <th>Category</th>
+                                    <th>Received Date</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notifTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </main>
         </div>
@@ -112,60 +141,127 @@
                 const s = localStorage.getItem('ovpre_notifications');
                 if (s) return JSON.parse(s);
             } catch(e) {}
-            localStorage.setItem('ovpre_notifications', JSON.stringify([{"id":1,"message":"Your research proposal \"AI-Driven Early Crop Disease Detection\" was approved by Executive VP.","time":"2026-03-10 • 10:15 AM","status":"Unread","link":"research.html"},{"id":2,"message":"New research proposal submitted by Prof. Lorna Bautista awaiting coordinator screening.","time":"2026-03-09 • 02:40 PM","status":"Unread","link":"research.html"},{"id":3,"message":"Extension proposal \"Community Water Filtration System\" endorsed by Extension Director.","time":"2026-03-08 • 11:20 AM","status":"Read","link":"extension.html"},{"id":4,"message":"Quarterly physical accomplishment reporting deadline is approaching on March 31.","time":"2026-03-05 • 09:00 AM","status":"Read","link":"announcements.html"},{"id":5,"message":"New campus activity \"Annual University Research Colloquium 2026\" published.","time":"2026-03-02 • 04:15 PM","status":"Read","link":"activities.html"}]));
-            return [{"id":1,"message":"Your research proposal \"AI-Driven Early Crop Disease Detection\" was approved by Executive VP.","time":"2026-03-10 • 10:15 AM","status":"Unread","link":"research.html"},{"id":2,"message":"New research proposal submitted by Prof. Lorna Bautista awaiting coordinator screening.","time":"2026-03-09 • 02:40 PM","status":"Unread","link":"research.html"},{"id":3,"message":"Extension proposal \"Community Water Filtration System\" endorsed by Extension Director.","time":"2026-03-08 • 11:20 AM","status":"Read","link":"extension.html"},{"id":4,"message":"Quarterly physical accomplishment reporting deadline is approaching on March 31.","time":"2026-03-05 • 09:00 AM","status":"Read","link":"announcements.html"},{"id":5,"message":"New campus activity \"Annual University Research Colloquium 2026\" published.","time":"2026-03-02 • 04:15 PM","status":"Read","link":"activities.html"}];
+            const defaults = [
+                {"id":1,"message":"Your research proposal \"AI-Driven Early Crop Disease Detection\" was approved by Executive VP.","time":"2026-03-10 • 10:15 AM","status":"Unread","link":"research.html"},
+                {"id":2,"message":"New research proposal submitted by Prof. Lorna Bautista awaiting coordinator screening.","time":"2026-03-09 • 02:40 PM","status":"Unread","link":"research.html"},
+                {"id":3,"message":"Extension proposal \"Community Water Filtration System\" endorsed by Extension Director.","time":"2026-03-08 • 11:20 AM","status":"Read","link":"extension.html"},
+                {"id":4,"message":"Quarterly physical accomplishment reporting deadline is approaching on March 31.","time":"2026-03-05 • 09:00 AM","status":"Read","link":"announcements.html"},
+                {"id":5,"message":"New campus activity \"Annual University Research Colloquium 2026\" published.","time":"2026-03-02 • 04:15 PM","status":"Read","link":"activities.html"}
+            ];
+            localStorage.setItem('ovpre_notifications', JSON.stringify(defaults));
+            return defaults;
         }
 
         function saveNotifs(data) {
             localStorage.setItem('ovpre_notifications', JSON.stringify(data));
         }
 
+        function getNotificationCategory(item) {
+            const text = ((item.message || '') + ' ' + (item.link || '') + ' ' + (item.type || '')).toLowerCase();
+            if (text.includes('research')) return 'Research';
+            if (text.includes('extension')) return 'Extension';
+            if (text.includes('announcement')) return 'Announcements';
+            if (text.includes('activit') || text.includes('colloquium')) return 'Activities';
+            if (text.includes('document') || text.includes('file') || text.includes('upload')) return 'Records';
+            if (text.includes('user') || text.includes('account') || text.includes('security')) return 'User Security';
+            return 'General';
+        }
+
         function renderNotifs() {
             const list = getStoredNotifs();
             const unreadCount = list.filter(n => n.status === 'Unread').length;
-            document.getElementById('unreadCountSpan').textContent = unreadCount;
-            const container = document.getElementById('notifListContainer');
-            container.replaceChildren();
+            const unreadSpan = document.getElementById('unreadCountSpan');
+            if (unreadSpan) unreadSpan.textContent = unreadCount;
+
+            const tbody = document.getElementById('notifTableBody');
+            if (!tbody) return;
+            tbody.replaceChildren();
 
             if (!list.length) {
-                container.innerHTML = `
-                    <article class="panel" style="text-align: center; padding: 48px 24px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <i class="ri-notification-off-line" style="font-size: 2.5rem; color: #94a3b8; display: block; margin-bottom: 12px;"></i>
-                        <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 700; color: #0f172a;">No notifications yet</h3>
-                        <p style="margin: 0; color: #64748b; font-size: 0.9rem;">You're all caught up! New alerts and updates will appear here.</p>
-                    </article>
+                tbody.innerHTML = `
+                    <tr data-pagination-empty>
+                        <td colspan="6" style="text-align: center; padding: 48px 24px;">
+                            <div style="width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%; background: #f1f5f9; display: grid; place-items: center; color: #94a3b8; font-size: 1.75rem;">
+                                <i class="ri-notification-off-line"></i>
+                            </div>
+                            <h3 style="margin: 0 0 6px; color: var(--green-900); font-size: 1.15rem; font-weight: 700;">No notifications yet</h3>
+                            <p style="margin: 0; color: var(--muted); font-size: 0.92rem;">You're all caught up! New alerts and updates will appear here.</p>
+                        </td>
+                    </tr>
                 `;
-                return;
+            } else {
+                list.forEach(n => {
+                    const isUnread = n.status === 'Unread';
+                    const cat = getNotificationCategory(n);
+                    const tr = document.createElement('tr');
+                    tr.dataset.tableRow = 'true';
+                    tr.dataset.status = isUnread ? 'Unread' : 'Read';
+                    tr.dataset.category = cat;
+                    if (isUnread) {
+                        tr.style.background = '#f0fdf4';
+                    }
+
+                    tr.innerHTML = `
+                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; text-align: center; vertical-align: middle;">
+                            <input type="checkbox" name="selected_ids[]" value="${n.id}" aria-label="Select notification" data-row-select="notificationsTable">
+                        </td>
+                        <td style="vertical-align: middle;">
+                            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                <div style="width: 36px; height: 36px; border-radius: 10px; background: ${isUnread ? '#dcfce7' : '#f1f5f9'}; color: ${isUnread ? '#15803d' : '#64748b'}; display: inline-grid; place-items: center; font-size: 1.15rem; flex-shrink: 0; margin-top: 2px;">
+                                    <i class="${isUnread ? 'ri-notification-3-fill' : 'ri-notification-3-line'}"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.92rem; font-weight: ${isUnread ? '700' : '500'}; color: #0f172a; line-height: 1.45;">
+                                        ${n.message}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="vertical-align: middle;">
+                            <span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-weight: 700; font-size: 0.76rem; padding: 3px 10px; border-radius: 999px;">
+                                ${cat}
+                            </span>
+                        </td>
+                        <td style="vertical-align: middle; white-space: nowrap; color: #64748b; font-size: 0.84rem;" data-sort-value="${n.time || ''}">
+                            <i class="ri-time-line"></i> ${n.time}
+                        </td>
+                        <td style="vertical-align: middle;">
+                            <span class="badge" style="background: ${isUnread ? '#dcfce7' : '#f1f5f9'}; color: ${isUnread ? '#15803d' : '#64748b'}; border: 1px solid ${isUnread ? '#86efac' : '#cbd5e1'}; font-weight: 700; font-size: 0.74rem; padding: 3px 9px; border-radius: 999px;">
+                                <i class="${isUnread ? 'ri-record-circle-line' : 'ri-checkbox-circle-line'}"></i>
+                                ${isUnread ? 'Unread' : 'Read'}
+                            </span>
+                        </td>
+                        <td style="vertical-align: middle; text-align: right; white-space: nowrap;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end;">
+                                ${n.link ? `<a class="ghost-btn action-btn notification-btn-open" href="${n.link}" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;"><i class="ri-arrow-right-up-line"></i> Open</a>` : ''}
+                                ${isUnread ? `<button class="ghost-btn action-btn notification-btn-mark" type="button" onclick="markSingleAsRead(${n.id})" title="Mark as Read" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><i class="ri-check-line"></i> Mark as Read</button>` : ''}
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             }
 
-            list.forEach(n => {
-                const isUnread = n.status === 'Unread';
-                const card = document.createElement('article');
-                card.style.cssText = `display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; border-radius: 14px; background: #ffffff; border: 1px solid ${isUnread ? '#86efac' : '#e2e8f0'}; box-shadow: ${isUnread ? '0 4px 14px rgba(22, 163, 74, 0.08)' : '0 2px 6px rgba(0,0,0,0.02)'}; flex-wrap: wrap;`;
-                card.innerHTML = `
-                    <div style="display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 260px;">
-                        <div style="width: 40px; height: 40px; border-radius: 10px; background: ${isUnread ? '#dcfce7' : '#f1f5f9'}; color: ${isUnread ? '#15803d' : '#64748b'}; display: inline-grid; place-items: center; font-size: 1.3rem; flex-shrink: 0;">
-                            <i class="${isUnread ? 'ri-notification-3-fill' : 'ri-notification-3-line'}"></i>
-                        </div>
-                        <div>
-                            <p style="margin: 0 0 6px; font-size: 0.92rem; font-weight: ${isUnread ? '700' : '500'}; color: #0f172a; line-height: 1.45;">${n.message}</p>
-                            <div style="display: flex; align-items: center; gap: 12px; font-size: 0.78rem; color: #64748b;">
-                                <span><i class="ri-time-line"></i> ${n.time}</span>
-                                <span class="badge" style="background: ${isUnread ? '#dcfce7' : '#f1f5f9'}; color: ${isUnread ? '#166534' : '#64748b'}; font-weight: 700; font-size: 0.72rem; padding: 2px 8px; border-radius: 999px;">
-                                    ${n.status}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <a href="${n.link}" style="padding: 7px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-                            <i class="ri-arrow-right-up-line"></i> Open
-                        </a>
-                        ${isUnread ? `<button type="button" onclick="markSingleAsRead(${n.id})" style="padding: 7px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;"><i class="ri-check-line"></i> Mark as Read</button>` : ''}
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+            const selectAll = document.querySelector('[data-select-all="notificationsTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            const tb = document.querySelector('[data-selection-toolbar="notificationsTable"]');
+            if (tb) {
+                tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
+                const countBadge = tb.querySelector('[data-selection-count]');
+                if (countBadge) countBadge.textContent = '0 selected';
+            }
+
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
+            }
+            if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('notificationsTable'));
+            }
         }
 
         function markSingleAsRead(id) {
@@ -173,6 +269,7 @@
             const n = list.find(item => item.id === id);
             if (n) n.status = 'Read';
             saveNotifs(list);
+            showToastAlert('Notification marked as read.');
             renderNotifs();
         }
 
@@ -180,10 +277,29 @@
             const list = getStoredNotifs();
             list.forEach(n => { n.status = 'Read'; });
             saveNotifs(list);
+            showToastAlert('All notifications marked as read.');
+            renderNotifs();
+        }
+
+        function markSelectedAsRead() {
+            const checked = Array.from(document.querySelectorAll('#notificationsTable [data-row-select]:checked'));
+            const ids = checked.map(c => Number(c.value));
+            if (!ids.length) return;
+            const list = getStoredNotifs();
+            list.forEach(n => {
+                if (ids.includes(n.id)) n.status = 'Read';
+            });
+            saveNotifs(list);
+            showToastAlert(`${ids.length} notification(s) marked as read.`);
+            renderNotifs();
+        }
+
+        function showToastAlert(msg) {
             const t = document.getElementById('toastAlert');
+            if (!t) return;
+            t.innerHTML = `<i class="ri-checkbox-circle-line"></i> ${msg || 'Notifications updated!'}`;
             t.style.display = 'flex';
             setTimeout(() => { t.style.display = 'none'; }, 3000);
-            renderNotifs();
         }
 
         document.addEventListener('DOMContentLoaded', () => {

@@ -903,7 +903,7 @@ window.initAdminTablePagination = function(table) {
         searchLabel.innerHTML = '<i class="ri-search-line" aria-hidden="true"></i><span class="sr-only">Search this table</span>';
         tableSearchInput = document.createElement('input');
         tableSearchInput.type = 'search';
-        const placeholderText = table.id === 'recordsTable' ? 'Search records...' : (table.id === 'usersTable' ? 'Search users...' : (table.id === 'researchSubmissionTable' ? 'Search research...' : (table.id === 'extensionSubmissionTable' ? 'Search extension...' : (table.id === 'activitySubmissionTable' ? 'Search activities...' : (table.id === 'systemActivityTable' ? 'Search system activity...' : 'Search this table')))));
+        const placeholderText = table.id === 'recordsTable' ? 'Search records...' : (table.id === 'usersTable' ? 'Search users...' : (table.id === 'researchSubmissionTable' ? 'Search research...' : (table.id === 'extensionSubmissionTable' ? 'Search extension...' : (table.id === 'activitySubmissionTable' ? 'Search activities...' : (table.id === 'systemActivityTable' ? 'Search system activity...' : (table.id === 'notificationsTable' ? 'Search notifications...' : 'Search this table'))))));
         tableSearchInput.placeholder = placeholderText;
         tableSearchInput.setAttribute('aria-label', placeholderText);
         if (tableSearch && table.id === 'recordsTable' && tableSearch.value) {
