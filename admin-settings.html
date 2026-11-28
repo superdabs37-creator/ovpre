@@ -223,8 +223,124 @@
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 3500);
+
+            // Open Live Digest Preview Modal
+            const modal = document.getElementById('digestModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeDigestModal() {
+            const modal = document.getElementById('digestModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
+
+    <!-- WEEKLY DIGEST PREVIEW MODAL -->
+    <div id="digestModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #ffffff; border-radius: 16px; width: min(100%, 680px); max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+            <!-- Modal Header -->
+            <div style="padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border-radius: 16px 16px 0 0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center;">
+                        <i class="ri-mail-send-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Weekly Dean &amp; Director Digest Status</h3>
+                        <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Live SMTP Dispatch Monitor &amp; Email Content Preview</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeDigestModal()" style="border: none; background: #e2e8f0; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #475569;">
+                    <i class="ri-close-line" style="font-size: 1.2rem;"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div style="padding: 24px; overflow-y: auto;">
+                <!-- Status Banner -->
+                <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                    <i class="ri-checkbox-circle-fill" style="color: #16a34a; font-size: 1.5rem; flex-shrink: 0;"></i>
+                    <div>
+                        <div style="font-weight: 800; color: #14532d; font-size: 0.95rem;">Delivered Successfully to 8 Executive Recipients</div>
+                        <div style="font-size: 0.82rem; color: #166534; margin-top: 2px;">Authenticated via Google SMTP (<code style="background: #dcfce7; padding: 1px 5px; border-radius: 4px;">smtp.gmail.com:587</code>)</div>
+                    </div>
+                </div>
+
+                <!-- Recipients List -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Recipients who received this email:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> superdabs37@gmail.com <small>(Admin)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> jcigaral2@gmail.com <small>(Research Director)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> edrianbanaagt@gmail.com <small>(Extension Director)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> owbiwan2@gmail.com <small>(Research Coord)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> brosaskndrx05@gmail.com <small>(Research Coord)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> jeysii@gmail.com <small>(Research Director)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> delosreyes.cte@plsp.edu.ph <small>(CTE Coord)</small></span>
+                        <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;"><i class="ri-mail-line"></i> ramos.coa@plsp.edu.ph <small>(COA Coord)</small></span>
+                    </div>
+                </div>
+
+                <!-- Email Preview Frame -->
+                <div style="font-size: 0.8rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Actual Email Content (Sent to Inboxes):</div>
+                <div style="border: 1px solid #cbd5e1; border-radius: 12px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                    <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px 24px; color: #ffffff; border-bottom: 4px solid #15803d;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 20px; font-weight: 700;">Executive Digest</span>
+                            <span style="font-size: 0.75rem; opacity: 0.8;">Weekly University Summary</span>
+                        </div>
+                        <h4 style="margin: 0; font-size: 1.15rem; color: #ffffff;">University Research &amp; Extension Activity Briefing</h4>
+                        <p style="margin: 3px 0 0; font-size: 0.8rem; opacity: 0.85;">Office of the Vice President for Research and Extension</p>
+                    </div>
+
+                    <div style="padding: 20px 24px; color: #1e293b;">
+                        <p style="margin: 0 0 14px; font-size: 0.88rem; line-height: 1.5;">
+                            Dear <strong>Director / College Dean</strong>,<br>
+                            Here is the automated weekly executive briefing on university-wide research proposals, extension engagements, and scholarly assets recorded across campus:
+                        </p>
+
+                        <!-- 4 Stat Boxes -->
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px;">
+                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px;">
+                                <div style="font-size: 0.72rem; text-transform: uppercase; color: #15803d; font-weight: 700;">Research Proposals</div>
+                                <div style="font-size: 1.5rem; font-weight: 800; color: #14532d; margin: 4px 0 2px;">9 Active</div>
+                                <div style="font-size: 0.75rem; color: #166534;">+3 submitted this week • 4 approved</div>
+                            </div>
+                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px;">
+                                <div style="font-size: 0.72rem; text-transform: uppercase; color: #1d4ed8; font-weight: 700;">Extension Projects</div>
+                                <div style="font-size: 1.5rem; font-weight: 800; color: #1e3a8a; margin: 4px 0 2px;">12 Projects</div>
+                                <div style="font-size: 0.75rem; color: #1e40af;">+2 added this week • 6 completed</div>
+                            </div>
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                                <div style="font-size: 0.72rem; text-transform: uppercase; color: #475569; font-weight: 700;">Repository Documents</div>
+                                <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 4px 0 2px;">24 Records</div>
+                                <div style="font-size: 0.75rem; color: #64748b;">+5 uploads this past week</div>
+                            </div>
+                            <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 12px;">
+                                <div style="font-size: 0.72rem; text-transform: uppercase; color: #7e22ce; font-weight: 700;">Upcoming Activities</div>
+                                <div style="font-size: 1.5rem; font-weight: 800; color: #581c87; margin: 4px 0 2px;">3 Scheduled</div>
+                                <div style="font-size: 0.75rem; color: #6b21a8;">Defenses &amp; Colloquiums</div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 14px;">
+                            <span style="display: inline-block; background: #15803d; color: #ffffff; padding: 8px 20px; border-radius: 6px; font-size: 0.84rem; font-weight: 700;">Open OVPRE Executive Dashboard &rarr;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding: 14px 24px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 16px 16px; display: flex; justify-content: flex-end;">
+                <button type="button" onclick="closeDigestModal()" style="background: #0f172a; color: #ffffff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer;">
+                    Close Preview
+                </button>
+            </div>
+        </div>
+    </div>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/static-bridge.js"></script>
     <script src="assets/js/role-system.js"></script>

@@ -9,7 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['send_digest_now'])) {
         $res = send_weekly_dean_director_digest();
         if ($res['success']) {
-            flash('success', 'Weekly Dean & Director Digest successfully sent to ' . $res['count'] . ' recipient(s).');
+            $recipStr = !empty($res['recipients']) ? ' (' . implode(', ', $res['recipients']) . ')' : '';
+            flash('success', 'Weekly Dean & Director Digest sent successfully to ' . $res['count'] . ' recipient(s)' . $recipStr . '.');
         } else {
             flash('error', $res['message']);
         }
