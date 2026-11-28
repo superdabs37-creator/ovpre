@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="active" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
+                    <svg class="sidebar-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="3"></rect><path d="M9 3v18"></path><path d="m14 9-3 3 3 3"></path></svg>
+                </button>
+                <div class="topbar-title">
+                    <h1>System Settings</h1>
+                </div>
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
+                    <i class="ri-search-line"></i>
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div id="saveToast" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; align-items: center; gap: 8px;">
+                    <i class="ri-checkbox-circle-line" style="font-size: 1.2rem;"></i> Settings successfully saved!
+                </div>
+
+                <form onsubmit="handleSaveSettings(event)">
+                    <section class="settings-grid">
+                        <!-- Security Settings -->
+                        <article class="panel setting-card" style="padding: 22px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px;">
+                                <i class="ri-shield-keyhole-line" style="font-size: 1.8rem; color: #15803d;"></i>
+                                <div>
+                                    <h3 style="margin: 0 0 4px; font-size: 1.05rem;">Security Settings</h3>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Password rules and active session protection.</p>
+                                </div>
+                            </div>
+                            
+                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9;">
+                                <span>Require strong passwords<br><small style="color: #64748b;">Require letters &amp; numbers on registration</small></span>
+                                <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #15803d;">
+                            </label>
+                            
+                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9;">
+                                <span>Enable session timeout<br><small style="color: #64748b;">Automatically end idle sessions after 30 mins</small></span>
+                                <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #15803d;">
+                            </label>
+                        </article>
+
+                        <!-- Upload Rules -->
+                        <article class="panel setting-card" style="padding: 22px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px;">
+                                <i class="ri-upload-cloud-2-line" style="font-size: 1.8rem; color: #0284c7;"></i>
+                                <div>
+                                    <h3 style="margin: 0 0 4px; font-size: 1.05rem;">Upload Rules</h3>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">File upload constraints and document verification.</p>
+                                </div>
+                            </div>
+
+                            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem;">Max Upload File Size (MB)</label>
+                            <input type="number" value="15" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 12px; font-size: 0.88rem;">
+
+                            <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem;">Allowed File Extensions</label>
+                            <input type="text" value="pdf, docx, xlsx, pptx, jpg, png" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                        </article>
+
+                        <!-- Workflow Notifications -->
+                        <article class="panel setting-card" style="padding: 22px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px;">
+                                <i class="ri-notification-badge-line" style="font-size: 1.8rem; color: #7c3aed;"></i>
+                                <div>
+                                    <h3 style="margin: 0 0 4px; font-size: 1.05rem;">Workflow &amp; Notifications</h3>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Email dispatch and alert delivery defaults.</p>
+                                </div>
+                            </div>
+
+                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9;">
+                                <span>Email alerts on proposal endorsements<br><small style="color: #64748b;">Notify proponent upon review stage progress</small></span>
+                                <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #15803d;">
+                            </label>
+
+                            <label class="toggle-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #f1f5f9;">
+                                <span>Weekly Dean &amp; Director digests<br><small style="color: #64748b;">Automated university research activity summary</small></span>
+                                <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #15803d;">
+                            </label>
+                        </article>
+
+                        <!-- System Modules & Direct Management -->
+                        <article class="panel setting-card" style="padding: 22px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px;">
+                                <i class="ri-dashboard-3-line" style="font-size: 1.8rem; color: #ea580c;"></i>
+                                <div>
+                                    <h3 style="margin: 0 0 4px; font-size: 1.05rem;">Administration Tools</h3>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Direct access to audit, reporting, and maintenance engines.</p>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
+                                <a href="admin-reports.html" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #1e293b; font-weight: 600; font-size: 0.85rem; transition: background 0.15s;">
+                                    <i class="ri-line-chart-line" style="color: #15803d; font-size: 1.1rem;"></i> Reports
+                                </a>
+                                <a href="admin-users.html" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #1e293b; font-weight: 600; font-size: 0.85rem; transition: background 0.15s;">
+                                    <i class="ri-team-line" style="color: #0284c7; font-size: 1.1rem;"></i> User Directory
+                                </a>
+                                <a href="system-activity.html" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #1e293b; font-weight: 600; font-size: 0.85rem; transition: background 0.15s;">
+                                    <i class="ri-history-line" style="color: #7c3aed; font-size: 1.1rem;"></i> Audit Trail
+                                </a>
+                                <a href="system-backup.html" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #1e293b; font-weight: 600; font-size: 0.85rem; transition: background 0.15s;">
+                                    <i class="ri-database-2-line" style="color: #b45309; font-size: 1.1rem;"></i> Backup &amp; Recovery
+                                </a>
+                            </div>
+                        </article>
+                    </section>
+
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 24px; border-radius: 10px; background: #15803d; color: #fff; font-weight: 800; font-size: 0.92rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="ri-save-line"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            const toast = document.getElementById('saveToast');
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/static-bridge.js"></script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Encountered an Issue | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261111-error">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="error-page-wrapper">
+        <article class="error-card error-500">
+            <a href="dashboard.html" class="error-brand" title="Go to Dashboard">
+                <img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo">
+                <div class="error-brand-text">
+                    <strong>I-Record Portal</strong>
+                    <span>Office of the Vice President for Research &amp; Extension</span>
+                </div>
+            </a>
+
+            <div class="error-illustration">
+                <i class="ri-server-line"></i>
+            </div>
+
+            <span class="error-code-badge">500 SERVER ERROR</span>
+            <h1 class="error-title">Temporary Processing Issue</h1>
+            <p class="error-description">
+                The institutional server encountered an unexpected error while processing this request. Our technical staff has logged the condition. Please try refreshing or return to the main dashboard.
+            </p>
+
+            <div class="error-actions">
+                <button type="button" onclick="window.location.reload()" class="error-btn-primary" style="cursor: pointer; border: none;">
+                    <i class="ri-refresh-line"></i> Try Refreshing
+                </button>
+                <a href="dashboard.html" class="error-btn-secondary">
+                    <i class="ri-dashboard-line"></i> Return to Dashboard
+                </a>
+                <a href="index.html" class="error-btn-secondary">
+                    <i class="ri-home-4-line"></i> Home
+                </a>
+            </div>
+
+            <div class="error-quick-links">
+                <p>Status &amp; Navigation</p>
+                <div class="error-links-grid">
+                    <a href="system-backup.html" class="error-link-pill"><i class="ri-database-2-line"></i> Backup System</a>
+                    <a href="system-activity.html" class="error-link-pill"><i class="ri-history-line"></i> System Logs</a>
+                    <a href="admin-documents.html" class="error-link-pill"><i class="ri-file-search-line"></i> Records</a>
+                    <a href="dashboard.html" class="error-link-pill"><i class="ri-dashboard-line"></i> Overview</a>
+                </div>
+            </div>
+
+            <div class="error-footer">
+                <span>Timestamp: <code id="errTimestamp" style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;"></code></span>
+            </div>
+        </article>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const timeEl = document.getElementById('errTimestamp');
+            if (timeEl) {
+                timeEl.textContent = new Date().toUTCString();
+            }
+        });
+    </script>
+</body>
+</html>

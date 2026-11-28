@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements Management | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261109-fixed">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="active" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
+                    <svg class="sidebar-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="3"></rect><path d="M9 3v18"></path><path d="m14 9-3 3 3 3"></path></svg>
+                </button>
+                <div class="topbar-title">
+                    <h1>Announcements Management</h1>
+                </div>
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
+                    <i class="ri-search-line"></i>
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- ANNOUNCEMENTS TABLE PANEL -->
+                <section class="panel" style="border: 1px solid #dbe7df; border-radius: 16px; background: #ffffff; padding: 22px;">
+                    <!-- Segmented Control Tabs & Action Button -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+                        <div class="portal-table-tabs" style="display: flex; gap: 8px;">
+                            <button type="button" class="portal-table-tab active" id="tabActiveBtn" onclick="switchAnnounceTab('active')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; background: #15803d; color: #ffffff; cursor: pointer; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2); transition: all 0.2s ease;">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <span>Published</span>
+                                <span class="tab-count" id="activeBadge" style="background: rgba(255,255,255,0.25); color: #ffffff; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">4</span>
+                            </button>
+                            <button type="button" class="portal-table-tab" id="tabArchivedBtn" onclick="switchAnnounceTab('archived')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: 1.5px solid #cbd5e1; background: #ffffff; color: #475569; cursor: pointer; transition: all 0.2s ease;">
+                                <i class="ri-archive-line"></i>
+                                <span>Archived</span>
+                                <span class="tab-count" id="archivedBadge" style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem;">1</span>
+                            </button>
+                        </div>
+                        <button class="primary-btn" type="button" onclick="openAddAnnouncementModal()" data-open-modal="announcementEditorModal" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; background: #15803d; color: #ffffff; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">
+                            <i class="ri-megaphone-line"></i> <span>Publish Announcement</span>
+                        </button>
+                    </div>
+
+                    <!-- BULK SELECTION TOOLBAR -->
+                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="announcementsTable" id="announcementsSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 14px;">
+                        <span data-selection-count id="announcementsSelectedCount" style="font-weight: 700; color: #15803d; font-size: 0.88rem;">0 selected</span>
+                        <form id="bulk-announcementsTable" onsubmit="handleBulkAnnouncementsSubmit(event)" style="margin: 0;">
+                            <span id="bulkAnnouncementsBtnContainer">
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
+                                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
+                                </button>
+                            </span>
+                        </form>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table" id="announcementsTable" style="width: 100%; min-width: 900px; border-collapse: collapse;">
+                            <thead style="background: #f0fdf4; border-bottom: 2px solid #86efac;">
+                                <tr style="text-align: left;">
+                                    <th class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; vertical-align: middle; padding: 13px 8px;">
+                                        <label class="select-all-control">
+                                            <input form="bulk-announcementsTable" type="checkbox" aria-label="Select all announcements" data-select-all="announcementsTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('title')">
+                                        ANNOUNCEMENT TITLE
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('category')">
+                                        CATEGORY
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('audience')">
+                                        AUDIENCE
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('priority')">
+                                        PRIORITY
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('date')">
+                                        PUBLISHED DATE
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; cursor: pointer; vertical-align: middle;" onclick="sortAnnTable('expiry')">
+                                        EXPIRY DATE
+                                    </th>
+                                    <th style="padding: 13px 14px; color: #14532d; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; vertical-align: middle;">
+                                        MANAGE / ACTION
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="announcementsTableBody" style="font-size: 0.88rem;">
+
+    <tr data-table-row data-priority="High" data-category="Research Call" id="announcement-row-1" style="border-bottom: 1px solid #f1f5f9;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
+            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="1" aria-label="Select announcement 1" data-row-select="announcementsTable">
+        </td>
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(1)">Call for Research Proposals: FY 2026 Institutional Seed Funding</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The Office of the Vice President for Research and Extension invites full-time faculty members to submit a...</p>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Research Call</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> All Faculty</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Oct 15, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Dec 15, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(1)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(1)"><i class="ri-download-2-line"></i><span>Archive</span></button>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-priority="Medium" data-category="Policy" id="announcement-row-2" style="border-bottom: 1px solid #f1f5f9;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
+            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="2" aria-label="Select announcement 2" data-row-select="announcementsTable">
+        </td>
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(2)">Guidelines on Extension Program Liquidation and Impact Reporting</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">All College Extension Coordinators and project heads must submit complete liquidation reports and communi...</p>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Policy</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> Extension Coordinators</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.8rem;"></i> Medium</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Oct 20, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Nov 30, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(2)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(2)"><i class="ri-download-2-line"></i><span>Archive</span></button>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-priority="Urgent" data-category="Event" id="announcement-row-3" style="border-bottom: 1px solid #f1f5f9;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
+            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="3" aria-label="Select announcement 3" data-row-select="announcementsTable">
+        </td>
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(3)">Annual University Research Colloquium & Best Paper Awards 2026</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are w...</p>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Event</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> All Faculty</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.8rem;"></i> Urgent</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Oct 28, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Dec 10, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(3)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(3)"><i class="ri-download-2-line"></i><span>Archive</span></button>
+            </div>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-priority="High" data-category="Extension Call" id="announcement-row-4" style="border-bottom: 1px solid #f1f5f9;">
+        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
+            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="4" aria-label="Select announcement 4" data-row-select="announcementsTable">
+        </td>
+        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
+            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer;" onclick="openViewAnnouncementModal(4)">Quarterly Submission Window for Community Extension Proposals</strong>
+            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">The fourth quarter submission window for community extension proposals will officially close on November ...</p>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">Extension Call</span>
+        </td>
+        <td style="padding: 14px 14px; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> Faculty Extensionists</span>
+        </td>
+        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>
+        </td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Nov 01, 2026</td>
+        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">Nov 25, 2026</td>
+        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                <button type="button" class="action-btn" onclick="openEditAnnouncementModal(4)" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(4)"><i class="ri-download-2-line"></i><span>Archive</span></button>
+            </div>
+        </td>
+    </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="admin-table-pagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
+                        <span id="tablePageSummary" style="font-size: 0.84rem; color: #64748b; font-weight: 600;">Showing 1 to 4 of 4 entries</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button type="button" id="prevPageBtn" onclick="changeAnnouncePage(-1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Previous</button>
+                            <span id="paginationNumbers" style="display: flex; gap: 4px;">
+                                <button type="button" style="padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; background: #15803d; color: #fff;">1</button>
+                            </span>
+                            <button type="button" id="nextPageBtn" onclick="changeAnnouncePage(1)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; cursor: pointer;">Next</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT ANNOUNCEMENT -->
+    <div class="modal" id="announcementEditorModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal onclick="closeModal('announcementEditorModal')"></div>
+        <article class="modal-card" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal onclick="closeModal('announcementEditorModal')" aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div style="margin-bottom: 14px;">
+                <h2 id="annModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-megaphone-line" style="color: #15803d;"></i> <span>Publish Announcement</span>
+                </h2>
+                <p style="margin: 4px 0 0; color: #64748b; font-size: 0.88rem;">Disseminate critical notices to faculty proponents, coordinators, and college directors.</p>
+            </div>
+            <form onsubmit="handleSaveAnnouncement(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="editAnnId">
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Title</label>
+                    <input type="text" id="annTitle" required placeholder="Subject or announcement heading" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Category</label>
+                        <select id="annCategory" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                            <option value="Research Call">Research Call</option>
+                            <option value="Extension Call">Extension Call</option>
+                            <option value="Policy">Policy</option>
+                            <option value="Event">Event</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Target Audience</label>
+                        <select id="annAudience" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                            <option value="All">All</option>
+                            <option value="All Faculty">All Faculty</option>
+                            <option value="Research Director">Research Director</option>
+                            <option value="Extension Director">Extension Director</option>
+                            <option value="Research Coordinators">Research Coordinators</option>
+                            <option value="Extension Coordinators">Extension Coordinators</option>
+                            <option value="Faculty Researchers">Faculty Researchers</option>
+                            <option value="Faculty Extensionists">Faculty Extensionists</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Priority</label>
+                        <select id="annPriority" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+                            <option value="Normal">Normal</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Expiry Date</label>
+                    <input type="text" id="annExpiry" placeholder="e.g. Dec 15, 2026" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 5px;">Announcement Message / Body</label>
+                    <textarea id="annContent" rows="5" required placeholder="Full circular text..." style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; line-height: 1.5;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
+                    <button type="button" class="modal-cancel-btn" data-close-modal onclick="closeModal('announcementEditorModal')" style="height: 40px; min-width: 84px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Cancel</button>
+                    <button type="submit" id="annSubmitBtn" class="primary-btn" style="height: 40px; background: #15803d; color: #ffffff; padding: 0 22px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">Publish Now</button>
+                </div>
+            </form>
+        </article>
+    </div>
+
+    <!-- MODAL: VIEW ANNOUNCEMENT -->
+    <div class="modal" id="announcementViewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal onclick="closeModal('announcementViewModal')"></div>
+        <article class="modal-card" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal onclick="closeModal('announcementViewModal')" aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div style="margin-bottom: 12px;">
+                <span class="category-badge" id="viewAnnCategory" style="background: #dcfce7; color: #166534; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem;">Announcement</span>
+                <h2 id="viewAnnTitle" style="margin: 8px 0 4px; font-size: 1.3rem; color: #0f172a; line-height: 1.35;"></h2>
+                <div style="font-size: 0.84rem; color: #64748b; margin-top: 4px;">
+                    <span>Audience: <strong id="viewAnnAudience" style="color: #334155;"></strong></span> &bull; 
+                    <span>Priority: <strong id="viewAnnPriority"></strong></span> &bull; 
+                    <span>Published: <strong id="viewAnnDate" style="color: #334155;"></strong></span>
+                </div>
+            </div>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin: 14px 0; font-size: 0.92rem; line-height: 1.6; color: #334155;" id="viewAnnContent">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 14px;">
+                <span id="viewAnnExpiry" style="font-size: 0.82rem; color: #64748b;"></span>
+                <button type="button" class="modal-cancel-btn" data-close-modal onclick="closeModal('announcementViewModal')" style="height: 38px; min-width: 80px; padding: 0 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">Close</button>
+            </div>
+        </article>
+    </div>
+
+    <script>
+        // Standalone helpers & modal engine (works offline without external library lag)
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function openModal(idOrEl) {
+            const m = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+            if (!m) return;
+            m.classList.add('open');
+            m.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(idOrEl) {
+            const m = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : (idOrEl || document.querySelector('.modal.open'));
+            if (!m) return;
+            m.classList.remove('open');
+            m.setAttribute('aria-hidden', 'true');
+            if (!document.querySelector('.modal.open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            let box = document.getElementById('ovpreFlash');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'ovpreFlash';
+                const host = document.querySelector('.content-area') || document.body;
+                host.insertBefore(box, host.firstChild);
+            }
+            const icon = type === 'error' ? 'ri-error-warning-line' : 'ri-checkbox-circle-line';
+            box.innerHTML = `<div class="notice ${escapeHtml(type)}" style="margin-bottom: 16px;"><i class="${icon}"></i> ${escapeHtml(message)}</div>`;
+            window.clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => { if (box) box.innerHTML = ''; }, 4500);
+        }
+
+        window.OVPRE = window.OVPRE || {};
+        window.OVPRE.openModal = openModal;
+        window.OVPRE.closeModal = closeModal;
+        window.OVPRE.h = escapeHtml;
+        window.OVPRE.toast = showToast;
+
+        const initialAnnouncements = [
+        {
+                "id": 1,
+                "title": "Call for Research Proposals: FY 2026 Institutional Seed Funding",
+                "content": "The Office of the Vice President for Research and Extension invites full-time faculty members to submit applied research proposals aligned with the university strategic research priorities. Selected proposals are eligible for institutional grants up to PHP 250,000.",
+                "category": "Research Call",
+                "audience": "All Faculty",
+                "priority": "High",
+                "date": "Oct 15, 2026",
+                "expiry": "Dec 15, 2026",
+                "archived": false
+        },
+        {
+                "id": 2,
+                "title": "Guidelines on Extension Program Liquidation and Impact Reporting",
+                "content": "All College Extension Coordinators and project heads must submit complete liquidation reports and community beneficiary feedback surveys within 30 days of project conclusion.",
+                "category": "Policy",
+                "audience": "Extension Coordinators",
+                "priority": "Medium",
+                "date": "Oct 20, 2026",
+                "expiry": "Nov 30, 2026",
+                "archived": false
+        },
+        {
+                "id": 3,
+                "title": "Annual University Research Colloquium & Best Paper Awards 2026",
+                "content": "The 8th Annual Research Colloquium will be held on December 10, 2026. Oral and poster presentations are welcome across all nine academic colleges.",
+                "category": "Event",
+                "audience": "All Faculty",
+                "priority": "Urgent",
+                "date": "Oct 28, 2026",
+                "expiry": "Dec 10, 2026",
+                "archived": false
+        },
+        {
+                "id": 4,
+                "title": "Quarterly Submission Window for Community Extension Proposals",
+                "content": "The fourth quarter submission window for community extension proposals will officially close on November 25, 2026. Please ensure coordinator endorsements are secured prior to submission.",
+                "category": "Extension Call",
+                "audience": "Faculty Extensionists",
+                "priority": "High",
+                "date": "Nov 01, 2026",
+                "expiry": "Nov 25, 2026",
+                "archived": false
+        },
+        {
+                "id": 5,
+                "title": "Call for Submissions: 2025 Regional Extension Compendium",
+                "content": "Annual compilation of completed and ongoing community extension initiatives across Calabarzon LGUs.",
+                "category": "Publication",
+                "audience": "All Faculty",
+                "priority": "Normal",
+                "date": "Sep 10, 2025",
+                "expiry": "Oct 30, 2025",
+                "archived": true
+        }
+];
+
+        let currentAnnTab = 'active';
+        let annPage = 1;
+        let annPageSize = 10;
+        let sortField = 'title';
+        let sortAsc = true;
+
+        function getStoredAnnouncements() {
+            try {
+                const s = localStorage.getItem('ovpre_announcements');
+                if (s) {
+                    const parsed = JSON.parse(s);
+                    if (Array.isArray(parsed)) {
+                        let migrated = false;
+                        parsed.forEach(item => {
+                            if (item && item.audience === 'General Academic Community') {
+                                item.audience = 'All Faculty';
+                                migrated = true;
+                            }
+                        });
+                        if (migrated) {
+                            localStorage.setItem('ovpre_announcements', JSON.stringify(parsed));
+                        }
+                        return parsed;
+                    }
+                }
+            } catch (e) {}
+            localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
+            return initialAnnouncements;
+        }
+
+        function saveAnnouncements(data) {
+            localStorage.setItem('ovpre_announcements', JSON.stringify(data));
+        }
+
+        function switchAnnounceTab(tab) {
+            currentAnnTab = tab;
+            annPage = 1;
+            const activeBtn = document.getElementById('tabActiveBtn');
+            const archBtn = document.getElementById('tabArchivedBtn');
+            const bulkBtnContainer = document.getElementById('bulkAnnouncementsBtnContainer');
+            if (tab === 'active') {
+                activeBtn.style.background = '#15803d';
+                activeBtn.style.color = '#ffffff';
+                activeBtn.style.border = 'none';
+                activeBtn.style.boxShadow = '0 2px 6px rgba(21, 128, 61, 0.2)';
+                archBtn.style.background = '#ffffff';
+                archBtn.style.color = '#475569';
+                archBtn.style.border = '1.5px solid #cbd5e1';
+                archBtn.style.boxShadow = 'none';
+                if (bulkBtnContainer) {
+                    bulkBtnContainer.innerHTML = `
+                        <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected announcement(s)?');">
+                            <i class="ri-download-2-line"></i><span>Archive Selected</span>
+                        </button>
+                    `;
+                }
+            } else {
+                activeBtn.style.background = '#ffffff';
+                activeBtn.style.color = '#475569';
+                activeBtn.style.border = '1.5px solid #cbd5e1';
+                activeBtn.style.boxShadow = 'none';
+                archBtn.style.background = '#15803d';
+                archBtn.style.color = '#ffffff';
+                archBtn.style.border = 'none';
+                archBtn.style.boxShadow = '0 2px 6px rgba(21, 128, 61, 0.2)';
+                if (bulkBtnContainer) {
+                    bulkBtnContainer.innerHTML = `
+                        <button class="action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit onclick="return confirm('Restore selected announcement(s)?');" style="background: #15803d; border: 1px solid #166534; color: #ffffff; font-weight: 700; font-size: 0.84rem; padding: 7px 18px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);">
+                            <i class="ri-arrow-go-back-line"></i><span>Restore Selected</span>
+                        </button>
+                    `;
+                }
+            }
+            renderAnnouncements();
+        }
+
+        function handleAnnSearch(val) {
+            annPage = 1;
+            renderAnnouncements();
+        }
+
+        function changePageSize(size) {
+            annPageSize = Number(size) || 10;
+            annPage = 1;
+            renderAnnouncements();
+        }
+
+        function sortAnnTable(field) {
+            if (sortField === field) {
+                sortAsc = !sortAsc;
+            } else {
+                sortField = field;
+                sortAsc = true;
+            }
+            renderAnnouncements();
+        }
+
+        function getPriorityHtml(priority) {
+            if (priority === 'High') {
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;"><i class="ri-alert-fill" style="font-size: 0.8rem;"></i> High</span>';
+            } else if (priority === 'Urgent') {
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;"><i class="ri-error-warning-fill" style="font-size: 0.8rem;"></i> Urgent</span>';
+            } else if (priority === 'Medium') {
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;"><i class="ri-information-fill" style="font-size: 0.8rem;"></i> Medium</span>';
+            } else {
+                return '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;"><i class="ri-checkbox-circle-fill" style="font-size: 0.8rem;"></i> Normal</span>';
+            }
+        }
+
+        function renderAnnouncements() {
+            const all = getStoredAnnouncements();
+            const activeList = all.filter(a => !a.archived);
+            const archivedList = all.filter(a => a.archived);
+
+            document.getElementById('activeBadge').textContent = activeList.length;
+            document.getElementById('archivedBadge').textContent = archivedList.length;
+
+            let filtered = currentAnnTab === 'active' ? activeList : archivedList;
+
+            const q = (document.querySelector('[data-global-search]')?.value || '').trim().toLowerCase();
+            if (q) {
+                filtered = filtered.filter(a => 
+                    (a.title || '').toLowerCase().includes(q) ||
+                    (a.category || '').toLowerCase().includes(q) ||
+                    (a.audience || '').toLowerCase().includes(q) ||
+                    (a.content || '').toLowerCase().includes(q) ||
+                    (a.priority || '').toLowerCase().includes(q)
+                );
+            }
+
+            // Sorting
+            filtered.sort((x, y) => {
+                let vX = (x[sortField] || '').toString().toLowerCase();
+                let vY = (y[sortField] || '').toString().toLowerCase();
+                if (vX < vY) return sortAsc ? -1 : 1;
+                if (vX > vY) return sortAsc ? 1 : -1;
+                return 0;
+            });
+
+            const total = filtered.length;
+            const startIdx = (annPage - 1) * annPageSize;
+            const pageItems = filtered.slice(startIdx, startIdx + annPageSize);
+
+            const tbody = document.getElementById('announcementsTableBody');
+            tbody.innerHTML = '';
+
+            if (!pageItems.length) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b;"><i class="ri-inbox-line" style="font-size: 2.2rem; display: block; margin-bottom: 8px; color: #94a3b8;"></i> No ' + (currentAnnTab === 'active' ? 'published' : 'archived') + ' announcements found.</td>';
+                tbody.appendChild(tr);
+            } else {
+                pageItems.forEach(a => {
+                    const tr = document.createElement('tr');
+                    tr.id = 'announcement-row-' + a.id;
+                    tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;';
+
+                    const actionButtons = currentAnnTab === 'active' ? `
+                        <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                            <button type="button" class="action-btn btn-archive-natural" onclick="toggleArchiveAnnouncement(${a.id})"><i class="ri-download-2-line"></i><span>Archive</span></button>
+                        </div>
+                    ` : `
+                        <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                            <button type="button" class="action-btn" onclick="openEditAnnouncementModal(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-edit-line"></i><span>Edit</span></button>
+                            <button type="button" class="action-btn" onclick="toggleArchiveAnnouncement(${a.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-weight: 700; font-size: 0.82rem; padding: 5px 14px; border-radius: 8px; cursor: pointer; min-height: 30px; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                        </div>
+                    `;
+
+                    tr.innerHTML = `
+                        <td class="table-checkbox-col" style="width: 44px; min-width: 44px; max-width: 44px; text-align: center; padding: 14px 8px; vertical-align: middle;">
+                            <input form="bulk-announcementsTable" type="checkbox" name="ids[]" value="${a.id}" aria-label="Select announcement ${a.id}" data-row-select="announcementsTable">
+                        </td>
+                        <td style="padding: 14px 14px; min-width: 260px; max-width: 360px; vertical-align: middle;">
+                            <strong style="color: #0f172a; font-size: 0.92rem; display: block; line-height: 1.35; cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='#15803d'" onmouseout="this.style.color='#0f172a'" onclick="openViewAnnouncementModal(${a.id})">${OVPRE.h(a.title)}</strong>
+                            <p style="margin: 4px 0 0; font-size: 0.8rem; color: #64748b; line-height: 1.4;">${OVPRE.h(a.content.slice(0, 95))}...</p>
+                        </td>
+                        <td style="padding: 14px 14px; vertical-align: middle;">
+                            <span style="display: inline-block; padding: 4px 11px; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-size: 0.76rem; font-weight: 600;">${OVPRE.h(a.category)}</span>
+                        </td>
+                        <td style="padding: 14px 14px; vertical-align: middle;">
+                            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 999px; background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 600;"><i class="ri-user-line" style="font-size: 0.75rem;"></i> ${OVPRE.h(a.audience)}</span>
+                        </td>
+                        <td style="padding: 14px 14px; text-align: center; vertical-align: middle;">${getPriorityHtml(a.priority)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">${OVPRE.h(a.date)}</td>
+                        <td style="padding: 14px 14px; color: #475569; font-size: 0.88rem; white-space: nowrap; text-align: center; vertical-align: middle;">${OVPRE.h(a.expiry || 'No expiry')}</td>
+                        <td style="padding: 14px 14px; text-align: center; white-space: nowrap; vertical-align: middle;">${actionButtons}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Pagination UI
+            const pageCount = Math.max(1, Math.ceil(total / annPageSize));
+            if (annPage > pageCount) annPage = pageCount;
+            const pageSummary = document.getElementById('tablePageSummary');
+            if (pageSummary) pageSummary.textContent = total ? `Showing ${startIdx + 1} to ${Math.min(startIdx + annPageSize, total)} of ${total} entries` : 'No records';
+            const prevBtn = document.getElementById('prevPageBtn');
+            if (prevBtn) prevBtn.disabled = annPage <= 1;
+            const nextBtn = document.getElementById('nextPageBtn');
+            if (nextBtn) nextBtn.disabled = annPage >= pageCount;
+
+            const pNumContainer = document.getElementById('paginationNumbers');
+            if (pNumContainer) {
+                pNumContainer.innerHTML = '';
+                for (let i = 1; i <= pageCount; i++) {
+                    const b = document.createElement('button');
+                    b.textContent = i;
+                    b.type = 'button';
+                    b.style.cssText = `padding: 6px 11px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; ${i === annPage ? 'background: #15803d; color: #fff; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);' : 'background: #fff; color: #1e293b;'}`;
+                    b.onclick = () => { annPage = i; renderAnnouncements(); };
+                    pNumContainer.appendChild(b);
+                }
+            }
+
+            const selectAll = document.querySelector('[data-select-all="announcementsTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            const tb = document.querySelector('[data-selection-toolbar="announcementsTable"]');
+            if (tb) {
+                tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
+                const countBadge = tb.querySelector('[data-selection-count]');
+                if (countBadge) countBadge.textContent = '0 selected';
+            }
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
+            }
+            if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('announcementsTable'));
+            }
+        }
+
+        window.handleBulkAnnouncementsSubmit = function(e) {
+            e.preventDefault();
+            const checkedBoxes = Array.from(document.querySelectorAll('#announcementsTable [data-row-select]:checked'));
+            const ids = checkedBoxes.map(c => Number(c.value));
+            if (!ids.length) {
+                showToast('Please select at least one announcement.', 'error');
+                return;
+            }
+            const submitBtn = e.submitter || document.activeElement;
+            const action = (submitBtn && submitBtn.value) ? submitBtn.value : (currentAnnTab === 'archived' ? 'restore' : 'archive');
+            const all = getStoredAnnouncements();
+            ids.forEach(id => {
+                const item = all.find(a => a.id === id);
+                if (item) item.archived = (action === 'archive');
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    OVPRE_SUPABASE.archiveAnnouncement(id, action === 'archive');
+                }
+            });
+            saveAnnouncements(all);
+            showToast(action === 'archive' ? `${ids.length} announcement(s) archived successfully.` : `${ids.length} announcement(s) restored successfully.`, 'success');
+            renderAnnouncements();
+        };
+
+        function changeAnnouncePage(delta) {
+            annPage += delta;
+            renderAnnouncements();
+        }
+
+        function openAddAnnouncementModal() {
+            document.getElementById('editAnnId').value = '';
+            document.getElementById('annModalTitle').innerHTML = '<i class="ri-megaphone-line" style="color: #15803d;"></i> <span>Publish Announcement</span>';
+            document.getElementById('annSubmitBtn').textContent = 'Publish Now';
+            document.getElementById('annTitle').value = '';
+            document.getElementById('annCategory').value = 'Research Call';
+            document.getElementById('annAudience').value = 'All Faculty';
+            document.getElementById('annPriority').value = 'High';
+            document.getElementById('annExpiry').value = '';
+            document.getElementById('annContent').value = '';
+            openModal('announcementEditorModal');
+        }
+
+        function openEditAnnouncementModal(id) {
+            const all = getStoredAnnouncements();
+            const a = all.find(item => item.id === Number(id));
+            if (!a) return;
+            document.getElementById('editAnnId').value = a.id;
+            document.getElementById('annModalTitle').innerHTML = '<i class="ri-edit-line" style="color: #15803d;"></i> <span>Edit Announcement</span>';
+            document.getElementById('annSubmitBtn').textContent = 'Update Announcement';
+            document.getElementById('annTitle').value = a.title;
+            document.getElementById('annCategory').value = a.category;
+            document.getElementById('annAudience').value = a.audience;
+            document.getElementById('annPriority').value = a.priority;
+            document.getElementById('annExpiry').value = a.expiry || '';
+            document.getElementById('annContent').value = a.content;
+            openModal('announcementEditorModal');
+        }
+
+        function openViewAnnouncementModal(id) {
+            const all = getStoredAnnouncements();
+            const a = all.find(item => item.id === Number(id));
+            if (!a) return;
+            document.getElementById('viewAnnCategory').textContent = a.category;
+            document.getElementById('viewAnnTitle').textContent = a.title;
+            document.getElementById('viewAnnAudience').textContent = a.audience;
+            document.getElementById('viewAnnPriority').innerHTML = getPriorityHtml(a.priority);
+            document.getElementById('viewAnnDate').textContent = a.date;
+            document.getElementById('viewAnnExpiry').textContent = a.expiry ? ('Valid until ' + a.expiry) : 'No expiration date';
+            document.getElementById('viewAnnContent').textContent = a.content;
+            openModal('announcementViewModal');
+        }
+
+        function handleSaveAnnouncement(e) {
+            e.preventDefault();
+            const id = document.getElementById('editAnnId').value;
+            const title = document.getElementById('annTitle').value.trim();
+            const category = document.getElementById('annCategory').value;
+            const audience = document.getElementById('annAudience').value;
+            const priority = document.getElementById('annPriority').value;
+            const expiry = document.getElementById('annExpiry').value.trim();
+            const content = document.getElementById('annContent').value.trim();
+
+            const all = getStoredAnnouncements();
+            if (id) {
+                const item = all.find(a => a.id === Number(id));
+                if (item) {
+                    item.title = title;
+                    item.category = category;
+                    item.audience = audience;
+                    item.priority = priority;
+                    item.expiry = expiry;
+                    item.content = content;
+                    saveAnnouncements(all);
+                    if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                        OVPRE_SUPABASE.updateAnnouncement(item.id, { title, content, audience });
+                    }
+                    showToast('Announcement updated successfully.', 'success');
+                }
+            } else {
+                const newId = (all.reduce((max, a) => Math.max(max, a.id || 0), 0)) + 1;
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const now = new Date();
+                const dateStr = months[now.getMonth()] + ' ' + String(now.getDate()).padStart(2, '0') + ', ' + now.getFullYear();
+
+                const newAnn = {
+                    id: newId,
+                    title,
+                    content,
+                    category,
+                    audience,
+                    priority,
+                    date: dateStr,
+                    expiry: expiry || 'Dec 31, 2026',
+                    archived: false
+                };
+                all.unshift(newAnn);
+                saveAnnouncements(all);
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    OVPRE_SUPABASE.createAnnouncement(newAnn);
+                }
+                showToast('Announcement published successfully.', 'success');
+            }
+
+            closeModal('announcementEditorModal');
+            renderAnnouncements();
+        }
+
+        function toggleArchiveAnnouncement(id) {
+            const all = getStoredAnnouncements();
+            const a = all.find(item => item.id === Number(id));
+            if (!a) return;
+            a.archived = !a.archived;
+            saveAnnouncements(all);
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                OVPRE_SUPABASE.archiveAnnouncement(a.id, a.archived);
+            }
+            showToast(a.archived ? 'Announcement archived.' : 'Announcement restored to published feed.', 'success');
+            renderAnnouncements();
+        }
+
+        function exportAnnouncementsCSV() {
+            const all = getStoredAnnouncements();
+            const list = currentAnnTab === 'active' ? all.filter(a => !a.archived) : all.filter(a => a.archived);
+            const headers = ['ID', 'Title', 'Category', 'Audience', 'Priority', 'Published Date', 'Expiry Date', 'Content'];
+            const rows = list.map(a => [
+                a.id,
+                '"' + (a.title || '').replace(/"/g, '""') + '"',
+                '"' + (a.category || '').replace(/"/g, '""') + '"',
+                '"' + (a.audience || '').replace(/"/g, '""') + '"',
+                '"' + (a.priority || '').replace(/"/g, '""') + '"',
+                '"' + (a.date || '').replace(/"/g, '""') + '"',
+                '"' + (a.expiry || '').replace(/"/g, '""') + '"',
+                '"' + (a.content || '').replace(/"/g, '""') + '"'
+            ]);
+
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', (currentAnnTab === 'active' ? 'published' : 'archived') + '_announcements.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Announcements exported to CSV.', 'success');
+        }
+
+        // Global delegation for modal trigger elements
+        document.addEventListener('click', function(e) {
+            const opener = e.target.closest('[data-open-modal]');
+            if (opener) {
+                const targetId = opener.getAttribute('data-open-modal');
+                if (targetId) {
+                    e.preventDefault();
+                    if (targetId === 'announcementEditorModal' && !opener.hasAttribute('onclick')) {
+                        openAddAnnouncementModal();
+                    } else {
+                        openModal(targetId);
+                    }
+                }
+                return;
+            }
+            const closer = e.target.closest('[data-close-modal]');
+            if (closer) {
+                e.preventDefault();
+                const m = closer.closest('.modal');
+                if (m) {
+                    closeModal(m);
+                } else {
+                    closeModal();
+                }
+                return;
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const openModalEl = document.querySelector('.modal.open');
+                if (openModalEl) closeModal(openModalEl);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const stored = localStorage.getItem('ovpre_announcements');
+                if (!stored || JSON.parse(stored)[0]?.title !== initialAnnouncements[0].title) {
+                    localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
+                }
+            } catch (e) {
+                localStorage.setItem('ovpre_announcements', JSON.stringify(initialAnnouncements));
+            }
+            document.querySelector('[data-global-search]')?.addEventListener('input', function() { annPage = 1; renderAnnouncements(); });
+            renderAnnouncements();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js?v=20261112"></script>
+    <script src="assets/js/app.js?v=20261111-btncolor"></script>
+    <script src="assets/js/static-bridge.js?v=20261111-btncolor"></script>
+    <script src="assets/js/role-system.js?v=20261111-btncolor"></script>
+</body>
+</html>

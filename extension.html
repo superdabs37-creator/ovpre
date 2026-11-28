@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Management | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261030-searchable-select">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="active" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
+                    <svg class="sidebar-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="3"></rect><path d="M9 3v18"></path><path d="m14 9-3 3 3 3"></path></svg>
+                </button>
+                <div class="topbar-title">
+                    <h1>Extension Management</h1>
+                </div>
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
+                    <i class="ri-search-line"></i>
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+            <main class="content-area">
+                <section class="module-header">
+                    <div class="module-icon"><i class="ri-community-line"></i></div>
+                    <div>
+                        <p>Community Extension</p>
+                        <h2>Extension Projects &amp; Workflow</h2>
+                        <span>Academic Pipeline: Faculty Extensionist &rarr; College Coordinator &rarr; Extension Director &rarr; Executive Final Approval</span>
+                    </div>
+                </section>
+
+                <div id="ovpreFlash"></div>
+
+                <!-- ACTIVE / ARCHIVED VIEW SELECTOR -->
+                <section class="panel" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 12px; background: #fff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div class="record-segmented-control" role="tablist" aria-label="Extension view mode">
+                                <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchExtensionTab('active')">
+                                    <i class="ri-folder-line"></i><span>Active Initiatives (<span id="activeCount">6</span>)</span>
+                                </button>
+                                <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchExtensionTab('archived')">
+                                    <i class="ri-archive-line"></i><span>Archived Initiatives (<span id="archivedCount">1</span>)</span>
+                                </button>
+                            </div>
+
+                            <!-- Scope / Proponent Shortcut Filter Toggle -->
+                            <div class="scope-filter-control" role="group" aria-label="Extension scope filter">
+                                <button type="button" id="scopeAllExtensionBtn" class="scope-filter-btn is-active" onclick="setExtensionScope('all')" title="View all university initiatives">
+                                    <i class="ri-grid-line"></i><span>All Initiatives (<span id="allScopeCount">6</span>)</span>
+                                </button>
+                                <button type="button" id="scopeMyExtensionBtn" class="scope-filter-btn" onclick="setExtensionScope('my')" title="Shortcut: Show only your personal extension projects">
+                                    <i class="ri-user-star-line"></i><span>My Submissions (<span id="myScopeCount">2</span>)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="primary-btn action-btn" onclick="openCreateProjectModal()" id="btnSubmitProject" style="display: inline-flex; align-items: center; gap: 6px; background: #15803d; color: #fff; font-weight: 600;">
+                            <i class="ri-add-circle-line"></i><span>Submit Extension Initiative</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtered View Alert Banner for My Submissions -->
+                    <div id="mySubmissionsAlertBanner" class="my-submissions-alert-banner" style="display: none; margin-top: 12px; margin-bottom: 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
+                            <span>Your <strong id="myExtensionBannerCount">3</strong> submissions have been routed to the <strong>CCST Extension Coordinator</strong>.</span>
+                        </div>
+                        <button type="button" class="alert-btn-clear" onclick="setExtensionScope('all')">
+                            <i class="ri-eye-line"></i><span>View All Initiatives</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- PROJECTS TABLE -->
+                <section class="panel">
+                    <div class="table-selection-toolbar is-hidden" data-selection-toolbar="extensionProjectsTable" id="extensionSelectionToolbar" hidden style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 12px;">
+                        <span data-selection-count id="extensionSelectedCount" style="font-weight: 700; color: #b45309; font-size: 0.88rem;">0 selected</span>
+                        <form id="bulk-extensionProjectsTable" onsubmit="handleBulkExtensionSubmit(event)" style="margin: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span id="bulkExtensionBtnContainer" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm('Archive selected extension projects?');">
+                                    <i class="ri-download-2-line"></i><span>Archive Selected</span>
+                                </button>
+                                <button class="action-btn" type="submit" name="bulk_action" value="delete" style="color: #dc2626; border: 1px solid #fecaca; background: #fef2f2; font-weight: 600;" onclick="return confirm('Are you sure you want to permanently delete the selected extension projects?');">
+                                    <i class="ri-delete-bin-line"></i><span>Delete Selected</span>
+                                </button>
+                            </span>
+                        </form>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table" id="extensionProjectsTable">
+                            <thead>
+                                <tr>
+                                    <th class="table-checkbox-col" style="width: 44px; text-align: center;">
+                                        <label class="select-all-control">
+                                            <input form="bulk-extensionProjectsTable" type="checkbox" aria-label="Select all extension projects" data-select-all="extensionProjectsTable">
+                                            <span>Select all</span>
+                                        </label>
+                                    </th>
+                                    <th>Project</th>
+                                    <th>Partner / Location</th>
+                                    <th>College</th>
+                                    <th><div style="display: inline-flex; align-items: center; gap: 6px;"><span>Budget</span><button type="button" class="btn-toggle-mask" data-mask-target="budget" aria-label="Toggle budget visibility" title="Hide/Unhide Budget"><i class="ri-eye-line"></i></button></div></th>
+                                    <th>Stage</th>
+                                    <th>Status</th>
+                                    <th>Manage / Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="extensionProjectsBody">
+
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Nursing and Allied Health Sciences" id="project-1" data-id="1" data-project-id="1" data-alias-id="ext-project-1">
+            <td data-sort-value="Barangay San Gabriel Community Health and Hypertension Teleconsultation">
+                <strong>Barangay San Gabriel Community Health and Hypertension Teleconsultation</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Maria Bautista | 
+                    <i class="ri-calendar-line"></i> Jan 20, 2026 to Apr 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="Barangay San Gabriel Health Center & LGU San Pablo">
+                <strong>Barangay San Gabriel Health Center & LGU San Pablo</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Brgy. San Gabriel, San Pablo City</small>
+            </td>
+            <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+            <td data-sort-value="80000"><strong>PHP 80,000.00</strong></td>
+            <td data-sort-value="Completed"><span style="font-weight: 600; color: #166534;">Completed</span></td>
+            <td data-sort-value="Approved">
+                <span class="status-pill status-approved">
+                    Approved
+                </span>
+            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(1)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Business Administration" id="project-2" data-id="2" data-project-id="2" data-alias-id="ext-project-2">
+            <td data-sort-value="Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors">
+                <strong>Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Elena Cruz | 
+                    <i class="ri-calendar-line"></i> Feb 05, 2026 to Apr 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="San Pablo City Public Market Cooperative">
+                <strong>San Pablo City Public Market Cooperative</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> San Pablo City Public Market</small>
+            </td>
+            <td data-sort-value="College of Business Administration"><span class="dept-pill">College of Business Administration</span></td>
+            <td data-sort-value="65000"><strong>PHP 65,000.00</strong></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(2)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Director Review" data-stage="Stage 2: Director Evaluation" data-college="College of Engineering" id="project-3" data-id="3" data-project-id="3" data-alias-id="ext-project-3">
+            <td data-sort-value="Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation">
+                <strong>Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Engr. Mark Santos | 
+                    <i class="ri-calendar-line"></i> Feb 14, 2026 to Apr 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="Brgy. Concepcion Urban Farmers Association">
+                <strong>Brgy. Concepcion Urban Farmers Association</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Brgy. Concepcion, San Pablo City</small>
+            </td>
+            <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+            <td data-sort-value="110000"><strong>PHP 110,000.00</strong></td>
+            <td data-sort-value="Stage 2: Director Evaluation"><span style="font-weight: 600; color: #166534;">Stage 2: Director Evaluation</span></td>
+            <td data-sort-value="Pending Director Review">
+                <span class="status-pill status-pending-director-review">
+                    Pending Director Review
+                </span>
+            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(3)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Approved" data-stage="Completed" data-college="College of Engineering" id="project-4" data-id="4" data-project-id="4" data-alias-id="ext-project-4">
+            <td data-sort-value="Community IoT Flood Early Warning System & SMS Evacuation Alert">
+                <strong>Community IoT Flood Early Warning System & SMS Evacuation Alert</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Engr. Roberto Dimaano | 
+                    <i class="ri-calendar-line"></i> Mar 01, 2026 to Jun 30, 2026
+                </div>
+            </td>
+            <td data-sort-value="MDRRMO San Pablo & Brgy. Sampaloc Lake Council">
+                <strong>MDRRMO San Pablo & Brgy. Sampaloc Lake Council</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Lake Sampaloc Shoreline</small>
+            </td>
+            <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+            <td data-sort-value="135000"><strong>PHP 135,000.00</strong></td>
+            <td data-sort-value="Completed"><span style="font-weight: 600; color: #166534;">Completed</span></td>
+            <td data-sort-value="Approved">
+                <span class="status-pill status-approved">
+                    Approved
+                </span>
+            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(4)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Arts and Sciences" id="project-5" data-id="5" data-project-id="5" data-alias-id="ext-project-5">
+            <td data-sort-value="Modern Organic Backyard Aquaculture and Tilapia Pond Management">
+                <strong>Modern Organic Backyard Aquaculture and Tilapia Pond Management</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Dr. Fernando Morales | 
+                    <i class="ri-calendar-line"></i> Mar 15, 2026 to Jul 15, 2026
+                </div>
+            </td>
+            <td data-sort-value="Seven Lakes Fisherfolk Cooperative">
+                <strong>Seven Lakes Fisherfolk Cooperative</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> Brgy. San Buenaventura</small>
+            </td>
+            <td data-sort-value="College of Arts and Sciences"><span class="dept-pill">College of Arts and Sciences</span></td>
+            <td data-sort-value="90000"><strong>PHP 90,000.00</strong></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(5)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
+
+        <tr data-table-row data-status="Pending Coordinator Review" data-stage="Stage 1: Coordinator Screening" data-college="College of Computer Studies" id="project-6" data-id="6" data-project-id="6" data-alias-id="ext-project-6">
+            <td data-sort-value="STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)">
+                <strong>STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)</strong>
+                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                    <i class="ri-user-line"></i> Lead: Prof. Arnel Santos | 
+                    <i class="ri-calendar-line"></i> Mar 20, 2026 to May 20, 2026
+                </div>
+            </td>
+            <td data-sort-value="Sangguniang Kabataan Federation of San Pablo City">
+                <strong>Sangguniang Kabataan Federation of San Pablo City</strong>
+                <br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> San Pablo City Youth Center</small>
+            </td>
+            <td data-sort-value="College of Computer Studies"><span class="dept-pill">College of Computer Studies</span></td>
+            <td data-sort-value="110000"><strong>PHP 110,000.00</strong></td>
+            <td data-sort-value="Stage 1: Coordinator Screening"><span style="font-weight: 600; color: #166534;">Stage 1: Coordinator Screening</span></td>
+            <td data-sort-value="Pending Coordinator Review">
+                <span class="status-pill status-pending-coordinator-review">
+                    Pending Coordinator Review
+                </span>
+            </td>
+            <td>
+        <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(6)" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+            <i class="ri-eye-line"></i><span>Details</span>
+        </button>
+    </td>
+        </tr>
+    
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- CREATE PROPOSAL MODAL -->
+    <div class="modal" id="createExtensionProjectModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createExtensionProjectTitle">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card simple-submit-modal" style="max-width: 680px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head">
+                <span class="category-badge">Extension</span>
+                <h2 id="createExtensionProjectTitle">Submit Extension Project Proposal</h2>
+                <p>Stage 1: Proposal Writing &amp; Submission (Routed to College Coordinator for Initial Screening)</p>
+            </div>
+            <form class="editor-panel" id="createExtensionProjectForm" onsubmit="handleCreateExtensionProject(event)">
+                <div class="form-grid">
+                    <label class="field"><span>Project Title</span><input name="project_title" id="createTitle" required placeholder="Full extension project title"></label>
+                    <label class="field"><span>Coordinator / Lead</span><input name="coordinator" id="createCoordinator" required placeholder="Prof. Elena Cruz"></label>
+                    <label class="field"><span>Community Partner / LGU</span><input name="community_partner" id="createPartner" required placeholder="e.g. San Pablo City Public Market Cooperative"></label>
+                    <label class="field"><span>Location</span><input name="location" id="createLocation" placeholder="e.g. San Pablo City Public Market" required></label>
+                    <label class="field"><span>College / Office</span>
+                        <select name="college" id="createCollege" required>
+                            <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                            <option value="College of Business Administration">College of Business Administration</option>
+                            <option value="College of Engineering">College of Engineering</option>
+                            <option value="College of Computer Studies">College of Computer Studies</option>
+                            <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                            <option value="College of Teacher Education">College of Teacher Education</option>
+                            <option value="College of Tourism and Hospitality Management">College of Tourism and Hospitality Management</option>
+                            <option value="College of Public Administration and Governance">College of Public Administration and Governance</option>
+                            <option value="College of Physical Education">College of Physical Education</option>
+                            <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Target Budget (PHP)</span><input type="number" step="0.01" name="budget" id="createBudget" placeholder="75000" required></label>
+                    <label class="field"><span>Start Date</span><input type="date" name="start_date" id="createStartDate" required></label>
+                    <label class="field"><span>End Date</span><input type="date" name="end_date" id="createEndDate" required></label>
+                </div>
+                <label class="field"><span>Project Description &amp; Beneficiaries</span><textarea rows="4" name="description" id="createDescription" required placeholder="Detail target beneficiaries, outreach activities, and measurable community outcomes..."></textarea></label>
+                <label class="field"><span>Proposal Document / MOA Draft (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="createFile" accept=".pdf,.doc,.docx,.zip"></label>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="modal-cancel-btn" data-close-modal>Cancel</button>
+                    <button class="primary-btn post-btn" type="submit"><i class="ri-send-plane-line"></i> Submit to Extension Coordinator</button>
+                </div>
+            </form>
+        </article>
+    </div>
+
+    <!-- FACULTY RESUBMIT MODAL -->
+    <div class="modal" id="resubmitExtensionModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card simple-submit-modal" style="max-width: 680px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close form"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head">
+                <span class="category-badge" style="background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;">Revision &amp; Resubmission</span>
+                <h2 style="margin: 6px 0;">Resubmit Extension Project Proposal</h2>
+                <p>Stage 1: Revise extension project according to screening feedback and resubmit to College Coordinator</p>
+            </div>
+            <div id="resubmitExtFeedbackBox" style="background: #fff7ed; border-left: 4px solid #ea580c; padding: 12px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 0.88rem;">
+                <strong style="color: #c2410c;"><i class="ri-feedback-line"></i> Reviewer / Coordinator Feedback:</strong>
+                <div id="resubmitExtFeedbackText" style="margin-top: 4px; color: #9a3412; line-height: 1.45;"></div>
+            </div>
+            <form class="editor-panel" id="resubmitExtensionForm" onsubmit="handleResubmitExtensionProject(event)">
+                <input type="hidden" id="resubmitExtProjId" name="id">
+                <div class="form-grid">
+                    <label class="field"><span>Project Title</span><input name="project_title" id="resubmitExtTitle" required></label>
+                    <label class="field"><span>Coordinator / Lead</span><input name="coordinator" id="resubmitExtCoordinator" required></label>
+                    <label class="field"><span>Community Partner / LGU</span><input name="community_partner" id="resubmitExtPartner" required></label>
+                    <label class="field"><span>Location</span><input name="location" id="resubmitExtLocation" required></label>
+                    <label class="field"><span>College / Office</span>
+                        <select name="college" id="resubmitExtCollege" required>
+                            <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                            <option value="College of Business Administration">College of Business Administration</option>
+                            <option value="College of Engineering">College of Engineering</option>
+                            <option value="College of Computer Studies">College of Computer Studies</option>
+                            <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                            <option value="College of Teacher Education">College of Teacher Education</option>
+                            <option value="College of Tourism and Hospitality Management">College of Tourism and Hospitality Management</option>
+                            <option value="College of Public Administration and Governance">College of Public Administration and Governance</option>
+                            <option value="College of Physical Education">College of Physical Education</option>
+                            <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Target Budget (PHP)</span><input type="number" step="0.01" name="budget" id="resubmitExtBudget" required></label>
+                    <label class="field"><span>Start Date</span><input type="date" name="start_date" id="resubmitExtStartDate" required></label>
+                    <label class="field"><span>End Date</span><input type="date" name="end_date" id="resubmitExtEndDate" required></label>
+                </div>
+                <label class="field"><span>Project Description &amp; Beneficiaries</span><textarea rows="4" name="description" id="resubmitExtDescription" required></textarea></label>
+                <label class="field"><span>Upload Revised Document / MOA (PDF, DOC, DOCX up to 15 MB)</span><input type="file" id="resubmitExtFile" accept=".pdf,.doc,.docx,.zip"></label>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="modal-cancel-btn" data-close-modal>Cancel</button>
+                    <button class="primary-btn post-btn" type="submit" style="background: #0284c7;"><i class="ri-refresh-line"></i> Resubmit to Coordinator</button>
+                </div>
+            </form>
+        </article>
+    </div>
+
+    <!-- COORDINATOR SCREENING MODAL -->
+    <div class="modal" id="coordModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="coordForm" onsubmit="handleCoordSubmit(event)" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 id="coordModalHeading" style="color: #15803d;"><i class="ri-check-double-line"></i> College Extension Coordinator Screening</h2>
+            <input type="hidden" id="coordProjId" name="id">
+            <p><strong id="coordProjTitle"></strong></p>
+            <label class="field"><span>Screening Remarks &amp; Community Alignment:</span>
+                <textarea id="coordRemarks" name="remarks" rows="3" required placeholder="Screening notes regarding community partner validation, MOA viability, and logistical clearance..."></textarea>
+            </label>
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn btn-endorse" type="submit" name="coord_action" value="endorse">
+                    <i class="ri-check-line"></i> Endorse to Director
+                </button>
+                <button class="ghost-btn btn-revision" type="submit" name="coord_action" value="revision">
+                    <i class="ri-arrow-go-back-line"></i> Return for Revision
+                </button>
+                <button class="ghost-btn danger-btn btn-decline" type="submit" name="coord_action" value="decline">
+                    <i class="ri-close-circle-line"></i> Decline Proposal
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- DIRECTOR EVALUATION MODAL -->
+    <div class="modal" id="dirModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="dirForm" onsubmit="handleDirSubmit(event)" style="max-width: 620px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 style="color: #1d4ed8;"><i class="ri-award-line"></i> Extension Director Evaluation</h2>
+            <input type="hidden" id="dirProjId" name="id">
+            <p><strong id="dirProjTitle"></strong></p>
+            <div class="form-grid">
+                <label class="field"><span>Evaluation Rating (Score out of 100):</span>
+                    <input type="number" step="0.01" min="0" max="100" id="dirRating" name="evaluation_rating" placeholder="90.00" required>
+                </label>
+                <label class="field"><span>Approved Funding Allocation (PHP):</span>
+                    <input type="number" step="0.01" min="0" id="dirApprovedBudget" name="approved_budget" required>
+                </label>
+            </div>
+            <label class="field"><span>Director Recommendation Remarks:</span>
+                <textarea id="dirRemarks" name="remarks" rows="3" required placeholder="Director evaluation remarks, beneficiary metrics, and institutional endorsement..."></textarea>
+            </label>
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn btn-endorse" type="submit" name="dir_action" value="endorse">
+                    <i class="ri-checkbox-circle-line"></i> Endorse for Implementation
+                </button>
+                <button class="ghost-btn btn-revision" type="submit" name="dir_action" value="revision">
+                    <i class="ri-arrow-go-back-line"></i> Return for Revision
+                </button>
+                <button class="ghost-btn danger-btn btn-decline" type="submit" name="dir_action" value="decline">
+                    <i class="ri-close-circle-line"></i> Decline Proposal
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- EXECUTIVE FINAL APPROVAL MODAL -->
+    <div class="modal" id="execModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="execForm" onsubmit="handleExecSubmit(event)" style="max-width: 600px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2 style="color: #7e22ce;"><i class="ri-checkbox-circle-line"></i> OVPRE Executive Final Approval</h2>
+            <input type="hidden" id="execProjId" name="id">
+            <p><strong id="execProjTitle"></strong></p>
+            <label class="field"><span>Executive Resolution &amp; Directives:</span>
+                <textarea id="execRemarks" name="remarks" rows="4" required>Approved for implementation under University Extension and Community Engagement Program. Fund release and MOA execution authorized.</textarea>
+            </label>
+            <div class="modal-review-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap;">
+                <button class="primary-btn" type="submit" name="exec_action" value="approve" style="background: #16a34a;">
+                    <i class="ri-check-double-line"></i> Grant Final Approval
+                </button>
+                <button class="ghost-btn danger-btn" type="submit" name="exec_action" value="decline">Disapprove</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- DETAILS MODAL -->
+    <div class="modal" id="detailsModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 660px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div class="activity-modal-head" style="margin-bottom: 12px;">
+                <span class="category-badge" id="detailStage">Extension</span>
+                <h2 id="detailTitle" style="margin: 6px 0;">Extension Project Details</h2>
+                <p id="detailSubtitle" style="color: #64748b; font-size: 0.9rem;"></p>
+            </div>
+            <div style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 14px; border: 1px solid #e2e8f0;">
+                <div><strong>Community Partner:</strong> <span id="detailPartner"></span></div>
+                <div style="margin-top: 6px;"><strong>Location:</strong> <span id="detailLocation"></span></div>
+                <div style="margin-top: 6px;"><strong>Budget Allocation:</strong> <span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val" id="detailBudget"></span><span class="currency-mask">PHP ••••••</span></span></div>
+                <div style="margin-top: 6px;"><strong>Implementation Period:</strong> <span id="detailDates"></span></div>
+                <div style="margin-top: 6px;" id="detailDescWrap"><strong>Description &amp; Beneficiaries:</strong> <div id="detailDescription" style="margin-top: 4px; line-height: 1.5; color: #334155;"></div></div>
+            </div>
+            <div id="detailWorkflowTrail" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;"></div>
+            <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 14px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="primary-btn action-btn" onclick="openDocPreviewFromDetails()" style="background: #15803d; color: #ffffff; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ri-file-pdf-2-line"></i> <span>View PDF Document</span>
+                    </button>
+                    <a id="detailDownloadBtn" href="#" download class="ghost-btn action-btn" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                        <i class="ri-download-line"></i> <span>Download</span>
+                    </a>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="action-btn btn-archive-natural" id="detailArchiveBtn" onclick="toggleArchiveFromDetails()"><i class="ri-download-2-line"></i> <span>Archive Project</span></button>
+                    <button type="button" class="modal-cancel-btn" data-close-modal>Close</button>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- PREVIEW MODAL -->
+    <div class="modal preview-modal" id="previewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card preview-card">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-right: 36px; flex-wrap: wrap; gap: 8px;">
+                <h2 id="previewModalTitle" style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>Document Preview</span>
+                </h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="#" id="previewOpenTabBtn" target="_blank" class="preview-btn preview-btn-tab action-btn" title="Open in new window">
+                        <i class="ri-external-link-line"></i> <span>New Tab</span>
+                    </a>
+                    <a href="#" id="previewDownloadBtn" class="preview-btn preview-btn-download action-btn" download title="Download document">
+                        <i class="ri-download-2-line"></i> <span>Download PDF</span>
+                    </a>
+                </div>
+            </div>
+            <iframe id="previewIframe" class="document-preview" src="about:blank"></iframe>
+        </article>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        const initialSeed = [
+        {
+                "id": 1,
+                "title": "Barangay San Gabriel Community Health and Hypertension Teleconsultation",
+                "coordinator": "Prof. Maria Bautista",
+                "college": "College of Nursing and Allied Health Sciences",
+                "partner": "Barangay San Gabriel Health Center & LGU San Pablo",
+                "location": "Brgy. San Gabriel, San Pablo City",
+                "beneficiaries": "120 Hypertensive Senior Citizens",
+                "budget": 80000,
+                "approved_budget": 80000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Completed",
+                "created_at": "2026-01-20",
+                "start_date": "2026-01-20",
+                "end_date": "2026-04-20",
+                "description": "Community nursing outreach providing regular blood pressure monitoring, telehealth education, and maintenance medication guidance.",
+                "coordinator_remarks": "Screened and fully endorsed. Solid community partner agreement and clear health targets.",
+                "coordinator_name": "Prof. CONAHS Coordinator",
+                "director_remarks": "Approved with rating 95.00. High community impact and clear barangay integration.",
+                "director_name": "Dr. Maricel Gomez",
+                "evaluation_rating": "95.00",
+                "executive_remarks": "Final executive approval granted. Fund release authorized under University Extension Support.",
+                "executive_name": "Super Administrator",
+                "document_filename": "San_Gabriel_Health_Extension.pdf",
+                "archived": false
+        },
+        {
+                "id": 2,
+                "title": "Digital Financial Literacy & Cloud Bookkeeping for San Pablo Wet Market Vendors",
+                "coordinator": "Prof. Maria Santos",
+                "college": "College of Business Administration",
+                "partner": "San Pablo City Public Market Cooperative",
+                "location": "San Pablo City Public Market",
+                "beneficiaries": "80 Micro-retailers and Vendors",
+                "budget": 65000,
+                "approved_budget": 65000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-05",
+                "start_date": "2026-02-05",
+                "end_date": "2026-04-20",
+                "description": "Hands-on training using smartphone accounting apps, GCash/Maya QR payments, and basic inventory tracking.",
+                "coordinator_remarks": "Under active screening with College Extension Coordinator.",
+                "coordinator_name": "Prof. CBA Coordinator",
+                "document_filename": "Vendor_Financial_Literacy_MOA.pdf",
+                "archived": false
+        },
+        {
+                "id": 3,
+                "title": "Smart Urban Backyard Hydroponics & Organic Vegetable Cultivation",
+                "coordinator": "Prof. Engr. Mark Santos",
+                "college": "College of Engineering",
+                "partner": "Brgy. Concepcion Urban Farmers Association",
+                "location": "Brgy. Concepcion, San Pablo City",
+                "beneficiaries": "60 Urban Household Beneficiaries",
+                "budget": 110000,
+                "approved_budget": 110000,
+                "stage": "Stage 2: Director Evaluation",
+                "status": "Pending Director Review",
+                "progress_status": "Planning",
+                "created_at": "2026-02-14",
+                "start_date": "2026-02-14",
+                "end_date": "2026-04-20",
+                "description": "Fabrication of modular nutrient-film hydroponic units for small backyard plots with solar aerator backup.",
+                "coordinator_remarks": "Endorsed with priority endorsement. High relevance to urban food self-sufficiency.",
+                "coordinator_name": "Engr. COE Coordinator",
+                "coordinator_reviewed_at": "2026-02-18",
+                "document_filename": "Urban_Hydroponics_Manual.pdf",
+                "archived": false
+        },
+        {
+                "id": 4,
+                "title": "Community IoT Flood Early Warning System & SMS Evacuation Alert",
+                "coordinator": "Engr. Roberto Dimaano",
+                "college": "College of Engineering",
+                "partner": "MDRRMO San Pablo & Brgy. Sampaloc Lake Council",
+                "location": "Lake Sampaloc Shoreline",
+                "beneficiaries": "350 Coastal & Lakeside Households",
+                "budget": 135000,
+                "approved_budget": 135000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Ongoing",
+                "created_at": "2026-03-01",
+                "start_date": "2026-03-01",
+                "end_date": "2026-06-30",
+                "description": "Deployment of solar-powered ultrasonic water level sensors linked to an automated SMS alert gateway.",
+                "coordinator_remarks": "Complete technical drawings, risk assessment, and barangay clearance submitted.",
+                "coordinator_name": "Engr. COE Coordinator",
+                "director_remarks": "Director evaluation rating: 94.00. Approved for implementation.",
+                "director_name": "Dr. Maricel Gomez",
+                "director_reviewed_at": "2026-03-05",
+                "evaluation_rating": "94.00",
+                "document_filename": "IoT_Flood_Sensor_Proposal.pdf",
+                "archived": false
+        },
+        {
+                "id": 5,
+                "title": "Modern Organic Backyard Aquaculture and Tilapia Pond Management",
+                "coordinator": "Dr. Fernando Morales",
+                "college": "College of Arts and Sciences",
+                "partner": "Seven Lakes Fisherfolk Cooperative",
+                "location": "Brgy. San Buenaventura",
+                "beneficiaries": "45 Small-Scale Fisherfolk",
+                "budget": 90000,
+                "approved_budget": 90000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Pending Coordinator Review",
+                "progress_status": "Planning",
+                "created_at": "2026-03-15",
+                "start_date": "2026-03-15",
+                "end_date": "2026-07-15",
+                "description": "Transfer of low-cost organic feeding technologies and water bio-filter management to boost fingerling survival.",
+                "coordinator_remarks": "Screened and validated. Cooperative has provided counterpart pond space.",
+                "coordinator_name": "Dr. CA Coordinator",
+                "document_filename": "Tilapia_Aquaculture_Extension.docx",
+                "archived": false
+        },
+        {
+                "id": 6,
+                "title": "STEM Robotics & Coding Bootcamp for Out-of-School Youth (OSY)",
+                "coordinator": "Prof. Maria Santos, Dr. Aris Thorne",
+                "college": "College of Computer Studies",
+                "partner": "Sangguniang Kabataan Federation of San Pablo City",
+                "location": "San Pablo City Youth Center",
+                "beneficiaries": "60 Out-of-School Youth (Ages 16-24)",
+                "budget": 110000,
+                "approved_budget": 110000,
+                "stage": "Stage 1: Coordinator Screening",
+                "status": "Needs Revision",
+                "progress_status": "Planning",
+                "created_at": "2026-03-20",
+                "start_date": "2026-03-20",
+                "end_date": "2026-05-20",
+                "description": "Introductory Python, micro:bit microcontrollers, and basic electronics workshops aiming at tech apprenticeship pathway.",
+                "coordinator_remarks": "Please provide the formal SK Federation partnership MOA and detailed itemized logistics budget before endorsement.",
+                "coordinator_name": "Prof. Elena Cruz",
+                "coordinator_reviewed_at": "2026-03-22",
+                "document_filename": "STEM_Youth_Bootcamp_Plan.pdf",
+                "archived": false
+        },
+        {
+                "id": 7,
+                "title": "Heritage Tour Guiding & Ecotourism Capacity Mentorship for Youth Volunteers",
+                "coordinator": "Prof. Manuel Valenzuela",
+                "college": "College of Arts and Sciences",
+                "partner": "San Pablo City Tourism Council",
+                "location": "Plaza Rizal Heritage District",
+                "beneficiaries": "40 Student Heritage Docents",
+                "budget": 55000,
+                "approved_budget": 55000,
+                "stage": "Completed",
+                "status": "Approved",
+                "progress_status": "Completed",
+                "created_at": "2025-07-10",
+                "start_date": "2025-07-10",
+                "end_date": "2025-10-10",
+                "description": "Regional heritage training series covering local history, tour commentary delivery, and emergency response.",
+                "coordinator_remarks": "Completed project documentation submitted and archived.",
+                "document_filename": "Heritage_Docent_Manual.pdf",
+                "archived": true
+        }
+];
+        let currentTab = 'active';
+        let activeDetailId = null;
+
+        function getProjects() {
+            try {
+                const raw = localStorage.getItem('ovpre_extension_projects');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length && parsed.some(item => item.title === initialSeed[0].title)) {
+                        let mutated = false;
+                        const filtered = parsed.filter(item => {
+                            const title = (item.title || '').trim().toUpperCase();
+                            const coord = (item.coordinator || '').trim().toUpperCase();
+                            if (title.includes('OWBIWAN') || coord.includes('OWVBI')) {
+                                mutated = true;
+                                return false;
+                            }
+                            return true;
+                        });
+                        filtered.forEach(item => {
+                            if (item.status === 'Pending Executive Approval') {
+                                item.status = 'Approved';
+                                item.stage = 'Completed';
+                                if (item.progress_status === 'Planning') item.progress_status = 'Ongoing';
+                                mutated = true;
+                            }
+                        });
+                        if (mutated) localStorage.setItem('ovpre_extension_projects', JSON.stringify(filtered));
+                        return filtered;
+                    }
+                }
+            } catch (e) {}
+            localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
+            return initialSeed;
+        }
+
+        function saveProjects(list) {
+            try {
+                localStorage.setItem('ovpre_extension_projects', JSON.stringify(list));
+            } catch (e) {}
+        }
+
+        function switchExtensionTab(tab) {
+            currentTab = tab;
+            const tabActiveBtn = document.getElementById('tabActiveBtn');
+            const tabArchivedBtn = document.getElementById('tabArchivedBtn');
+            if (tabActiveBtn && tabArchivedBtn) {
+                tabActiveBtn.classList.toggle('is-active', tab === 'active');
+                tabArchivedBtn.classList.toggle('is-active', tab === 'archived');
+                tabActiveBtn.setAttribute('aria-selected', tab === 'active' ? 'true' : 'false');
+                tabArchivedBtn.setAttribute('aria-selected', tab === 'archived' ? 'true' : 'false');
+            }
+
+            const bulkBtnContainer = document.getElementById('bulkExtensionBtnContainer');
+            if (bulkBtnContainer) {
+                if (tab === 'archived') {
+                    bulkBtnContainer.innerHTML = '<button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit style="color: #15803d; border: 1.5px solid #bbf7d0; background: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="ri-arrow-go-back-line"></i><span>Restore Selected</span></button>';
+                } else {
+                    bulkBtnContainer.innerHTML = '<button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit onclick="return confirm(\'Archive selected extension projects?\');"><i class="ri-download-2-line"></i><span>Archive Selected</span></button>';
+                }
+            }
+
+            renderTable();
+        }
+
+        function getCurrentUserRole() {
+            try {
+                if (window.OVPRE && OVPRE.user) return OVPRE.user().role;
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw).role || 'Super Admin';
+            } catch (e) {}
+            return 'Super Admin';
+        }
+
+        function getCurrentUserFullname() {
+            try {
+                if (window.OVPRE && OVPRE.user) return OVPRE.user().fullname;
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw).fullname || 'Super Administrator';
+            } catch (e) {}
+            return 'Super Administrator';
+        }
+
+        function getCurrentUserObj() {
+            try {
+                const raw = localStorage.getItem('irecord_user') || sessionStorage.getItem('irecord_user');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            return { id: 1, username: 'admin', fullname: 'Super Administrator', role: 'Super Admin' };
+        }
+
+        function normalizeDepartmentCode(dept) {
+            const s = String(dept || '').toLowerCase();
+            if (!s || s === 'institutional' || s === 'none') return '';
+            if (s.includes('ccst') || s.includes('computer studies')) return 'CCST';
+            if (s.includes('coe') || s.includes('engineering')) return 'COE';
+            if (s.includes('conahs') || s.includes('cnahs') || s.includes('nursing')) return 'CONAHS';
+            if (s.includes('cas') || s.includes('arts and sciences')) return 'CAS';
+            if (s.includes('cba') || s.includes('business')) return 'CBA';
+            if (s.includes('cte') || s.includes('teacher education')) return 'CTE';
+            if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
+            if (s.includes('cpag') || s.includes('public administration') || s.includes('governance') || s.includes('coa') || s.includes('accountancy')) return 'CPAG';
+            if (s.includes('chk') || s.includes('human kinetics') || s.includes('cpe') || s.includes('physical education')) return 'CPE';
+            return s.trim().toUpperCase();
+        }
+
+        function isSameDepartment(p, u) {
+            const userDept = normalizeDepartmentCode((u && (u.department || u.college)) || '');
+            if (!userDept) return true;
+            const propDept = normalizeDepartmentCode(p.department_code || p.college || '');
+            return propDept === userDept;
+        }
+
+        function isRegisteredAccount(u) {
+            if (!u) return false;
+            if (u.is_registered === true) return true;
+            if (u.is_demo === true) return false;
+            try {
+                const regList = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+                if (regList.some(r =>
+                    (u.id && r.id && String(r.id) === String(u.id)) ||
+                    (u.username && r.username && r.username.toLowerCase() === u.username.toLowerCase()) ||
+                    (u.email && r.email && r.email.toLowerCase() === u.email.toLowerCase())
+                )) {
+                    return true;
+                }
+            } catch (e) {}
+            const demoNames = [
+                'super administrator', 'ovpre admin office', 'dr. aris ramos', 'dr. aris thorne',
+                'dr. maricel gomez', 'prof. engr. mark santos', 'prof. elena cruz',
+                'prof. juan dela cruz', 'prof. maria bautista'
+            ];
+            const fn = (u.fullname || '').trim().toLowerCase();
+            return Boolean(fn && !demoNames.includes(fn));
+        }
+
+        const ALL_COLLEGES_MAP_EXT = [
+            { value: 'College of Computer Studies', code: 'CCST' },
+            { value: 'College of Computer Studies and Technology', code: 'CCST' },
+            { value: 'College of Nursing and Allied Health Sciences', code: 'CONAHS' },
+            { value: 'College of Business Administration', code: 'CBA' },
+            { value: 'College of Engineering', code: 'COE' },
+            { value: 'College of Arts and Sciences', code: 'CAS' },
+            { value: 'College of Teacher Education', code: 'CTE' },
+            { value: 'College of Tourism and Hospitality Management', code: 'CTHM' },
+            { value: 'College of Public Administration and Governance', code: 'CPAG' },
+            { value: 'College of Physical Education', code: 'CPE' },
+            { value: 'Office of the Vice President for Research and Extension', code: 'OVPRE' }
+        ];
+
+        function filterCollegeOptionsForExtensionUser(u) {
+            const colSelect = document.getElementById('createCollege');
+            if (!colSelect) return;
+            const userDeptCode = normalizeDepartmentCode((u && (u.department || u.college)) || '');
+            
+            colSelect.innerHTML = '';
+            if (userDeptCode) {
+                // If user belongs to a department (e.g. CCST faculty), show ONLY their department!
+                const matched = ALL_COLLEGES_MAP_EXT.filter(c => c.code === userDeptCode);
+                if (matched.length > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = matched[0].value;
+                    opt.textContent = matched[0].value;
+                    opt.selected = true;
+                    colSelect.appendChild(opt);
+                } else {
+                    const opt = document.createElement('option');
+                    opt.value = u.department || u.college;
+                    opt.textContent = u.department || u.college;
+                    opt.selected = true;
+                    colSelect.appendChild(opt);
+                }
+            } else {
+                ALL_COLLEGES_MAP_EXT.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.value;
+                    opt.textContent = c.value;
+                    colSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function openCreateProjectModal() {
+            const role = getCurrentUserRole();
+            if (role === 'Super Admin' || role === 'OVPRE Admin') {
+                OVPRE.toast('System Admin accounts cannot submit extension proposals.', 'error');
+                return;
+            }
+            const u = getCurrentUserObj();
+            const fullname = u.fullname || getCurrentUserFullname();
+            const coordInput = document.getElementById('createCoordinator');
+            if (coordInput) {
+                coordInput.value = fullname || 'Faculty Lead';
+            }
+            filterCollegeOptionsForExtensionUser(u);
+            OVPRE.openModal('createExtensionProjectModal');
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentScope = urlParams.get('filter') === 'my' ? 'my' : 'all';
+
+        function isMyExtension(p) {
+            const u = getCurrentUserObj();
+            const myId = u.id ? String(u.id) : '';
+            const myUsername = (u.username || '').trim().toLowerCase();
+            const myEmail = (u.email || '').trim().toLowerCase();
+            const myName = (u.fullname || '').trim().toLowerCase();
+
+            // 1. Strict account-level ownership check for any submitted extension project
+            if (p.submitted_by_id || p.submitted_by_username || p.submitted_by_email) {
+                if (myId && p.submitted_by_id && String(p.submitted_by_id) === myId) return true;
+                if (myUsername && p.submitted_by_username && String(p.submitted_by_username).toLowerCase() === myUsername) return true;
+                if (myEmail && p.submitted_by_email && String(p.submitted_by_email).toLowerCase() === myEmail) return true;
+                return false;
+            }
+
+            // 2. Newly registered / custom faculty accounts start with their own clean slate (never inherit pre-seeded demo items)
+            if (isRegisteredAccount(u)) {
+                const createdBy = (p.created_by || '').trim().toLowerCase();
+                if (myName && createdBy && createdBy === myName) return true;
+                return false;
+            }
+
+            // 3. Built-in demo Faculty Extensionist account
+            const coord = (p.coordinator || '').toLowerCase();
+            const createdBy = (p.created_by || '').toLowerCase();
+            if (myName && (coord.includes(myName) || createdBy.includes(myName))) return true;
+            if ((myName === 'prof. maria bautista' || myName.includes('santos')) && [2, 6].includes(Number(p.id))) return true;
+            return false;
+        }
+
+        function setExtensionScope(scope) {
+            const userRole = getCurrentUserRole();
+            const isFaculty = (userRole === 'Faculty Extensionist' || userRole === 'Extensionist');
+            currentScope = isFaculty ? 'my' : scope;
+            const url = new URL(window.location);
+            if (currentScope === 'my') {
+                url.searchParams.set('filter', 'my');
+            } else {
+                url.searchParams.delete('filter');
+            }
+            window.history.replaceState({}, '', url);
+            renderTable();
+        }
+
+        function renderTable() {
+            const all = getProjects();
+            const currentUser = getCurrentUserObj();
+            const userRole = getCurrentUserRole();
+            const isSuperAdmin = (userRole === 'Super Admin');
+            const isOVPREAdmin = (userRole === 'OVPRE Admin');
+            const isExecutive = isSuperAdmin || isOVPREAdmin;
+            const isCoordinator = (userRole === 'Extension Coordinator');
+            const isDirector = (userRole === 'Extension Director');
+            const isFaculty = (userRole === 'Faculty Extensionist' || userRole === 'Extensionist');
+            const userDeptCode = normalizeDepartmentCode(currentUser.department || currentUser.college || '');
+
+            // Faculty see ONLY their own submitted projects; Coordinators see ONLY their assigned department's projects!
+            let scopedAll = all;
+            if (isFaculty) {
+                scopedAll = all.filter(isMyExtension);
+            } else if (isCoordinator) {
+                scopedAll = all.filter(p => isSameDepartment(p, currentUser));
+            }
+
+            const activeList = scopedAll.filter(p => !p.archived);
+            const archivedList = scopedAll.filter(p => p.archived);
+            document.getElementById('activeCount').textContent = activeList.length;
+            document.getElementById('archivedCount').textContent = archivedList.length;
+
+            // System Admin and Coordinators cannot submit proposals - hide submit button for Admin / Executive / Coordinator
+            const submitBtn = document.getElementById('btnSubmitProject');
+            if (submitBtn) {
+                submitBtn.style.display = (isExecutive || isCoordinator || isDirector) ? 'none' : 'inline-flex';
+            }
+
+            const myActiveList = activeList.filter(isMyExtension);
+            const myArchivedList = archivedList.filter(isMyExtension);
+
+            const scopeCtrl = document.querySelector('.scope-filter-control');
+            const scopeAllBtn = document.getElementById('scopeAllExtensionBtn');
+            const clearBtn = document.querySelector('#mySubmissionsAlertBanner .alert-btn-clear');
+            if (scopeCtrl) {
+                scopeCtrl.style.display = isFaculty ? 'inline-flex' : 'none';
+            }
+            if (scopeAllBtn) {
+                scopeAllBtn.style.display = isFaculty ? 'none' : '';
+            }
+            if (clearBtn) {
+                clearBtn.style.display = isFaculty ? 'none' : '';
+            }
+            if (isFaculty) {
+                currentScope = 'my';
+            } else {
+                currentScope = 'all';
+            }
+            const allCountEl = document.getElementById('allScopeCount');
+            const myCountEl = document.getElementById('myScopeCount');
+            if (allCountEl) allCountEl.textContent = currentTab === 'active' ? activeList.length : archivedList.length;
+            if (myCountEl) myCountEl.textContent = currentTab === 'active' ? myActiveList.length : myArchivedList.length;
+
+            const scopeMyBtn = document.getElementById('scopeMyExtensionBtn');
+            const banner = document.getElementById('mySubmissionsAlertBanner');
+            const bannerCount = document.getElementById('myExtensionBannerCount');
+
+            if (isFaculty) {
+                if (scopeMyBtn) scopeMyBtn.classList.add('is-active');
+                if (scopeAllBtn) scopeAllBtn.classList.remove('is-active');
+                if (banner) {
+                    banner.style.display = 'flex';
+                    banner.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-user-star-fill" style="color: #0d9488; font-size: 1.15rem;"></i>
+                            <span>Your <strong>${currentTab === 'active' ? myActiveList.length : myArchivedList.length}</strong> ${(currentTab === 'active' ? myActiveList.length : myArchivedList.length) === 1 ? 'submission has' : 'submissions have'} been routed to the <strong>${userDeptCode || 'CCST'} Extension Coordinator</strong>.</span>
+                        </div>
+                    `;
+                }
+            } else if (isCoordinator) {
+                if (banner) {
+                    banner.style.display = 'flex';
+                    banner.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;">
+                            <i class="ri-building-2-fill" style="color: #d97706; font-size: 1.15rem;"></i>
+                            <span>Department Coordinator View (<strong>${userDeptCode || 'Assigned College'}</strong> — ${OVPRE.h(currentUser.fullname || 'Coordinator')}): Showing extension initiatives submitted exclusively under <strong>${OVPRE.h(currentUser.department || userDeptCode)}</strong> (<strong>${currentTab === 'active' ? activeList.length : archivedList.length}</strong> found)</span>
+                        </div>
+                    `;
+                }
+            } else {
+                if (scopeAllBtn) scopeAllBtn.classList.add('is-active');
+                if (scopeMyBtn) scopeMyBtn.classList.remove('is-active');
+                if (banner) banner.style.display = 'none';
+            }
+
+            let list = currentTab === 'active' ? activeList : archivedList;
+            if (currentScope === 'my') {
+                list = list.filter(isMyExtension);
+            }
+            const tbody = document.getElementById('extensionProjectsBody');
+            tbody.innerHTML = '';
+
+            if (!list.length) {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-pagination-empty', 'true');
+                const emptyMsg = isFaculty
+                    ? 'No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension initiatives found under your account. Click "Submit Extension Initiative" above to submit your proposal to your ' + (userDeptCode || 'College') + ' Coordinator.'
+                    : (isCoordinator
+                        ? 'No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension initiatives submitted yet for ' + (userDeptCode || 'your department') + '.'
+                        : 'No ' + (currentTab === 'active' ? 'active' : 'archived') + ' extension projects found.');
+                tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 28px; color: #64748b;">' + emptyMsg + '</td>';
+                tbody.appendChild(tr);
+            } else {
+                list.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-table-row', '');
+                    tr.setAttribute('data-status', p.status);
+                    tr.setAttribute('data-stage', p.stage);
+                    tr.setAttribute('data-college', p.college);
+                    tr.id = 'project-' + p.id;
+                    tr.setAttribute('data-id', p.id);
+                    tr.setAttribute('data-project-id', p.id);
+                    tr.setAttribute('data-alias-id', 'ext-project-' + p.id);
+                    const pStatus = p.status || 'Pending Coordinator Review';
+                    const lead = p.coordinator || 'Faculty Lead';
+                    const sDate = p.start_date || p.created_at;
+                    const eDate = p.end_date || '2026-04-20';
+                    const partner = p.partner || 'Local Community Partner';
+                    const loc = p.location || '';
+                    const col = p.college || 'College of Nursing and Allied Health Sciences';
+                    const bgt = Number(p.approved_budget || p.budget || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const stg = p.stage || 'Proposal';
+                    const docName = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
+                    let actionsHtml = '';
+                    if (currentTab === 'active') {
+                        let workflowBtns = '';
+
+                        // Stage 1: STRICTLY College Coordinator ONLY (No override)
+                        if (isCoordinator && isSameDepartment(p, currentUser) && ['Pending Coordinator Review', 'Pending', 'Under Review'].includes(pStatus)) {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openCoordModal(${p.id}, false)" style="background: #15803d; color: #fff;" title="Endorse project to Extension Director">
+                                    <i class="ri-check-double-line"></i><span>Endorse</span>
+                                </button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openCoordModal(${p.id}, true)" style="color: #c2410c; border: 1px solid #fed7aa; background: #fff7ed;" title="Return to faculty for revision">
+                                    <i class="ri-arrow-go-back-line"></i><span>Revision</span>
+                                </button>
+                            `;
+                        }
+                        // Stage 2: STRICTLY Extension Director ONLY (No override)
+                        else if (isDirector && ['Pending Director Review', 'Under Review'].includes(pStatus)) {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openDirModal(${p.id})" style="background: #1d4ed8; color: #fff;" title="Director Project Evaluation">
+                                    <i class="ri-award-line"></i><span>Evaluate</span>
+                                </button>
+                            `;
+                        }
+
+                        // Revision: STRICTLY Faculty Proponent ONLY (No override)
+                        else if (isFaculty && isMyExtension(p) && pStatus === 'Needs Revision') {
+                            workflowBtns += `
+                                <button class="primary-btn action-btn" type="button" onclick="openResubmitModal(${p.id})" style="background: #0284c7; color: #fff;" title="Review comments and resubmit revised extension project">
+                                    <i class="ri-refresh-line"></i><span>Resubmit</span>
+                                </button>
+                            `;
+                        }
+
+                        actionsHtml = `
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                ${workflowBtns}
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;">
+                                    <i class="ri-eye-line"></i><span>Details</span>
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="display: flex; gap: 6px;">
+                                <button class="ghost-btn action-btn" type="button" onclick="restoreProject(${p.id})"><i class="ri-arrow-go-back-line"></i><span>Restore</span></button>
+                                <button class="ghost-btn action-btn" type="button" onclick="openDetailsModal(${p.id})" style="color: #15803d; border: 1px solid #bbf7d0; background: #f0fdf4; font-weight: 600;"><i class="ri-eye-line"></i><span>Details</span></button>
+                            </div>
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td class="table-checkbox-col" style="width: 44px; text-align: center;">
+                            <input form="bulk-extensionProjectsTable" type="checkbox" name="ids[]" value="${p.id}" aria-label="Select extension project ${p.id}" data-row-select="extensionProjectsTable">
+                        </td>
+                        <td data-sort-value="${OVPRE.h(p.title)}">
+                            <strong>${OVPRE.h(p.title)}</strong>
+                            <div style="font-size: 0.8rem; color: #6b7280; margin-top: 3px;">
+                                <i class="ri-user-line"></i> Lead: ${OVPRE.h(lead)} | 
+                                <i class="ri-calendar-line"></i> ${OVPRE.date(sDate)} to ${OVPRE.date(eDate)}
+                            </div>
+                        </td>
+                        <td data-sort-value="${OVPRE.h(partner)}">
+                            <strong>${OVPRE.h(partner)}</strong>
+                            ${loc ? '<br><small style="color:#4b5563;"><i class="ri-map-pin-line"></i> ' + OVPRE.h(loc) + '</small>' : ''}
+                        </td>
+                        <td data-sort-value="${OVPRE.h(col)}"><span class="dept-pill">${OVPRE.h(col)}</span></td>
+                        <td data-sort-value="${p.approved_budget || p.budget}"><span class="currency-masked-wrap" data-mask-group="budget"><span class="currency-val"><strong>PHP ${bgt}</strong></span><span class="currency-mask"><strong>PHP ••••••</strong></span></span></td>
+                        <td data-sort-value="${OVPRE.h(stg)}"><span style="font-weight:600; color:#166534;">${OVPRE.h(stg)}</span></td>
+                        <td data-sort-value="${OVPRE.h(pStatus)}">
+                            <span class="status-pill status-${OVPRE.statusClass(pStatus)}">
+                                ${OVPRE.h(pStatus)}
+                            </span>
+                        </td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            const selectAll = document.querySelector('[data-select-all="extensionProjectsTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            const tb = document.querySelector('[data-selection-toolbar="extensionProjectsTable"]');
+            if (tb) {
+                tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
+                const countBadge = tb.querySelector('[data-selection-count]');
+                if (countBadge) countBadge.textContent = '0 selected';
+            }
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
+            }
+
+            if (window.OVPRE && OVPRE.reloadTable) {
+                OVPRE.reloadTable('extensionProjectsTable');
+            } else if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('extensionProjectsTable'));
+            }
+            if (typeof window.handleLocationHashTarget === 'function') {
+                setTimeout(window.handleLocationHashTarget, 60);
+            }
+        }
+
+        window.handleBulkExtensionSubmit = function(e) {
+            e.preventDefault();
+            const checkedBoxes = Array.from(document.querySelectorAll('#extensionProjectsTable [data-row-select]:checked'));
+            const ids = checkedBoxes.map(c => Number(c.value));
+            if (!ids.length) {
+                OVPRE.toast('Please select at least one project.', 'error');
+                return;
+            }
+            const submitBtn = e.submitter || document.activeElement;
+            const action = (submitBtn && submitBtn.value) ? submitBtn.value : (currentTab === 'archived' ? 'restore' : 'archive');
+            const all = getProjects();
+
+            if (action === 'delete') {
+                const remaining = all.filter(p => !ids.includes(Number(p.id)));
+                saveProjects(remaining);
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    ids.forEach(id => {
+                        try { if (OVPRE_SUPABASE.deleteExtensionProject) OVPRE_SUPABASE.deleteExtensionProject(id); } catch (err) {}
+                    });
+                }
+                OVPRE.toast(`${ids.length} project(s) permanently deleted.`, 'success');
+                renderTable();
+                return;
+            }
+
+            ids.forEach(id => {
+                const item = all.find(p => p.id === id);
+                if (item) item.archived = (action === 'archive');
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    OVPRE_SUPABASE.archiveExtensionProject(id, action === 'archive');
+                }
+            });
+            saveProjects(all);
+            OVPRE.toast(action === 'archive' ? `${ids.length} project(s) archived successfully.` : `${ids.length} project(s) restored to active projects.`, 'success');
+            renderTable();
+        };
+
+        // --- SUBMIT EXTENSION PROPOSAL ---
+        async function handleCreateExtensionProject(event) {
+            event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole === 'Super Admin' || userRole === 'OVPRE Admin') {
+                OVPRE.toast('System Admin accounts cannot submit extension proposals.', 'error');
+                return;
+            }
+
+            const title = document.getElementById('createTitle').value.trim();
+            const coordinator = document.getElementById('createCoordinator').value.trim();
+            const partner = document.getElementById('createPartner').value.trim();
+            const location = document.getElementById('createLocation').value.trim();
+            const college = document.getElementById('createCollege').value;
+            const budget = parseFloat(document.getElementById('createBudget').value) || 0;
+            const startDate = document.getElementById('createStartDate').value;
+            const endDate = document.getElementById('createEndDate').value;
+            const description = document.getElementById('createDescription').value.trim();
+            const fileInput = document.getElementById('createFile');
+            const file = fileInput && fileInput.files && fileInput.files[0];
+
+            let docFilename = file ? file.name : (title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
+            let docUrl = '';
+
+            if (file && window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    const uploadRes = await OVPRE_SUPABASE.uploadDocument(file, 'extension');
+                    if (uploadRes && uploadRes.url) {
+                        docUrl = uploadRes.url;
+                    }
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] File upload error:', e);
+                }
+            }
+
+            const all = getProjects();
+            const newId = (all.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0)) + 1;
+
+            const currentUser = getCurrentUserObj();
+            const newProject = {
+                id: newId,
+                title,
+                coordinator,
+                partner,
+                location,
+                college,
+                department_code: normalizeDepartmentCode(college || currentUser.department || ''),
+                budget,
+                approved_budget: budget,
+                start_date: startDate || new Date().toISOString().slice(0, 10),
+                end_date: endDate || '2026-06-30',
+                stage: "Stage 1: Coordinator Screening",
+                status: "Pending Coordinator Review",
+                progress_status: "Planning",
+                created_at: new Date().toISOString().slice(0, 10),
+                description,
+                document_filename: docFilename,
+                document_url: docUrl,
+                submitted_by_id: currentUser.id || '',
+                submitted_by_username: (currentUser.username || '').toLowerCase(),
+                submitted_by_email: (currentUser.email || '').toLowerCase(),
+                created_by: currentUser.fullname || coordinator,
+                archived: false
+            };
+            all.unshift(newProject);
+            saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.createExtensionProject(newProject);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] create error:', e);
+                }
+            }
+
+            OVPRE.closeModal('createExtensionProjectModal');
+            document.getElementById('createExtensionProjectForm').reset();
+            const routedDept = normalizeDepartmentCode(college || currentUser.department || 'CONAHS') || 'College'; OVPRE.toast('Extension proposal submitted successfully! Routed exclusively to ' + routedDept + ' Extension Coordinator.', 'success');
+            renderTable();
+        }
+
+        // --- FACULTY RESUBMIT MODAL & HANDLER ---
+        function openResubmitModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Faculty Extensionist' && userRole !== 'Extensionist') {
+                OVPRE.toast('Access Denied: Only faculty proponents can resubmit proposals.', 'error');
+                return;
+            }
+
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+
+            document.getElementById('resubmitExtProjId').value = p.id;
+            document.getElementById('resubmitExtTitle').value = p.title || '';
+            document.getElementById('resubmitExtCoordinator').value = p.coordinator || '';
+            document.getElementById('resubmitExtPartner').value = p.partner || '';
+            document.getElementById('resubmitExtLocation').value = p.location || '';
+            document.getElementById('resubmitExtCollege').value = p.college || 'College of Computer Studies';
+            document.getElementById('resubmitExtBudget').value = p.budget || '';
+            document.getElementById('resubmitExtStartDate').value = p.start_date || '';
+            document.getElementById('resubmitExtEndDate').value = p.end_date || '';
+            document.getElementById('resubmitExtDescription').value = p.description || '';
+
+            const feedback = p.director_remarks || p.coordinator_remarks || 'Please address reviewer comments and attach your revised project documentation.';
+            const feedbackEl = document.getElementById('resubmitExtFeedbackText');
+            if (feedbackEl) {
+                feedbackEl.textContent = feedback;
+            }
+            OVPRE.openModal('resubmitExtensionModal');
+        }
+
+        async function handleResubmitExtensionProject(event) {
+            event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Faculty Extensionist' && userRole !== 'Extensionist') {
+                OVPRE.toast('Access Denied: Only faculty proponents can resubmit proposals.', 'error');
+                return;
+            }
+
+            const id = Number(document.getElementById('resubmitExtProjId').value);
+            const title = document.getElementById('resubmitExtTitle').value.trim();
+            const coordinator = document.getElementById('resubmitExtCoordinator').value.trim();
+            const partner = document.getElementById('resubmitExtPartner').value.trim();
+            const location = document.getElementById('resubmitExtLocation').value.trim();
+            const college = document.getElementById('resubmitExtCollege').value;
+            const budget = parseFloat(document.getElementById('resubmitExtBudget').value) || 0;
+            const startDate = document.getElementById('resubmitExtStartDate').value;
+            const endDate = document.getElementById('resubmitExtEndDate').value;
+            const description = document.getElementById('resubmitExtDescription').value.trim();
+            const fileInput = document.getElementById('resubmitExtFile');
+            const file = fileInput && fileInput.files && fileInput.files[0];
+
+            const all = getProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+
+            let docFilename = p.document_filename;
+            let docUrl = p.document_url || '';
+
+            if (file) {
+                docFilename = file.name;
+                if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                    try {
+                        const uploadRes = await OVPRE_SUPABASE.uploadDocument(file, 'extension');
+                        if (uploadRes && uploadRes.url) {
+                            docUrl = uploadRes.url;
+                        }
+                    } catch (e) {
+                        console.warn('[OVPRE Supabase] File upload error:', e);
+                    }
+                }
+            }
+
+            p.title = title;
+            p.coordinator = coordinator;
+            p.partner = partner;
+            p.location = location;
+            p.college = college;
+            p.budget = budget;
+            p.approved_budget = budget;
+            p.start_date = startDate || p.start_date;
+            p.end_date = endDate || p.end_date;
+            p.description = description;
+            p.document_filename = docFilename;
+            p.document_url = docUrl;
+            p.status = 'Pending Coordinator Review';
+            p.stage = 'Stage 1: Coordinator Screening';
+            p.resubmitted_at = new Date().toISOString().slice(0, 10);
+
+            saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, {
+                        project_title: title,
+                        coordinator,
+                        community_partner: partner,
+                        location,
+                        budget,
+                        status: 'Pending Coordinator Review',
+                        workflow_stage: 'Stage 1: Coordinator Screening',
+                        status_remarks: 'Revised and resubmitted by proponent'
+                    });
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
+            OVPRE.closeModal('resubmitExtensionModal');
+            OVPRE.toast('Revised extension project resubmitted to College Coordinator successfully!', 'success');
+            renderTable();
+        }
+
+        // --- COORDINATOR SCREENING (STRICTLY DEPARTMENT-SCOPED) ---
+        function openCoordModal(id, isRevisionOnly) {
+            const userRole = getCurrentUserRole();
+            const currentUser = getCurrentUserObj();
+            if (userRole !== 'Extension Coordinator') {
+                OVPRE.toast('Access Denied: Only College Extension Coordinators can screen proposals.', 'error');
+                return;
+            }
+
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+
+            if (!isSameDepartment(p, currentUser)) {
+                const propDept = normalizeDepartmentCode(p.department_code || p.college) || 'that college';
+                OVPRE.toast('Access Denied: Only the assigned ' + propDept + ' Extension Coordinator can screen or approve this project.', 'error');
+                return;
+            }
+
+            const coordDept = normalizeDepartmentCode(currentUser.department || currentUser.college || '');
+            document.getElementById('coordProjId').value = p.id;
+            document.getElementById('coordProjTitle').textContent = p.title;
+            document.getElementById('coordRemarks').value = p.coordinator_remarks || '';
+
+            const heading = document.getElementById('coordModalHeading');
+            if (heading) {
+                if (isRevisionOnly) {
+                    heading.style.color = '#c2410c';
+                    heading.innerHTML = `<i class="ri-arrow-go-back-line"></i> Return Project for Revision (${coordDept || 'College'} Coordinator)`;
+                } else {
+                    heading.style.color = '#15803d';
+                    heading.innerHTML = `<i class="ri-check-double-line"></i> ${coordDept || 'College'} Extension Coordinator Screening`;
+                }
+            }
+            OVPRE.openModal('coordModal');
+        }
+
+        async function handleCoordSubmit(event) {
+            event.preventDefault();
+            const userRole = getCurrentUserRole();
+            const currentUser = getCurrentUserObj();
+            if (userRole !== 'Extension Coordinator') {
+                OVPRE.toast('Access Denied: Only College Extension Coordinators can screen proposals.', 'error');
+                return;
+            }
+
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'endorse';
+            const id = Number(document.getElementById('coordProjId').value);
+            const remarks = document.getElementById('coordRemarks').value.trim();
+
+            const all = getProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+
+            if (!isSameDepartment(p, currentUser)) {
+                const propDept = normalizeDepartmentCode(p.department_code || p.college) || 'that college';
+                OVPRE.toast('Access Denied: Only the assigned ' + propDept + ' Extension Coordinator can screen or approve this project.', 'error');
+                return;
+            }
+
+            const coordDept = normalizeDepartmentCode(currentUser.department || currentUser.college || '');
+            const fullname = currentUser.fullname || getCurrentUserFullname();
+            p.coordinator_remarks = remarks;
+            p.coordinator_name = fullname + (coordDept ? ` (${coordDept} Coordinator)` : '');
+            p.coordinator_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            let supabaseUpdates = {
+                status_remarks: remarks
+            };
+
+            if (action === 'endorse') {
+                p.status = 'Pending Director Review';
+                p.stage = 'Stage 2: Director Evaluation';
+                supabaseUpdates.status = 'Pending Director Review';
+                supabaseUpdates.workflow_stage = 'Stage 2: Director Evaluation';
+                OVPRE.toast(`Endorsed by ${coordDept || 'College'} Extension Coordinator to Extension Director!`, 'success');
+            } else if (action === 'revision') {
+                p.status = 'Needs Revision';
+                p.stage = 'Stage 1: Coordinator Screening';
+                supabaseUpdates.status = 'Needs Revision';
+                supabaseUpdates.workflow_stage = 'Stage 1: Coordinator Screening';
+                OVPRE.toast(`Returned to ${coordDept || 'college'} faculty proponent for revision.`, 'info');
+            } else if (action === 'decline') {
+                p.status = 'Declined';
+                p.stage = 'Terminated';
+                supabaseUpdates.status = 'Declined';
+                supabaseUpdates.workflow_stage = 'Terminated';
+                OVPRE.toast(`Project declined at ${coordDept || 'college'} screening stage.`, 'error');
+            }
+
+            saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, supabaseUpdates);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
+            OVPRE.closeModal('coordModal');
+            renderTable();
+        }
+        // --- DIRECTOR EVALUATION ---
+        function openDirModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Extension Director') {
+                OVPRE.toast('Access Denied: Only the Extension Director can evaluate proposals.', 'error');
+                return;
+            }
+
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+            document.getElementById('dirProjId').value = p.id;
+            document.getElementById('dirProjTitle').textContent = p.title;
+            document.getElementById('dirRating').value = p.evaluation_rating || '90.00';
+            document.getElementById('dirApprovedBudget').value = p.approved_budget || p.budget;
+            document.getElementById('dirRemarks').value = p.director_remarks || '';
+            OVPRE.openModal('dirModal');
+        }
+
+        async function handleDirSubmit(event) {
+            event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Extension Director') {
+                OVPRE.toast('Access Denied: Only the Extension Director can evaluate proposals.', 'error');
+                return;
+            }
+
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'endorse';
+            const id = Number(document.getElementById('dirProjId').value);
+            const rating = document.getElementById('dirRating').value;
+            const appBudget = parseFloat(document.getElementById('dirApprovedBudget').value) || 0;
+            const remarks = document.getElementById('dirRemarks').value.trim();
+
+            const all = getProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+
+            const fullname = getCurrentUserFullname();
+            p.evaluation_rating = rating;
+            p.approved_budget = appBudget;
+            p.director_remarks = remarks;
+            p.director_name = fullname || "Dr. Maricel Gomez";
+            p.director_reviewed_at = new Date().toISOString().slice(0, 10);
+
+            let supabaseUpdates = {
+                status_remarks: remarks,
+                evaluation_rating: parseFloat(rating) || null,
+                approved_budget: appBudget
+            };
+
+            if (action === 'endorse') {
+                p.status = 'Approved';
+                p.stage = 'Completed';
+                p.progress_status = 'Ongoing';
+                supabaseUpdates.status = 'Approved';
+                supabaseUpdates.workflow_stage = 'Completed';
+                OVPRE.toast('Extension Director evaluation completed. Project Approved!', 'success');
+            } else if (action === 'revision') {
+                p.status = 'Needs Revision';
+                p.stage = 'Stage 1: Coordinator Screening';
+                supabaseUpdates.status = 'Needs Revision';
+                supabaseUpdates.workflow_stage = 'Stage 1: Coordinator Screening';
+                OVPRE.toast('Project returned for revision by Director.', 'info');
+            } else if (action === 'decline') {
+                p.status = 'Declined';
+                p.stage = 'Terminated';
+                supabaseUpdates.status = 'Declined';
+                supabaseUpdates.workflow_stage = 'Terminated';
+                OVPRE.toast('Project declined by Extension Director.', 'error');
+            }
+
+            saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, supabaseUpdates);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
+            OVPRE.closeModal('dirModal');
+            renderTable();
+        }
+
+        // --- EXECUTIVE FINAL APPROVAL ---
+        function openExecModal(id) {
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Super Admin' && userRole !== 'OVPRE Admin') {
+                OVPRE.toast('Access Denied: Only Executive Administration can approve proposals.', 'error');
+                return;
+            }
+
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+            document.getElementById('execProjId').value = p.id;
+            document.getElementById('execProjTitle').textContent = p.title;
+            document.getElementById('execRemarks').value = p.executive_remarks || 'Approved for implementation under University Extension and Community Engagement Program. Fund release and MOA execution authorized.';
+            OVPRE.openModal('execModal');
+        }
+
+        async function handleExecSubmit(event) {
+            event.preventDefault();
+            const userRole = getCurrentUserRole();
+            if (userRole !== 'Super Admin' && userRole !== 'OVPRE Admin') {
+                OVPRE.toast('Access Denied: Only Executive Administration can approve proposals.', 'error');
+                return;
+            }
+
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : 'approve';
+            const id = Number(document.getElementById('execProjId').value);
+            const remarks = document.getElementById('execRemarks').value.trim();
+
+            const all = getProjects();
+            const p = all.find(item => item.id === id);
+            if (!p) return;
+
+            const fullname = getCurrentUserFullname();
+            p.executive_remarks = remarks;
+            p.executive_name = fullname || "Super Administrator";
+            p.executive_approved_at = new Date().toISOString().slice(0, 10);
+
+            let supabaseUpdates = {
+                status_remarks: remarks
+            };
+
+            if (action === 'approve') {
+                p.status = 'Approved';
+                p.stage = 'Completed';
+                p.progress_status = 'Ongoing';
+                supabaseUpdates.status = 'Approved';
+                supabaseUpdates.workflow_stage = 'Completed';
+                supabaseUpdates.progress_status = 'Ongoing';
+                OVPRE.toast('Final Executive Approval granted! Extension project is officially approved.', 'success');
+            } else {
+                p.status = 'Declined';
+                p.stage = 'Terminated';
+                supabaseUpdates.status = 'Declined';
+                supabaseUpdates.workflow_stage = 'Terminated';
+                OVPRE.toast('Project disapproved by Executive Office.', 'error');
+            }
+
+            saveProjects(all);
+
+            if (window.OVPRE_SUPABASE && OVPRE_SUPABASE.isReady()) {
+                try {
+                    await OVPRE_SUPABASE.updateExtensionProject(p.id, supabaseUpdates);
+                } catch (e) {
+                    console.warn('[OVPRE Supabase] update error:', e);
+                }
+            }
+
+            OVPRE.closeModal('execModal');
+            renderTable();
+        }
+
+        // --- DETAILS MODAL ---
+        function openDetailsModal(id) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+            activeDetailId = p.id;
+
+            document.getElementById('detailStage').textContent = p.stage || 'Proposal';
+            document.getElementById('detailTitle').textContent = p.title;
+            document.getElementById('detailSubtitle').textContent = p.college + ' | Lead: ' + p.coordinator;
+            document.getElementById('detailPartner').textContent = p.partner || 'Community Partner';
+            document.getElementById('detailLocation').textContent = p.location || 'Local Community Site';
+            document.getElementById('detailBudget').textContent = 'PHP ' + Number(p.approved_budget || p.budget).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('detailDates').textContent = OVPRE.date(p.start_date || p.created_at) + ' to ' + OVPRE.date(p.end_date || '2026-04-20');
+            document.getElementById('detailDescription').textContent = p.description || 'No description provided.';
+
+            const trail = document.getElementById('detailWorkflowTrail');
+            trail.innerHTML = '';
+
+            if (p.coordinator_remarks) {
+                trail.innerHTML += `
+                    <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 1: College Coordinator Screening</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.coordinator_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.coordinator_name || 'Coordinator')} | ${OVPRE.date(p.coordinator_reviewed_at || p.created_at)}</small>
+                    </div>
+                `;
+            }
+            if (p.director_remarks) {
+                trail.innerHTML += `
+                    <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 2: Director Evaluation (Rating: ${OVPRE.h(p.evaluation_rating || 'N/A')}/100)</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.director_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.director_name || 'Extension Director')} | ${OVPRE.date(p.director_reviewed_at || p.created_at)}</small>
+                    </div>
+                `;
+            }
+            if (p.executive_remarks) {
+                trail.innerHTML += `
+                    <div style="background: #faf5ff; border-left: 4px solid #9333ea; padding: 10px 12px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Stage 3: Executive Final Approval</strong>
+                        <p style="margin: 4px 0;">${OVPRE.h(p.executive_remarks)}</p>
+                        <small style="color: #64748b;">${OVPRE.h(p.executive_name || 'Executive')} | ${OVPRE.date(p.executive_approved_at || p.created_at)}</small>
+                    </div>
+                `;
+            }
+
+            const dl = document.getElementById('detailDownloadBtn');
+            if (dl) {
+                const fname = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
+                dl.setAttribute('download', fname);
+                dl.setAttribute('href', p.document_url || ('uploads/records/' + fname));
+            }
+
+            const archBtn = document.getElementById('detailArchiveBtn');
+            if (p.archived) {
+                archBtn.innerHTML = '<i class="ri-arrow-go-back-line"></i> <span>Restore Project</span>';
+            } else {
+                archBtn.innerHTML = '<i class="ri-download-2-line"></i> <span>Archive Project</span>';
+            }
+
+            OVPRE.openModal('detailsModal');
+        }
+
+        function toggleArchiveFromDetails() {
+            if (!activeDetailId) return;
+            const all = getProjects();
+            const p = all.find(item => item.id === activeDetailId);
+            if (!p) return;
+            p.archived = !p.archived;
+            saveProjects(all);
+            OVPRE.closeModal('detailsModal');
+            OVPRE.toast(p.archived ? 'Project archived successfully.' : 'Project restored to active projects.', 'success');
+            renderTable();
+        }
+
+        function restoreProject(id) {
+            const all = getProjects();
+            const p = all.find(item => item.id === Number(id));
+            if (!p) return;
+            p.archived = false;
+            saveProjects(all);
+            OVPRE.toast('Project restored to active projects.', 'success');
+            renderTable();
+        }
+
+        // --- PREVIEW MODAL ---
+        function openDocPreview(title, filename, pdfUrl) {
+            const url = pdfUrl || ('uploads/records/' + filename);
+            document.getElementById('previewModalTitle').innerHTML = '<i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>' + OVPRE.h(title) + '</span>';
+            const iframe = document.getElementById('previewIframe');
+            if (iframe) {
+                iframe.onload = function () {
+                    try {
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (doc && doc.body && (doc.title.includes('404') || doc.body.innerText.includes('404 NOT FOUND') || doc.body.innerText.includes('Page or Resource Not Found'))) {
+                            doc.open();
+                            doc.write(`
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta charset="utf-8">
+                                    <style>
+                                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; margin: 0; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 80vh; box-sizing: border-box; }
+                                        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 650px; width: 100%; padding: 36px 32px; text-align: center; }
+                                        .badge { display: inline-block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-bottom: 16px; }
+                                        h2 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.35rem; font-weight: 700; line-height: 1.4; }
+                                        p { color: #64748b; font-size: 0.92rem; line-height: 1.6; margin: 0 0 20px 0; }
+                                        .doc-box { background: #f1f5f9; border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left; font-family: monospace; font-size: 0.88rem; color: #334155; word-break: break-all; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="card">
+                                        <div class="badge">OVPRE Digital Repository Document</div>
+                                        <h2>` + OVPRE.h(title) + `</h2>
+                                        <div class="doc-box">
+                                            <strong>Document:</strong> ` + OVPRE.h(filename) + `<br>
+                                            <strong>Status:</strong> Official Extension Record<br>
+                                            <strong>Repository:</strong> OVPRE Central Archive
+                                        </div>
+                                        <p>This project is registered in the institutional repository. The document is accessible via the download action or institutional backup.</p>
+                                    </div>
+                                </body>
+                                </html>
+                            `);
+                            doc.close();
+                        }
+                    } catch (e) {
+                        // Handled natively by browser PDF viewer
+                    }
+                };
+                iframe.src = url;
+            }
+            const openTab = document.getElementById('previewOpenTabBtn');
+            if (openTab) {
+                openTab.href = url;
+            }
+            const dl = document.getElementById('previewDownloadBtn');
+            if (dl) {
+                dl.setAttribute('download', filename);
+                dl.setAttribute('href', url);
+            }
+            OVPRE.openModal('previewModal');
+        }
+
+        function openDocPreviewFromDetails() {
+            if (!activeDetailId) return;
+            const all = getProjects();
+            const p = all.find(item => item.id === activeDetailId);
+            if (!p) return;
+            OVPRE.closeModal('detailsModal');
+            const fname = p.document_filename || (p.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Doc.pdf');
+            const url = p.document_url || ('uploads/records/' + fname);
+            openDocPreview(p.title, fname, url);
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const stored = localStorage.getItem('ovpre_extension_projects');
+                if (!stored || JSON.parse(stored).length < initialSeed.length) {
+                    localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
+                }
+            } catch (e) {
+                localStorage.setItem('ovpre_extension_projects', JSON.stringify(initialSeed));
+            }
+            renderTable();
+            if (typeof filterCollegeOptionsForExtensionUser === 'function') {
+                filterCollegeOptionsForExtensionUser(getCurrentUserObj());
+            }
+            if (urlParams.get('action') === 'new') {
+                setTimeout(openCreateProjectModal, 150);
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js?v=20261112"></script>
+    <script src="assets/js/app.js?v=20261111-nofile"></script>
+    <script src="assets/js/static-bridge.js?v=20261111-nofile"></script>
+    <script src="assets/js/role-system.js?v=20261111-nofile"></script>
+</body>
+</html>
+

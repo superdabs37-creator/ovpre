@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261015-simple-login-background">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="login-body">
+    <main class="login-shell">
+        <section class="login-card">
+            <div class="login-logo">
+                <img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo">
+            </div>
+            <div class="login-copy">
+                <p>Office of the Vice President for Research and Extension</p>
+                <h1>I-Record</h1>
+            </div>
+
+            <!-- Dynamic alerts (registered, logout, errors) -->
+            <div id="loginNotice" style="display: none; padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem; align-items: center; gap: 8px;"></div>
+
+            <form class="login-form" id="loginForm">
+                <label for="username">Username or email</label>
+                <div class="input-control">
+                    <i class="ri-user-line"></i>
+                    <input type="text" id="username" name="username" placeholder="Enter username or email" required>
+                </div>
+
+                <label for="password">Password</label>
+                <div class="input-control">
+                    <i class="ri-lock-line"></i>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                    <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Show password" style="background:none;border:none;padding:0;cursor:pointer;color:var(--muted);display:flex;align-items:center;margin-left:auto;">
+                        <i class="ri-eye-line" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+
+                <div class="login-tools">
+                    <label class="check-control">
+                        <input type="checkbox" name="remember" checked>
+                        <span>Remember me</span>
+                    </label>
+                    <a href="forgot-password.html">Forgot Password?</a>
+                </div>
+
+                <button class="primary-btn full-btn" type="submit" id="submitBtn">
+                    <i class="ri-login-circle-line"></i> Sign in
+                </button>
+
+                <div style="text-align: center; margin: 16px 0 10px; font-size: 0.92rem; color: #64748b;">
+                    Don't have an account? <a href="register.html" style="color: #15803d; font-weight: 700; text-decoration: underline;">Create an account</a>
+                </div>
+
+                <!-- Quick Role Access for All 7 Roles -->
+                <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #cbd5e1; text-align: center;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Quick Role Testing:</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 8px;">
+                        <button type="button" onclick="quickLogin('Super Admin', 'Super Administrator')" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Super Admin</button>
+                        <button type="button" onclick="quickLogin('Research Director', 'Dr. Aris Ramos')" style="background: #e0f2fe; border: 1px solid #bae6fd; color: #0284c7; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Research Director</button>
+                        <button type="button" onclick="quickLogin('Extension Director', 'Dr. Maricel Gomez')" style="background: #ccfbf1; border: 1px solid #99f6e4; color: #0f766e; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Extension Director</button>
+                        <button type="button" onclick="quickLogin('Research Coordinator', 'Prof. Engr. Mark Santos', 'College of Computer Studies and Technology (CCST)')" style="background: #ede9fe; border: 1px solid #ddd6fe; color: #6d28d9; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Research Coord</button>
+                        <button type="button" onclick="quickLogin('Extension Coordinator', 'Prof. Elena Cruz', 'College of Business and Accountancy (CBA)')" style="background: #fef3c7; border: 1px solid #fde68a; color: #b45309; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Extension Coord</button>
+                        <button type="button" onclick="quickLogin('Faculty Researcher', 'Prof. Juan Dela Cruz', 'College of Computer Studies and Technology (CCST)')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Faculty Researcher</button>
+                        <button type="button" onclick="quickLogin('Faculty Extensionist', 'Prof. Maria Bautista', 'College of Nursing and Allied Health Sciences (CONAHS)')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Faculty Extensionist</button>
+                        <button type="button" onclick="quickLoginAccount('zyrus')" style="background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; font-size: 0.74rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Zyrus (Account)</button>
+                    </div>
+                </div>
+
+                <p class="portal-link full-btn">
+                    <a href="index.html"><i class="ri-arrow-left-line"></i> Back to Home</a>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        window.quickLoginAccount = function(username) {
+            let registeredUsers = [];
+            try { registeredUsers = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]'); } catch(e) {}
+            const found = registeredUsers.find(u => u && u.username && String(u.username).toLowerCase() === String(username).toLowerCase()) || {
+                id: 'usr_zyrus',
+                username: 'zyrus',
+                fullname: 'Zyrus',
+                role: 'Faculty Researcher',
+                email: 'zyrus@plsp.edu.ph',
+                department: 'College of Computer Studies and Technology (CCST)',
+                is_registered: true,
+                is_demo: false
+            };
+            const userSession = {
+                id: found.id || 'usr_zyrus',
+                username: found.username || 'zyrus',
+                fullname: found.fullname || 'Zyrus',
+                role: found.role || 'Faculty Researcher',
+                email: found.email || 'zyrus@plsp.edu.ph',
+                department: found.department || found.college || 'College of Computer Studies and Technology (CCST)',
+                photo: found.photo || '',
+                is_registered: true,
+                is_demo: false,
+                logged_in: true
+            };
+            sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+            localStorage.setItem('irecord_user', JSON.stringify(userSession));
+            window.location.href = 'dashboard.html';
+        };
+
+        window.quickLogin = function(role, fullname, dept) {
+            const userSession = {
+                id: 'demo_' + role.toLowerCase().replace(/\s+/g, '_'),
+                username: role.toLowerCase().replace(/\s+/g, '_'),
+                fullname: fullname,
+                role: role,
+                email: role.toLowerCase().replace(/\s+/g, '.') + '@plsp.edu.ph',
+                department: dept || '',
+                is_demo: true,
+                is_registered: false,
+                logged_in: true
+            };
+            sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+            localStorage.setItem('irecord_user', JSON.stringify(userSession));
+            window.location.href = 'dashboard.html';
+        };
+
+        (() => {
+            // If running on a live web server (XAMPP / Apache / PHP), redirect to the real secure PHP login
+            if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('vercel.app')) {
+                window.location.replace('index.php');
+                return;
+            }
+
+            // Check URL parameters for banners
+            const urlParams = new URLSearchParams(window.location.search);
+            const noticeBox = document.getElementById('loginNotice');
+            if (urlParams.get('registered') === '1') {
+                noticeBox.style.display = 'flex';
+                noticeBox.style.background = '#f0fdf4';
+                noticeBox.style.border = '1px solid #86efac';
+                noticeBox.style.color = '#166534';
+                noticeBox.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Your account has been created and activated! You can now sign in immediately.';
+            } else if (urlParams.get('logout') === '1') {
+                noticeBox.style.display = 'flex';
+                noticeBox.style.background = '#eff6ff';
+                noticeBox.style.border = '1px solid #bfdbfe';
+                noticeBox.style.color = '#1e40af';
+                noticeBox.innerHTML = '<i class="ri-information-line" style="font-size: 1.25rem;"></i> You have been successfully signed out.';
+            }
+
+            // Password reveal toggle
+            const toggleBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+
+            if (toggleBtn && passwordInput && toggleIcon) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    toggleIcon.className = isPassword ? 'ri-eye-off-line' : 'ri-eye-line';
+                    toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                    toggleIcon.style.color = isPassword ? '#15803d' : '#6f7b73';
+                });
+            }
+
+            // Login submission handler
+            const loginForm = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const usernameInput = document.getElementById('username').value.trim();
+                const passwordInput = document.getElementById('password').value;
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Signing in...';
+
+                function showError(msg) {
+                    noticeBox.style.display = 'flex';
+                    noticeBox.style.background = '#fef2f2';
+                    noticeBox.style.border = '1px solid #fca5a5';
+                    noticeBox.style.color = '#991b1b';
+                    noticeBox.innerHTML = '<i class="ri-error-warning-line" style="font-size: 1.25rem;"></i> ' + msg;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Sign In';
+                }
+
+                if (!usernameInput || !passwordInput) {
+                    showError('Please enter both your username and password.');
+                    return;
+                }
+
+                // Known system accounts mapping for Supabase Auth lookup
+                const USERNAME_EMAIL_MAP = {
+                    'admin': 'superdabs37@gmail.com',
+                    'athorne': 'thorne.ccst@plsp.edu.ph',
+                    'kvaldez': 'valdez.coe@plsp.edu.ph',
+                    'lbautista': 'bautista.conahs@plsp.edu.ph',
+                    'gmendoza': 'mendoza.cas@plsp.edu.ph',
+                    'rcruz': 'cruz.cba@plsp.edu.ph',
+                    'mdelosreyes': 'delosreyes.cte@plsp.edu.ph',
+                    'jaquino': 'aquino.cthm@plsp.edu.ph',
+                    'vramos': 'ramos.coa@plsp.edu.ph',
+                    'jcigaral2': 'jcigaral2@gmail.com',
+                    'edrianbanaagt': 'edrianbanaagt@gmail.com',
+                    'marielramos12': 'marielramos12@gmail.com',
+                    'johncarl28': 'johncarl28@gmail.com',
+                    'owbiwan2': 'owbiwan2@gmail.com',
+                    'kendrix': 'brosaskndrx05@gmail.com',
+                    'jeysii': 'jeysii@gmail.com'
+                };
+
+                const targetEmail = usernameInput.includes('@') 
+                    ? usernameInput 
+                    : (USERNAME_EMAIL_MAP[usernameInput.toLowerCase()] || (usernameInput.toLowerCase() + '@plsp.edu.ph'));
+
+                // Try authenticating with Supabase Auth cloud service
+                let supabaseSuccess = false;
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    try {
+                        const sb = window.supabase.createClient(
+                            'https://yolquvpmptfjblfldbuh.supabase.co',
+                            'sb_publishable_0tb6TAlGiK3xHBjZkNuCZw_l6ImNFmC'
+                        );
+                        const { data, error } = await sb.auth.signInWithPassword({
+                            email: targetEmail,
+                            password: passwordInput
+                        });
+
+                        if (!error && data && data.user) {
+                            supabaseSuccess = true;
+                            const u = data.user;
+                            const meta = u.user_metadata || {};
+                            const userSession = {
+                                id: u.id,
+                                username: usernameInput,
+                                fullname: meta.fullname || meta.full_name || usernameInput,
+                                role: meta.role || (usernameInput.toLowerCase() === 'admin' ? 'Super Admin' : 'Researcher'),
+                                email: u.email,
+                                is_registered: true,
+                                logged_in: true
+                            };
+
+                            sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+                            localStorage.setItem('irecord_user', JSON.stringify(userSession));
+                            if (data.session) {
+                                sessionStorage.setItem('supabase_access_token', data.session.access_token);
+                                sessionStorage.setItem('supabase_refresh_token', data.session.refresh_token);
+                            }
+
+                            noticeBox.style.display = 'flex';
+                            noticeBox.style.background = '#f0fdf4';
+                            noticeBox.style.border = '1px solid #86efac';
+                            noticeBox.style.color = '#166534';
+                            noticeBox.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Sign-in successful! Redirecting to dashboard...';
+
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 600);
+                            return;
+                        }
+                    } catch (sbErr) {
+                        console.warn('[OVPRE Supabase] Auth attempt error:', sbErr);
+                    }
+                }
+
+                // If Supabase failed or offline, check registered prototype users
+                let registeredUsers = [];
+                try {
+                    registeredUsers = JSON.parse(localStorage.getItem('irecord_registered_users') || '[]');
+                } catch(err) {}
+
+                const matchedUser = registeredUsers.find(u => 
+                    u.username.toLowerCase() === usernameInput.toLowerCase() || 
+                    u.email.toLowerCase() === usernameInput.toLowerCase()
+                );
+
+                const isDefaultAdmin = (usernameInput.toLowerCase() === 'admin' && (passwordInput === 'admin' || passwordInput === 'PLSP_Research2026!'));
+
+                if (!matchedUser && !isDefaultAdmin) {
+                    showError('Invalid credentials or temporarily locked account.');
+                    return;
+                }
+
+                if (matchedUser && matchedUser.password && matchedUser.password !== passwordInput) {
+                    showError('Invalid credentials or temporarily locked account.');
+                    return;
+                }
+
+                const userSession = matchedUser ? {
+                    id: matchedUser.id || ('usr_' + matchedUser.username.toLowerCase()),
+                    username: matchedUser.username,
+                    fullname: matchedUser.fullname,
+                    role: matchedUser.role,
+                    email: matchedUser.email,
+                    phone: matchedUser.phone || '',
+                    birthday: matchedUser.birthday || '',
+                    gender: matchedUser.gender || '',
+                    photo: matchedUser.photo || '',
+                    department: matchedUser.department || '',
+                    is_registered: true,
+                    logged_in: true
+                } : {
+                    id: 1,
+                    username: 'admin',
+                    fullname: 'Super Administrator',
+                    role: 'Super Admin',
+                    email: 'admin@plsp.edu.ph',
+                    is_registered: true,
+                    logged_in: true
+                };
+
+                sessionStorage.setItem('irecord_user', JSON.stringify(userSession));
+                localStorage.setItem('irecord_user', JSON.stringify(userSession));
+
+                noticeBox.style.display = 'flex';
+                noticeBox.style.background = '#f0fdf4';
+                noticeBox.style.border = '1px solid #86efac';
+                noticeBox.style.color = '#166534';
+                noticeBox.innerHTML = '<i class="ri-checkbox-circle-line" style="font-size: 1.25rem;"></i> Sign-in successful! Redirecting to dashboard...';
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 600);
+            });
+        })();
+    </script>
+</body>
+</html>

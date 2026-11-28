@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Management | I-Record</title>
+    <link rel="icon" type="image/jpeg" href="assets/img/ovpre-logo.jpg?v=20261105-logo">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261030-searchable-select">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell sidebar-expanded" id="appShell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" href="dashboard.html">
+                <span><img src="assets/img/ovpre-logo.jpg" alt="OVPRE Logo"></span>
+                <strong>I-Record</strong>
+            </a>
+            <nav class="sidebar-nav">
+                <a class="" href="dashboard.html" title="Dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+                <a class="active" href="admin-documents.html" title="Records"><i class="ri-file-search-line"></i><span>Records</span></a>
+                <a class="" href="research.html" title="Research"><i class="ri-flask-line"></i><span>Research</span></a>
+                <a class="" href="extension.html" title="Extension"><i class="ri-community-line"></i><span>Extension</span></a>
+                <a class="" href="announcements.html" title="Announcements"><i class="ri-megaphone-line"></i><span>Announcements</span></a>
+                <a class="" href="activities.html" title="Activities"><i class="ri-calendar-event-line"></i><span>Activities</span></a>
+                <a class="" href="admin-reports.html" title="Reports"><i class="ri-file-chart-line"></i><span>Reports</span></a>
+                <a class="" href="admin-users.html" title="User Security"><i class="ri-shield-user-line"></i><span>User Security</span></a>
+                <a class="" href="system-activity.html" title="System Activity"><i class="ri-history-line"></i><span>System Activity</span></a>
+                <a class="" href="system-backup.html" title="Backup &amp; Recovery"><i class="ri-database-2-line"></i><span>Backup &amp; Recovery</span></a>
+                <a class="" href="admin-settings.html" title="Settings"><i class="ri-settings-3-line"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer" title="Executive Administration">
+                <i class="ri-shield-keyhole-line"></i>
+                <span>Executive Administration</span>
+            </div>
+        </aside>
+        <div class="page-wrap">
+            <header class="topbar">
+                <button class="icon-btn menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" data-toggle-sidebar>
+                    <svg class="sidebar-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="3"></rect><path d="M9 3v18"></path><path d="m14 9-3 3 3 3"></path></svg>
+                </button>
+                <div class="topbar-title">
+                    <h1>Record Management</h1>
+                </div>
+                <form class="topbar-search" role="search" action="search.html" method="get" data-global-search-form>
+                    <i class="ri-search-line"></i>
+                    <input type="search" name="q" placeholder="Search this page" aria-label="Search across accessible records" data-global-search>
+                    <button class="topbar-search-clear" type="button" aria-label="Clear search" data-global-search-clear><i class="ri-close-line"></i></button>
+                    <button class="topbar-search-submit" type="submit" aria-label="Run search"><i class="ri-arrow-right-line"></i></button>
+                    <span class="topbar-search-count" data-global-search-count></span>
+                </form>
+                <a class="topbar-icon" href="notifications.html" aria-label="Notifications">
+                    <i class="ri-notification-3-line"></i>
+                    <span></span>
+                </a>
+                <div class="profile-menu">
+                    <button class="profile-button" type="button" data-profile-toggle aria-expanded="false" aria-haspopup="true">
+                        <span class="avatar">SA</span>
+                        <span id="userNameDisplay">Super Administrator</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" data-profile-dropdown>
+                        <div class="profile-dropdown-identity">
+                            <span class="profile-dropdown-avatar"><i class="ri-user-3-fill"></i></span>
+                            <strong id="dropdownUserName">Super Administrator</strong>
+                            <small id="dropdownUserRole" style="color: #202729;">System Administrator</small>
+                        </div>
+                        <a href="profile.html"><i class="ri-user-settings-line"></i> Edit Profile</a>
+                        <a href="admin-settings.html"><i class="ri-settings-3-line"></i> System Settings</a>
+                        <a href="login.html?logout=1" onclick="sessionStorage.removeItem('irecord_user'); localStorage.removeItem('irecord_user');"><i class="ri-logout-circle-line"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+            <main class="content-area">
+                <section class="module-header">
+                    <div class="module-icon"><i class="ri-file-search-line"></i></div>
+                    <div>
+                        <p>I-Record</p>
+                        <h2>Record Management</h2>
+                        <span>Review records with remarks, preview files, assign reviewers, archive with reasons, and track timelines.</span>
+                    </div>
+                </section>
+
+                <div id="ovpreFlash"></div>
+
+                <!-- TOOL PANEL (EXACT PHP STRUCTURE) -->
+                <section class="tool-panel">
+                    <div class="search-control">
+                        <i class="ri-search-line"></i>
+                        <input data-table-search type="search" placeholder="Search by title, author, category, date, or status" id="recordTableSearch">
+                    </div>
+                    <div class="tool-panel-actions">
+                        <div class="record-segmented-control" role="tablist" aria-label="Record view mode">
+                            <button type="button" class="record-segmented-tab is-active" id="tabActiveBtn" role="tab" aria-selected="true" onclick="switchRecordView('active')">
+                                <i class="ri-folder-line"></i><span>Active Records</span>
+                            </button>
+                            <button type="button" class="record-segmented-tab" id="tabArchivedBtn" role="tab" aria-selected="false" onclick="switchRecordView('archived')">
+                                <i class="ri-archive-line"></i><span>Archived Records</span>
+                            </button>
+                        </div>
+                        <div class="action-row" style="margin: 0;">
+                            <select class="filter-select" id="statusFilterSelect" data-status-filter onchange="handleStatusFilterChange(this.value)">
+                                <option value="All">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Under Review">Under Review</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Declined">Declined</option>
+                            </select>
+                        </div>
+                        <button class="primary-btn" type="button" onclick="OVPRE.openModal('uploadModal')">
+                            <i class="ri-upload-cloud-line"></i> Upload Record
+                        </button>
+                    </div>
+                </section>
+
+                <!-- SUBMISSION FOLDERS (EXACT PHP DETAILS ACCORDIONS) -->
+                <section class="panel submission-folders" style="margin-bottom: 24px;">
+                    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                            <h2 id="submissionFoldersTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                                <i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                                <span>Submission Folders</span>
+                            </h2>
+                            <span id="submissionFoldersSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;">Research, extension, and activity submissions</span>
+                        </div>
+                    </div>
+
+                    <!-- 1. Research Submissions Folder -->
+                    <details class="submission-folder" id="researchFolder">
+                        <summary>
+                            <span><i class="ri-flask-line"></i> <span id="researchFolderTitle">Research Management Submissions</span></span>
+                            <strong id="researchSubCount">6</strong>
+                        </summary>
+                        <div class="table-scroll">
+                            <div class="table-selection-toolbar is-hidden" data-selection-toolbar="researchSubmissionTable" hidden style="display: none;">
+                                <span data-selection-count>0 selected</span>
+                                <button class="ghost-btn action-btn" type="button" data-open-selected-research><i class="ri-arrow-right-line"></i><span>Open Selected</span></button>
+                                <form id="bulk-researchSubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'researchSubmissionTable')">
+                                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
+                                </form>
+                            </div>
+                            <table class="data-table portal-table" id="researchSubmissionTable">
+                                <thead>
+                                    <tr>
+                                        <th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-researchSubmissionTable" type="checkbox" aria-label="Select all research submissions" data-select-all="researchSubmissionTable"><span>Select all</span></label></th>
+                                        <th>Research Title</th>
+                                        <th>College</th>
+                                        <th>Researchers</th>
+                                        <th>Submitted By</th>
+                                        <th>Assigned To</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Manage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="researchSubmissionBody">
+
+    <tr data-table-row data-status="Approved">
+        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission 1" value="1" data-row-select="researchSubmissionTable"></td>
+        <td data-sort-value="AI-Driven Early Crop Disease Detection for Calabarzon Farming"><strong>AI-Driven Early Crop Disease Detection for Calabarzon Farming</strong><br><small>DOST-PCAARRD Grant</small></td>
+        <td data-sort-value="College of Computer Studies"><span class="dept-pill">College of Computer Studies</span></td>
+        <td data-sort-value="Dr. Alicia Santos, Engr. Mark Ramos">Dr. Alicia Santos, Engr. Mark Ramos</td>
+        <td data-sort-value="Dr. Alicia Santos">Dr. Alicia Santos</td>
+        <td data-sort-value="Dr. Research Director">Dr. Research Director</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="2026-01-15">Jan 15, 2026</td>
+        <td><a class="ghost-btn action-btn" href="research.html?status=Approved"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved">
+        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission 2" value="2" data-row-select="researchSubmissionTable"></td>
+        <td data-sort-value="Isolation and Characterization of Bioactive Flavonoids from Indigenous Calamansi Waste"><strong>Isolation and Characterization of Bioactive Flavonoids from Indigenous Calamansi Waste</strong><br><small>DA-BAR Research Fund</small></td>
+        <td data-sort-value="College of Arts and Sciences"><span class="dept-pill">College of Arts and Sciences</span></td>
+        <td data-sort-value="Dr. Fernando Morales">Dr. Fernando Morales</td>
+        <td data-sort-value="Dr. Fernando Morales">Dr. Fernando Morales</td>
+        <td data-sort-value="Dr. Research Director">Dr. Research Director</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="2026-01-28">Jan 28, 2026</td>
+        <td><a class="ghost-btn action-btn" href="research.html?status=Approved"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Under Review">
+        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission 3" value="3" data-row-select="researchSubmissionTable"></td>
+        <td data-sort-value="Stress Coping Mechanisms and Psychological Resilience of Public Tertiary Educators"><strong>Stress Coping Mechanisms and Psychological Resilience of Public Tertiary Educators</strong><br><small>CHED Zonal Research Grant</small></td>
+        <td data-sort-value="College of Teacher Education"><span class="dept-pill">College of Teacher Education</span></td>
+        <td data-sort-value="Dr. Rebecca Hernandez">Dr. Rebecca Hernandez</td>
+        <td data-sort-value="Dr. Rebecca Hernandez">Dr. Rebecca Hernandez</td>
+        <td data-sort-value="Dr. Research Director">Dr. Research Director</td>
+        <td data-sort-value="Under Review"><span class="status-pill status-under-review">Under Review</span></td>
+        <td data-sort-value="2026-02-20">Feb 20, 2026</td>
+        <td><a class="ghost-btn action-btn" href="research.html?status=Under%20Review"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Pending">
+        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission 4" value="4" data-row-select="researchSubmissionTable"></td>
+        <td data-sort-value="Structural Assessment and Low-Cost Seismic Retrofitting of Heritage Masonry Buildings"><strong>Structural Assessment and Low-Cost Seismic Retrofitting of Heritage Masonry Buildings</strong><br><small>DOST-PCIEERD Research Grant</small></td>
+        <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+        <td data-sort-value="Engr. Gabriel Mendoza, Engr. Diana Cruz">Engr. Gabriel Mendoza, Engr. Diana Cruz</td>
+        <td data-sort-value="Engr. Gabriel Mendoza">Engr. Gabriel Mendoza</td>
+        <td data-sort-value="Engr. Mark Ramos">Engr. Mark Ramos</td>
+        <td data-sort-value="Pending"><span class="status-pill status-pending">Pending</span></td>
+        <td data-sort-value="2026-03-02">Mar 02, 2026</td>
+        <td><a class="ghost-btn action-btn" href="research.html?status=Pending"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Pending">
+        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission 5" value="5" data-row-select="researchSubmissionTable"></td>
+        <td data-sort-value="Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility"><strong>Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility</strong><br><small>BSP Research Academy Grant</small></td>
+        <td data-sort-value="College of Business Administration and Accountancy"><span class="dept-pill">College of Business Administration and Accountancy</span></td>
+        <td data-sort-value="Prof. Vicente Reyes">Prof. Vicente Reyes</td>
+        <td data-sort-value="Prof. Vicente Reyes">Prof. Vicente Reyes</td>
+        <td data-sort-value="Unassigned">Unassigned</td>
+        <td data-sort-value="Pending"><span class="status-pill status-pending">Pending</span></td>
+        <td data-sort-value="2026-03-10">Mar 10, 2026</td>
+        <td><a class="ghost-btn action-btn" href="research.html?status=Pending"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Declined">
+        <td class="table-checkbox-col"><input form="bulk-researchSubmissionTable" type="checkbox" name="ids[]" aria-label="Select research submission 6" value="6" data-row-select="researchSubmissionTable"></td>
+        <td data-sort-value="Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients"><strong>Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients</strong><br><small>DOH-PCHRD Health Research Grant</small></td>
+        <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+        <td data-sort-value="Prof. Melissa Aquino">Prof. Melissa Aquino</td>
+        <td data-sort-value="Prof. Melissa Aquino">Prof. Melissa Aquino</td>
+        <td data-sort-value="Unassigned">Unassigned</td>
+        <td data-sort-value="Declined"><span class="status-pill status-declined">Rejected</span></td>
+        <td data-sort-value="2026-03-12">Mar 12, 2026</td>
+        <td><a class="ghost-btn action-btn" href="research.html?status=Declined"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+
+                    <!-- 2. Extension Submissions Folder -->
+                    <details class="submission-folder" id="extensionFolder">
+                        <summary>
+                            <span><i class="ri-community-line"></i> <span id="extensionFolderTitle">Extension Project Submissions</span></span>
+                            <strong id="extensionSubCount">6</strong>
+                        </summary>
+                        <div class="table-scroll">
+                            <div class="table-selection-toolbar is-hidden" data-selection-toolbar="extensionSubmissionTable" hidden style="display: none;">
+                                <span data-selection-count>0 selected</span>
+                                <form id="bulk-extensionSubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'extensionSubmissionTable')">
+                                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
+                                </form>
+                            </div>
+                            <table class="data-table portal-table" id="extensionSubmissionTable">
+                                <thead>
+                                    <tr>
+                                        <th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-extensionSubmissionTable" type="checkbox" aria-label="Select all extension submissions" data-select-all="extensionSubmissionTable"><span>Select all</span></label></th>
+                                        <th>Project</th>
+                                        <th>College</th>
+                                        <th>Coordinator</th>
+                                        <th>Partner</th>
+                                        <th>Budget</th>
+                                        <th>Assigned To</th>
+                                        <th>Status</th>
+                                        <th>Manage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="extensionSubmissionBody">
+
+    <tr data-table-row data-status="Approved">
+        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission 1" value="1" data-row-select="extensionSubmissionTable"></td>
+        <td data-sort-value="Community Water Filtration System Installation in Barangay San Lucas"><strong>Community Water Filtration System Installation in Barangay San Lucas</strong><br><small>Jan 25, 2026 - Jul 25, 2026</small></td>
+        <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+        <td data-sort-value="Engr. Katrina Valdez">Engr. Katrina Valdez</td>
+        <td data-sort-value="Barangay San Lucas Council">Barangay San Lucas Council</td>
+        <td data-sort-value="180000">PHP 180,000.00</td>
+        <td data-sort-value="Prof. Extension Director">Prof. Extension Director</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td><a class="ghost-btn action-btn" href="extension.html?status=Approved"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved">
+        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission 2" value="2" data-row-select="extensionSubmissionTable"></td>
+        <td data-sort-value="IT Skills Training & Digital Literacy Bootcamp for Barangay San Juan"><strong>IT Skills Training & Digital Literacy Bootcamp for Barangay San Juan</strong><br><small>Jan 20, 2026 - Apr 20, 2026</small></td>
+        <td data-sort-value="College of Computer Studies"><span class="dept-pill">College of Computer Studies</span></td>
+        <td data-sort-value="Dr. Aris Thorne">Dr. Aris Thorne</td>
+        <td data-sort-value="Barangay San Juan Youth Org">Barangay San Juan Youth Org</td>
+        <td data-sort-value="75000">PHP 75,000.00</td>
+        <td data-sort-value="Dr. Maricel Gomez">Dr. Maricel Gomez</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td><a class="ghost-btn action-btn" href="extension.html?status=Approved"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Under Review">
+        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission 3" value="3" data-row-select="extensionSubmissionTable"></td>
+        <td data-sort-value="Financial Literacy & Cloud Bookkeeping Coaching for Wet Market Vendors"><strong>Financial Literacy & Cloud Bookkeeping Coaching for Wet Market Vendors</strong><br><small>Feb 22, 2026 - May 22, 2026</small></td>
+        <td data-sort-value="College of Business Administration and Accountancy"><span class="dept-pill">College of Business Administration and Accountancy</span></td>
+        <td data-sort-value="Prof. Raymond Cruz">Prof. Raymond Cruz</td>
+        <td data-sort-value="Market Vendors Cooperative">Market Vendors Cooperative</td>
+        <td data-sort-value="120000">PHP 120,000.00</td>
+        <td data-sort-value="Prof. Extension Director">Prof. Extension Director</td>
+        <td data-sort-value="Under Review"><span class="status-pill status-under-review">Under Review</span></td>
+        <td><a class="ghost-btn action-btn" href="extension.html?status=Under%20Review"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Pending">
+        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission 4" value="4" data-row-select="extensionSubmissionTable"></td>
+        <td data-sort-value="Modern Organic Backyard Aquaculture for Livelihood Diversification"><strong>Modern Organic Backyard Aquaculture for Livelihood Diversification</strong><br><small>Mar 05, 2026 - Sep 05, 2026</small></td>
+        <td data-sort-value="College of Arts and Sciences"><span class="dept-pill">College of Arts and Sciences</span></td>
+        <td data-sort-value="Dr. Fernando Morales">Dr. Fernando Morales</td>
+        <td data-sort-value="Fisherfolk Association">Fisherfolk Association</td>
+        <td data-sort-value="95000">PHP 95,000.00</td>
+        <td data-sort-value="Unassigned">Unassigned</td>
+        <td data-sort-value="Pending"><span class="status-pill status-pending">Pending</span></td>
+        <td><a class="ghost-btn action-btn" href="extension.html?status=Pending"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Pending">
+        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission 5" value="5" data-row-select="extensionSubmissionTable"></td>
+        <td data-sort-value="Urban Rooftop Hydroponic Gardening & Nutrition Coaching for Informal Settlers"><strong>Urban Rooftop Hydroponic Gardening & Nutrition Coaching for Informal Settlers</strong><br><small>Mar 10, 2026 - Jun 10, 2026</small></td>
+        <td data-sort-value="College of Arts and Sciences"><span class="dept-pill">College of Arts and Sciences</span></td>
+        <td data-sort-value="Prof. Lilian Santos">Prof. Lilian Santos</td>
+        <td data-sort-value="Urban Farmers Coalition">Urban Farmers Coalition</td>
+        <td data-sort-value="65000">PHP 65,000.00</td>
+        <td data-sort-value="Unassigned">Unassigned</td>
+        <td data-sort-value="Pending"><span class="status-pill status-pending">Pending</span></td>
+        <td><a class="ghost-btn action-btn" href="extension.html?status=Pending"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved">
+        <td class="table-checkbox-col"><input form="bulk-extensionSubmissionTable" type="checkbox" name="ids[]" aria-label="Select extension submission 6" value="6" data-row-select="extensionSubmissionTable"></td>
+        <td data-sort-value="Solar-Powered Low-Cost Post-Harvest Food Dryer Installation & Training"><strong>Solar-Powered Low-Cost Post-Harvest Food Dryer Installation & Training</strong><br><small>Feb 15, 2026 - Aug 15, 2026</small></td>
+        <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+        <td data-sort-value="Engr. Katrina Valdez">Engr. Katrina Valdez</td>
+        <td data-sort-value="Fruit Growers Cooperative">Fruit Growers Cooperative</td>
+        <td data-sort-value="140000">PHP 140,000.00</td>
+        <td data-sort-value="Prof. Extension Director">Prof. Extension Director</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td><a class="ghost-btn action-btn" href="extension.html?status=Approved"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+
+                    <!-- 3. Activity Submissions Folder -->
+                    <details class="submission-folder" id="activityFolder">
+                        <summary>
+                            <span><i class="ri-calendar-event-line"></i> <span id="activityFolderTitle">Activity Submissions</span></span>
+                            <strong id="activitySubCount">5</strong>
+                        </summary>
+                        <div class="table-scroll">
+                            <div class="table-selection-toolbar is-hidden" data-selection-toolbar="activitySubmissionTable" hidden style="display: none;">
+                                <span data-selection-count>0 selected</span>
+                                <form id="bulk-activitySubmissionTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'activitySubmissionTable')">
+                                    <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span>Archive Selected</span></button>
+                                </form>
+                            </div>
+                            <table class="data-table portal-table" id="activitySubmissionTable">
+                                <thead>
+                                    <tr>
+                                        <th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-activitySubmissionTable" type="checkbox" aria-label="Select all activities" data-select-all="activitySubmissionTable"><span>Select all</span></label></th>
+                                        <th>Activity</th>
+                                        <th>College</th>
+                                        <th>Type</th>
+                                        <th>Venue</th>
+                                        <th>Date</th>
+                                        <th>Submitted By</th>
+                                        <th>Manage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activitySubmissionBody">
+
+    <tr data-table-row>
+        <td class="table-checkbox-col"><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity 1" value="1" data-row-select="activitySubmissionTable"></td>
+        <td data-sort-value="Annual University Research & Innovation Colloquium 2026"><strong>Annual University Research & Innovation Colloquium 2026</strong><br><small>Flagship academic presentations and multidisciplinary research showcase.</small></td>
+        <td data-sort-value="Office of the Vice President for Research and Extension"><span class="dept-pill">Office of the Vice President for Research and Extension</span></td>
+        <td data-sort-value="Colloquium"><span class="dept-pill">Colloquium</span></td>
+        <td data-sort-value="University Gymnasium">University Gymnasium</td>
+        <td data-sort-value="2026-04-15">Apr 15, 2026</td>
+        <td data-sort-value="Dr. Aris Thorne">Dr. Aris Thorne</td>
+        <td><a class="ghost-btn action-btn" href="activities.html"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row>
+        <td class="table-checkbox-col"><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity 2" value="2" data-row-select="activitySubmissionTable"></td>
+        <td data-sort-value="Community Extension Leaders Capacity Building Seminar"><strong>Community Extension Leaders Capacity Building Seminar</strong><br><small>Leadership workshops for barangay coordinators and community facilitators.</small></td>
+        <td data-sort-value="Extension Directorate"><span class="dept-pill">Extension Directorate</span></td>
+        <td data-sort-value="Seminar"><span class="dept-pill">Seminar</span></td>
+        <td data-sort-value="AVR Building C">AVR Building C</td>
+        <td data-sort-value="2026-04-22">Apr 22, 2026</td>
+        <td data-sort-value="Dr. Maricel Gomez">Dr. Maricel Gomez</td>
+        <td><a class="ghost-btn action-btn" href="activities.html"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row>
+        <td class="table-checkbox-col"><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity 3" value="3" data-row-select="activitySubmissionTable"></td>
+        <td data-sort-value="Grant Writing & Scopus Publication Bootcamp for Faculty Researchers"><strong>Grant Writing & Scopus Publication Bootcamp for Faculty Researchers</strong><br><small>Intensive 3-day workshop on writing high-impact journal manuscripts.</small></td>
+        <td data-sort-value="Research Directorate"><span class="dept-pill">Research Directorate</span></td>
+        <td data-sort-value="Workshop"><span class="dept-pill">Workshop</span></td>
+        <td data-sort-value="Computer Lab 4">Computer Lab 4</td>
+        <td data-sort-value="2026-05-08">May 08, 2026</td>
+        <td data-sort-value="Dr. Research Director">Dr. Research Director</td>
+        <td><a class="ghost-btn action-btn" href="activities.html"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row>
+        <td class="table-checkbox-col"><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity 4" value="4" data-row-select="activitySubmissionTable"></td>
+        <td data-sort-value="Post-Disaster Psychosocial First-Aid Training for Local Volunteers"><strong>Post-Disaster Psychosocial First-Aid Training for Local Volunteers</strong><br><small>Disaster preparedness and psychological first aid modules for local responders.</small></td>
+        <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+        <td data-sort-value="Training"><span class="dept-pill">Training</span></td>
+        <td data-sort-value="Community Center">Community Center</td>
+        <td data-sort-value="2026-05-18">May 18, 2026</td>
+        <td data-sort-value="Prof. Melissa Aquino">Prof. Melissa Aquino</td>
+        <td><a class="ghost-btn action-btn" href="activities.html"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+
+    <tr data-table-row>
+        <td class="table-checkbox-col"><input form="bulk-activitySubmissionTable" type="checkbox" name="ids[]" aria-label="Select activity 5" value="5" data-row-select="activitySubmissionTable"></td>
+        <td data-sort-value="Calabarzon Higher Education Agribusiness & Tech Summit"><strong>Calabarzon Higher Education Agribusiness & Tech Summit</strong><br><small>Regional forum bridging academic innovations with agricultural cooperatives.</small></td>
+        <td data-sort-value="College of Arts and Sciences"><span class="dept-pill">College of Arts and Sciences</span></td>
+        <td data-sort-value="Forum"><span class="dept-pill">Forum</span></td>
+        <td data-sort-value="Main Auditorium">Main Auditorium</td>
+        <td data-sort-value="2026-06-02">Jun 02, 2026</td>
+        <td data-sort-value="Dr. Fernando Morales">Dr. Fernando Morales</td>
+        <td><a class="ghost-btn action-btn" href="activities.html"><i class="ri-arrow-right-line"></i><span>Open</span></a></td>
+    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                </section>
+
+                <!-- CATEGORY SUMMARY GRID (FULL-WIDTH 4-COLUMN CARDS) -->
+                <section class="summary-grid" style="margin-bottom: 24px;">
+                    <article class="summary-card category-filter-card active" role="button" tabindex="0" data-category-filter="All">
+                        <div class="summary-icon"><i class="ri-folders-line"></i></div>
+                        <div>
+                            <p>All Records</p>
+                            <h3 id="countAll">8</h3>
+                            <span>Open all records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Research Paper">
+                        <div class="summary-icon"><i class="ri-article-line"></i></div>
+                        <div>
+                            <p>Research Paper</p>
+                            <h3 id="countRes">1</h3>
+                            <span>Open category records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Extension Project">
+                        <div class="summary-icon"><i class="ri-hand-heart-line"></i></div>
+                        <div>
+                            <p>Extension Project</p>
+                            <h3 id="countExt">2</h3>
+                            <span>Open category records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Institutional Report">
+                        <div class="summary-icon"><i class="ri-bar-chart-box-line"></i></div>
+                        <div>
+                            <p>Institutional Report</p>
+                            <h3 id="countRep">2</h3>
+                            <span>Open category records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Special Order / Policy">
+                        <div class="summary-icon"><i class="ri-file-shield-line"></i></div>
+                        <div>
+                            <p>Special Order / Policy</p>
+                            <h3 id="countPol">1</h3>
+                            <span>Open category records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Minutes of Meeting">
+                        <div class="summary-icon"><i class="ri-team-line"></i></div>
+                        <div>
+                            <p>Minutes of Meeting</p>
+                            <h3 id="countMin">1</h3>
+                            <span>Open category records</span>
+                        </div>
+                    </article>
+                    <article class="summary-card category-filter-card" role="button" tabindex="0" data-category-filter="Technical Report">
+                        <div class="summary-icon"><i class="ri-file-settings-line"></i></div>
+                        <div>
+                            <p>Technical Report</p>
+                            <h3 id="countTech">1</h3>
+                            <span>Open category records</span>
+                        </div>
+                    </article>
+                </section>
+
+                <!-- COMPLETED COLLEGES DIRECTORY CARD (FULL-WIDTH BELOW CATEGORY CARDS) -->
+                <article class="panel chart-panel acad-analytics-card" style="margin-bottom: 24px;">
+                    <div class="acad-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div class="acad-card-title-wrap">
+                            <span class="acad-card-icon icon-emerald">
+                                <i class="ri-building-2-line"></i>
+                            </span>
+                            <div>
+                                <h2 class="acad-card-title">Completed Colleges</h2>
+                            </div>
+                        </div>
+                        <div class="acad-header-controls" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <div class="acad-search-box" style="position: relative; display: flex; align-items: center;">
+                                <i class="ri-search-line" style="position: absolute; left: 9px; color: #94a3b8; font-size: 0.85rem; pointer-events: none;"></i>
+                                <input type="search" id="completedCollegeSearchInput" placeholder="Search department or title..." aria-label="Search completed projects by department" style="height: 32px; padding: 0 28px 0 28px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; color: #1e293b; background: #ffffff; width: 220px; outline: none; transition: all 0.2s ease;">
+                                <button type="button" id="completedCollegeSearchBtn" aria-label="Search" title="Search" style="position: absolute; right: 2px; width: 26px; height: 26px; border: none; background: transparent; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                                    <i class="ri-arrow-right-s-line" style="font-size: 1rem;"></i>
+                                </button>
+                            </div>
+                            <div class="acad-filter-box">
+                                <label for="completedProjectTypeFilter">Stream:</label>
+                                <select id="completedProjectTypeFilter" class="filter-select compact-select">
+                                    <option value="all">All Projects</option>
+                                    <option value="research">Research</option>
+                                    <option value="extension">Extension</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Clean Scroll Container -->
+                    <div id="completedCollegesList" class="custom-clean-scrollbar" style="flex: 1; min-height: 250px; max-height: 295px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 9px;">
+                        <!-- Populated dynamically by JS with clean academic cards -->
+                    </div>
+
+                    <!-- Card Bottom Bar -->
+                    <div class="acad-card-footer">
+                        <span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;">
+                            <i class="ri-shield-check-line" style="color: #15803d; font-size: 0.9rem;"></i> Institutional Completion Registry
+                        </span>
+                        <strong id="completedTotalBadge" style="color: #0f172a; font-weight: 800;">4 Active Colleges · 8 Completed</strong>
+                    </div>
+                </article>
+
+                <!-- MAIN RECORDS TABLE PANEL (EXACT PHP TABLE & COLUMNS) -->
+                <section class="panel">
+                    <div class="panel-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                            <h2 id="recordsPanelTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; display: inline-flex; align-items: center; gap: 8px; letter-spacing: -0.015em;">
+                                <i class="ri-file-list-3-line" style="color: #15803d; font-size: 1.25rem;"></i>
+                                <span>All Records</span>
+                            </h2>
+                            <span id="recordsPanelSubtitle" style="display: block; font-size: 0.82rem; color: #64748b; font-weight: 500; margin-top: 3px;">Open a category card above to view its documents.</span>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="recordsTable" hidden style="display: none;">
+                            <span data-selection-count>0 selected</span>
+                            <form id="bulk-recordsTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'recordsTable')">
+                                <button class="action-btn btn-archive-natural" type="submit" name="bulk_action" value="archive" data-bulk-submit><i class="ri-download-2-line"></i><span id="bulkRecordActionLabel">Archive Selected</span></button>
+                            </form>
+                        </div>
+                        <table class="data-table portal-table" id="recordsTable">
+                            <thead>
+                                <tr>
+                                    <th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-recordsTable" type="checkbox" aria-label="Select all records" data-select-all="recordsTable"><span>Select all</span></label></th>
+                                    <th>Document</th>
+                                    <th>Author</th>
+                                    <th>College</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Assigned</th>
+                                    <th>Uploaded By</th>
+                                    <th>Manage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsTableBody">
+
+    <tr data-table-row data-status="Approved" data-category="Institutional Report" id="doc-1">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="1" aria-label="Select record 1" data-row-select="recordsTable"></td>
+        <td data-sort-value="Institutional Research Agenda and Ethics Protocol 2026-2028">
+            <strong>Institutional Research Agenda and Ethics Protocol 2026-2028</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Institutional Report | OVPRE_Research_Agenda_2026.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Adopted by Academic Council under Resolution No. 04-2026.</small>
+        </td>
+        <td data-sort-value="Dr. Aris Thorne">Dr. Aris Thorne</td>
+        <td data-sort-value="Office of the Vice President for Research and Extension"><span class="dept-pill">Office of the Vice President for Research and Extension</span></td>
+        <td data-sort-value="2026-01-10">Jan 10, 2026</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="Dr. Research Director">Dr. Research Director</td>
+        <td data-sort-value="Dr. Aris Thorne">Dr. Aris Thorne</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(1)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved" data-category="Special Order / Policy" id="doc-2">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="2" aria-label="Select record 2" data-row-select="recordsTable"></td>
+        <td data-sort-value="University Extension Manual and Barangay Partnership Framework">
+            <strong>University Extension Manual and Barangay Partnership Framework</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Special Order / Policy | Extension_Partnership_Manual_v2.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Institutional guidelines approved for implementation.</small>
+        </td>
+        <td data-sort-value="Dr. Maricel Gomez">Dr. Maricel Gomez</td>
+        <td data-sort-value="Office of the Vice President for Research and Extension"><span class="dept-pill">Office of the Vice President for Research and Extension</span></td>
+        <td data-sort-value="2026-01-18">Jan 18, 2026</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="Prof. Extension Director">Prof. Extension Director</td>
+        <td data-sort-value="Dr. Maricel Gomez">Dr. Maricel Gomez</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(2)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved" data-category="Research Paper" id="doc-3">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="3" aria-label="Select record 3" data-row-select="recordsTable"></td>
+        <td data-sort-value="AI-Powered Early Blight Detection in Solanaceous Crops - Full Study">
+            <strong>AI-Powered Early Blight Detection in Solanaceous Crops - Full Study</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Research Paper | AI_Early_Blight_Detection_Study.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Recommended for journal publication.</small>
+        </td>
+        <td data-sort-value="Dr. Alicia Santos, Engr. Mark Ramos">Dr. Alicia Santos, Engr. Mark Ramos</td>
+        <td data-sort-value="College of Computer Studies"><span class="dept-pill">College of Computer Studies</span></td>
+        <td data-sort-value="2026-02-02">Feb 02, 2026</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="Dr. Research Director">Dr. Research Director</td>
+        <td data-sort-value="Dr. Alicia Santos">Dr. Alicia Santos</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(3)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved" data-category="Extension Project" id="doc-4">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="4" aria-label="Select record 4" data-row-select="recordsTable"></td>
+        <td data-sort-value="Digital Financial Literacy & Cloud Bookkeeping for Market Vendors">
+            <strong>Digital Financial Literacy & Cloud Bookkeeping for Market Vendors</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Extension Project | Vendor_Cloud_Bookkeeping_Module.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Outreach training materials approved.</small>
+        </td>
+        <td data-sort-value="Prof. Elena Cruz">Prof. Elena Cruz</td>
+        <td data-sort-value="College of Business Administration and Accountancy"><span class="dept-pill">College of Business Administration and Accountancy</span></td>
+        <td data-sort-value="2026-02-14">Feb 14, 2026</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="Prof. Extension Director">Prof. Extension Director</td>
+        <td data-sort-value="Prof. Elena Cruz">Prof. Elena Cruz</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(4)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Approved" data-category="Minutes of Meeting" id="doc-5">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="5" aria-label="Select record 5" data-row-select="recordsTable"></td>
+        <td data-sort-value="Minutes of the 1st Regular OVPRE Research Directorate Council 2026">
+            <strong>Minutes of the 1st Regular OVPRE Research Directorate Council 2026</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Minutes of Meeting | Minutes_OVPRE_Council_Jan2026.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Duly signed and ratified.</small>
+        </td>
+        <td data-sort-value="Administrative Office">Administrative Office</td>
+        <td data-sort-value="Office of the Vice President for Research and Extension"><span class="dept-pill">Office of the Vice President for Research and Extension</span></td>
+        <td data-sort-value="2026-02-20">Feb 20, 2026</td>
+        <td data-sort-value="Approved"><span class="status-pill status-approved">Approved</span></td>
+        <td data-sort-value="Dr. Aris Thorne">Dr. Aris Thorne</td>
+        <td data-sort-value="Administrative Office">Administrative Office</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(5)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Under Review" data-category="Technical Report" id="doc-6">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="6" aria-label="Select record 6" data-row-select="recordsTable"></td>
+        <td data-sort-value="Community IoT Flood Early Warning System Technical Blueprints">
+            <strong>Community IoT Flood Early Warning System Technical Blueprints</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Technical Report | IoT_Flood_Sensor_Blueprints.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Under review by engineering technical evaluation committee.</small>
+        </td>
+        <td data-sort-value="Engr. Roberto Dimaano">Engr. Roberto Dimaano</td>
+        <td data-sort-value="College of Engineering"><span class="dept-pill">College of Engineering</span></td>
+        <td data-sort-value="2026-02-28">Feb 28, 2026</td>
+        <td data-sort-value="Under Review"><span class="status-pill status-under-review">Under Review</span></td>
+        <td data-sort-value="Engr. Mark Ramos">Engr. Mark Ramos</td>
+        <td data-sort-value="Engr. Roberto Dimaano">Engr. Roberto Dimaano</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(6)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Pending" data-category="Extension Project" id="doc-7">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="7" aria-label="Select record 7" data-row-select="recordsTable"></td>
+        <td data-sort-value="Modern Organic Backyard Aquaculture Field Manual">
+            <strong>Modern Organic Backyard Aquaculture Field Manual</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Extension Project | Organic_Tilapia_Aquaculture_Guide.docx
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Awaiting final college coordinator endorsement.</small>
+        </td>
+        <td data-sort-value="Dr. Fernando Morales">Dr. Fernando Morales</td>
+        <td data-sort-value="College of Arts and Sciences"><span class="dept-pill">College of Arts and Sciences</span></td>
+        <td data-sort-value="2026-03-05">Mar 05, 2026</td>
+        <td data-sort-value="Pending"><span class="status-pill status-pending">Pending</span></td>
+        <td data-sort-value="Dr. Maricel Gomez">Dr. Maricel Gomez</td>
+        <td data-sort-value="Dr. Fernando Morales">Dr. Fernando Morales</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(7)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+
+    <tr data-table-row data-status="Under Review" data-category="Institutional Report" id="doc-8">
+        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="8" aria-label="Select record 8" data-row-select="recordsTable"></td>
+        <td data-sort-value="Maternal Nutrition & First 1000 Days Recipe Compilation">
+            <strong>Maternal Nutrition & First 1000 Days Recipe Compilation</strong>
+            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                <i class="ri-file-line"></i> Institutional Report | Maternal_Nutrition_Recipes.pdf
+            </div>
+            <small style="color: #64748b; display: block; margin-top: 2px;">Remarks: Review in progress with RHU nutritionists.</small>
+        </td>
+        <td data-sort-value="Prof. Clara De Jesus">Prof. Clara De Jesus</td>
+        <td data-sort-value="College of Nursing and Allied Health Sciences"><span class="dept-pill">College of Nursing and Allied Health Sciences</span></td>
+        <td data-sort-value="2026-03-14">Mar 14, 2026</td>
+        <td data-sort-value="Under Review"><span class="status-pill status-under-review">Under Review</span></td>
+        <td data-sort-value="Prof. Extension Director">Prof. Extension Director</td>
+        <td data-sort-value="Prof. Clara De Jesus">Prof. Clara De Jesus</td>
+        <td>
+            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(8)">
+                <i class="ri-more-2-fill"></i><span>Manage</span>
+            </button>
+        </td>
+    </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ARCHIVED ANNOUNCEMENTS PANEL (SHOWN IN ARCHIVED RECORDS VIEW) -->
+                <section class="panel" id="archivedAnnouncementsPanel" style="display: none;">
+                    <div class="panel-heading">
+                        <h2>Archived Announcements</h2>
+                        <span id="archivedAnnouncementsCount">1 archived announcement</span>
+                    </div>
+                    <div class="table-scroll">
+                        <div class="table-selection-toolbar is-hidden" data-selection-toolbar="archivedAnnouncementsTable" hidden style="display: none;">
+                            <span data-selection-count>0 selected</span>
+                            <form id="bulk-archivedAnnouncementsTable" method="post" data-bulk-selection-form onsubmit="handleBulkAction(event, 'archivedAnnouncementsTable')">
+                                <button class="ghost-btn action-btn" type="submit" name="bulk_action" value="restore" data-bulk-submit><i class="ri-arrow-go-back-line"></i><span>Restore Selected</span></button>
+                            </form>
+                        </div>
+                        <table class="data-table portal-table" id="archivedAnnouncementsTable">
+                            <thead>
+                                <tr>
+                                    <th class="table-checkbox-col"><label class="select-all-control"><input form="bulk-archivedAnnouncementsTable" type="checkbox" aria-label="Select all archived announcements" data-select-all="archivedAnnouncementsTable"><span>Select all</span></label></th>
+                                    <th>Announcement</th>
+                                    <th>Audience</th>
+                                    <th>Archived Status</th>
+                                    <th>Posted By</th>
+                                    <th>Date Posted</th>
+                                    <th>Manage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="archivedAnnouncementsBody">
+                                <tr data-table-row data-status="Archived">
+                                    <td class="table-checkbox-col"><input form="bulk-archivedAnnouncementsTable" type="checkbox" name="ids[]" aria-label="Select archived announcement 101" value="101" data-row-select="archivedAnnouncementsTable"></td>
+                                    <td data-sort-value="Call for Institutional Research & Extension Proposals CY 2025 (Closed)"><strong>Call for Institutional Research & Extension Proposals CY 2025 (Closed)</strong><br><small>The formal submission window for the 2025 grant cycle is now archived.</small></td>
+                                    <td data-sort-value="All Faculty"><span class="dept-pill">All Faculty</span></td>
+                                    <td><span class="status-pill status-archived">Archived</span></td>
+                                    <td data-sort-value="Super Administrator">Super Administrator</td>
+                                    <td data-sort-value="2025-11-20">Nov 20, 2025</td>
+                                    <td>
+                                        <button class="ghost-btn action-btn" type="button" onclick="handleRestoreAnnouncement(101)">
+                                            <i class="ri-arrow-go-back-line"></i><span>Retrieve</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         MODALS (EXACT PHP SPECIFICATIONS)
+         ========================================================= -->
+
+    <!-- 1. MANAGE RECORD MODAL -->
+    <div class="modal" id="manageDocModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card record-manage-modal">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2>Manage Record</h2>
+            <p id="manageDocTitle" style="font-weight: 700; color: #0f172a; margin: 0;"></p>
+            <small id="manageDocMeta" style="color: #64748b; margin-top: -8px; display: block;"></small>
+            <div class="record-modal-actions" style="margin-top: 10px;">
+                <button class="ghost-btn action-btn" type="button" id="managePreviewBtn"><i class="ri-eye-line"></i><span>Preview</span></button>
+                <a class="ghost-btn action-btn" id="manageDownloadBtn" download><i class="ri-download-line"></i><span>Download</span></a>
+                <button class="ghost-btn action-btn" type="button" id="manageTimelineBtn"><i class="ri-time-line"></i><span>Timeline</span></button>
+                <button class="ghost-btn action-btn" type="button" id="manageVersionsBtn"><i class="ri-git-branch-line"></i><span>Versions</span></button>
+                <button class="primary-btn action-btn" type="button" id="manageReviewBtn"><i class="ri-checkbox-circle-line"></i><span>Review</span></button>
+                <button class="action-btn btn-archive-natural" type="button" id="manageArchiveBtn"><i class="ri-download-2-line"></i><span>Archive</span></button>
+            </div>
+        </article>
+    </div>
+
+    <!-- 2. REVIEW RECORD MODAL -->
+    <div class="modal" id="reviewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="reviewDocForm" onsubmit="handleSaveReview(event)" style="max-width: 580px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2>Review Record</h2>
+            <input type="hidden" id="revDocId">
+            <p><strong id="revDocTitle"></strong></p>
+            <label class="field"><span>Status</span>
+                <select id="revStatus" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Declined">Declined</option>
+                </select>
+            </label>
+            <label class="field"><span>Approval / Rejection Remarks</span>
+                <textarea id="revRemarks" rows="4" placeholder="Enter remarks, conditions, or directives..."></textarea>
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                <button type="button" class="modal-cancel-btn" data-close-modal>Cancel</button>
+                <button type="submit" class="primary-btn mini-btn"><i class="ri-save-line"></i> Save Review</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 3. REVIEW TIMELINE MODAL -->
+    <div class="modal" id="timelineModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 600px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2>Review Timeline</h2>
+            <div class="timeline-list" id="timelineListContent">
+                <!-- Populated dynamically -->
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                <button type="button" class="modal-cancel-btn" data-close-modal>Close</button>
+            </div>
+        </article>
+    </div>
+
+    <!-- 4. VERSION HISTORY MODAL -->
+    <div class="modal" id="versionsModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 600px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2>Version History</h2>
+            <div class="timeline-list" id="versionsListContent">
+                <!-- Populated dynamically -->
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                <button type="button" class="modal-cancel-btn" data-close-modal>Close</button>
+            </div>
+        </article>
+    </div>
+
+    <!-- 5. PREVIEW MODAL -->
+    <div class="modal preview-modal" id="previewModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card preview-card">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-right: 36px; flex-wrap: wrap; gap: 8px;">
+                <h2 id="prevDocTitle" style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>Document Preview</span>
+                </h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="#" id="prevOpenTabBtn" target="_blank" class="preview-btn preview-btn-tab action-btn" title="Open in new window">
+                        <i class="ri-external-link-line"></i> <span>New Tab</span>
+                    </a>
+                    <a href="#" id="prevDownloadBtn" class="preview-btn preview-btn-download action-btn" download title="Download document">
+                        <i class="ri-download-2-line"></i> <span>Download PDF</span>
+                    </a>
+                </div>
+            </div>
+            <iframe id="previewIframe" class="document-preview" src="about:blank"></iframe>
+        </article>
+    </div>
+
+    <!-- 6. UPLOAD RECORD MODAL -->
+    <div class="modal" id="uploadModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card" style="max-width: 600px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2><i class="ri-upload-cloud-line" style="color: #15803d;"></i> Upload New Record</h2>
+            <form id="uploadDocForm" onsubmit="handleUploadDoc(event)" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                <label class="field"><span>Document Title</span>
+                    <input type="text" id="upTitle" required placeholder="Full document title">
+                </label>
+                <div class="form-grid">
+                    <label class="field"><span>Category</span>
+                        <select id="upCategory" required>
+                            <option value="Research Paper">Research Paper</option>
+                            <option value="Extension Project">Extension Project</option>
+                            <option value="Institutional Report">Institutional Report</option>
+                            <option value="Special Order / Policy">Special Order / Policy</option>
+                            <option value="Minutes of Meeting">Minutes of Meeting</option>
+                            <option value="Technical Report">Technical Report</option>
+                        </select>
+                    </label>
+                    <label class="field"><span>Author / Lead</span>
+                        <input type="text" id="upAuthor" required placeholder="Author or Submitting Unit">
+                    </label>
+                </div>
+                <label class="field"><span>College / Office</span>
+                    <select id="upCollege" required>
+                        <option value="Office of the Vice President for Research and Extension">Office of the Vice President for Research and Extension</option>
+                        <option value="College of Computer Studies">College of Computer Studies</option>
+                        <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                        <option value="College of Business Administration and Accountancy">College of Business Administration and Accountancy</option>
+                        <option value="College of Engineering">College of Engineering</option>
+                        <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                        <option value="College of Teacher Education">College of Teacher Education</option>
+                        <option value="College of Tourism and Hospitality Management">College of Tourism and Hospitality Management</option>
+                        <option value="College of Public Administration and Governance">College of Public Administration and Governance</option>
+                        <option value="College of Physical Education">College of Physical Education</option>
+                    </select>
+                </label>
+                <label class="field"><span>Select File (PDF, DOCX up to 15 MB)</span>
+                    <input type="file" id="upFile" accept=".pdf,.doc,.docx,.zip">
+                </label>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="modal-cancel-btn" data-close-modal>Cancel</button>
+                    <button type="submit" class="primary-btn mini-btn"><i class="ri-upload-cloud-line"></i> Upload</button>
+                </div>
+            </form>
+        </article>
+    </div>
+
+    <!-- 7. RETRIEVE RECORD MODAL -->
+    <div class="modal" id="restoreDocModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <form class="modal-card" id="restoreDocForm" onsubmit="handleConfirmRestore(event)" style="max-width: 480px;">
+            <button class="modal-close" type="button" data-close-modal aria-label="Close modal"><i class="ri-close-line"></i></button>
+            <h2>Retrieve Record</h2>
+            <input type="hidden" id="restoreDocId">
+            <p>Retrieve this archived record back to the active workflow?</p>
+            <p><strong id="restoreDocTitle"></strong></p>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
+                <button type="button" class="modal-cancel-btn" data-close-modal>Cancel</button>
+                <button type="submit" class="primary-btn mini-btn"><i class="ri-arrow-go-back-line"></i> Retrieve Record</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 8. QUICK PREVIEW MODAL FOR COMPLETED PROJECTS -->
+    <div class="modal" id="submissionQuickPreviewDialog" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="quickPreviewTypeBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 9px; border-radius: 6px;"></span>
+                    <span id="quickPreviewStatusBadge" class="badge" style="font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px;"></span>
+                </div>
+                <button type="button" id="closeQuickPreviewDialog" data-close-modal aria-label="Close preview" style="width: 30px; height: 30px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #64748b; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+            </div>
+            <div style="padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(85vh - 72px); overflow-y: auto;">
+                <div>
+                    <h3 id="quickPreviewTitle" style="margin: 0 0 6px; color: #0f172a; font-size: 1.18rem; font-weight: 800; line-height: 1.4;"></h3>
+                    <p id="quickPreviewMeta" style="margin: 0; color: #64748b; font-size: 0.84rem; line-height: 1.5;"></p>
+                </div>
+                <div id="quickPreviewDescBox" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 0.88rem; color: #334155; line-height: 1.6;">
+                    <strong id="quickPreviewDescLabel" style="display: block; margin-bottom: 6px; color: #0f172a; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Abstract / Details</strong>
+                    <p id="quickPreviewDesc" style="margin: 0; white-space: pre-wrap; word-break: break-word;"></p>
+                </div>
+
+                <!-- Attached File Showcase Card -->
+                <div id="quickPreviewFileCard" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                        <span style="width: 38px; height: 38px; border-radius: 8px; background: #dcfce7; color: #15803d; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                            <i class="ri-file-pdf-fill"></i>
+                        </span>
+                        <div style="min-width: 0;">
+                            <strong id="quickPreviewFileName" style="display: block; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                Research-Documentation.pdf
+                            </strong>
+                            <span style="font-size: 0.72rem; color: #15803d; font-weight: 600;">
+                                <i class="ri-checkbox-circle-fill"></i> Official Verified Academic Document
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; padding-top: 12px; border-top: 1px solid #e2e8f0; flex-wrap: wrap;">
+                    <a id="quickPreviewDownloadBtn" href="#" class="ghost-btn action-btn" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px; font-size: 0.86rem; font-weight: 600; color: #1e293b !important; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease;">
+                        <i class="ri-download-cloud-line" style="font-size: 0.95rem;"></i> <span>Download File</span>
+                    </a>
+                    <a id="quickPreviewViewFileBtn" href="#" target="_blank" rel="noopener" class="primary-btn action-btn" style="height: 38px; min-height: 38px; max-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 18px; font-size: 0.86rem; font-weight: 700; color: #ffffff !important; background: #15803d !important; border: 1px solid #15803d !important; border-radius: 8px; text-decoration: none; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25); transition: all 0.2s ease;">
+                        <i class="ri-file-search-line" style="font-size: 0.95rem; line-height: 1; color: #ffffff !important;"></i> <span style="color: #ffffff !important; font-size: 0.86rem; font-weight: 700;">View File</span>
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT DATA ENGINE (EXACT PHP CORRESPONDENCE)
+         ========================================================= -->
+    <script>
+        const initialDocuments = [
+        {
+                "id": 1,
+                "title": "Institutional Research Agenda and Ethics Protocol 2026-2028",
+                "category_name": "Institutional Report",
+                "original_filename": "OVPRE_Research_Agenda_2026.pdf",
+                "size": "4.8 MB",
+                "author": "Dr. Aris Thorne",
+                "department_name": "Office of the Vice President for Research and Extension",
+                "submission_date": "2026-01-10",
+                "status": "Approved",
+                "status_remarks": "Adopted by Academic Council under Resolution No. 04-2026.",
+                "assignee": "Dr. Research Director",
+                "uploader": "Dr. Aris Thorne",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Approved",
+                                "remarks": "Adopted by Academic Council under Resolution No. 04-2026.",
+                                "fullname": "Dr. Research Director",
+                                "date": "Jan 12, 2026 10:30 AM"
+                        },
+                        {
+                                "action": "Under Review",
+                                "remarks": "Forwarded for Academic Council evaluation.",
+                                "fullname": "Dr. Aris Thorne",
+                                "date": "Jan 10, 2026 02:15 PM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Initial submission of Institutional Research Agenda.",
+                                "fullname": "Dr. Aris Thorne",
+                                "date": "Jan 10, 2026 09:00 AM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0 (Final Ratified)",
+                                "filename": "OVPRE_Research_Agenda_2026.pdf",
+                                "fullname": "Dr. Aris Thorne",
+                                "date": "Jan 10, 2026 09:00 AM"
+                        }
+                ]
+        },
+        {
+                "id": 2,
+                "title": "University Extension Manual and Barangay Partnership Framework",
+                "category_name": "Special Order / Policy",
+                "original_filename": "Extension_Partnership_Manual_v2.pdf",
+                "size": "3.2 MB",
+                "author": "Dr. Maricel Gomez",
+                "department_name": "Office of the Vice President for Research and Extension",
+                "submission_date": "2026-01-18",
+                "status": "Approved",
+                "status_remarks": "Institutional guidelines approved for implementation.",
+                "assignee": "Prof. Extension Director",
+                "uploader": "Dr. Maricel Gomez",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Approved",
+                                "remarks": "Institutional guidelines approved for implementation.",
+                                "fullname": "Prof. Extension Director",
+                                "date": "Jan 20, 2026 04:00 PM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Extension Partnership Framework submitted.",
+                                "fullname": "Dr. Maricel Gomez",
+                                "date": "Jan 18, 2026 11:20 AM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 2.0 (Official Manual)",
+                                "filename": "Extension_Partnership_Manual_v2.pdf",
+                                "fullname": "Dr. Maricel Gomez",
+                                "date": "Jan 18, 2026 11:20 AM"
+                        }
+                ]
+        },
+        {
+                "id": 3,
+                "title": "AI-Powered Early Blight Detection in Solanaceous Crops - Full Study",
+                "category_name": "Research Paper",
+                "original_filename": "AI_Early_Blight_Detection_Study.pdf",
+                "size": "8.5 MB",
+                "author": "Dr. Alicia Santos, Engr. Mark Ramos",
+                "department_name": "College of Computer Studies",
+                "submission_date": "2026-02-02",
+                "status": "Approved",
+                "status_remarks": "Recommended for journal publication.",
+                "assignee": "Dr. Research Director",
+                "uploader": "Dr. Alicia Santos",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Approved",
+                                "remarks": "Recommended for Scopus journal submission.",
+                                "fullname": "Dr. Research Director",
+                                "date": "Feb 05, 2026 03:30 PM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Full study submitted.",
+                                "fullname": "Dr. Alicia Santos",
+                                "date": "Feb 02, 2026 08:45 AM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0 (Full Preprint)",
+                                "filename": "AI_Early_Blight_Detection_Study.pdf",
+                                "fullname": "Dr. Alicia Santos",
+                                "date": "Feb 02, 2026 08:45 AM"
+                        }
+                ]
+        },
+        {
+                "id": 4,
+                "title": "Digital Financial Literacy & Cloud Bookkeeping for Market Vendors",
+                "category_name": "Extension Project",
+                "original_filename": "Vendor_Cloud_Bookkeeping_Module.pdf",
+                "size": "5.1 MB",
+                "author": "Prof. Elena Cruz",
+                "department_name": "College of Business Administration and Accountancy",
+                "submission_date": "2026-02-14",
+                "status": "Approved",
+                "status_remarks": "Outreach training materials approved.",
+                "assignee": "Prof. Extension Director",
+                "uploader": "Prof. Elena Cruz",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Approved",
+                                "remarks": "Outreach training materials approved.",
+                                "fullname": "Prof. Extension Director",
+                                "date": "Feb 16, 2026 01:10 PM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Module draft submitted.",
+                                "fullname": "Prof. Elena Cruz",
+                                "date": "Feb 14, 2026 10:00 AM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0",
+                                "filename": "Vendor_Cloud_Bookkeeping_Module.pdf",
+                                "fullname": "Prof. Elena Cruz",
+                                "date": "Feb 14, 2026 10:00 AM"
+                        }
+                ]
+        },
+        {
+                "id": 5,
+                "title": "Minutes of the 1st Regular OVPRE Research Directorate Council 2026",
+                "category_name": "Minutes of Meeting",
+                "original_filename": "Minutes_OVPRE_Council_Jan2026.pdf",
+                "size": "1.4 MB",
+                "author": "Administrative Office",
+                "department_name": "Office of the Vice President for Research and Extension",
+                "submission_date": "2026-02-20",
+                "status": "Approved",
+                "status_remarks": "Duly signed and ratified.",
+                "assignee": "Dr. Aris Thorne",
+                "uploader": "Administrative Office",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Approved",
+                                "remarks": "Duly signed and ratified.",
+                                "fullname": "Dr. Aris Thorne",
+                                "date": "Feb 21, 2026 09:15 AM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Minutes prepared.",
+                                "fullname": "Administrative Office",
+                                "date": "Feb 20, 2026 04:30 PM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0 (Signed)",
+                                "filename": "Minutes_OVPRE_Council_Jan2026.pdf",
+                                "fullname": "Administrative Office",
+                                "date": "Feb 20, 2026 04:30 PM"
+                        }
+                ]
+        },
+        {
+                "id": 6,
+                "title": "Community IoT Flood Early Warning System Technical Blueprints",
+                "category_name": "Technical Report",
+                "original_filename": "IoT_Flood_Sensor_Blueprints.pdf",
+                "size": "12.3 MB",
+                "author": "Engr. Roberto Dimaano",
+                "department_name": "College of Engineering",
+                "submission_date": "2026-02-28",
+                "status": "Under Review",
+                "status_remarks": "Under review by engineering technical evaluation committee.",
+                "assignee": "Engr. Mark Ramos",
+                "uploader": "Engr. Roberto Dimaano",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Under Review",
+                                "remarks": "Assigned to Engineering Tech Committee.",
+                                "fullname": "Engr. Mark Ramos",
+                                "date": "Mar 01, 2026 11:00 AM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Blueprints submitted.",
+                                "fullname": "Engr. Roberto Dimaano",
+                                "date": "Feb 28, 2026 05:00 PM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0",
+                                "filename": "IoT_Flood_Sensor_Blueprints.pdf",
+                                "fullname": "Engr. Roberto Dimaano",
+                                "date": "Feb 28, 2026 05:00 PM"
+                        }
+                ]
+        },
+        {
+                "id": 7,
+                "title": "Modern Organic Backyard Aquaculture Field Manual",
+                "category_name": "Extension Project",
+                "original_filename": "Organic_Tilapia_Aquaculture_Guide.docx",
+                "size": "6.7 MB",
+                "author": "Dr. Fernando Morales",
+                "department_name": "College of Arts and Sciences",
+                "submission_date": "2026-03-05",
+                "status": "Pending",
+                "status_remarks": "Awaiting final college coordinator endorsement.",
+                "assignee": "Dr. Maricel Gomez",
+                "uploader": "Dr. Fernando Morales",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Manual uploaded for extension accreditation.",
+                                "fullname": "Dr. Fernando Morales",
+                                "date": "Mar 05, 2026 01:20 PM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0",
+                                "filename": "Organic_Tilapia_Aquaculture_Guide.docx",
+                                "fullname": "Dr. Fernando Morales",
+                                "date": "Mar 05, 2026 01:20 PM"
+                        }
+                ]
+        },
+        {
+                "id": 8,
+                "title": "Maternal Nutrition & First 1000 Days Recipe Compilation",
+                "category_name": "Institutional Report",
+                "original_filename": "Maternal_Nutrition_Recipes.pdf",
+                "size": "2.9 MB",
+                "author": "Prof. Clara De Jesus",
+                "department_name": "College of Nursing and Allied Health Sciences",
+                "submission_date": "2026-03-14",
+                "status": "Under Review",
+                "status_remarks": "Review in progress with RHU nutritionists.",
+                "assignee": "Prof. Extension Director",
+                "uploader": "Prof. Clara De Jesus",
+                "archived": false,
+                "timeline": [
+                        {
+                                "action": "Under Review",
+                                "remarks": "Under review with RHU partners.",
+                                "fullname": "Prof. Extension Director",
+                                "date": "Mar 15, 2026 09:30 AM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Recipe guide uploaded.",
+                                "fullname": "Prof. Clara De Jesus",
+                                "date": "Mar 14, 2026 03:00 PM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0",
+                                "filename": "Maternal_Nutrition_Recipes.pdf",
+                                "fullname": "Prof. Clara De Jesus",
+                                "date": "Mar 14, 2026 03:00 PM"
+                        }
+                ]
+        },
+        {
+                "id": 9,
+                "title": "Historical Tour Guide Training Handbook 2025 Edition",
+                "category_name": "Special Order / Policy",
+                "original_filename": "Tour_Guide_Handbook_2025.pdf",
+                "size": "3.8 MB",
+                "author": "Prof. Manuel Valenzuela",
+                "department_name": "College of Arts and Sciences",
+                "submission_date": "2025-10-15",
+                "status": "Approved",
+                "status_remarks": "Archived following completion of outreach series.",
+                "assignee": "Unassigned",
+                "uploader": "Prof. Manuel Valenzuela",
+                "archived": true,
+                "timeline": [
+                        {
+                                "action": "Archived",
+                                "remarks": "Archived following completion of outreach series.",
+                                "fullname": "Dr. Aris Thorne",
+                                "date": "Dec 18, 2025 04:00 PM"
+                        },
+                        {
+                                "action": "Approved",
+                                "remarks": "Approved for regional heritage training.",
+                                "fullname": "Dr. Research Director",
+                                "date": "Oct 20, 2025 10:15 AM"
+                        },
+                        {
+                                "action": "Uploaded",
+                                "remarks": "Handbook submitted.",
+                                "fullname": "Prof. Manuel Valenzuela",
+                                "date": "Oct 15, 2025 09:00 AM"
+                        }
+                ],
+                "versions": [
+                        {
+                                "version_label": "Version 1.0 (Archived)",
+                                "filename": "Tour_Guide_Handbook_2025.pdf",
+                                "fullname": "Prof. Manuel Valenzuela",
+                                "date": "Oct 15, 2025 09:00 AM"
+                        }
+                ]
+        }
+];
+        const researchSubmissions = [
+        {
+                "id": 1,
+                "title": "AI-Driven Early Crop Disease Detection for Calabarzon Farming",
+                "funding_source": "DOST-PCAARRD Grant",
+                "department_name": "College of Computer Studies",
+                "researchers": "Dr. Alicia Santos, Engr. Mark Ramos",
+                "fullname": "Dr. Alicia Santos",
+                "assignee": "Dr. Research Director",
+                "status": "Approved",
+                "created_at": "2026-01-15"
+        },
+        {
+                "id": 2,
+                "title": "Isolation and Characterization of Bioactive Flavonoids from Indigenous Calamansi Waste",
+                "funding_source": "DA-BAR Research Fund",
+                "department_name": "College of Arts and Sciences",
+                "researchers": "Dr. Fernando Morales",
+                "fullname": "Dr. Fernando Morales",
+                "assignee": "Dr. Research Director",
+                "status": "Approved",
+                "created_at": "2026-01-28"
+        },
+        {
+                "id": 3,
+                "title": "Stress Coping Mechanisms and Psychological Resilience of Public Tertiary Educators",
+                "funding_source": "CHED Zonal Research Grant",
+                "department_name": "College of Teacher Education",
+                "researchers": "Dr. Rebecca Hernandez",
+                "fullname": "Dr. Rebecca Hernandez",
+                "assignee": "Dr. Research Director",
+                "status": "Under Review",
+                "created_at": "2026-02-20"
+        },
+        {
+                "id": 4,
+                "title": "Structural Assessment and Low-Cost Seismic Retrofitting of Heritage Masonry Buildings",
+                "funding_source": "DOST-PCIEERD Research Grant",
+                "department_name": "College of Engineering",
+                "researchers": "Engr. Gabriel Mendoza, Engr. Diana Cruz",
+                "fullname": "Engr. Gabriel Mendoza",
+                "assignee": "Engr. Mark Ramos",
+                "status": "Pending",
+                "created_at": "2026-03-02"
+        },
+        {
+                "id": 5,
+                "title": "Macro-Financial Contagion Modeling of Regional Rural Banks under High Inflation Volatility",
+                "funding_source": "BSP Research Academy Grant",
+                "department_name": "College of Business Administration and Accountancy",
+                "researchers": "Prof. Vicente Reyes",
+                "fullname": "Prof. Vicente Reyes",
+                "assignee": "Unassigned",
+                "status": "Pending",
+                "created_at": "2026-03-10"
+        },
+        {
+                "id": 6,
+                "title": "Clinical Efficacy of Tele-Rehabilitation Monitoring in Post-Stroke Geriatric Patients",
+                "funding_source": "DOH-PCHRD Health Research Grant",
+                "department_name": "College of Nursing and Allied Health Sciences",
+                "researchers": "Prof. Melissa Aquino",
+                "fullname": "Prof. Melissa Aquino",
+                "assignee": "Unassigned",
+                "status": "Declined",
+                "created_at": "2026-03-12"
+        }
+];
+        const extensionSubmissions = [
+        {
+                "id": 1,
+                "project_title": "Community Water Filtration System Installation in Barangay San Lucas",
+                "start_date": "2026-01-25",
+                "end_date": "2026-07-25",
+                "department_name": "College of Engineering",
+                "coordinator": "Engr. Katrina Valdez",
+                "community_partner": "Barangay San Lucas Council",
+                "budget": 180000,
+                "assignee": "Prof. Extension Director",
+                "progress_status": "Approved"
+        },
+        {
+                "id": 2,
+                "project_title": "IT Skills Training & Digital Literacy Bootcamp for Barangay San Juan",
+                "start_date": "2026-01-20",
+                "end_date": "2026-04-20",
+                "department_name": "College of Computer Studies",
+                "coordinator": "Dr. Aris Thorne",
+                "community_partner": "Barangay San Juan Youth Org",
+                "budget": 75000,
+                "assignee": "Dr. Maricel Gomez",
+                "progress_status": "Approved"
+        },
+        {
+                "id": 3,
+                "project_title": "Financial Literacy & Cloud Bookkeeping Coaching for Wet Market Vendors",
+                "start_date": "2026-02-22",
+                "end_date": "2026-05-22",
+                "department_name": "College of Business Administration and Accountancy",
+                "coordinator": "Prof. Raymond Cruz",
+                "community_partner": "Market Vendors Cooperative",
+                "budget": 120000,
+                "assignee": "Prof. Extension Director",
+                "progress_status": "Under Review"
+        },
+        {
+                "id": 4,
+                "project_title": "Modern Organic Backyard Aquaculture for Livelihood Diversification",
+                "start_date": "2026-03-05",
+                "end_date": "2026-09-05",
+                "department_name": "College of Arts and Sciences",
+                "coordinator": "Dr. Fernando Morales",
+                "community_partner": "Fisherfolk Association",
+                "budget": 95000,
+                "assignee": "Unassigned",
+                "progress_status": "Pending"
+        },
+        {
+                "id": 5,
+                "project_title": "Urban Rooftop Hydroponic Gardening & Nutrition Coaching for Informal Settlers",
+                "start_date": "2026-03-10",
+                "end_date": "2026-06-10",
+                "department_name": "College of Arts and Sciences",
+                "coordinator": "Prof. Lilian Santos",
+                "community_partner": "Urban Farmers Coalition",
+                "budget": 65000,
+                "assignee": "Unassigned",
+                "progress_status": "Pending"
+        },
+        {
+                "id": 6,
+                "project_title": "Solar-Powered Low-Cost Post-Harvest Food Dryer Installation & Training",
+                "start_date": "2026-02-15",
+                "end_date": "2026-08-15",
+                "department_name": "College of Engineering",
+                "coordinator": "Engr. Katrina Valdez",
+                "community_partner": "Fruit Growers Cooperative",
+                "budget": 140000,
+                "assignee": "Prof. Extension Director",
+                "progress_status": "Approved"
+        }
+];
+        const activitySubmissions = [
+        {
+                "id": 1,
+                "title": "Annual University Research & Innovation Colloquium 2026",
+                "description": "Flagship academic presentations and multidisciplinary research showcase.",
+                "department_name": "Office of the Vice President for Research and Extension",
+                "activity_type": "Colloquium",
+                "venue": "University Gymnasium",
+                "date": "2026-04-15",
+                "fullname": "Dr. Aris Thorne"
+        },
+        {
+                "id": 2,
+                "title": "Community Extension Leaders Capacity Building Seminar",
+                "description": "Leadership workshops for barangay coordinators and community facilitators.",
+                "department_name": "Extension Directorate",
+                "activity_type": "Seminar",
+                "venue": "AVR Building C",
+                "date": "2026-04-22",
+                "fullname": "Dr. Maricel Gomez"
+        },
+        {
+                "id": 3,
+                "title": "Grant Writing & Scopus Publication Bootcamp for Faculty Researchers",
+                "description": "Intensive 3-day workshop on writing high-impact journal manuscripts.",
+                "department_name": "Research Directorate",
+                "activity_type": "Workshop",
+                "venue": "Computer Lab 4",
+                "date": "2026-05-08",
+                "fullname": "Dr. Research Director"
+        },
+        {
+                "id": 4,
+                "title": "Post-Disaster Psychosocial First-Aid Training for Local Volunteers",
+                "description": "Disaster preparedness and psychological first aid modules for local responders.",
+                "department_name": "College of Nursing and Allied Health Sciences",
+                "activity_type": "Training",
+                "venue": "Community Center",
+                "date": "2026-05-18",
+                "fullname": "Prof. Melissa Aquino"
+        },
+        {
+                "id": 5,
+                "title": "Calabarzon Higher Education Agribusiness & Tech Summit",
+                "description": "Regional forum bridging academic innovations with agricultural cooperatives.",
+                "department_name": "College of Arts and Sciences",
+                "activity_type": "Forum",
+                "venue": "Main Auditorium",
+                "date": "2026-06-02",
+                "fullname": "Dr. Fernando Morales"
+        }
+];
+
+        let currentTab = 'active'; // 'active' or 'archived'
+        let selectedDocForManage = null;
+
+        function getDocs() {
+            try {
+                const raw = localStorage.getItem('ovpre_admin_documents');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length && parsed[0].category_name) return parsed;
+                }
+            } catch (e) {}
+            localStorage.setItem('ovpre_admin_documents', JSON.stringify(initialDocuments));
+            return initialDocuments;
+        }
+
+        function saveDocs(list) {
+            try {
+                localStorage.setItem('ovpre_admin_documents', JSON.stringify(list));
+            } catch (e) {}
+        }
+
+        // --- TAB SWITCHING (Active / Archived) ---
+        function switchRecordView(tab) {
+            currentTab = tab;
+            const isArchived = (tab === 'archived');
+            const tabActiveBtn = document.getElementById('tabActiveBtn');
+            const tabArchivedBtn = document.getElementById('tabArchivedBtn');
+
+            if (tabActiveBtn && tabArchivedBtn) {
+                tabActiveBtn.classList.toggle('is-active', !isArchived);
+                tabArchivedBtn.classList.toggle('is-active', isArchived);
+                tabActiveBtn.setAttribute('aria-selected', !isArchived ? 'true' : 'false');
+                tabArchivedBtn.setAttribute('aria-selected', isArchived ? 'true' : 'false');
+            }
+
+            // Update Folders Headings
+            const sfTitle = document.getElementById('submissionFoldersTitle');
+            const sfSub = document.getElementById('submissionFoldersSubtitle');
+            if (sfTitle) sfTitle.innerHTML = `<i class="ri-folder-shared-line" style="color: #15803d; font-size: 1.25rem;"></i><span>${isArchived ? 'Archived Submission Folders' : 'Submission Folders'}</span>`;
+            const _currentUser = (function() {
+                try {
+                    const u = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
+                    return u ? JSON.parse(u) : null;
+                } catch(e) { return null; }
+            })();
+            const _role = (_currentUser && _currentUser.role) ? _currentUser.role : '';
+            if (sfSub) {
+                if (_role === 'Research Director') {
+                    sfSub.textContent = isArchived ? 'Archived research and activity submissions' : 'Research and activity submissions';
+                } else if (_role === 'Extension Director') {
+                    sfSub.textContent = isArchived ? 'Archived extension and activity submissions' : 'Extension and activity submissions';
+                } else {
+                    sfSub.textContent = isArchived ? 'Archived research, extension, and activity submissions' : 'Research, extension, and activity submissions';
+                }
+            }
+
+            const rfTitle = document.getElementById('researchFolderTitle');
+            const efTitle = document.getElementById('extensionFolderTitle');
+            const afTitle = document.getElementById('activityFolderTitle');
+            if (rfTitle) rfTitle.textContent = isArchived ? 'Archived Research Submissions' : 'Research Management Submissions';
+            if (efTitle) efTitle.textContent = isArchived ? 'Archived Extension Project Submissions' : 'Extension Project Submissions';
+            if (afTitle) afTitle.textContent = isArchived ? 'Archived Activity Submissions' : 'Activity Submissions';
+
+            // Update Bulk action label
+            const bulkActionLabel = document.getElementById('bulkRecordActionLabel');
+            if (bulkActionLabel) {
+                bulkActionLabel.textContent = isArchived ? 'Retrieve Selected' : 'Archive Selected';
+            }
+
+            // Update Records Panel Title
+            const pTitle = document.getElementById('recordsPanelTitle');
+            if (pTitle) pTitle.innerHTML = `<i class="ri-file-list-3-line" style="color: #15803d; font-size: 1.25rem;"></i><span>${isArchived ? 'Archived Records' : 'All Records'}</span>`;
+
+            // Show / Hide Archived Announcements Panel
+            const annPanel = document.getElementById('archivedAnnouncementsPanel');
+            if (annPanel) {
+                annPanel.style.display = isArchived ? 'block' : 'none';
+            }
+
+            renderRecordsTable();
+        }
+
+        // --- CATEGORY COUNTS ---
+        function updateCategoryCounts(all) {
+            const activeList = all.filter(d => !d.archived);
+            const countByCat = (cat) => activeList.filter(d => d.category_name === cat).length;
+            const countAll = document.getElementById('countAll');
+            if (countAll) countAll.textContent = activeList.length;
+            const countRes = document.getElementById('countRes');
+            if (countRes) countRes.textContent = countByCat('Research Paper');
+            const countExt = document.getElementById('countExt');
+            if (countExt) countExt.textContent = countByCat('Extension Project');
+            const countRep = document.getElementById('countRep');
+            if (countRep) countRep.textContent = countByCat('Institutional Report');
+            const countPol = document.getElementById('countPol');
+            if (countPol) countPol.textContent = countByCat('Special Order / Policy');
+            const countMin = document.getElementById('countMin');
+            if (countMin) countMin.textContent = countByCat('Minutes of Meeting');
+            const countTech = document.getElementById('countTech');
+            if (countTech) countTech.textContent = countByCat('Technical Report');
+        }
+
+        // --- RENDER RECORDS TABLE ---
+        function renderRecordsTable() {
+            const all = getDocs();
+            updateCategoryCounts(all);
+
+            const isArchived = (currentTab === 'archived');
+            const list = all.filter(d => isArchived ? d.archived : !d.archived);
+
+            const tbody = document.getElementById('recordsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (!list.length) {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-pagination-empty', 'true');
+                tr.innerHTML = '<td colspan="9" style="text-align: center; padding: 28px; color: #64748b;">No ' + (isArchived ? 'archived' : 'active') + ' records found.</td>';
+                tbody.appendChild(tr);
+            } else {
+                list.forEach(doc => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-table-row', '');
+                    tr.setAttribute('data-status', doc.status || 'Approved');
+                    tr.setAttribute('data-category', doc.category_name);
+                    tr.id = 'doc-' + doc.id;
+
+                    const remarksHtml = doc.status_remarks ? '<br><small style="color: #64748b;">Remarks: ' + OVPRE.h(doc.status_remarks) + '</small>' : '';
+
+                    tr.innerHTML = `
+                        <td class="table-checkbox-col"><input form="bulk-recordsTable" type="checkbox" name="ids[]" value="${doc.id}" aria-label="Select record ${doc.id}" data-row-select="recordsTable"></td>
+                        <td data-sort-value="${OVPRE.h(doc.title)}">
+                            <strong>${OVPRE.h(doc.title)}</strong>
+                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
+                                <i class="ri-file-line"></i> ${OVPRE.h(doc.category_name)} | ${OVPRE.h(doc.original_filename)}
+                            </div>
+                            ${remarksHtml}
+                        </td>
+                        <td data-sort-value="${OVPRE.h(doc.author)}">${OVPRE.h(doc.author)}</td>
+                        <td data-sort-value="${OVPRE.h(doc.department_name)}"><span class="dept-pill">${OVPRE.h(doc.department_name)}</span></td>
+                        <td data-sort-value="${doc.submission_date}">${OVPRE.date(doc.submission_date)}</td>
+                        <td data-sort-value="${OVPRE.h(doc.status)}"><span class="status-pill status-${OVPRE.statusClass(doc.status)}">${OVPRE.h(doc.status === 'Declined' ? 'Rejected' : doc.status)}</span></td>
+                        <td data-sort-value="${OVPRE.h(doc.assignee)}">${OVPRE.h(doc.assignee || 'Unassigned')}</td>
+                        <td data-sort-value="${OVPRE.h(doc.uploader)}">${OVPRE.h(doc.uploader || 'Administrator')}</td>
+                        <td>
+                            <button class="primary-btn action-btn" type="button" onclick="openManageDocModal(${doc.id})">
+                                <i class="ri-more-2-fill"></i><span>Manage</span>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            const tb = document.querySelector('[data-selection-toolbar="recordsTable"]');
+            if (tb) {
+                tb.hidden = true;
+                tb.classList.add('is-hidden');
+                tb.style.setProperty('display', 'none', 'important');
+            }
+            const selectAll = document.querySelector('[data-select-all="recordsTable"]');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            if (typeof window.initTableSelectionEngine === 'function') {
+                window.initTableSelectionEngine();
+            }
+
+            if (window.OVPRE && OVPRE.reloadTable) {
+                OVPRE.reloadTable('recordsTable');
+            } else if (typeof window.reloadAdminTablePagination === 'function') {
+                window.reloadAdminTablePagination(document.getElementById('recordsTable'));
+            }
+        }
+
+        // --- MANAGE MODAL WORKFLOWS ---
+        function openManageDocModal(docId) {
+            const all = getDocs();
+            const doc = all.find(d => Number(d.id) === Number(docId));
+            if (!doc) return;
+            selectedDocForManage = doc;
+
+            document.getElementById('manageDocTitle').textContent = doc.title;
+            document.getElementById('manageDocMeta').textContent = doc.category_name + ' | ' + doc.original_filename + ' | Author: ' + doc.author;
+
+            const dl = document.getElementById('manageDownloadBtn');
+            dl.setAttribute('download', doc.original_filename);
+            dl.setAttribute('href', 'data:application/pdf;charset=utf-8,' + encodeURIComponent('OVPRE Document: ' + doc.title));
+
+            document.getElementById('managePreviewBtn').onclick = () => {
+                OVPRE.closeModal('manageDocModal');
+                openDocPreview(doc.id);
+            };
+
+            document.getElementById('manageTimelineBtn').onclick = () => {
+                OVPRE.closeModal('manageDocModal');
+                openTimelineModal(doc.id);
+            };
+
+            document.getElementById('manageVersionsBtn').onclick = () => {
+                OVPRE.closeModal('manageDocModal');
+                openVersionsModal(doc.id);
+            };
+
+            document.getElementById('manageReviewBtn').onclick = () => {
+                OVPRE.closeModal('manageDocModal');
+                openReviewModal(doc.id);
+            };
+
+            const archBtn = document.getElementById('manageArchiveBtn');
+            if (doc.archived) {
+                archBtn.innerHTML = '<i class="ri-arrow-go-back-line"></i><span>Retrieve</span>';
+                archBtn.onclick = () => {
+                    OVPRE.closeModal('manageDocModal');
+                    openRestoreModal(doc.id);
+                };
+            } else {
+                archBtn.innerHTML = '<i class="ri-download-2-line"></i><span>Archive</span>';
+                archBtn.onclick = () => {
+                    toggleArchiveDoc(doc.id);
+                };
+            }
+
+            OVPRE.openModal('manageDocModal');
+        }
+
+        // --- PREVIEW MODAL ---
+        function openDocPreview(docId) {
+            const all = getDocs();
+            const d = all.find(item => Number(item.id) === Number(docId));
+            if (!d) return;
+            document.getElementById('prevDocTitle').innerHTML = '<i class="ri-file-pdf-2-line" style="color: #dc2626;"></i> <span>' + OVPRE.h(d.title) + '</span>';
+            const pdfUrl = d.file_url || ('uploads/records/' + d.original_filename);
+            const iframe = document.getElementById('previewIframe');
+            if (iframe) {
+                iframe.onload = function () {
+                    try {
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (doc && doc.body && (doc.title.includes('404') || doc.body.innerText.includes('404 NOT FOUND') || doc.body.innerText.includes('Page or Resource Not Found'))) {
+                            doc.open();
+                            doc.write(`
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta charset="utf-8">
+                                    <style>
+                                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; margin: 0; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 80vh; box-sizing: border-box; }
+                                        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 650px; width: 100%; padding: 36px 32px; text-align: center; }
+                                        .badge { display: inline-block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-bottom: 16px; }
+                                        h2 { margin: 0 0 10px 0; color: #0f172a; font-size: 1.35rem; font-weight: 700; line-height: 1.4; }
+                                        p { color: #64748b; font-size: 0.92rem; line-height: 1.6; margin: 0 0 20px 0; }
+                                        .doc-box { background: #f1f5f9; border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left; font-family: monospace; font-size: 0.88rem; color: #334155; word-break: break-all; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="card">
+                                        <div class="badge">OVPRE Digital Repository Document</div>
+                                        <h2>` + OVPRE.h(d.title) + `</h2>
+                                        <div class="doc-box">
+                                            <strong>Document:</strong> ` + OVPRE.h(d.original_filename) + `<br>
+                                            <strong>Author:</strong> ` + OVPRE.h(d.author) + `<br>
+                                            <strong>Category:</strong> ` + OVPRE.h(d.category_name) + `<br>
+                                            <strong>Repository:</strong> OVPRE Central Archive
+                                        </div>
+                                        <p>This document is registered in the institutional repository. The file is accessible via the download action or institutional backup.</p>
+                                    </div>
+                                </body>
+                                </html>
+                            `);
+                            doc.close();
+                        }
+                    } catch (e) {
+                        // Handled natively by browser PDF viewer
+                    }
+                };
+                iframe.src = pdfUrl;
+            }
+            const openTab = document.getElementById('prevOpenTabBtn');
+            if (openTab) openTab.href = pdfUrl;
+            const dl = document.getElementById('prevDownloadBtn');
+            if (dl) {
+                dl.setAttribute('download', d.original_filename);
+                dl.setAttribute('href', pdfUrl);
+            }
+            OVPRE.openModal('previewModal');
+        }
+
+        // --- TIMELINE MODAL ---
+        function openTimelineModal(docId) {
+            const all = getDocs();
+            const d = all.find(item => Number(item.id) === Number(docId));
+            if (!d) return;
+
+            const listEl = document.getElementById('timelineListContent');
+            listEl.innerHTML = '';
+
+            const logs = d.timeline || [
+                { action: "Approved", remarks: d.status_remarks || "Document verified and institutional filing completed.", fullname: d.assignee || "Dr. Research Director", date: "Jan 12, 2026 10:30 AM" },
+                { action: "Uploaded", remarks: "Record submitted for institutional repository indexing.", fullname: d.uploader || "Dr. Aris Thorne", date: "Jan 10, 2026 09:00 AM" }
+            ];
+
+            logs.forEach(log => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <strong>${OVPRE.h(log.action)}</strong>
+                    <p>${OVPRE.h(log.remarks || 'No remarks provided.')}</p>
+                    <small>${OVPRE.h(log.fullname || 'System')} | ${OVPRE.h(log.date)}</small>
+                `;
+                listEl.appendChild(div);
+            });
+
+            OVPRE.openModal('timelineModal');
+        }
+
+        // --- VERSIONS MODAL ---
+        function openVersionsModal(docId) {
+            const all = getDocs();
+            const d = all.find(item => Number(item.id) === Number(docId));
+            if (!d) return;
+
+            const listEl = document.getElementById('versionsListContent');
+            listEl.innerHTML = '';
+
+            const versions = d.versions || [
+                { version_label: "Version 1.0 (Official Filing)", filename: d.original_filename, fullname: d.uploader || "System", date: "Jan 10, 2026 09:00 AM" }
+            ];
+
+            versions.forEach(v => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <strong>${OVPRE.h(v.version_label)}</strong>
+                    <p><a href="#" download="${OVPRE.h(v.filename)}" onclick="OVPRE.toast('Downloading version ${OVPRE.h(v.version_label)}...', 'info')">Download ${OVPRE.h(v.filename)}</a></p>
+                    <small>${OVPRE.h(v.fullname || 'System')} | ${OVPRE.h(v.date)}</small>
+                `;
+                listEl.appendChild(div);
+            });
+
+            OVPRE.openModal('versionsModal');
+        }
+
+        // --- REVIEW MODAL ---
+        function openReviewModal(docId) {
+            const all = getDocs();
+            const d = all.find(item => Number(item.id) === Number(docId));
+            if (!d) return;
+            document.getElementById('revDocId').value = d.id;
+            document.getElementById('revDocTitle').textContent = d.title;
+            document.getElementById('revStatus').value = d.status || 'Approved';
+            if (document.getElementById('revAssignee')) {
+                document.getElementById('revAssignee').value = d.assignee || 'Unassigned';
+            }
+            document.getElementById('revRemarks').value = d.status_remarks || '';
+            OVPRE.openModal('reviewModal');
+        }
+
+        function handleSaveReview(event) {
+            event.preventDefault();
+            const id = Number(document.getElementById('revDocId').value);
+            const status = document.getElementById('revStatus').value;
+            const assigneeEl = document.getElementById('revAssignee');
+            const remarks = document.getElementById('revRemarks').value.trim();
+
+            const all = getDocs();
+            const doc = all.find(d => Number(d.id) === id);
+            if (doc) {
+                doc.status = status;
+                if (assigneeEl) {
+                    doc.assignee = assigneeEl.value;
+                }
+                doc.status_remarks = remarks;
+                doc.timeline = doc.timeline || [];
+                doc.timeline.unshift({
+                    action: status,
+                    remarks: remarks || "Status changed to " + status,
+                    fullname: "Super Administrator",
+                    date: new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                });
+                saveDocs(all);
+            }
+
+            OVPRE.closeModal('reviewModal');
+            OVPRE.toast('Record review saved successfully!', 'success');
+            renderRecordsTable();
+        }
+
+        // --- ARCHIVE & RETRIEVE ---
+        function toggleArchiveDoc(docId) {
+            const all = getDocs();
+            const doc = all.find(d => Number(d.id) === Number(docId));
+            if (!doc) return;
+
+            doc.archived = true;
+            doc.timeline = doc.timeline || [];
+            doc.timeline.unshift({
+                action: "Archived",
+                remarks: "Archived from Record Management.",
+                fullname: "Super Administrator",
+                date: new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+            });
+
+            saveDocs(all);
+            OVPRE.closeModal('manageDocModal');
+            OVPRE.toast('Record successfully moved to archived records.', 'success');
+            renderRecordsTable();
+        }
+
+        function openRestoreModal(docId) {
+            const all = getDocs();
+            const doc = all.find(d => Number(d.id) === Number(docId));
+            if (!doc) return;
+            document.getElementById('restoreDocId').value = doc.id;
+            document.getElementById('restoreDocTitle').textContent = doc.title;
+            OVPRE.openModal('restoreDocModal');
+        }
+
+        function handleConfirmRestore(event) {
+            event.preventDefault();
+            const id = Number(document.getElementById('restoreDocId').value);
+            const all = getDocs();
+            const doc = all.find(d => Number(d.id) === id);
+            if (doc) {
+                doc.archived = false;
+                doc.timeline = doc.timeline || [];
+                doc.timeline.unshift({
+                    action: "Retrieved",
+                    remarks: "Retrieved to active repository workflow.",
+                    fullname: "Super Administrator",
+                    date: new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                });
+                saveDocs(all);
+            }
+
+            OVPRE.closeModal('restoreDocModal');
+            OVPRE.toast('Record successfully restored to active records.', 'success');
+            renderRecordsTable();
+        }
+
+        // --- UPLOAD RECORD ---
+        function handleUploadDoc(event) {
+            event.preventDefault();
+            const title = document.getElementById('upTitle').value.trim();
+            const category_name = document.getElementById('upCategory').value;
+            const author = document.getElementById('upAuthor').value.trim();
+            const department_name = document.getElementById('upCollege').value;
+
+            const all = getDocs();
+            const newId = (all.reduce((max, d) => Math.max(max, Number(d.id) || 0), 0)) + 1;
+            const original_filename = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24) + '_Record.pdf';
+
+            const newDoc = {
+                id: newId,
+                title,
+                category_name,
+                original_filename,
+                size: '2.5 MB',
+                author,
+                department_name,
+                submission_date: new Date().toISOString().slice(0, 10),
+                status: 'Under Review',
+                status_remarks: 'Uploaded by administrator for repository indexing.',
+                assignee: 'Unassigned',
+                uploader: 'Super Administrator',
+                archived: false,
+                timeline: [
+                    { action: "Uploaded", remarks: "Uploaded by administrator for repository indexing.", fullname: "Super Administrator", date: new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
+                ],
+                versions: [
+                    { version_label: "Version 1.0", filename: original_filename, fullname: "Super Administrator", date: new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
+                ]
+            };
+
+            all.unshift(newDoc);
+            saveDocs(all);
+
+            OVPRE.closeModal('uploadModal');
+            document.getElementById('uploadDocForm').reset();
+            OVPRE.toast('Record successfully uploaded and filed!', 'success');
+            renderRecordsTable();
+        }
+
+        // --- BULK ACTION HANDLER ---
+        function handleBulkAction(event, tableId) {
+            event.preventDefault();
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const selected = Array.from(table.querySelectorAll('[data-row-select="' + tableId + '"]:checked')).map(cb => cb.value);
+            if (!selected.length) return;
+
+            if (tableId === 'recordsTable') {
+                const all = getDocs();
+                const isArchived = (currentTab === 'archived');
+                selected.forEach(id => {
+                    const doc = all.find(d => Number(d.id) === Number(id));
+                    if (doc) doc.archived = !isArchived;
+                });
+                saveDocs(all);
+                OVPRE.toast(selected.length + ' record(s) successfully ' + (isArchived ? 'retrieved' : 'archived') + '.', 'success');
+                renderRecordsTable();
+            } else {
+                OVPRE.toast(selected.length + ' item(s) processed.', 'success');
+            }
+        }
+
+        function handleRestoreAnnouncement(id) {
+            OVPRE.toast('Announcement successfully restored to published announcements!', 'success');
+        }
+
+        function applyRoleFolders() {
+            try {
+                const u = sessionStorage.getItem('irecord_user') || localStorage.getItem('irecord_user');
+                const user = u ? JSON.parse(u) : null;
+                const role = (user && user.role) ? user.role : '';
+                const rf = document.getElementById('researchFolder');
+                const ef = document.getElementById('extensionFolder');
+                const wrap = document.querySelector('.submission-folders');
+                const sfSub = document.getElementById('submissionFoldersSubtitle');
+                if (role === 'Extension Director') {
+                    if (rf) rf.style.display = 'none';
+                    if (ef) ef.style.display = '';
+                    if (wrap) wrap.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+                    if (sfSub) sfSub.textContent = (currentTab === 'archived') ? 'Archived extension and activity submissions' : 'Extension and activity submissions';
+                } else if (role === 'Research Director') {
+                    if (ef) ef.style.display = 'none';
+                    if (rf) rf.style.display = '';
+                    if (wrap) wrap.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+                    if (sfSub) sfSub.textContent = (currentTab === 'archived') ? 'Archived research and activity submissions' : 'Research and activity submissions';
+                }
+            } catch(e) {}
+        }
+
+        // =========================================================
+        // COMPLETED COLLEGES DIRECTORY LOGIC & PREVIEW
+        // =========================================================
+        const completedColleges = [
+            {
+                department_name: 'College of Computer Studies and Technology',
+                projects: [
+                    { id: 1, type: 'Research', title: 'AI-Driven Early Crop Disease Detection for Calabarzon Farming', status: 'Completed', description: 'Machine learning model trained on local agrarian crop foliage images to detect leaf blight before visible manifestation.', submitter_name: 'Dr. Aris Thorne', file_name: 'AI-Driven-Crop-Disease-Detection-Model.pdf', file_url: 'research.html#proposal-1' },
+                    { id: 5, type: 'Research', title: 'Smart Campus IoT Energy Consumption Monitor', status: 'Completed', description: 'Real-time telemetry measuring sub-station electrical loads across campus academic wings.', submitter_name: 'Dr. Aris Thorne', file_name: 'Smart-Campus-IoT-Energy-System.pdf', file_url: 'research.html#proposal-5' },
+                    { id: 2, type: 'Extension', title: 'IT Skills Training & Digital Literacy for Barangay San Juan', status: 'Completed', description: 'Four-weekend computer literacy bootcamp for senior citizens and out-of-school youth in Barangay San Juan.', submitter_name: 'Prof. Clara Reyes', file_name: 'IT-Digital-Literacy-BrgySanJuan.pdf', file_url: 'extension.html#project-2' }
+                ]
+            },
+            {
+                department_name: 'College of Engineering',
+                projects: [
+                    { id: 3, type: 'Extension', title: 'Community Water Filtration System Installation in Barangay San Lucas', status: 'Completed', description: 'Design and local fabrication of gravity-fed bio-sand water filters for clean drinking water.', submitter_name: 'Engr. Katrina Valdez', file_name: 'Water-Filtration-Community-Design.pdf', file_url: 'extension.html#project-3' },
+                    { id: 6, type: 'Research', title: 'Solar-Powered Low-Cost Post-Harvest Food Dryer', status: 'Completed', description: 'Convective drying chamber powered by photovoltaic thermal panels for fruit and vegetable preservation.', submitter_name: 'Engr. Katrina Valdez', file_name: 'Solar-Dryer-Apparatus-Documentation.pdf', file_url: 'research.html#proposal-6' }
+                ]
+            },
+            {
+                department_name: 'College of Nursing and Allied Health Sciences',
+                projects: [
+                    { id: 4, type: 'Research', title: 'Pediatric Immunization Hesitancy Dynamics in Post-Pandemic Households', status: 'Completed', description: 'Mixed-method epidemiological survey on rural maternal attitudes regarding primary childhood vaccines.', submitter_name: 'Dr. Elena Ramos', file_name: 'Pediatric-Immunization-Survey-Report.pdf', file_url: 'research.html#proposal-4' }
+                ]
+            },
+            {
+                department_name: 'College of Business Administration',
+                projects: [
+                    { id: 7, type: 'Research', title: 'Micro-Enterprise E-Commerce Adoption and Supply Chain Resiliency', status: 'Completed', description: 'Empirical assessment of digital point-of-sale adoption among public market retail cooperatives.', submitter_name: 'Dr. Michael Chen', file_name: 'Micro-Enterprise-ECommerce-Adoption.pdf', file_url: 'research.html#proposal-7' },
+                    { id: 8, type: 'Extension', title: 'Financial Literacy & Bookkeeping Coaching for Market Vendors', status: 'Completed', description: 'Weekly accounting clinic assisting micro-traders in basic ledger balancing and microfinance navigation.', submitter_name: 'Prof. Leo Gomez', file_name: 'Financial-Literacy-Coaching-Modules.pdf', file_url: 'extension.html#project-8' }
+                ]
+            }
+        ];
+
+        function normalizeCompletedCollegeDept(dept) {
+            const s = String(dept || '').toLowerCase();
+            if (!s || s === 'institutional' || s === 'none') return '';
+            if (s.includes('ccst') || s.includes('computer')) return 'CCST';
+            if (s.includes('coe') || s.includes('engineering')) return 'COE';
+            if (s.includes('conahs') || s.includes('cnahs') || s.includes('nursing')) return 'CONAHS';
+            if (s.includes('cas') || s.includes('arts')) return 'CAS';
+            if (s.includes('cba') || s.includes('business')) return 'CBA';
+            if (s.includes('cte') || s.includes('teacher') || s.includes('education')) return 'CTE';
+            if (s.includes('cthm') || s.includes('tourism') || s.includes('hospitality')) return 'CTHM';
+            if (s.includes('coa') || s.includes('accountancy')) return 'COA';
+            if (s.includes('cpag') || s.includes('public administration')) return 'CPAG';
+            if (s.includes('chk') || s.includes('human kinetics') || s.includes('cpe') || s.includes('physical education')) return 'CPE';
+            return s.trim().slice(0, 4).toUpperCase();
+        }
+
+        function buildMergedCompletedColleges() {
+            const map = new Map();
+            completedColleges.forEach(c => {
+                map.set(c.department_name, {
+                    department_name: c.department_name,
+                    projects: c.projects.map(p => ({ ...p }))
+                });
+            });
+
+            try {
+                const resStored = JSON.parse(localStorage.getItem('ovpre_research_projects') || 'null');
+                if (Array.isArray(resStored)) {
+                    resStored.forEach(r => {
+                        if (r.archived) return;
+                        if (r.status === 'Approved' || r.status === 'Completed' || r.progress_status === 'Completed') {
+                            const colName = (r.college || 'College of Computer Studies and Technology').split('(')[0].trim();
+                            if (!map.has(colName)) {
+                                map.set(colName, { department_name: colName, projects: [] });
+                            }
+                            const group = map.get(colName);
+                            if (!group.projects.some(p => p.type === 'Research' && (p.id === r.id || p.title === r.title))) {
+                                group.projects.push({
+                                    id: r.id,
+                                    type: 'Research',
+                                    title: r.title,
+                                    status: 'Completed',
+                                    description: r.abstract || 'Completed institutional research project.',
+                                    submitter_name: r.researchers || r.created_by || 'Faculty Researcher',
+                                    file_name: r.document_filename || 'Research-Report.pdf',
+                                    file_url: r.document_url || `research.html#proposal-${r.id}`
+                                });
+                            }
+                        }
+                    });
+                }
+            } catch (e) {}
+
+            try {
+                const extStored = JSON.parse(localStorage.getItem('ovpre_extension_projects') || 'null');
+                if (Array.isArray(extStored)) {
+                    extStored.forEach(ex => {
+                        if (ex.archived) return;
+                        if (ex.status === 'Approved' || ex.status === 'Completed' || ex.progress_status === 'Completed') {
+                            const colName = (ex.college || 'College of Nursing and Allied Health Sciences').split('(')[0].trim();
+                            if (!map.has(colName)) {
+                                map.set(colName, { department_name: colName, projects: [] });
+                            }
+                            const group = map.get(colName);
+                            if (!group.projects.some(p => p.type === 'Extension' && (p.id === ex.id || p.title === ex.title))) {
+                                group.projects.push({
+                                    id: ex.id,
+                                    type: 'Extension',
+                                    title: ex.title,
+                                    status: 'Completed',
+                                    description: ex.description || 'Completed community extension initiative.',
+                                    submitter_name: ex.coordinator || ex.created_by || 'Faculty Extensionist',
+                                    file_name: ex.document_filename || 'Extension-Report.pdf',
+                                    file_url: ex.document_url || `extension.html#project-${ex.id}`
+                                });
+                            }
+                        }
+                    });
+                }
+            } catch (e) {}
+
+            return Array.from(map.values());
+        }
+
+        function createDocumentPdfBlob(title, author, dept, desc) {
+            const safeTitle = (title || 'Academic Project').replace(/[()\\]/g, '');
+            const safeAuthor = (author || 'Faculty Proponent').replace(/[()\\]/g, '');
+            const safeDept = (dept || 'Academic Department').replace(/[()\\]/g, '');
+            const safeDesc = (desc || 'Completed academic project under the institutional repository.').replace(/[()\\]/g, '').slice(0, 300);
+
+            const stream = [
+                'BT',
+                '/F1 16 Tf',
+                '50 720 Td',
+                `(${safeTitle.slice(0, 60)}) Tj`,
+                '/F1 10 Tf',
+                '0 -28 Td',
+                `(Author / Submitter: ${safeAuthor}) Tj`,
+                '0 -18 Td',
+                `(Department / College: ${safeDept}) Tj`,
+                '0 -18 Td',
+                '(Classification: Official Verified Academic Record - Completed) Tj',
+                '0 -32 Td',
+                '/F1 12 Tf',
+                '(PROJECT DETAILS / ABSTRACT:) Tj',
+                '/F1 10 Tf',
+                '0 -20 Td',
+                `(${safeDesc.slice(0, 95)}) Tj`,
+                safeDesc.length > 95 ? `0 -16 Td (${safeDesc.slice(95, 190)}) Tj` : '',
+                safeDesc.length > 190 ? `0 -16 Td (${safeDesc.slice(190, 285)}) Tj` : '',
+                'ET'
+            ].filter(Boolean).join('\n');
+
+            const streamLen = new TextEncoder().encode(stream).length;
+            let out = '%PDF-1.4\n';
+            const offsets = [];
+            offsets.push(out.length);
+            out += '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+            offsets.push(out.length);
+            out += '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n';
+            offsets.push(out.length);
+            out += '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n';
+            offsets.push(out.length);
+            out += `4 0 obj\n<< /Length ${streamLen} >>\nstream\n${stream}\nendstream\nendobj\n`;
+            offsets.push(out.length);
+            out += '5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n';
+            const xrefOffset = out.length;
+            out += 'xref\n0 6\n0000000000 65535 f \n';
+            for (const offset of offsets) {
+                out += String(offset).padStart(10, '0') + ' 00000 n \n';
+            }
+            out += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+            return new Blob([out], { type: 'application/pdf' });
+        }
+
+        function downloadAcademicFile(fileUrl, fileName, title, author, dept, desc) {
+            const isRealPdfUrl = fileUrl && fileUrl !== '#' && !fileUrl.includes('.html') && (fileUrl.includes('.pdf') || fileUrl.includes('download-document.php'));
+            if (isRealPdfUrl) {
+                let dlUrl = fileUrl;
+                if (dlUrl.includes('download-document.php') && !dlUrl.includes('download=1')) {
+                    dlUrl += (dlUrl.includes('?') ? '&' : '?') + 'download=1';
+                }
+                const a = document.createElement('a');
+                a.href = dlUrl;
+                a.download = fileName || 'Academic-Document.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                return;
+            }
+            const blob = createDocumentPdfBlob(title, author, dept, desc);
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = fileName || 'Academic-Document.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+        }
+
+        function viewAcademicFile(fileUrl, title, author, dept, desc) {
+            const isRealPdfUrl = fileUrl && fileUrl !== '#' && !fileUrl.includes('.html') && (fileUrl.includes('.pdf') || fileUrl.includes('download-document.php'));
+            if (isRealPdfUrl) {
+                window.open(fileUrl, '_blank', 'noopener');
+                return;
+            }
+            const blob = createDocumentPdfBlob(title, author, dept, desc);
+            const blobUrl = URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank', 'noopener');
+        }
+
+        function openQuickPreview(sub, personName, deptName) {
+            const previewDialog = document.getElementById('submissionQuickPreviewDialog');
+            if (!previewDialog) return;
+            const isResearch = sub.type === 'Research';
+            document.getElementById('quickPreviewTypeBadge').textContent = sub.type || 'Project';
+            document.getElementById('quickPreviewTypeBadge').style.background = isResearch ? '#f0fdf4' : '#f3e8ff';
+            document.getElementById('quickPreviewTypeBadge').style.color = isResearch ? '#15803d' : '#7c3aed';
+
+            const statusEl = document.getElementById('quickPreviewStatusBadge');
+            const status = sub.status || 'Completed';
+            statusEl.textContent = status;
+            statusEl.style.background = (status === 'Completed' || status === 'Approved') ? '#f0fdf4' : '#fffbeb';
+            statusEl.style.color = (status === 'Completed' || status === 'Approved') ? '#15803d' : '#b45309';
+
+            document.getElementById('quickPreviewTitle').textContent = sub.title || '';
+            const pName = personName || sub.submitter_name || 'Faculty Proponent';
+            const dName = deptName || sub.department_name || 'Academic Department';
+            document.getElementById('quickPreviewMeta').textContent = `Submitter: ${pName} (${dName}) | Status: ${status}`;
+            document.getElementById('quickPreviewDesc').textContent = sub.description || 'Completed institutional project document.';
+
+            const subId = encodeURIComponent(sub.id || '');
+            const targetUrl = isResearch
+                ? `research.html?highlight=${subId}#proposal-${subId}`
+                : `extension.html?highlight=${subId}#project-${subId}`;
+            const fileUrl = sub.file_url || sub.document_url || targetUrl;
+            const fileName = sub.file_name || (sub.title ? sub.title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 32) + '-Report.pdf' : 'Academic-Document.pdf');
+
+            const fileNameEl = document.getElementById('quickPreviewFileName');
+            if (fileNameEl) fileNameEl.textContent = fileName;
+
+            const viewFileBtn = document.getElementById('quickPreviewViewFileBtn');
+            if (viewFileBtn) {
+                viewFileBtn.onclick = (e) => {
+                    e.preventDefault();
+                    viewAcademicFile(fileUrl, sub.title, pName, dName, sub.description);
+                };
+            }
+
+            const downloadBtn = document.getElementById('quickPreviewDownloadBtn');
+            if (downloadBtn) {
+                downloadBtn.onclick = (e) => {
+                    e.preventDefault();
+                    downloadAcademicFile(fileUrl, fileName, sub.title, pName, dName, sub.description);
+                };
+            }
+
+            if (window.OVPRE && OVPRE.openModal) OVPRE.openModal('submissionQuickPreviewDialog');
+            else previewDialog.classList.add('open');
+        }
+        window.openQuickPreview = openQuickPreview;
+
+        function renderCompletedColleges() {
+            const completedCollegesList = document.getElementById('completedCollegesList');
+            const completedProjectFilter = document.getElementById('completedProjectTypeFilter');
+            const searchInput = document.getElementById('completedCollegeSearchInput');
+            const completedTotalBadgeEl = document.getElementById('completedTotalBadge');
+            if (!completedCollegesList) return;
+
+            const filterVal = completedProjectFilter ? completedProjectFilter.value : 'all';
+            const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+            completedCollegesList.replaceChildren();
+
+            let mergedColleges = buildMergedCompletedColleges();
+            let visibleCount = 0;
+            let totalCompletedProjects = 0;
+
+            mergedColleges.forEach(col => {
+                const deptMatches = !query || 
+                    col.department_name.toLowerCase().includes(query) || 
+                    normalizeCompletedCollegeDept(col.department_name).toLowerCase().includes(query);
+
+                const filteredProjects = col.projects.filter(p => {
+                    const matchesStream = filterVal === 'all' || p.type.toLowerCase() === filterVal;
+                    if (!matchesStream) return false;
+                    if (!query) return true;
+                    if (deptMatches) return true;
+                    return (p.title && p.title.toLowerCase().includes(query)) ||
+                           (p.submitter_name && p.submitter_name.toLowerCase().includes(query)) ||
+                           (p.description && p.description.toLowerCase().includes(query));
+                });
+                if (!filteredProjects.length) return;
+                visibleCount++;
+                totalCompletedProjects += filteredProjects.length;
+
+                const card = document.createElement('div');
+                card.className = 'acad-college-group';
+
+                const heading = document.createElement('div');
+                heading.className = 'acad-college-header';
+
+                const collegeLeft = document.createElement('div');
+                collegeLeft.className = 'acad-college-name-wrap';
+
+                const acronymBadge = document.createElement('span');
+                acronymBadge.className = 'acad-college-acronym';
+                acronymBadge.textContent = normalizeCompletedCollegeDept(col.department_name);
+
+                const collegeName = document.createElement('h3');
+                collegeName.className = 'acad-college-name';
+                collegeName.textContent = col.department_name;
+                collegeName.title = col.department_name;
+                collegeLeft.append(acronymBadge, collegeName);
+
+                const projectCount = document.createElement('span');
+                projectCount.className = 'acad-college-count';
+                projectCount.textContent = `${filteredProjects.length} completed`;
+                heading.append(collegeLeft, projectCount);
+
+                const projectContainer = document.createElement('div');
+                projectContainer.className = 'acad-project-list';
+
+                filteredProjects.forEach(project => {
+                    const isResearch = project.type === 'Research';
+                    const pill = document.createElement('div');
+                    pill.className = 'acad-project-row';
+                    pill.role = 'button';
+                    pill.tabIndex = 0;
+                    pill.title = `Click to view file & details for: ${project.title}`;
+
+                    const leftWrap = document.createElement('div');
+                    leftWrap.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;flex:1;';
+
+                    const typeBadge = document.createElement('span');
+                    typeBadge.className = `acad-project-type ${isResearch ? 'type-research' : 'type-extension'}`;
+                    typeBadge.textContent = project.type;
+
+                    const titleSpan = document.createElement('span');
+                    titleSpan.className = 'acad-project-title';
+                    titleSpan.textContent = project.title;
+                    leftWrap.append(typeBadge, titleSpan);
+
+                    const viewFileBtn = document.createElement('button');
+                    viewFileBtn.type = 'button';
+                    viewFileBtn.className = 'acad-view-file-btn';
+                    viewFileBtn.innerHTML = '<i class="ri-file-text-line" style="font-size:0.76rem;"></i><span>View File</span>';
+
+                    pill.append(leftWrap, viewFileBtn);
+
+                    const triggerPreview = (e) => {
+                        if (e) e.stopPropagation();
+                        openQuickPreview(project, project.submitter_name || 'Faculty Proponent', col.department_name);
+                    };
+
+                    pill.addEventListener('click', triggerPreview);
+                    pill.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            triggerPreview(e);
+                        }
+                    });
+
+                    projectContainer.appendChild(pill);
+                });
+
+                card.append(heading, projectContainer);
+                completedCollegesList.appendChild(card);
+            });
+
+            if (completedTotalBadgeEl) {
+                if (query) {
+                    completedTotalBadgeEl.textContent = `${visibleCount} College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed (Filtered)`;
+                } else {
+                    completedTotalBadgeEl.textContent = `${visibleCount} Active College${visibleCount === 1 ? '' : 's'} · ${totalCompletedProjects} Completed`;
+                }
+            }
+
+            if (!visibleCount) {
+                completedCollegesList.innerHTML = `<div style="padding: 30px 10px; text-align: center; color: #64748b; font-size: 0.85rem;"><i class="ri-search-line" style="font-size: 1.8rem; display: block; margin-bottom: 6px; color: #94a3b8;"></i>No completed projects found${query ? ' matching "' + query.replace(/["<>]/g, '') + '"' : ' matching selected criteria'}.</div>`;
+            }
+        }
+        window.renderCompletedColleges = renderCompletedColleges;
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function () {
+            applyRoleFolders();
+            // Check URL for ?archived=1
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('archived') === '1') {
+                switchRecordView('archived');
+            } else {
+                renderRecordsTable();
+            }
+
+            const completedProjectFilter = document.getElementById('completedProjectTypeFilter');
+            const searchInput = document.getElementById('completedCollegeSearchInput');
+            const searchBtn = document.getElementById('completedCollegeSearchBtn');
+
+            if (completedProjectFilter) {
+                completedProjectFilter.addEventListener('change', renderCompletedColleges);
+                renderCompletedColleges();
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', renderCompletedColleges);
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        renderCompletedColleges();
+                    }
+                });
+            }
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    renderCompletedColleges();
+                    if (searchInput) searchInput.focus();
+                });
+            }
+
+            const closePreviewDialog = document.getElementById('closeQuickPreviewDialog');
+            const previewDialog = document.getElementById('submissionQuickPreviewDialog');
+            if (closePreviewDialog && previewDialog) {
+                closePreviewDialog.addEventListener('click', () => {
+                    if (window.OVPRE && OVPRE.closeModal) OVPRE.closeModal('submissionQuickPreviewDialog');
+                    else previewDialog.classList.remove('open');
+                });
+                previewDialog.addEventListener('click', (e) => {
+                    if (e.target === previewDialog) previewDialog.classList.remove('open');
+                });
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js?v=20261112"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/static-bridge.js"></script>
+    <script src="assets/js/role-system.js"></script>
+</body>
+</html>
